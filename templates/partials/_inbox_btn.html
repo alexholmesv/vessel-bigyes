@@ -1,0 +1,27 @@
+<!-- ── Inbox mail icon button (include before user-menu-wrap in every nav) ── -->
+<button id="inbox-btn"
+        onclick="inboxOpen()"
+        title="Inbox"
+        class="relative flex items-center justify-center flex-shrink-0 focus:outline-none"
+        style="width:36px;height:36px;border:var(--by-bd-thick);background:var(--by-bg);
+               transition:background var(--by-snap);"
+        onmouseover="this.style.background='var(--by-bg-2)'"
+        onmouseout="this.style.background='var(--by-bg)'">
+  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8"
+       style="color:var(--by-ink);" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5
+             0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0
+             1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0
+             1-1.07-1.916V6.75"/>
+  </svg>
+  {# Unread badge — injected by inject_nav_context() #}
+  <span id="inbox-badge"
+        class="absolute flex items-center justify-center"
+        style="top:-6px;right:-6px;min-width:16px;height:16px;padding:0 3px;
+               background:var(--by-tomato);border:1.5px solid var(--by-bg);
+               font-family:var(--by-f-mono);font-size:9px;font-weight:700;color:#fff;
+               line-height:1;{{ 'display:none;' if not inbox_unread_count else '' }}">
+    {{ inbox_unread_count if inbox_unread_count and inbox_unread_count < 100 else ('99+' if inbox_unread_count else '') }}
+  </span>
+</button>

@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes · Profile</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Archivo Black"', 'system-ui', 'sans-serif'],
+          sans:    ['"Archivo"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          body:    ['"Manrope"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono:    ['"DM Mono"', 'ui-monospace', 'monospace'],
+        },
+        // BigYes colour tokens — change hex values here to retheme.
+        colors: {
+          'by-yes':         '#FFC629',
+          'by-yes-deep':    '#E5A800',
+          'by-yes-soft':    '#FFE7A0',
+          'by-ink':         '#141210',
+          'by-ink-2':       '#2A2723',
+          'by-ink-3':       '#5C544A',
+          'by-ink-4':       '#8A8073',
+          'by-bg':          '#F4EEE2',
+          'by-bg-2':        '#ECE3D0',
+          'by-bg-3':        '#E2D6BB',
+          'by-tomato':      '#E5482A',
+          'by-tomato-deep': '#B83218',
+          'by-night':       '#141210',
+          'by-night-on':    '#C9BFA8',
+        },
+        boxShadow: {
+          'by-hard':     '4px 4px 0 0 #141210',
+          'by-hard-yes': '4px 4px 0 0 #FFC629',
+        },
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  /* ── BigYes Design Tokens v0.1 ───────────────────────────────────── */
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-r-1:4px; --by-r-pill:999px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-bd-dash:1px dashed var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
+  }
+
+  html, body { background: var(--by-bg); }
+  body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing:antialiased; }
+  .font-display { font-family: var(--by-f-display); font-weight:900; letter-spacing:-0.02em; text-transform:uppercase; }
+  .font-mono { font-family: var(--by-f-mono); }
+
+  .by-display { font-family:var(--by-f-display); font-weight:900; line-height:0.88; letter-spacing:-0.02em; text-transform:uppercase; }
+  .by-eyebrow { font-family:var(--by-f-mono); font-size:var(--by-t-mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--by-ink-3); }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+
+  .hairline { border-color: var(--by-ink); }
+
+  /* Chips */
+  .chip { display:inline-flex; align-items:center; gap:.375rem; padding:.15rem .55rem; border-radius:999px; font-family:var(--by-f-mono); font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--by-ink); line-height:1.2; background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
+  .chip .dot { width:6px; height:6px; border-radius:999px; flex-shrink:0; background:var(--by-ink); }
+  .chip-active  { background:var(--by-bg); }
+  .chip-active  .dot { background:#2A8A4F; }
+  .chip-open    { background:var(--by-yes); }
+  .chip-open    .dot { background:var(--by-ink); }
+  .chip-mine    { background:var(--by-yes); }
+  .chip-mine    .dot { background:var(--by-ink); }
+  .chip-taken   { background:var(--by-bg-2); color:var(--by-ink-3); border-color:var(--by-ink-3); }
+  .chip-taken   .dot { background:var(--by-ink-3); }
+  .chip-upcoming { background:var(--by-bg); }
+  .chip-upcoming .dot { background:var(--by-ink); }
+
+  /* Sidebar nav */
+  .nav-item { display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:0; color:var(--by-ink-3); font-family:var(--by-f-body); font-size:13.5px; font-weight:500; border:none; border-left:4px solid transparent; text-decoration:none; transition:background var(--by-snap),color var(--by-snap); }
+  .nav-item:hover { color:var(--by-ink); background:var(--by-bg-2); }
+  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+  .nav-item .ico { width:18px; height:18px; flex:0 0 18px; }
+  .nav-item .kbd { margin-left:auto; font-family:var(--by-f-mono); font-size:10.5px; color:var(--by-ink-4); }
+
+  /* Buttons */
+  .btn-spot  { background:var(--by-yes); color:var(--by-ink); font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
+  .btn-spot:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
+  .btn-spot:active { transform:translate(4px,4px); box-shadow:none; }
+  .btn-live  { background:var(--by-tomato); color:#fff; font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
+  .btn-live:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
+  .btn-ghost { border:1px solid var(--by-ink); background:transparent; color:var(--by-ink); font-weight:500; }
+  .btn-ghost:hover { background:var(--by-bg-2); }
+
+  /* Avatar */
+  .av { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; font-weight:800; color:var(--by-ink); box-shadow:inset 0 0 0 1px rgba(20,18,16,.2); flex-shrink:0; }
+
+  /* Points hero — night island (one dark inversion on this page) */
+  .points-hero { border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
+  .points-hero-inner { background:var(--by-night); padding:28px 30px; color:var(--by-night-on); }
+  .points-hero-inner .by-eyebrow { color:var(--by-night-on); opacity:.7; }
+  .points-num { font-family:var(--by-f-display); font-weight:900; font-size:clamp(56px,14vw,88px); line-height:.88; letter-spacing:-0.04em; color:var(--by-yes); }
+
+  /* Breakdown bars */
+  .bd-bar { background:rgba(255,255,255,.12); border-radius:6px; overflow:hidden; height:8px; }
+  .bd-bar > i { display:block; height:100%; border-radius:6px; }
+
+  /* Class card */
+  .class-card { padding:16px; border:1px solid var(--by-ink); background:var(--by-bg); transition:background-color 120ms, box-shadow 120ms; }
+  .class-card:hover { background:var(--by-bg-2); box-shadow:var(--by-sh-1); }
+
+  /* Shift row */
+  .shift-row { display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid var(--by-ink); background:var(--by-bg); }
+  .shift-row.mine { background:var(--by-yes-soft); }
+
+  /* Live challenge card */
+  .live-card { border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); transition:box-shadow 120ms, border-color 120ms; }
+  .live-card.armed { border-color:var(--by-yes); box-shadow:var(--by-sh-yes); }
+  .live-card-inner { background:var(--by-bg-2); padding:18px; }
+
+  /* Countdown */
+  .countdown { font-family:'Fraunces',serif; font-variation-settings:"opsz" 144; font-size:clamp(44px,16vw,72px); line-height:1; font-weight:600; letter-spacing:-0.04em; transition:color 400ms ease, text-shadow 400ms ease; }
+  .countdown.calm   { color:#22D3EE; text-shadow:0 0 32px rgba(34,211,238,.45); }
+  .countdown.warm   { color:#FBBF24; text-shadow:0 0 32px rgba(251,191,36,.55); }
+  .countdown.danger { color:#F87171; text-shadow:0 0 32px rgba(248,113,113,.65); animation:shake .4s ease-in-out infinite; }
+  .countdown.locked { color:#475569; text-shadow:none; animation:none; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-2px)} 75%{transform:translateX(2px)} }
+  .text-live-indicator { color: var(--by-tomato); }
+
+  /* Achievement tile */
+  .ach { display:flex; flex-direction:column; gap:6px; align-items:flex-start; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.015); }
+  .ach .icon { width:32px; height:32px; border-radius:10px; display:grid; place-items:center; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.06); border-radius:999px; }
+  ::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,.10); }
+
+  /* ── Mobile-first chrome ─────────────────────────────── */
+  body { padding-bottom: 64px; }
+  @media (min-width: 1024px) { body { padding-bottom: 0; } }
+
+  .by-mob-bar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; height: 56px;
+    background: var(--by-bg);
+    border-bottom: var(--by-bd-thick);
+  }
+  @media (min-width: 1024px) { .by-mob-bar { display: none; } }
+
+  .by-ham {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border: var(--by-bd-thick); background: var(--by-bg);
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+    cursor: pointer;
+  }
+  .by-ham span { display: block; width: 18px; height: 1.5px; background: var(--by-ink); }
+
+  .by-mob-drawer {
+    position: fixed; top: 56px; bottom: 64px; left: 0; z-index: 35;
+    width: 280px;
+    background: var(--by-bg);
+    border-right: var(--by-bd-thick);
+    transform: translateX(-100%);
+    transition: transform 240ms cubic-bezier(.2,.8,.2,1);
+    overflow-y: auto;
+  }
+  .by-mob-drawer.open { transform: translateX(0); }
+  @media (min-width: 1024px) { .by-mob-drawer { display: none; } }
+
+  .by-mob-overlay {
+    display: none; position: fixed; inset: 0; z-index: 34;
+    background: rgba(20,18,16,.45);
+  }
+  .by-mob-overlay.open { display: block; }
+
+  .by-mob-tabs {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; height: 64px;
+    display: flex;
+    background: var(--by-bg);
+    border-top: var(--by-bd-thick);
+  }
+  .by-mob-tabs a {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    padding: 8px 4px 10px;
+    font-family: var(--by-f-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--by-ink-3);
+    border-right: 1px solid var(--by-bg-3);
+    text-decoration: none; min-height: 44px;
+  }
+  .by-mob-tabs a:last-child { border-right: 0; }
+  .by-mob-tabs a.active { color: var(--by-ink); background: var(--by-yes); }
+  .by-mob-tabs svg { width: 20px; height: 20px; }
+  @media (min-width: 1024px) { .by-mob-tabs { display: none; } }
+
+  /* Sticky bottom CTA bar */
+  .by-cta-bar {
+    position: sticky; bottom: 64px; z-index: 20;
+    display: flex; gap: 8px;
+    padding: 12px 16px;
+    background: var(--by-bg);
+    border-top: var(--by-bd-thick);
+    margin: 16px -28px -28px;
+  }
+  .by-cta-bar .by-cta-btn {
+    flex: 1; min-height: 48px; padding: 14px 16px;
+    font-family: var(--by-f-sans); font-size: 14px; font-weight: 700;
+    border: var(--by-bd-thick); cursor: pointer;
+  }
+  .by-cta-btn-primary { background: var(--by-yes); color: var(--by-ink); box-shadow: var(--by-sh-1); }
+  .by-cta-btn-ghost   { background: transparent; color: var(--by-ink); }
+  @media (min-width: 1024px) {
+    .by-cta-bar { position: static; border-top: 0; padding: 0; margin: 0; display: flex; gap: 8px; }
+    .by-cta-bar .by-cta-btn { flex: 0 0 auto; }
+  }
+
+  /* Points hero: full-width on mobile, split on lg */
+  .points-hero-inner { padding: 20px 16px; }
+  @media (min-width: 1024px) { .points-hero-inner { padding: 28px 30px; } }
+</style>
+{% include 'partials/_byselect.html' %}
+</head>
+
+<body class="min-h-screen">
+
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.5rem;font-size:.78125rem;font-weight:600;opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
+
+<!-- Mobile top bar (hidden lg+) -->
+<header class="by-mob-bar">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  </a>
+  <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+<div id="mob-overlay" class="by-mob-overlay" onclick="toggleMobDrawer()"></div>
+<nav id="mob-drawer" class="by-mob-drawer">
+  <div class="px-4 py-4 border-b hairline">
+    <div class="by-eyebrow">Student</div>
+    <div class="by-display text-[18px]" style="color:var(--by-ink);">My Stage</div>
+  </div>
+  <div class="px-3 py-3">
+    <a href="/" class="nav-item active">Profile</a>
+    <a href="#classes" class="nav-item" onclick="toggleMobDrawer()">My Classes</a>
+    <a href="#shifts" class="nav-item" onclick="toggleMobDrawer()">Volunteer Shifts</a>
+    <a href="#challenge" class="nav-item" onclick="toggleMobDrawer()">Challenge Inbox</a>
+    <div class="by-eyebrow px-2 pt-4 pb-1">Switch role</div>
+    <a href="/switch-role/stage_manager" class="nav-item">Stage Manager</a>
+    <a href="/switch-role/teacher" class="nav-item">Teacher</a>
+  </div>
+</nav>
+
+<div class="min-h-screen flex flex-col lg:grid lg:grid-cols-[248px_1fr]">
+
+  <!-- ══════════════ SIDEBAR (hidden below lg) ══════════════ -->
+  <aside class="hidden lg:flex lg:flex-col border-r hairline sticky top-0 h-screen overflow-y-auto"
+         style="background: var(--by-bg);">
+
+    <!-- Wordmark -->
+    <div class="px-5 pt-6 pb-5">
+      <a href="/" class="by-display" style="font-size:22px; color:var(--by-ink); text-decoration:none; line-height:1;">
+        Big<span class="by-yes-block" style="font-size:20px; padding:0 10px 3px;">Yes</span>
+      </a>
+      <div class="by-eyebrow mt-2">Barcelona Improv</div>
+    </div>
+
+    <!-- Role indicator -->
+    <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2"
+         style="border: var(--by-bd); background: var(--by-bg-2);">
+      <span class="w-6 h-6 flex items-center justify-center flex-shrink-0"
+            style="background: var(--by-ink); border: var(--by-bd); font-family:var(--by-f-mono); font-size:10px; font-weight:700; color:var(--by-bg);">S</span>
+      <div class="flex-1 min-w-0">
+        <div class="text-[12.5px] truncate" style="font-family:var(--by-f-sans); font-weight:700; color:var(--by-ink);">Student view</div>
+        <div class="by-eyebrow truncate">{{ current_user_name }}</div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="px-3 flex-1">
+      <div class="by-eyebrow px-2 pt-2 pb-1">My stage</div>
+      <a href="/" class="nav-item active">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="4"/><path d="M4 21c1-4 5-6 8-6s7 2 8 6"/></svg>
+        Profile <span class="kbd">G P</span>
+      </a>
+      <a href="#classes" class="nav-item">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
+        My Classes
+      </a>
+      <a href="#shifts" class="nav-item">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
+        Volunteer Shifts
+      </a>
+      <a href="#challenge" class="nav-item">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+        Challenge Inbox
+      </a>
+
+      <div class="by-eyebrow px-2 pt-5 pb-1">More</div>
+      <a href="#" class="nav-item">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
+        Achievements
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a8 8 0 0 0 .1-6l1.6-1.2-2-3.4-1.9.7a8 8 0 0 0-5.2-3L11.5 0H8.5l-.5 2a8 8 0 0 0-5.2 3l-1.9-.7-2 3.4L.5 9a8 8 0 0 0 .1 6"/></svg>
+        Settings
+      </a>
+
+    </nav>
+
+    <!-- Bottom: Yes-And balance -->
+    <div class="m-3 p-3" style="border: var(--by-bd); background: var(--by-bg-2);">
+      <div class="by-eyebrow">Yes-And balance</div>
+      <div class="mt-1 flex items-baseline gap-1">
+        <span id="sidePoints" class="font-display text-[26px] leading-none" style="color:var(--by-ink);">{{ user.yes_and_points | default(0) }}</span>
+        <span class="by-eyebrow">pts</span>
+      </div>
+      <div class="mt-2" style="height:4px; background:var(--by-bg-3);">
+        <i style="display:block; height:100%; width:{{ [((user.yes_and_points | default(0)) % 100), 100] | min }}%; background:var(--by-yes);"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <div class="flex flex-col min-w-0">
+
+    <!-- Sticky header -->
+    <header class="sticky top-0 z-30 border-b hairline" style="background: var(--by-bg);">
+      <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-3 lg:gap-4">
+        <div class="leading-tight">
+          <div class="by-eyebrow">Student</div>
+          <div class="font-display text-[22px]" style="color:var(--by-ink);">Profile</div>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <a href="/api/privacy/export" class="btn-ghost h-9 px-3 rounded-lg text-[13px] flex items-center gap-2 no-underline">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download my data
+        </a>
+
+        <!-- Scene switcher -->
+        {% include 'partials/_scene_switcher.html' %}
+
+        <!-- User menu dropdown -->
+        {% include 'partials/_inbox_btn.html' %}
+        <div class="relative flex-shrink-0" id="user-menu-wrap">
+          <button id="user-menu-btn" onclick="toggleUserMenu()"
+                  class="flex items-center gap-2 cursor-pointer h-9 px-2"
+                  style="border:var(--by-bd); background:var(--by-bg);">
+            <img class="by-um-av-img av object-cover flex-shrink-0"
+                 src="{{ current_user_avatar or '' }}"
+                 style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                 alt="{{ current_user_initials }}">
+            <span class="by-um-av-init av flex items-center justify-center flex-shrink-0"
+                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+              {{ current_user_initials }}
+            </span>
+            <div class="hidden md:block leading-tight text-left">
+              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
+              <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Student</div>
+            </div>
+            <svg class="h-3 w-3 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.5"
+                 style="color:var(--by-ink-4);"
+                 viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          </button>
+
+          <div id="user-menu-drop" class="hidden" style="
+            position:absolute; top:calc(100% + 6px); right:0; z-index:60;
+            min-width:168px; background:var(--by-bg); border:var(--by-bd-thick);
+            box-shadow:var(--by-sh-1);">
+            <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
+              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);line-height:1.2">{{ current_user_name }}</div>
+              <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Student</div>
+            </div>
+            <button onclick="openMyConfig(); toggleUserMenu(true)"
+              class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b"
+              style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
+              <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Config
+            </button>
+            <a href="/logout"
+              class="w-full text-left px-3 py-2.5 flex items-center gap-2.5"
+              style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);text-decoration:none;">
+              <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Log out
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {% if mock_preview %}
+    <!-- ═══════════════════════════════════════════════════════════
+         DESIGN MOCKUP — visible only when ?mock_preview=1
+         Static hardcoded data. Safe to restyle freely.
+         ═══════════════════════════════════════════════════════════ -->
+    <main class="px-4 lg:px-7 py-4 lg:py-6 grid grid-cols-12 gap-4 lg:gap-5">
+
+      <!-- Points hero — mock -->
+      <section class="col-span-12 border p-6" style="border-color:var(--by-ink); background:var(--by-bg-2);">
+        <div class="grid grid-cols-12 gap-6 items-center">
+          <div class="col-span-12 lg:col-span-5">
+            <p class="by-eyebrow mb-1">Yes-And Points</p>
+            <p class="by-display text-[64px] leading-none" style="color:var(--by-ink);">340</p>
+            <p class="by-eyebrow mt-2">Rank #4 of 24 students</p>
+            <div class="mt-4 h-2 rounded-full" style="background:var(--by-bg-3);">
+              <div class="h-full rounded-full" style="width:68%; background:var(--by-yes);"></div>
+            </div>
+            <p class="by-eyebrow mt-1">68% to next level — <span style="color:var(--by-ink); font-weight:700;">L3</span></p>
+          </div>
+          <div class="col-span-12 lg:col-span-7 grid grid-cols-2 gap-3">
+            {% for label, val, sub in [
+              ('Scenes played','12','this term'),
+              ('Challenges won','4','out of 7'),
+              ('Volunteer shifts','2','completed'),
+              ('Streak','3 weeks','attendance'),
+            ] %}
+            <div class="border px-4 py-3" style="border-color:var(--by-ink); background:var(--by-bg);">
+              <p class="by-eyebrow">{{ label }}</p>
+              <p class="by-h-sans text-[22px] mt-0.5" style="color:var(--by-ink);">{{ val }}</p>
+              <p class="by-eyebrow mt-0.5">{{ sub }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <!-- My classes (7 cols) — mock -->
+      <section id="classes" class="col-span-12 xl:col-span-7 border" style="border-color:var(--by-ink); background:var(--by-bg-2);">
+        <header class="px-5 py-4 border-b" style="border-color:var(--by-ink);">
+          <p class="by-h-sans text-[16px]" style="color:var(--by-ink);">My Classes</p>
+        </header>
+        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {% for name, day, time, level in [
+            ('Level 2 Improv','Tuesday','19:00','L2'),
+            ('Weekend Workshop','Saturday','10:00','L2'),
+          ] %}
+          <div class="border px-4 py-3" style="border-color:var(--by-ink); background:var(--by-bg);">
+            <p class="font-semibold text-[14px]">{{ name }}</p>
+            <p class="by-eyebrow mt-1">{{ day }} · {{ time }}</p>
+            <span class="inline-block mt-2 px-2 py-0.5 rounded text-[11px] font-black border" style="border-color:var(--by-ink); background:var(--by-yes);">{{ level }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Active challenge (5 cols) — mock -->
+      <aside id="challenge" class="col-span-12 xl:col-span-5 flex flex-col gap-4">
+        <div class="border p-5" style="border-color:var(--by-ink); background:var(--by-bg-2);">
+          <div class="flex items-start justify-between mb-3">
+            <p class="by-eyebrow">Active challenge</p>
+            <span class="px-2 py-0.5 rounded text-[11px] font-semibold border" style="border-color:var(--by-tomato); color:var(--by-tomato);">Live</span>
+          </div>
+          <p class="by-h-sans text-[18px] mb-1" style="color:var(--by-ink);">Yes-And in 60 sec</p>
+          <p class="text-[13px] mb-3" style="color:var(--by-ink-3);">Accept every offer your partner makes.</p>
+          <div class="h-2 rounded-full mb-1" style="background:var(--by-bg-3);">
+            <div class="h-full rounded-full" style="width:70%; background:var(--by-yes);"></div>
+          </div>
+          <p class="by-eyebrow">42 sec remaining</p>
+          <button class="mt-4 w-full h-10 rounded border font-semibold text-[13.5px]" style="background:var(--by-yes); border-color:var(--by-ink);">Submit response</button>
+        </div>
+
+        <!-- Volunteer shifts — mock -->
+        <div class="border p-5" id="shifts" style="border-color:var(--by-ink); background:var(--by-bg-2);">
+          <p class="by-h-sans text-[16px] mb-3" style="color:var(--by-ink);">Volunteer shifts</p>
+          {% for role, date, status in [
+            ('Door','Fri 23 May','Claimed'),
+            ('Bar','Sat 31 May','Open'),
+          ] %}
+          <div class="flex items-center justify-between py-2.5 border-b" style="border-color:var(--by-bg-3);">
+            <div>
+              <p class="font-semibold text-[13px]">{{ role }}</p>
+              <p class="by-eyebrow">{{ date }}</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[11px] font-semibold border"
+                  style="border-color:var(--by-ink); background:{% if status == 'Claimed' %}var(--by-yes-soft){% else %}var(--by-bg){% endif %};">
+              {{ status }}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+      </aside>
+
+    </main>
+    {% else %}
+    <main class="px-4 lg:px-7 py-4 lg:py-6 grid grid-cols-12 gap-4 lg:gap-5">
+
+      <!-- ── POINTS HERO ── -->
+      <section class="col-span-12 points-hero">
+        <div class="points-hero-inner grid grid-cols-12 gap-4 lg:gap-6 items-center">
+          <div class="col-span-12 lg:col-span-5">
+            <div class="flex items-center gap-2 text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-yes-deep)">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
+              Yes-And Points
+            </div>
+            <div class="mt-2 flex items-end gap-3 flex-wrap">
+              <span class="points-num" id="ptsNum">{{ user.yes_and_points | default(0) }}</span>
+              <div class="pb-2 leading-tight">
+                <div class="text-[12px]" style="color:var(--by-night-on)">Lifetime</div>
+              </div>
+            </div>
+            <div id="profileChips" class="mt-4 flex items-center gap-2 flex-wrap">
+              <span class="chip chip-active"><span class="dot"></span>Active member</span>
+              <span class="chip chip-mine"><span class="dot"></span>{{ classes | length }} class{{ 'es' if classes | length != 1 else '' }} enrolled</span>
+              <span id="volChip" class="chip chip-open" title=""><span class="dot"></span>—</span>
+            </div>
+          </div>
+
+          <!-- Breakdown (illustrative) -->
+          <div class="col-span-12 lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+              <div class="flex items-center justify-between">
+                <span class="text-[11.5px]" style="color:var(--by-night-on)">Class attendance</span>
+                <span class="text-[12px] font-mono" style="color:var(--by-bg)">+10 / session</span>
+              </div>
+              <div class="mt-2 bd-bar"><i style="width:55%; background:linear-gradient(90deg,#34D399,#22D3EE)"></i></div>
+              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">10 pts per attended session</div>
+            </div>
+            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+              <div class="flex items-center justify-between">
+                <span class="text-[11.5px]" style="color:var(--by-night-on)">Volunteer shifts</span>
+                <span class="text-[12px] font-mono" style="color:var(--by-bg)">+20 / shift</span>
+              </div>
+              <div class="mt-2 bd-bar"><i style="width:32%; background:linear-gradient(90deg,#22D3EE,#67E8F9)"></i></div>
+              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">20 pts per claimed shift</div>
+            </div>
+            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+              <div class="flex items-center justify-between">
+                <span class="text-[11.5px]" style="color:var(--by-night-on)">Live challenges</span>
+                <span class="text-[12px] font-mono" style="color:var(--by-bg)">+15 / prompt</span>
+              </div>
+              <div class="mt-2 bd-bar"><i style="width:30%; background:linear-gradient(90deg,#FBBF24,#F59E0B)"></i></div>
+              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">15 pts per submitted response</div>
+            </div>
+            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+              <div class="flex items-center justify-between">
+                <span class="text-[11.5px]" style="color:var(--by-night-on)">Total balance</span>
+                <span class="text-[12px] font-mono" style="color:var(--by-bg)">{{ user.yes_and_points | default(0) }} pts</span>
+              </div>
+              <div class="mt-2 bd-bar"><i style="width:{{ [((user.yes_and_points | default(0)) % 100), 100] | min }}%; background:linear-gradient(90deg,#F472B6,#FBBF24)"></i></div>
+              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">Keep it up!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── MY CLASSES (7 cols) ── -->
+      <section id="classes" class="col-span-12 xl:col-span-7 border hairline" style="background:var(--by-bg);">
+        <header class="px-5 py-4 flex items-center justify-between border-b hairline">
+          <div>
+            <div class="font-display text-[17px]" style="color:var(--by-ink)">My classes</div>
+            <div class="text-[12px]" style="color:var(--by-ink-3)">In session this term</div>
+          </div>
+          <span class="text-[11.5px] font-mono" style="color:var(--by-ink-3)">{{ classes | length }} enrolled</span>
+        </header>
+        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {% for c in classes %}
+          <div class="class-card{% if loop.last and classes | length % 2 == 1 %} md:col-span-2{% endif %}">
+            <div class="flex items-start justify-between gap-2">
+              <div class="font-display text-[15.5px] leading-tight" style="color:var(--by-ink)">{{ c.title }}</div>
+              {% set today_str = '' %}
+              {% if c.end_date and c.end_date < '2026-05-21' %}
+              <span class="chip chip-taken"><span class="dot"></span>Past</span>
+              {% elif c.start_date and c.start_date > '2026-05-21' %}
+              <span class="chip chip-upcoming" style="color:#a5b4fc;border-color:rgba(165,180,252,.35);background:rgba(99,102,241,.10)"><span class="dot" style="background:#818cf8"></span>Upcoming</span>
+              {% else %}
+              <span class="chip chip-active"><span class="dot"></span>Active</span>
+              {% endif %}
+            </div>
+            <div class="mt-2 text-[12.5px] flex items-center gap-1.5" style="color:var(--by-ink-3)">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              {{ c.schedule | default('TBD') }}
+            </div>
+            {% if c.start_date or c.end_date %}
+            <div class="text-[11.5px] mt-1 font-mono" style="color:var(--by-ink-3)">
+              {{ c.start_date | default('') }}{% if c.start_date and c.end_date %} → {{ c.end_date }}{% elif c.end_date %} → {{ c.end_date }}{% endif %}
+            </div>
+            {% endif %}
+            <div class="mt-3 pt-3 border-t hairline flex items-center gap-2">
+              <span class="av w-7 h-7 text-[11px]" style="background:linear-gradient(135deg,#FBBF24,#22D3EE)">{{ c.teacher_initials | default('?') }}</span>
+              <div class="leading-tight">
+                <div class="text-[12.5px]" style="color:var(--by-ink)">{{ c.teacher_name | default('—') }}</div>
+                <div class="text-[10.5px]" style="color:var(--by-ink-3)">Instructor</div>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="md:col-span-2 py-10 text-center text-[13px]" style="color:var(--by-ink-3)">
+            You are not enrolled in any classes yet.
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- ── LIVE CHALLENGE (5 cols) ── -->
+      <aside id="challenge" class="col-span-12 xl:col-span-5 flex flex-col gap-5">
+        <div id="liveCard" class="live-card">
+          <div class="live-card-inner">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-md bg-live-500/15 border border-live-500/40 grid place-items-center flex-shrink-0">
+                  <svg class="w-3.5 h-3.5 text-live-indicator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+                </div>
+                <div>
+                  <div class="text-[10.5px] uppercase tracking-[.18em] text-live-indicator">Live Challenge</div>
+                  <div id="liveTitle" class="font-display text-[17.5px] leading-tight" style="color:var(--by-ink)">No prompt right now</div>
+                </div>
+              </div>
+              <span id="liveStatus" class="chip chip-taken"><span class="dot"></span>Idle</span>
+            </div>
+
+            <!-- Idle / Available -->
+            <div id="idleState" class="mt-4">
+              <p id="idleMsg" class="text-[12.5px] leading-snug" style="color:var(--by-ink-3)">
+                When your teacher posts a challenge it appears here. Accept it and you'll have <b style="color:var(--by-yes-deep)">30 seconds</b> to respond and earn <b style="color:var(--by-yes-deep)">+15 pts</b>.
+              </p>
+              <!-- Available challenge(s) list -->
+              <div id="availableList" class="hidden mt-4 flex flex-col gap-3"></div>
+            </div>
+
+            <!-- Live -->
+            <div id="liveState" class="mt-4 hidden">
+              <div class="border hairline p-4 flex items-center gap-4" style="background:var(--by-bg);">
+                <div class="text-center min-w-[110px]">
+                  <div id="countdown" class="countdown calm">30</div>
+                  <div class="text-[10.5px] uppercase tracking-[.18em] mt-1" style="color:var(--by-ink-3)">seconds left</div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Difficulty</div>
+                  <div id="liveDiff" class="font-display text-[15.5px]" style="color:var(--by-ink)">—</div>
+                  <div class="mt-1 text-[12.5px] leading-snug" id="livePrompt" style="color:var(--by-ink-2)">—</div>
+                </div>
+              </div>
+              <div class="mt-3 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                <div id="progressBar" class="h-full transition-[width,background-color] duration-300" style="width:100%;background:#22D3EE"></div>
+              </div>
+              <div class="mt-4">
+                <label class="text-[11px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Your response</label>
+                <textarea id="responseInput" rows="3" maxlength="240" placeholder="Type your answer — keep it punchy."
+                  class="mt-1 w-full border hairline outline-none px-3 py-2.5 text-[13.5px] resize-none" style="background:var(--by-bg); color:var(--by-ink);"></textarea>
+                <div class="mt-1 flex items-center justify-between text-[11px]">
+                  <span class="" style="color:var(--by-ink-3)"><span id="charCount" class="font-mono" style="color:var(--by-ink-2)">0</span> / 240</span>
+                  <span class="font-mono" style="color:var(--by-ink-3)">⌘↵ to submit</span>
+                </div>
+                <button id="submitBtn" class="btn-live w-full h-10 mt-3 rounded-lg text-[13px] flex items-center justify-center gap-2">
+                  Submit response <span class="text-[11px] opacity-75 font-mono">+15 pts</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Locked -->
+            <div id="lockedState" class="mt-4 hidden">
+              <div class="border hairline p-4" style="background:var(--by-bg);">
+                <div class="flex items-center gap-3">
+                  <div id="lockedIcon" class="w-10 h-10 rounded-full grid place-items-center font-display text-[20px]" style="background:var(--by-bg-3); color:var(--by-ink);">·</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Result</div>
+                    <div id="lockedTitle" class="font-display text-[20px] leading-tight" style="color:var(--by-ink-2)">Time's up</div>
+                  </div>
+                </div>
+                <div class="mt-3 text-[12.5px]" id="lockedDetail" style="color:var(--by-ink-3)">The prompt is closed. Watch for the next one.</div>
+                <div id="lockedSubmission" class="hidden mt-3 p-3 rounded-lg bg-white/5 text-[12.5px]" style="color:var(--by-ink-2)">
+                  <div class="text-[10.5px] uppercase tracking-[.18em] mb-1" style="color:var(--by-ink-3)">Your response</div>
+                  <div id="submittedText">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent badges -->
+        <section class="border hairline" style="background:var(--by-bg);">
+          <header class="px-5 py-4 border-b hairline flex items-center justify-between">
+            <div class="font-display text-[16px]" style="color:var(--by-ink)">Recent badges</div>
+            <a href="#" class="text-[11.5px] font-semibold" style="color:var(--by-yes-deep)">All →</a>
+          </header>
+          <div class="p-4 grid grid-cols-3 gap-2.5">
+            <div class="ach">
+              <div class="icon" style="background:linear-gradient(135deg,#FBBF24,#F59E0B)">
+                <svg class="w-4 h-4" style="color:#1a1208" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
+              </div>
+              <div class="text-[12px] font-semibold" style="color:var(--by-ink)">First "Yes, and"</div>
+              <div class="text-[10.5px]" style="color:var(--by-ink-3)">Joined BIG</div>
+            </div>
+            <div class="ach">
+              <div class="icon" style="background:linear-gradient(135deg,#22D3EE,#0891B2)">
+                <svg class="w-4 h-4" style="color:#04212a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5 9-12"/></svg>
+              </div>
+              <div class="text-[12px] font-semibold" style="color:var(--by-ink)">Showing up</div>
+              <div class="text-[10.5px]" style="color:var(--by-ink-3)">3-class streak</div>
+            </div>
+            <div class="ach">
+              <div class="icon" style="background:linear-gradient(135deg,#A78BFA,#F472B6)">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--by-ink)"><path d="M3 7h18M6 7v12h12V7"/></svg>
+              </div>
+              <div class="text-[12px] font-semibold" style="color:var(--by-ink)">Volunteer</div>
+              <div class="text-[10.5px]" style="color:var(--by-ink-3)">First shift</div>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- ── VOLUNTEER SHIFTS (full width) ── -->
+      <section id="shifts" class="col-span-12 border hairline" style="background:var(--by-bg);">
+        <header class="px-5 py-4 flex items-center justify-between gap-3 border-b hairline">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <div class="font-display text-[17px]" style="color:var(--by-ink)">Volunteer shifts</div>
+              <span id="volPoolChip" class="chip chip-mine"><span class="dot"></span>You're on the pool</span>
+            </div>
+            <div id="volSubtitle" class="text-[12px] mt-0.5" style="color:var(--by-ink-3)">Each claimed shift earns <span class="font-semibold" style="color:var(--by-yes-deep)">+20 pts</span>. You can drop a shift up to 24h before the show.</div>
+          </div>
+          <div class="text-[11.5px] font-mono whitespace-nowrap" style="color:var(--by-ink-3)">Next 3 weeks</div>
+        </header>
+
+        <!-- Eligible: list of shows + slots -->
+        <ul id="showList" class="divide-y divide-white/[.05]"></ul>
+
+        <!-- Gated: not on volunteer pool -->
+        <div id="volGate" class="hidden px-5 py-10">
+          <div class="max-w-lg mx-auto text-center">
+            <div class="mx-auto w-12 h-12 border hairline grid place-items-center mb-3" style="background:var(--by-bg)">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--by-ink-3)"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/></svg>
+            </div>
+            <div class="font-display text-[18px]" style="color:var(--by-ink)">You're not on the volunteer pool yet</div>
+            <p class="text-[12.5px] mt-1.5 leading-snug" style="color:var(--by-ink-3)">
+              Door, Bar, and House Manager slots can only be claimed by students the Stage Manager has added to the volunteer pool.
+              Ask your coordinator — they add volunteers from the dashboard.
+            </p>
+            <div class="mt-4 flex items-center justify-center gap-2">
+              <button id="requestVolBtn" class="btn-spot h-9 px-3.5 rounded-lg text-[12.5px]">Request to join the pool</button>
+              <a href="#" class="btn-ghost h-9 px-3.5 rounded-lg text-[12.5px] inline-flex items-center">What volunteers do →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── DISPATCH INBOX ── -->
+      {% if notifications %}
+      <section id="inbox" class="col-span-12 border hairline" style="background:var(--by-bg);">
+        <header class="px-5 py-4 flex items-center justify-between gap-3 border-b hairline">
+          <div>
+            <div class="font-display text-[17px]" style="color:var(--by-ink);">Dispatch from the Stage</div>
+            <div class="mt-0.5 text-[12px]" style="color:var(--by-ink-3);">Messages from your Stage Manager</div>
+          </div>
+          <span class="font-mono text-[10px] px-2 py-1 border"
+                style="background:var(--by-yes);border-color:var(--by-ink);color:var(--by-ink);">
+            {{ notifications | selectattr('is_read', 'equalto', 0) | list | length }} unread
+          </span>
+        </header>
+        <ul class="divide-y hairline">
+          {% for notif in notifications %}
+          <li class="px-5 py-4 flex items-start gap-4 transition-colors {% if not notif.is_read %}bg-[#FFF9E8]{% endif %}"
+              data-notif-id="{{ notif.id }}" id="notif-{{ notif.id }}">
+            <div class="mt-1 w-2 h-2 rounded-full flex-shrink-0 {% if not notif.is_read %}bg-[#FFC629]{% else %}bg-transparent border hairline{% endif %}"></div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2 flex-wrap">
+                <div class="text-[14px] font-semibold" style="color:var(--by-ink);">{{ notif.subject }}</div>
+                <div class="text-[11px] font-mono whitespace-nowrap" style="color:var(--by-ink-4);">
+                  {{ notif.created_at[:16] | replace('T', ' ') }}
+                </div>
+              </div>
+              <div class="mt-1 text-[13px]" style="color:var(--by-ink-2);white-space:pre-wrap;">{{ notif.body }}</div>
+              <div class="mt-2 text-[11px] font-mono" style="color:var(--by-ink-4);">
+                From {{ notif.sender_name }}
+                {% if not notif.is_read %}
+                · <button onclick="markRead({{ notif.id }})" class="underline cursor-pointer" style="color:var(--by-ink-3);background:none;border:none;font:inherit;padding:0;">
+                    Mark as read
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      <!-- Sticky bottom CTA — mobile only; shows next claimable shift or request -->
+      <div class="col-span-12">
+        <div class="by-cta-bar">
+          <button class="by-cta-btn by-cta-btn-ghost" onclick="document.getElementById('shifts').scrollIntoView({behavior:'smooth'})">
+            View shifts
+          </button>
+          <button id="ctaClaimBtn" class="by-cta-btn by-cta-btn-primary" onclick="document.getElementById('shifts').scrollIntoView({behavior:'smooth'})">
+            Claim a shift →
+          </button>
+        </div>
+      </div>
+
+    </main>
+    {% endif %}{# end mock_preview #}
+
+    <!-- Footer -->
+    <footer class="px-4 lg:px-7 py-6 border-t hairline">
+      <div class="grid grid-cols-12 gap-4 items-center">
+        <div class="col-span-12 md:col-span-7 text-[12px]" style="color:var(--by-ink-3)">
+          © 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span>
+        </div>
+        <div class="col-span-12 md:col-span-5 flex flex-wrap items-center gap-4 md:justify-end text-[12px]">
+          <a href="#" id="demoVolBtn" class="inline-flex items-center gap-1.5" title="Demo: flip volunteer eligibility to see the gated state" style="color:var(--by-ink-3)">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 0 1 14-5.3L20 4M20 12a8 8 0 0 1-14 5.3L4 20"/><path d="M20 4v4h-4M4 20v-4h4"/></svg>
+            Demo: toggle volunteer
+          </a>
+          <a href="#" id="gdprBtn" class="inline-flex items-center gap-1.5" style="color:var(--by-ink-3)">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download my data (GDPR)
+          </a>
+          <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+
+<script>
+  /* ── Data injected from Flask ── */
+  const SHOWS   = {{ shows_json | safe }};
+  const ME      = { id: "{{ student_id }}", name: "{{ current_user_name | e }}", initials: "{{ current_user_initials | e }}" };
+  const PERSONAL_WINDOW = 30; // seconds after acceptance
+
+  (function(){
+    const $  = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function initials(n){ return (n||'').split(' ').map(p=>p[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '?'; }
+    function tintFor(seed){
+      const palette=[['#FBBF24','#F472B6'],['#22D3EE','#FBBF24'],['#A78BFA','#FBBF24'],['#34D399','#FBBF24'],['#60A5FA','#22D3EE'],['#FB7185','#FBBF24']];
+      let h=0; for(const ch of String(seed)) h=(h*31+ch.charCodeAt(0))|0;
+      return palette[Math.abs(h)%palette.length];
+    }
+
+    /* ── State ── */
+    const STATE = {
+      points:      parseInt($('#ptsNum').textContent) || 0,
+      isVolunteer: {{ user.is_volunteer | default(false) | tojson }},
+      volSince:    null,
+      challenge:   { phase:'idle', startedAt:null, duration:PERSONAL_WINDOW, challengeId:null, prompt:null, timerId:null, submitted:false, response:'' },
+    };
+
+    function syncPoints(){
+      $('#sidePoints').textContent = STATE.points;
+      $('#ptsNum').textContent     = STATE.points;
+    }
+
+    /* ── Volunteer eligibility ── */
+    function renderVolunteerStatus(){
+      const on = STATE.isVolunteer;
+      // Hero chip
+      const heroChip = $('#volChip');
+      if(on){
+        heroChip.className = 'chip chip-mine';
+        heroChip.innerHTML = `<span class="dot"></span>Volunteer${STATE.volSince ? ' · since ' + esc(STATE.volSince) : ''}`;
+        heroChip.title = 'Cleared by the Stage Manager for Door / Bar / House Manager slots';
+      } else {
+        heroChip.className = 'chip chip-taken';
+        heroChip.innerHTML = '<span class="dot"></span>Not on volunteer pool';
+        heroChip.title = 'Stage Manager hasn\'t added you to the volunteer pool yet';
+      }
+      // Section header chip
+      const headChip = $('#volPoolChip');
+      headChip.className = on ? 'chip chip-mine' : 'chip chip-taken';
+      headChip.innerHTML = on ? '<span class="dot"></span>You\'re on the pool' : '<span class="dot"></span>Pool access locked';
+      // Subtitle
+      $('#volSubtitle').innerHTML = on
+        ? 'Each claimed shift earns <span class="text-by-yes-deep font-semibold">+20 pts</span>. You can drop a shift up to 24h before the show.'
+        : 'Only volunteers can claim Door, Bar, and House Manager slots. Ask the Stage Manager to add you.';
+      // Show/gate the list
+      $('#showList').classList.toggle('hidden', !on);
+      $('#volGate').classList.toggle('hidden', on);
+    }
+
+    /* ────────── Toast ────────── */
+    let toastEl;
+    function flashToast(msg, variant='ghost'){
+      if(!toastEl){ toastEl = document.createElement('div'); document.body.appendChild(toastEl); }
+      const styles = {
+        spot: 'background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#1a1208;box-shadow:0 0 0 1px rgba(245,158,11,.6),0 12px 28px -8px rgba(245,158,11,.5)',
+        live: 'background:linear-gradient(135deg,#06B6D4,#22D3EE);color:#04212a;box-shadow:0 0 0 1px rgba(6,182,212,.6)',
+        ghost:'background:rgba(30,40,60,.9);color:#e2e8f0;border:1px solid rgba(255,255,255,.10)',
+      };
+      toastEl.style.cssText = `position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.5rem;font-size:.78125rem;font-weight:600;opacity:1;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;${styles[variant]||styles.ghost}`;
+      toastEl.textContent = msg;
+      clearTimeout(toastEl._t);
+      toastEl._t = setTimeout(()=>{ toastEl.style.opacity='0'; }, 1700);
+    }
+
+    /* ────────── Volunteer Shifts ────────── */
+    function slotHTML(show, slot){
+      const isMine  = slot.student_id === ME.id;
+      const isTaken = slot.student_id && !isMine;
+      const isOpen  = !slot.student_id;
+
+      let chip, action='';
+      if(isMine){
+        chip   = '<span class="chip chip-mine"><span class="dot"></span>You\'re on</span>';
+        action = `<button class="btn-ghost h-7 px-2.5 rounded-md text-[11.5px]" data-act="drop" data-sid="${esc(slot.id)}" data-shid="${esc(show.id)}">Drop</button>`;
+      } else if(isOpen){
+        chip   = '<span class="chip chip-open"><span class="dot"></span>Open</span>';
+        action = `<button class="btn-spot h-7 px-2.5 rounded-md text-[11.5px] flex items-center gap-1" data-act="claim" data-sid="${esc(slot.id)}" data-shid="${esc(show.id)}">Claim <span class="opacity-70 font-mono">+20</span></button>`;
+      } else {
+        chip = '<span class="chip chip-taken"><span class="dot"></span>Filled</span>';
+      }
+
+      const [c1,c2] = tintFor(slot.who||slot.student_id||slot.role);
+      const personHTML = slot.who
+        ? `<div class="flex items-center gap-2 min-w-0"><span class="av" style="width:24px;height:24px;font-size:10px;background:linear-gradient(135deg,${c1},${c2})">${esc(slot.initials||initials(slot.who))}</span><span class="text-[12px] text-by-ink-2 truncate">${esc(slot.who)}</span></div>`
+        : `<span class="text-[12px] text-by-ink-3">—</span>`;
+
+      return `<div class="shift-row${isMine?' mine':''}" id="slot-${esc(slot.id)}">
+        <div class="text-[12.5px] text-by-ink font-semibold w-36 flex-none">${esc(slot.role)}</div>
+        <div class="flex-1 min-w-0">${personHTML}</div>
+        ${chip}
+        ${action ? `<div class="flex-none">${action}</div>` : ''}
+      </div>`;
+    }
+
+    function renderShows(){
+      if(!SHOWS.length){ return; }
+      $('#showList').innerHTML = SHOWS.map(show => `
+        <li class="px-5 py-4">
+          <div class="flex items-start gap-4">
+            <div class="w-24 flex-none text-center">
+              <div class="text-[11.5px] font-semibold text-by-ink">${esc(show.day)}</div>
+              <div class="text-[11px] text-by-ink-3 font-mono">${esc(show.time)}</div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-display text-[15.5px] text-by-ink mb-3">${esc(show.title)}</div>
+              <div class="flex flex-col gap-2" data-show="${esc(show.id)}">
+                ${show.slots.map(slot => slotHTML(show, slot)).join('')}
+              </div>
+            </div>
+          </div>
+        </li>`).join('');
+    }
+    renderShows();
+
+    document.addEventListener('click', async e => {
+      const btn = e.target.closest('[data-act]');
+      if(!btn) return;
+      const act    = btn.dataset.act;
+      const slotId = btn.dataset.sid;
+      const showId = btn.dataset.shid;
+      const show   = SHOWS.find(s => s.id === showId);
+      if(!show) return;
+      const slot = show.slots.find(s => s.id === slotId);
+      if(!slot) return;
+
+      btn.disabled = true;
+
+      if(act === 'claim'){
+        try{
+          const res  = await fetch('/api/shift/claim', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ shift_id: slotId }) });
+          const json = await res.json();
+          if(!json.ok){ flashToast(json.error || 'Could not claim shift'); btn.disabled=false; return; }
+          slot.student_id = ME.id;
+          slot.who        = ME.name;
+          slot.initials   = ME.initials;
+          STATE.points    = json.new_balance;
+          syncPoints();
+          flashToast(`Claimed: ${slot.role} · +20 pts`, 'spot');
+          renderShows();
+        } catch(_){ flashToast('Network error — try again'); btn.disabled=false; }
+
+      } else if(act === 'drop'){
+        try{
+          const res  = await fetch('/api/shift/drop', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ shift_id: slotId }) });
+          const json = await res.json();
+          if(!json.ok){ flashToast(json.error || 'Could not drop shift'); btn.disabled=false; return; }
+          slot.student_id = null;
+          slot.who        = null;
+          slot.initials   = '';
+          STATE.points    = json.new_balance;
+          syncPoints();
+          flashToast(`Dropped: ${slot.role} · −20 pts`);
+          renderShows();
+        } catch(_){ flashToast('Network error — try again'); btn.disabled=false; }
+      }
+    });
+
+    /* ────────── Live Challenge ────────── */
+    function setPhase(p){
+      STATE.challenge.phase = p;
+      $('#idleState').classList.toggle('hidden',   p!=='idle');
+      $('#liveState').classList.toggle('hidden',   p!=='live');
+      $('#lockedState').classList.toggle('hidden', p!=='locked');
+      $('#liveCard').classList.toggle('armed',     p==='live');
+      const chip = $('#liveStatus');
+      if(p==='idle'){
+        chip.className='chip chip-taken'; chip.innerHTML='<span class="dot"></span>Idle';
+        $('#liveTitle').textContent='No prompt right now';
+      } else if(p==='live'){
+        chip.className='chip chip-mine';  chip.innerHTML='<span class="dot"></span>Live now';
+        $('#liveTitle').textContent='Respond before the lock';
+      } else {
+        chip.className='chip chip-taken'; chip.innerHTML='<span class="dot"></span>Locked';
+        $('#liveTitle').textContent='Prompt closed';
+      }
+    }
+
+    function renderAvailable(challenges){
+      const list = $('#availableList');
+      const pending = challenges.filter(c => c.status === 'pending');
+      if(!pending.length){
+        list.classList.add('hidden');
+        return;
+      }
+      list.classList.remove('hidden');
+      list.innerHTML = pending.map(c => `
+        <div class="border hairline p-3" style="background:var(--by-bg);">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex-1 min-w-0">
+              <div class="text-[10.5px] uppercase tracking-[.18em] mb-0.5" style="color:var(--by-ink-3)">${esc(c.difficulty)} · ${esc(c.class_title)}</div>
+              <div class="text-[13px] font-semibold leading-snug" style="color:var(--by-ink)">${esc(c.prompt)}</div>
+            </div>
+            <button class="flex-none btn-live h-8 px-3 rounded-md text-[12px] whitespace-nowrap" data-accept="${esc(c.id)}">
+              Accept <span class="opacity-70 font-mono">30s</span>
+            </button>
+          </div>
+        </div>`).join('');
+
+      list.querySelectorAll('[data-accept]').forEach(btn => {
+        btn.addEventListener('click', () => acceptChallenge(btn.dataset.accept));
+      });
+    }
+
+    async function loadChallenges(){
+      try {
+        const res  = await fetch('/api/challenge/pending');
+        const data = await res.json();
+        if(!data.ok) return;
+        const challenges = data.challenges || [];
+
+        // If one is accepted with time left, go straight to live
+        const live = challenges.find(c => c.status === 'accepted' && c.seconds_left > 0);
+        if(live && STATE.challenge.phase === 'idle'){
+          startLive(live.id, live.prompt, live.difficulty, live.seconds_left);
+          return;
+        }
+        renderAvailable(challenges);
+      } catch(_){}
+    }
+
+    async function acceptChallenge(challengeId){
+      try {
+        const res  = await fetch('/api/challenge/accept', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ challenge_id: challengeId }),
+        });
+        const data = await res.json();
+        if(!data.ok){ flashToast(data.error || 'Could not accept challenge'); return; }
+        startLive(data.challenge_id, data.prompt, data.difficulty, data.seconds_left);
+      } catch(_){
+        flashToast('Network error — try again');
+      }
+    }
+
+    function startLive(challengeId, promptText, difficulty, secondsLeft){
+      STATE.challenge = {
+        phase:'live', startedAt:Date.now(), duration:secondsLeft,
+        challengeId, prompt:promptText, timerId:null, submitted:false, response:'',
+      };
+      $('#liveDiff').textContent   = difficulty;
+      $('#livePrompt').textContent = promptText;
+      $('#responseInput').value    = '';
+      $('#responseInput').disabled = false;
+      $('#submitBtn').disabled     = false;
+      $('#submitBtn').classList.remove('opacity-50','cursor-not-allowed');
+      $('#charCount').textContent  = '0';
+      setPhase('live');
+      flashToast(`Challenge accepted — ${secondsLeft}s to respond!`, 'live');
+      tickCountdown();
+      setTimeout(()=> $('#responseInput').focus(), 100);
+    }
+
+    function tickCountdown(){
+      clearInterval(STATE.challenge.timerId);
+      STATE.challenge.timerId = setInterval(() => {
+        const elapsed   = Math.floor((Date.now() - STATE.challenge.startedAt)/1000);
+        const remaining = Math.max(0, STATE.challenge.duration - elapsed);
+        const cd = $('#countdown');
+        cd.textContent = remaining;
+        const tone = remaining > 15 ? 'calm' : remaining > 5 ? 'warm' : 'danger';
+        cd.classList.remove('calm','warm','danger','locked');
+        cd.classList.add(tone);
+        const pct = (remaining / STATE.challenge.duration) * 100;
+        const bar = $('#progressBar');
+        bar.style.width           = pct + '%';
+        bar.style.backgroundColor = remaining > 15 ? '#22D3EE' : remaining > 5 ? '#FBBF24' : '#F87171';
+        if(remaining === 0) lockChallenge(false);
+      }, 250);
+    }
+
+    function lockChallenge(viaSubmit){
+      clearInterval(STATE.challenge.timerId);
+      const cd = $('#countdown');
+      cd.textContent = '0';
+      cd.classList.remove('calm','warm','danger'); cd.classList.add('locked');
+      $('#responseInput').disabled = true;
+      $('#submitBtn').disabled     = true;
+      $('#submitBtn').classList.add('opacity-50','cursor-not-allowed');
+      $('#progressBar').style.width = '0%';
+
+      if(STATE.challenge.submitted){
+        STATE.points += 15; syncPoints();
+        $('#lockedIcon').style.background = 'linear-gradient(135deg,#22D3EE,#06B6D4)';
+        $('#lockedIcon').innerHTML = '<svg class="w-5 h-5" style="color:#04212a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-12"/></svg>';
+        $('#lockedTitle').textContent = '+15 pts earned';
+        const secsLeft = Math.max(0, STATE.challenge.duration - (STATE.challenge._submittedAt||0));
+        $('#lockedDetail').innerHTML = `Submitted with <b class="text-by-ink-2 font-mono">${secsLeft}s</b> left. Your teacher will see it.`;
+        $('#lockedSubmission').classList.remove('hidden');
+        $('#submittedText').textContent = STATE.challenge.response;
+        flashToast('+15 Yes-And Points', 'live');
+      } else {
+        $('#lockedIcon').style.background = 'var(--by-bg-3)';
+        $('#lockedIcon').innerHTML    = '·';
+        $('#lockedTitle').textContent = "Time's up";
+        $('#lockedDetail').textContent = 'The prompt is closed. Catch the next one.';
+        $('#lockedSubmission').classList.add('hidden');
+      }
+      setPhase('locked');
+      setTimeout(()=>{
+        if(STATE.challenge.phase==='locked'){
+          setPhase('idle');
+          loadChallenges(); // refresh list after lock
+        }
+      }, 5000);
+    }
+
+    /* ── Demo volunteer toggle ── */
+    $('#demoVolBtn').addEventListener('click', e => {
+      e.preventDefault();
+      STATE.isVolunteer = !STATE.isVolunteer;
+      if(STATE.isVolunteer && !STATE.volSince) STATE.volSince = 'today';
+      renderVolunteerStatus();
+      flashToast(
+        STATE.isVolunteer ? 'Stage Manager added you to the volunteer pool' : 'Removed from volunteer pool',
+        STATE.isVolunteer ? 'spot' : 'ghost'
+      );
+    });
+
+    $('#requestVolBtn').addEventListener('click', () => {
+      flashToast('Request sent to the Stage Manager');
+    });
+
+    $('#gdprBtn').addEventListener('click', e => {
+      e.preventDefault();
+      flashToast('GDPR export queued — link emailed within 24h');
+    });
+
+    renderVolunteerStatus();
+
+    $('#responseInput').addEventListener('input', e => {
+      $('#charCount').textContent = e.target.value.length;
+    });
+
+    $('#submitBtn').addEventListener('click', async () => {
+      const v = $('#responseInput').value.trim();
+      if(!v){ $('#responseInput').focus(); return; }
+      const elapsed = Math.floor((Date.now() - STATE.challenge.startedAt)/1000);
+      STATE.challenge.submitted    = true;
+      STATE.challenge.response     = v;
+      STATE.challenge._submittedAt = elapsed;
+
+      try {
+        const res  = await fetch('/api/challenge/submit', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ challenge_id: STATE.challenge.challengeId, content: v }),
+        });
+        const data = await res.json();
+        if(!data.ok){
+          STATE.challenge.submitted = false;
+          flashToast(data.error || 'Could not save response');
+          return;
+        }
+      } catch(_){
+        STATE.challenge.submitted = false;
+        flashToast('Network error — response not saved');
+        return;
+      }
+      lockChallenge(true);
+    });
+
+    document.addEventListener('keydown', e => {
+      if(STATE.challenge.phase !== 'live') return;
+      if((e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); $('#submitBtn').click(); }
+    });
+
+    setPhase('idle');
+    loadChallenges();
+    setInterval(loadChallenges, 30000);
+  })();
+</script>
+
+<!-- Bottom tab bar (hidden lg+) -->
+<nav class="by-mob-tabs">
+  <a href="/" class="active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="4"/><path d="M4 21c1-4 5-6 8-6s7 2 8 6"/></svg>
+    Profile
+  </a>
+  <a href="#classes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
+    Classes
+  </a>
+  <a href="#shifts">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
+    Shifts
+  </a>
+  <a href="#challenge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+    Challenge
+  </a>
+</nav>
+
+<script>
+  function toggleMobDrawer() {
+    const d = document.getElementById('mob-drawer');
+    const o = document.getElementById('mob-overlay');
+    const open = d.classList.toggle('open');
+    o.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  // ── Notification mark-read ────────────────────────────────────────────────
+  function markRead(notifId) {
+    fetch('/api/comms/mark-read', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ notification_id: notifId }),
+    }).then(function () {
+      const li = document.getElementById('notif-' + notifId);
+      if (!li) return;
+      li.classList.remove('bg-[#FFF9E8]');
+      const dot = li.querySelector('.rounded-full');
+      if (dot) { dot.classList.remove('bg-[#FFC629]'); dot.classList.add('border', 'hairline', 'bg-transparent'); }
+      const btn = li.querySelector('button[onclick]');
+      if (btn) btn.parentNode.removeChild(btn);
+    });
+  }
+</script>
+
+{% include 'partials/_user_config_modal.html' %}
+  {% include 'partials/_inbox_modal.html' %}
+
+</body>
+</html>

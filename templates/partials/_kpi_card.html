@@ -1,0 +1,53 @@
+{#
+  _kpi_card.html — Single KPI stat card
+  ============================================================
+  DESIGN FLAGS:
+    • Card background ............ var(--by-bg-2)       → paper deep
+    • Card border ................ var(--by-bd)         → 1px ink
+    • Card shadow ................ var(--by-sh-1)       → 4px hard ink shadow
+    • Label color ................ var(--by-ink-3)      → muted ink
+    • Value color ................ var(--by-ink)        → primary ink
+    • Delta positive ............. color: #16a34a       → green-700
+    • Delta negative ............. color: var(--by-tomato)
+
+  DOM IDs (each card gets a unique id passed via `card_id`):
+    id="{{ card_id }}"            — outer card div (e.g. "kpi-active-students")
+    id="{{ card_id }}-value"      — the big number span
+    id="{{ card_id }}-delta"      — the trend/delta span
+
+  Jinja variables expected (pass as include with context or macro args):
+    card_id    (str)   — unique DOM id slug, e.g. "kpi-active-students"
+    label      (str)   — eyebrow label, e.g. "Active Students"
+    value      (str)   — display value, e.g. "24"
+    unit       (str)   — optional unit suffix, e.g. "pts" or "€"
+    delta      (str)   — optional trend string, e.g. "+3 this week"
+    delta_pos  (bool)  — True = green delta, False = tomato delta
+
+  Usage:
+    {% include 'partials/_kpi_card.html' with {
+        card_id: 'kpi-active-students',
+        label: 'Active Students',
+        value: active_count|string,
+        delta: '+3 this week',
+        delta_pos: true
+    } only %}
+#}
+
+<div id="{{ card_id }}"
+     class="flex flex-col gap-1 px-4 py-3 rounded border"
+     style="background:var(--by-bg-2); border-color:var(--by-ink); box-shadow:var(--by-sh-1);">
+
+  <p class="by-eyebrow">{{ label }}</p>
+
+  <p class="by-h-sans text-[28px]" id="{{ card_id }}-value" style="color:var(--by-ink);">
+    {{ value }}{% if unit %}<span class="text-[14px] font-normal ml-0.5" style="color:var(--by-ink-3);">{{ unit }}</span>{% endif %}
+  </p>
+
+  {% if delta %}
+  <p class="text-[11.5px] font-semibold" id="{{ card_id }}-delta"
+     style="color:{% if delta_pos %}#16a34a{% else %}var(--by-tomato){% endif %};">
+    {{ delta }}
+  </p>
+  {% endif %}
+
+</div>

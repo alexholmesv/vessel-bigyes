@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes — {% block page_title %}Backstage{% endblock %}</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ["'Archivo Black'", 'system-ui', 'sans-serif'],
+          sans:    ["'Archivo'",       'ui-sans-serif', 'system-ui'],
+          body:    ["'Manrope'",       'ui-sans-serif', 'system-ui'],
+          mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
+        },
+        colors: {
+          'by-yes':         '#FFC629', 'by-yes-deep':    '#E5A800', 'by-yes-soft': '#FFE7A0',
+          'by-ink':         '#141210', 'by-ink-2':       '#2A2723', 'by-ink-3':    '#5C544A', 'by-ink-4': '#8A8073',
+          'by-bg':          '#F4EEE2', 'by-bg-2':        '#ECE3D0', 'by-bg-3':     '#E2D6BB',
+          'by-tomato':      '#E5482A', 'by-tomato-deep': '#B83218',
+          'by-night':       '#141210', 'by-night-on':    '#C9BFA8',
+        },
+        boxShadow: {
+          'by-hard':     '4px 4px 0 0 #141210',
+          'by-hard-yes': '4px 4px 0 0 #FFC629',
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  /* ── BigYes Design Tokens ──────────────────────────────────────────── */
+  :root {
+    --by-bg:#F4EEE2;      --by-bg-2:#ECE3D0;  --by-bg-3:#E2D6BB;
+    --by-ink:#141210;     --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629;     --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A;  --by-tomato-deep:#B83218;
+    --by-night:#141210;   --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid #D4C9B3;
+    --by-bd-dash:1px dashed #D4C9B3;
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-header-h: 68px;
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: var(--by-f-body); background: var(--by-bg); color: var(--by-ink); font-size: 15px; -webkit-font-smoothing: antialiased; padding-bottom: 64px; }
+  @media (min-width: 1024px) { body { padding-bottom: 0; } }
+
+  .hairline { border-color: var(--by-bd-soft) !important; }
+  .by-eyebrow { font-family:var(--by-f-mono); font-size:10.5px; font-weight:500; letter-spacing:.13em; text-transform:uppercase; color:var(--by-ink-4); }
+  .by-display { font-family:var(--by-f-display); font-weight:900; line-height:.88; letter-spacing:-.02em; text-transform:uppercase; }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+
+  /* ── Sidebar nav items ─────────────────────────────────────────────── */
+  .nav-item { display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:0; color:var(--by-ink-3); font-family:var(--by-f-body); font-size:13.5px; font-weight:500; border:none; border-left:4px solid transparent; text-decoration:none; transition:background var(--by-snap),color var(--by-snap); }
+  .nav-item:hover { color:var(--by-ink); background:var(--by-bg-2); }
+  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+  .nav-item .ico { width:18px; height:18px; flex:0 0 18px; }
+
+  /* ── Mobile bar ─────────────────────────────────────────────────────── */
+  .by-mob-bar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 16px; height:52px; border-bottom:var(--by-bd);
+    background:var(--by-bg); position:sticky; top:0; z-index:40;
+  }
+  @media (min-width:1024px) { .by-mob-bar,.by-mob-overlay,.by-mob-drawer,.by-mob-tabs { display:none !important; } }
+
+  /* ── Mobile bottom tab bar ───────────────────────────────────────────── */
+  .by-mob-tabs {
+    position:fixed; bottom:0; left:0; right:0; z-index:40; height:64px;
+    display:flex; background:var(--by-bg); border-top:1.5px solid var(--by-ink);
+  }
+  .by-mob-tabs a {
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    padding:6px 4px 10px;
+    font-family:var(--by-f-mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--by-ink-3); border-right:1px solid var(--by-bg-3); text-decoration:none; min-height:44px;
+  }
+  .by-mob-tabs a:last-child { border-right:0; }
+  .by-mob-tabs a.active,.by-mob-tabs a:active { color:var(--by-ink); background:var(--by-yes); }
+  .by-mob-tabs svg { width:20px; height:20px; }
+  .by-mob-tabs button {
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    padding:6px 4px 10px; border:none; cursor:pointer;
+    font-family:var(--by-f-mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--by-ink-3); background:var(--by-bg); min-height:44px;
+  }
+
+  /* ── Overflow utility for table containers ───────────────────────────── */
+  .by-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  .by-ham { background:none; border:none; cursor:pointer; padding:8px; display:flex; flex-direction:column; gap:4px; }
+  .by-ham span { display:block; width:18px; height:1.5px; background:var(--by-ink); }
+
+  .by-mob-drawer {
+    position:fixed; top:0; left:0; bottom:0; width:min(280px,80vw);
+    z-index:60; background:var(--by-bg); border-right:var(--by-bd-thick);
+    transform:translateX(-100%); transition:transform 220ms cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;
+  }
+  .by-mob-drawer.open { transform:translateX(0); }
+  .by-mob-overlay {
+    display:none; position:fixed; inset:0; z-index:59; background:rgba(20,18,16,.45);
+  }
+  .by-mob-overlay.open { display:block; }
+
+  /* ── Global select reset — BigYes design on all dropdowns ────── */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--by-bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23141210'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: var(--by-bd-thick);
+    color: var(--by-ink);
+    font-family: var(--by-f-body);
+    font-size: var(--by-t-body);
+    padding: 6px 32px 6px 10px;
+    cursor: pointer;
+    outline: none;
+  }
+  select:focus { box-shadow: 0 0 0 2px var(--by-yes); }
+  select:disabled { opacity: 0.38; cursor: not-allowed; }
+
+  /* ── Select chevron wrapper (keeps CSS-triangle fallback) ──────── */
+  .by-select-wrap { position: relative; }
+  .by-select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid var(--by-ink-3);
+  }
+  .by-select-wrap > select,
+  .select-wrap > select,
+  .by-select {
+    background-image: none !important;
+  }
+  .by-select-wrap > select,
+  .select-wrap > select {
+    padding-right: 32px;
+    cursor: pointer;
+  }
+</style>
+
+{% block extra_head %}{% endblock %}
+{% include 'partials/_byselect.html' %}
+</head>
+<body>
+
+<!-- ── Mobile top bar ── -->
+<header class="by-mob-bar">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  </a>
+  <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+<div id="mob-overlay" class="by-mob-overlay" onclick="toggleMobDrawer()"></div>
+<nav id="mob-drawer" class="by-mob-drawer">
+  <div class="px-4 py-4 border-b hairline">
+    <div class="by-eyebrow">Stage Manager</div>
+    <div class="by-display text-[18px]" style="color:var(--by-ink);">Studio · BCN</div>
+  </div>
+  <div class="px-3 py-3">
+    <a href="/"           class="nav-item {% if request.path == '/' %}active{% endif %}" onclick="toggleMobDrawer()">Dashboard</a>
+    <a href="/performers" class="nav-item {% if request.path == '/performers' %}active{% endif %}" onclick="toggleMobDrawer()">Performers</a>
+    <a href="/backstage/shows"  class="nav-item {% if request.path == '/backstage/shows' %}active{% endif %}" onclick="toggleMobDrawer()">Shows &amp; Bookings</a>
+    <a href="/classes"    class="nav-item {% if request.path == '/classes' %}active{% endif %}" onclick="toggleMobDrawer()">Classes &amp; Cohorts</a>
+    <div class="by-eyebrow px-2 pt-4 pb-1">Backstage</div>
+    <a href="/backstage/scene-library" class="nav-item {% if request.path == '/backstage/scene-library' %}active{% endif %}" onclick="toggleMobDrawer()">Scene Library</a>
+    {% if can_view_finances %}
+    <a href="/backstage/activity-log"  class="nav-item {% if request.path == '/backstage/activity-log' %}active{% endif %}" onclick="toggleMobDrawer()">Activity Log</a>
+    <a href="/backstage/callboard"     class="nav-item {% if request.path == '/backstage/callboard' %}active{% endif %}" onclick="toggleMobDrawer()">Callboard</a>
+    <a href="/backstage/finances"      class="nav-item {% if request.path == '/backstage/finances' %}active{% endif %}" style="color:var(--by-yes-deep);font-weight:700;" onclick="toggleMobDrawer()">Finances ✦</a>
+    <a href="/backstage/reports"       class="nav-item {% if request.path == '/backstage/reports' %}active{% endif %}" onclick="toggleMobDrawer()">Reports</a>
+    {% endif %}
+  </div>
+</nav>
+
+
+<!-- ══ Full-viewport layout: sidebar (248px) + main column ══ -->
+<div class="min-h-screen flex flex-col lg:grid lg:grid-cols-[248px_1fr]">
+
+  {# ════ SIDEBAR (single include — one source of truth) ════ #}
+  {% include 'partials/_sidebar.html' %}
+
+  {# ════ MAIN COLUMN ════ #}
+  <div class="flex flex-col min-w-0">
+
+    {# Default sticky page header — pages can override this block entirely #}
+    {% block page_header %}
+    <header class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+      <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
+        <div class="min-w-0">
+          <div class="by-eyebrow">{% block page_eyebrow %}Backstage{% endblock %}</div>
+          <h1 class="by-display text-[20px] leading-tight mt-0.5" style="color:var(--by-ink);">
+            {% block page_heading %}{% endblock %}
+          </h1>
+        </div>
+        <div class="ml-auto flex items-center gap-3 flex-shrink-0">
+          {% block page_header_actions %}{% endblock %}
+          {% include 'partials/_scene_switcher.html' %}
+<!-- User profile pill -->
+          {% include 'partials/_inbox_btn.html' %}
+          <div class="relative hidden lg:block flex-shrink-0" id="user-menu-wrap">
+            <button id="user-menu-btn" onclick="toggleUserMenu()"
+                    class="flex items-center gap-2 cursor-pointer h-9 px-2"
+                    style="border:var(--by-bd); background:var(--by-bg);">
+              <img id="header-av-img" class="object-cover flex-shrink-0"
+                   src="{{ current_user_avatar or '' }}"
+                   style="width:28px;height:28px;border:2px solid #000;border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                   alt="{{ current_user_initials }}">
+              <span id="header-av-init" class="flex items-center justify-center flex-shrink-0"
+                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                {{ current_user_initials }}
+              </span>
+              <div class="leading-tight text-left">
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
+                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C544A;margin-top:1px;">Stage Manager</div>
+              </div>
+              <span class="flex flex-shrink-0 items-center justify-center rounded-full"
+                    style="width:8px;height:8px;background:#E5482A;box-shadow:0 0 0 2px #fff,0 0 0 3px #E5482A;"></span>
+            </button>
+            <div id="user-menu-drop" class="hidden" style="
+              position:absolute; top:calc(100% + 6px); right:0; z-index:60;
+              min-width:160px; background:var(--by-bg); border:var(--by-bd-thick);
+              box-shadow:var(--by-sh-1);">
+              <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);line-height:1.2">{{ current_user_name }}</div>
+                <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Stage Manager</div>
+              </div>
+              <a href="/logout"
+                 class="w-full text-left px-3 py-2.5 flex items-center gap-2.5"
+                 style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);">
+                <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Log out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    {% endblock %}
+
+    {# ── Page-specific content ── #}
+    <div class="flex-1 min-w-0">
+      {% block content %}{% endblock %}
+    </div>
+
+    <footer class="px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3)">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span></div>
+      <div class="flex items-center gap-4">
+        <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+      </div>
+    </footer>
+
+  </div>{# /main column #}
+
+</div>{# /layout #}
+
+<script>
+  function toggleMobDrawer() {
+    const d = document.getElementById('mob-drawer');
+    const o = document.getElementById('mob-overlay');
+    const open = d.classList.toggle('open');
+    o.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  function toggleUserMenu(forceClose) {
+    const drop = document.getElementById('user-menu-drop');
+    if (!drop) return;
+    const open = forceClose === false ? true : (forceClose === true ? false : drop.classList.contains('hidden'));
+    drop.classList.toggle('hidden', !open);
+    if (open) {
+      setTimeout(() => {
+        document.addEventListener('click', function handler(e) {
+          if (!document.getElementById('user-menu-wrap')?.contains(e.target)) {
+            drop.classList.add('hidden');
+            document.removeEventListener('click', handler);
+          }
+        });
+      }, 0);
+    }
+  }
+</script>
+{% block extra_js %}{% endblock %}
+
+<!-- ════════════════════ BIGYES CONFIRM MODAL ════════════════════ -->
+<div id="by-confirm-modal" aria-modal="true" role="dialog"
+     class="hidden fixed inset-0 z-[500] flex items-center justify-center"
+     style="background:rgba(20,18,16,.72);">
+  <div style="background:var(--by-bg);border:2px solid var(--by-ink);
+              box-shadow:6px 6px 0 0 var(--by-ink);width:100%;max-width:420px;margin:0 16px;">
+    <div style="background:var(--by-ink);padding:16px 20px;">
+      <p style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.14em;
+                text-transform:uppercase;color:var(--by-night-on);margin-bottom:4px;">BigYes · Confirm</p>
+      <h3 id="by-confirm-title"
+          style="font-family:var(--by-f-display);font-size:20px;color:#fff;line-height:1.1;"></h3>
+    </div>
+    <div style="padding:20px 20px 8px;">
+      <p id="by-confirm-body"
+         style="font-family:var(--by-f-body);font-size:14px;color:var(--by-ink-2);line-height:1.6;"></p>
+    </div>
+    <div style="display:flex;gap:12px;padding:16px 20px 20px;">
+      <button onclick="byConfirmClose()"
+              style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);
+                     color:var(--by-ink-2);font-family:var(--by-f-sans);font-weight:600;
+                     font-size:13px;padding:10px 16px;cursor:pointer;transition:background 100ms;"
+              onmouseover="this.style.background='var(--by-bg-2)'"
+              onmouseout="this.style.background='var(--by-bg)'">
+        Cancel
+      </button>
+      <button id="by-confirm-ok" onclick="byConfirmDo()"
+              style="flex:1;font-family:var(--by-f-display);font-size:13px;
+                     letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;
+                     cursor:pointer;transition:box-shadow 100ms,transform 100ms;">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+  let _byConfirmCb = null;
+  function byConfirm({ title, body, label = 'Confirm', danger = false, onConfirm }) {
+    document.getElementById('by-confirm-title').textContent = title;
+    document.getElementById('by-confirm-body').textContent  = body;
+    const ok = document.getElementById('by-confirm-ok');
+    ok.textContent      = label;
+    ok.style.background = danger ? 'var(--by-tomato)'       : 'var(--by-yes)';
+    ok.style.color      = danger ? '#fff'                    : 'var(--by-ink)';
+    ok.style.border     = danger ? '1.5px solid var(--by-tomato-deep)' : '1.5px solid var(--by-ink)';
+    ok.style.boxShadow  = danger ? '3px 3px 0 0 var(--by-tomato-deep)' : '3px 3px 0 0 var(--by-ink)';
+    const shadow = danger ? '3px 3px 0 0 var(--by-tomato-deep)' : '3px 3px 0 0 var(--by-ink)';
+    ok.onmouseover = () => { ok.style.boxShadow = '1px 1px 0 0 ' + (danger ? 'var(--by-tomato-deep)' : 'var(--by-ink)'); ok.style.transform = 'translate(2px,2px)'; };
+    ok.onmouseout  = () => { ok.style.boxShadow = shadow; ok.style.transform = 'translate(0,0)'; };
+    _byConfirmCb = onConfirm;
+    document.getElementById('by-confirm-modal').classList.remove('hidden');
+  }
+  function byConfirmClose() {
+    document.getElementById('by-confirm-modal').classList.add('hidden');
+    _byConfirmCb = null;
+  }
+  function byConfirmDo() {
+    const cb = _byConfirmCb;
+    byConfirmClose();
+    if (cb) cb();
+  }
+  document.getElementById('by-confirm-modal').addEventListener('click', function(e) {
+    if (e.target === this) byConfirmClose();
+  });
+</script>
+  {% include 'partials/_inbox_modal.html' %}
+
+<!-- ── Mobile bottom nav (SM only, hidden lg+) ── -->
+<nav class="by-mob-tabs">
+  <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Board
+  </a>
+  <a href="/backstage/shows" class="{% if '/shows' in request.path %}active{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+    Shows
+  </a>
+  <a href="/classes" class="{% if '/classes' in request.path %}active{% endif %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Classes
+  </a>
+  <button onclick="toggleMobDrawer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    More
+  </button>
+</nav>
+
+</body>
+</html>

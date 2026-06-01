@@ -1,0 +1,112 @@
+{% if must_change_password %}
+<!-- ═══════════════ FORCED PASSWORD CHANGE MODAL ═══════════════ -->
+<div id="modal-force-pw"
+     class="fixed inset-0 z-[200] flex items-center justify-center"
+     style="background: rgba(20,18,16,0.72);">
+  <div class="relative w-full max-w-md mx-4"
+       style="background: var(--by-bg); border: 2px solid var(--by-ink);
+              box-shadow: 6px 6px 0 0 var(--by-ink);">
+
+    <!-- Header stripe -->
+    <div class="px-6 py-4" style="background: var(--by-yes); border-bottom: 2px solid var(--by-ink);">
+      <div class="by-eyebrow mb-1" style="color: var(--by-ink-2);">Yes, And…</div>
+      <h2 class="by-display text-[22px]" style="color: var(--by-ink); line-height: 1.1;">
+        New Password Required
+      </h2>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 py-5">
+      <p class="text-sm leading-relaxed mb-4" style="color: var(--by-ink-2); font-family: var(--by-f-body);">
+        Before you step on stage, you need to set your own password.
+        <strong style="color: var(--by-ink);">Yes, And</strong> — make it something only you know.
+        Minimum 6 characters.
+      </p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-widest mb-1.5"
+                 style="color: var(--by-ink-3); font-family: var(--by-f-mono);">
+            New Password
+          </label>
+          <input type="password" id="fpw-new" placeholder="••••••••" autocomplete="new-password"
+                 class="w-full border px-3 py-2.5 text-sm focus:outline-none"
+                 style="border-color: var(--by-ink); color: var(--by-ink-2); background: var(--by-bg);" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-widest mb-1.5"
+                 style="color: var(--by-ink-3); font-family: var(--by-f-mono);">
+            Confirm Password
+          </label>
+          <input type="password" id="fpw-confirm" placeholder="••••••••" autocomplete="new-password"
+                 class="w-full border px-3 py-2.5 text-sm focus:outline-none"
+                 style="border-color: var(--by-ink); color: var(--by-ink-2); background: var(--by-bg);" />
+        </div>
+
+        <div id="fpw-error" class="hidden px-3 py-2 text-sm font-medium text-center"
+             style="background: #FFF0EE; color: var(--by-tomato); border: 1px solid var(--by-tomato);"></div>
+
+        <button onclick="fpwSubmit()"
+                class="w-full py-3 text-sm font-bold uppercase tracking-wider mt-1"
+                style="background: var(--by-yes); border: 2px solid var(--by-ink);
+                       color: var(--by-ink); font-family: var(--by-f-display);
+                       box-shadow: 3px 3px 0 0 var(--by-ink); cursor: pointer;
+                       transition: box-shadow 100ms ease, transform 100ms ease;"
+                onmouseover="this.style.boxShadow='1px 1px 0 0 var(--by-ink)';this.style.transform='translate(2px,2px)'"
+                onmouseout="this.style.boxShadow='3px 3px 0 0 var(--by-ink)';this.style.transform='translate(0,0)'">
+          Set My Password →
+        </button>
+      </div>
+
+      <p class="mt-4 text-[11px] text-center" style="color: var(--by-ink-4); font-family: var(--by-f-mono);">
+        This scene doesn't start until you do.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function fpwSubmit() {
+    const newPw  = document.getElementById('fpw-new').value.trim();
+    const confirm = document.getElementById('fpw-confirm').value.trim();
+    const errEl  = document.getElementById('fpw-error');
+
+    errEl.classList.add('hidden');
+
+    if (newPw.length < 6) {
+      errEl.textContent = 'Password must be at least 6 characters.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    if (newPw !== confirm) {
+      errEl.textContent = "Passwords don't match — try again.";
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const res  = await fetch('/api/profile/forced-password-change', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ new_password: newPw }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        document.getElementById('modal-force-pw').remove();
+      } else {
+        errEl.textContent = data.error || 'Something went wrong.';
+        errEl.classList.remove('hidden');
+      }
+    } catch (_) {
+      errEl.textContent = 'Network error — please try again.';
+      errEl.classList.remove('hidden');
+    }
+  }
+
+  ['fpw-new', 'fpw-confirm'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') fpwSubmit();
+    });
+  });
+</script>
+{% endif %}

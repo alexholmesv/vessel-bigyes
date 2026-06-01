@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}BigYes CRM{% endblock %}</title>
+
+  <!-- Google Fonts: Archivo Black · Archivo · Manrope · DM Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN (Play CDN — supports JIT + custom keyframes) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // ─────────────────────────────────────────────────────────────────
+    // BigYes Tailwind theme — v0.1
+    // To retheme the entire interface, change the hex values in the
+    // `colors` block below. Each key maps 1-to-1 to a --by-* CSS
+    // custom property declared in the <style> block.
+    // ─────────────────────────────────────────────────────────────────
+    tailwind.config = {
+      theme: {
+        extend: {
+          // ── Typefaces ───────────────────────────────────────────────
+          fontFamily: {
+            display: ["'Archivo Black'", 'system-ui', 'sans-serif'],
+            sans:    ["'Archivo'",       'ui-sans-serif', 'system-ui'],
+            body:    ["'Manrope'",       'ui-sans-serif', 'system-ui'],
+            mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
+          },
+          // ── Colour tokens ───────────────────────────────────────────
+          colors: {
+            'by-yes':         '#FFC629', // marigold — CTAs, active nav, yes-block
+            'by-yes-deep':    '#E5A800', // pressed / hover on yellow
+            'by-yes-soft':    '#FFE7A0', // large background washes only
+            'by-ink':         '#141210', // primary text + all borders
+            'by-ink-2':       '#2A2723', // body text on paper
+            'by-ink-3':       '#5C544A', // muted / captions
+            'by-ink-4':       '#8A8073', // hint / disabled
+            'by-bg':          '#F4EEE2', // page background — warm paper
+            'by-bg-2':        '#ECE3D0', // alt rows, panels
+            'by-bg-3':        '#E2D6BB', // dividers, dashed rules
+            'by-tomato':      '#E5482A', // errors + LIVE pulse — never decorative
+            'by-tomato-deep': '#B83218', // pressed tomato
+            'by-night':       '#141210', // inverted hero surfaces
+            'by-night-on':    '#C9BFA8', // muted text on dark surfaces
+          },
+          // ── Hard offset shadow (hover only — brand signature lift) ──
+          boxShadow: {
+            'by-hard':     '4px 4px 0 0 #141210',
+            'by-hard-yes': '4px 4px 0 0 #FFC629',
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    /* ── BigYes Design Tokens v0.1 ─────────────────────────────────── */
+    :root {
+      --by-bg:        #F4EEE2;
+      --by-bg-2:      #ECE3D0;
+      --by-bg-3:      #E2D6BB;
+      --by-ink:       #141210;
+      --by-ink-2:     #2A2723;
+      --by-ink-3:     #5C544A;
+      --by-ink-4:     #8A8073;
+      --by-yes:       #FFC629;
+      --by-yes-deep:  #E5A800;
+      --by-yes-soft:  #FFE7A0;
+      --by-tomato:      #E5482A;
+      --by-tomato-deep: #B83218;
+      --by-night:      #141210;
+      --by-night-soft: #1E1B17;
+      --by-night-on:   #C9BFA8;
+      --by-f-display: 'Archivo Black', 'Archivo', system-ui, sans-serif;
+      --by-f-sans:    'Archivo', system-ui, sans-serif;
+      --by-f-body:    'Manrope', system-ui, sans-serif;
+      --by-f-mono:    'DM Mono', ui-monospace, monospace;
+      --by-t-display-xl: 96px;
+      --by-t-display-l:  64px;
+      --by-t-h1:         40px;
+      --by-t-h2:         24px;
+      --by-t-body-l:     17px;
+      --by-t-body:       15px;
+      --by-t-small:      13.5px;
+      --by-t-mono:       11.5px;
+      --by-r-1:    4px;
+      --by-r-2:    10px;
+      --by-r-pill: 999px;
+      --by-bd:       1px solid var(--by-ink);
+      --by-bd-thick: 1.5px solid var(--by-ink);
+      --by-bd-soft:  1px solid var(--by-bg-3);
+      --by-bd-dash:  1px dashed var(--by-bg-3);
+      --by-sh-1:   4px 4px 0 0 var(--by-ink);
+      --by-sh-yes: 4px 4px 0 0 var(--by-yes);
+      --by-s-1: 4px;  --by-s-2: 8px;  --by-s-3: 12px; --by-s-4: 16px;
+      --by-s-5: 24px; --by-s-6: 32px; --by-s-7: 48px; --by-s-8: 64px; --by-s-9: 96px;
+      --by-snap:  120ms cubic-bezier(.2,.8,.2,1);
+      --by-stamp: 180ms cubic-bezier(.7,0,.2,1.4);
+    }
+
+    html, body { background: var(--by-bg); }
+    body {
+      font-family: var(--by-f-body);
+      color: var(--by-ink);
+      font-size: var(--by-t-body);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .by-display {
+      font-family: var(--by-f-display);
+      font-weight: 900;
+      line-height: 0.88;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+    .by-eyebrow {
+      font-family: var(--by-f-mono);
+      font-size: var(--by-t-mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--by-ink-3);
+    }
+    .by-yes-block {
+      display: inline-block;
+      background: var(--by-yes);
+      color: var(--by-ink);
+      padding: 0 12px 4px;
+      transform: skew(-6deg);
+    }
+
+    /* ── Scrollbar ─────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--by-bg-2); }
+    ::-webkit-scrollbar-thumb { background: var(--by-ink-4); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--by-ink-3); }
+
+    /* ── Dropdown transitions ──────────────────────────────────────── */
+    #profile-menu,
+    #role-menu { transition: opacity var(--by-snap), transform var(--by-snap); }
+    #profile-menu.hidden,
+    #role-menu.hidden { opacity: 0; pointer-events: none; transform: translateY(-4px); }
+
+    /* ── Dropdown menu items ───────────────────────────────────────── */
+    .by-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      font-family: var(--by-f-body);
+      font-size: 14px;
+      color: var(--by-ink-2);
+      text-decoration: none;
+      transition: background var(--by-snap);
+    }
+    .by-menu-item:hover { background: var(--by-bg-2); }
+    .by-menu-item.danger { color: var(--by-tomato); }
+    .by-menu-item.danger:hover { background: var(--by-bg-2); }
+
+    /* ── Global select reset — BigYes design on all dropdowns ─────── */
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-color: var(--by-bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23141210'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      border: var(--by-bd-thick);
+      color: var(--by-ink);
+      font-family: var(--by-f-body);
+      font-size: var(--by-t-body);
+      padding: 6px 32px 6px 10px;
+      cursor: pointer;
+      outline: none;
+    }
+    select:focus {
+      box-shadow: 0 0 0 2px var(--by-yes);
+    }
+    select:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+
+    /* ── Select reset + BigYes chevron wrapper (legacy — kept for compat) */
+    .by-select-wrap { position: relative; }
+    .by-select-wrap > select {
+      background-image: none !important;
+      padding-right: 32px;
+    }
+    .by-select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid var(--by-ink-3);
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+  {% include 'partials/_byselect.html' %}
+</head>
+
+<body class="h-full antialiased">
+
+
+  <!-- ═══════════════════════════ TOP NAV ═══════════════════════════ -->
+  <header class="fixed inset-x-0 top-0 z-50 border-b"
+          style="background: var(--by-bg); border-color: var(--by-ink);">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+
+      <!-- ── Wordmark ── -->
+      <a href="/" class="by-display flex items-center" style="font-size: 20px; color: var(--by-ink); text-decoration: none; line-height: 1;">
+        Big<span class="by-yes-block" style="font-size: 18px; padding: 0 10px 3px;">Yes</span>
+      </a>
+
+      <!-- ── Right: Nav links · Role · Profile ── -->
+      <div class="flex items-center gap-6 ml-auto">
+
+        <!-- Page nav links (injected by child templates) -->
+        <nav class="hidden md:flex items-center gap-1">
+          {% block nav_links %}{% endblock %}
+        </nav>
+
+        <!-- Inbox Icon -->
+        {% include 'partials/_inbox_btn.html' %}
+
+        <!-- Scene Switcher -->
+        {% include 'partials/_scene_switcher.html' %}
+
+        <!-- Role Switcher -->
+        <div class="relative">
+          <button id="role-btn"
+                  onclick="toggleMenu('role-menu', 'role-btn')"
+                  class="flex items-center gap-2 px-3 py-1.5 focus:outline-none"
+                  style="border: var(--by-bd-thick); background: var(--by-bg);
+                         font-family: var(--by-f-mono); font-size: 11px;
+                         letter-spacing: 0.12em; text-transform: uppercase; color: var(--by-ink);">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8"
+                 viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                 d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5
+                    7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676
+                    0-5.216-.584-7.499-1.632Z"/></svg>
+            <span id="role-label">{{ current_role | default('Demo') }}</span>
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5"
+                 viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                 d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          </button>
+
+          <!-- Role dropdown -->
+          <div id="role-menu"
+               class="hidden absolute right-0 mt-1 w-44"
+               style="background: var(--by-bg); border: var(--by-bd-thick);
+                      box-shadow: var(--by-sh-1);">
+            <p class="by-eyebrow px-3 pt-2.5 pb-1.5">Switch Role</p>
+            {% for role, label, href in [
+                ('stage_manager', 'Stage Manager', '/switch-role/stage_manager'),
+                ('teacher',       'Teacher',       '/switch-role/teacher'),
+                ('student',       'Student',       '/switch-role/student')
+            ] %}
+            <a href="{{ href }}" class="by-menu-item">
+              <span class="h-1.5 w-1.5 shrink-0" style="background: var(--by-yes);"></span>
+              {{ label }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Profile Avatar Dropdown -->
+        <div class="relative">
+          <button id="profile-btn"
+                  onclick="toggleMenu('profile-menu', 'profile-btn')"
+                  class="flex items-center gap-2 px-2 py-1 focus:outline-none"
+                  style="background: transparent; transition: background var(--by-snap);"
+                  onmouseover="this.style.background='var(--by-bg-2)'"
+                  onmouseout="this.style.background='transparent'">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center select-none"
+                  style="background: var(--by-yes); border: var(--by-bd-thick);
+                         font-family: var(--by-f-mono); font-size: 11px;
+                         font-weight: 700; color: var(--by-ink); letter-spacing: 0.08em;">
+              {{ current_user_initials | default('?') }}
+            </span>
+            <span class="hidden sm:block text-sm"
+                  style="font-family: var(--by-f-body); color: var(--by-ink);">
+              {{ current_user_name | default('Guest') }}
+            </span>
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5"
+                 style="color: var(--by-ink-4);"
+                 viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                 d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          </button>
+
+          <!-- Profile dropdown -->
+          <div id="profile-menu"
+               class="hidden absolute right-0 mt-1 w-52"
+               style="background: var(--by-bg); border: var(--by-bd-thick);
+                      box-shadow: var(--by-sh-1);">
+            <div class="px-4 pt-3 pb-2.5" style="border-bottom: var(--by-bd-soft);">
+              <p style="font-family: var(--by-f-sans); font-weight: 700; font-size: 14px; color: var(--by-ink);">
+                {{ current_user_name | default('Guest') }}
+              </p>
+              <p style="font-family: var(--by-f-mono); font-size: 11px; color: var(--by-ink-4);">
+                {{ current_user_email | default('') }}
+              </p>
+            </div>
+            <a href="/profile" class="by-menu-item">
+              <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                   style="color: var(--by-ink-3);"
+                   viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                   d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5
+                      7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676
+                      0-5.216-.584-7.499-1.632Z"/></svg>
+              My Profile
+            </a>
+            <a href="/settings" class="by-menu-item">
+              <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                   style="color: var(--by-ink-3);"
+                   viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                   d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path
+                   stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+              Settings
+            </a>
+            <div style="border-top: var(--by-bd-soft); margin: 4px 0;"></div>
+            <a href="/logout" class="by-menu-item danger">
+              <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                   viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                   d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25
+                      2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12
+                      9l-3 3m0 0 3 3m-3-3h12.75"/></svg>
+              Sign Out
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════ FLASH MESSAGES ══════════════════════════ -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="fixed top-20 inset-x-0 z-40 flex flex-col items-center gap-2 px-4">
+        {% for category, message in messages %}
+          <div class="flex items-center gap-3 px-4 py-3 text-sm max-w-xl w-full"
+               style="border: var(--by-bd-thick); box-shadow: var(--by-sh-1);
+                      {% if category == 'error' %}
+                        background: #FFF0EE; color: var(--by-tomato);
+                      {% elif category == 'success' %}
+                        background: var(--by-yes-soft); color: var(--by-ink);
+                      {% else %}
+                        background: var(--by-bg); color: var(--by-ink-2);
+                      {% endif %}">
+            {% if category == 'error' %}
+              <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                   style="color: var(--by-tomato);"
+                   viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                   d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73
+                      0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898
+                      0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+            {% elif category == 'success' %}
+              <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                   style="color: var(--by-ink);"
+                   viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                   d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+            {% else %}
+              <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                   style="color: var(--by-ink-3);"
+                   viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                   d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75
+                      0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+            {% endif %}
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+  <main class="relative z-10 min-h-screen pt-16">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════ FOOTER ══════════════════════════════ -->
+  <footer class="relative z-10 py-5 px-6"
+          style="border-top: var(--by-bd); background: var(--by-bg);">
+    <div class="mx-auto max-w-7xl flex items-center justify-between flex-wrap gap-4"
+         style="font-family: var(--by-f-mono); font-size: 11px; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--by-ink-3);">
+      <span>&copy; 2026 Barcelona Improv Group &middot; Big Yes CRM
+        <span style="color: var(--by-ink-4);">v0.9.2 "Curtain Call"</span>
+      </span>
+      <div class="flex items-center gap-4">
+        <a href="/privacy" style="color: var(--by-ink-2); text-decoration: none;"
+           onmouseover="this.style.textDecoration='underline'"
+           onmouseout="this.style.textDecoration='none'">Privacy Center</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ════════════════════════ DROPDOWN SCRIPT ════════════════════════ -->
+  <script>
+    const menus = ['profile-menu', 'role-menu'];
+
+    function toggleMenu(menuId, btnId) {
+      const target = document.getElementById(menuId);
+      const isHidden = target.classList.contains('hidden');
+      menus.forEach(id => document.getElementById(id).classList.add('hidden'));
+      if (isHidden) target.classList.remove('hidden');
+    }
+
+    document.addEventListener('click', function (e) {
+      const triggers = ['profile-btn', 'role-btn'];
+      const inside = [...menus, ...triggers].some(id => {
+        const el = document.getElementById(id);
+        return el && el.contains(e.target);
+      });
+      if (!inside) menus.forEach(id => document.getElementById(id).classList.add('hidden'));
+    });
+  </script>
+
+  <!-- ════════════════════════ PARALLAX SCRIPT ════════════════════════ -->
+  <script>
+    (function () {
+      const DAMPENER = 0.18; /* lower = subtler depth effect */
+
+      function updateParallax() {
+        const scrollY = window.scrollY;
+        document.querySelectorAll('.parallax-layer[data-parallax-speed]').forEach(function (el) {
+          const speed = parseFloat(el.dataset.parallaxSpeed) || 1.0;
+          /* speed 1.0 → 0 offset; 1.2 → gentle float; 1.4 → pops forward */
+          const offset = -(scrollY * (speed - 1.0) * DAMPENER);
+          el.style.setProperty('--parallax-offset', offset + 'px');
+        });
+      }
+
+      window.addEventListener('scroll', updateParallax, { passive: true });
+      updateParallax(); /* set initial state on load */
+    })();
+  </script>
+
+  {% block extra_scripts %}{% endblock %}
+
+  <!-- ════════════════════ BIGYES CONFIRM MODAL ════════════════════ -->
+  <div id="by-confirm-modal" aria-modal="true" role="dialog"
+       class="hidden fixed inset-0 z-[500] flex items-center justify-center"
+       style="background:rgba(20,18,16,.72);">
+    <div style="background:var(--by-bg);border:2px solid var(--by-ink);
+                box-shadow:6px 6px 0 0 var(--by-ink);width:100%;max-width:420px;margin:0 16px;">
+      <div style="background:var(--by-ink);padding:16px 20px;">
+        <p style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.14em;
+                  text-transform:uppercase;color:var(--by-night-on);margin-bottom:4px;">BigYes · Confirm</p>
+        <h3 id="by-confirm-title"
+            style="font-family:var(--by-f-display);font-size:20px;color:#fff;line-height:1.1;"></h3>
+      </div>
+      <div style="padding:20px 20px 8px;">
+        <p id="by-confirm-body"
+           style="font-family:var(--by-f-body);font-size:14px;color:var(--by-ink-2);line-height:1.6;"></p>
+      </div>
+      <div style="display:flex;gap:12px;padding:16px 20px 20px;">
+        <button onclick="byConfirmClose()"
+                style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);
+                       color:var(--by-ink-2);font-family:var(--by-f-sans);font-weight:600;
+                       font-size:13px;padding:10px 16px;cursor:pointer;transition:background 100ms;"
+                onmouseover="this.style.background='var(--by-bg-2)'"
+                onmouseout="this.style.background='var(--by-bg)'">
+          Cancel
+        </button>
+        <button id="by-confirm-ok" onclick="byConfirmDo()"
+                style="flex:1;font-family:var(--by-f-display);font-size:13px;
+                       letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;
+                       cursor:pointer;transition:box-shadow 100ms,transform 100ms;">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let _byConfirmCb = null;
+    function byConfirm({ title, body, label = 'Confirm', danger = false, onConfirm }) {
+      document.getElementById('by-confirm-title').textContent = title;
+      document.getElementById('by-confirm-body').textContent  = body;
+      const ok = document.getElementById('by-confirm-ok');
+      ok.textContent        = label;
+      ok.style.background   = danger ? 'var(--by-tomato)'       : 'var(--by-yes)';
+      ok.style.color        = danger ? '#fff'                    : 'var(--by-ink)';
+      ok.style.border       = danger ? '1.5px solid var(--by-tomato-deep)' : '1.5px solid var(--by-ink)';
+      ok.style.boxShadow    = danger ? '3px 3px 0 0 var(--by-tomato-deep)' : '3px 3px 0 0 var(--by-ink)';
+      const shadow = danger ? '3px 3px 0 0 var(--by-tomato-deep)' : '3px 3px 0 0 var(--by-ink)';
+      ok.onmouseover = () => { ok.style.boxShadow = '1px 1px 0 0 ' + (danger ? 'var(--by-tomato-deep)' : 'var(--by-ink)'); ok.style.transform = 'translate(2px,2px)'; };
+      ok.onmouseout  = () => { ok.style.boxShadow = shadow; ok.style.transform = 'translate(0,0)'; };
+      _byConfirmCb = onConfirm;
+      document.getElementById('by-confirm-modal').classList.remove('hidden');
+    }
+    function byConfirmClose() {
+      document.getElementById('by-confirm-modal').classList.add('hidden');
+      _byConfirmCb = null;
+    }
+    function byConfirmDo() {
+      const cb = _byConfirmCb;
+      byConfirmClose();
+      if (cb) cb();
+    }
+    document.getElementById('by-confirm-modal').addEventListener('click', function(e) {
+      if (e.target === this) byConfirmClose();
+    });
+  </script>
+
+  {% include 'partials/_inbox_modal.html' %}
+
+
+  {% include 'partials/_forced_pw_modal.html' %}
+
+</body>
+</html>

@@ -1,0 +1,435 @@
+{#
+  _user_config_modal.html
+  Shared user-config slide-in panel + all supporting JS.
+  Include at the END of <body> in any template that has the user dropdown.
+  Admin (admin.html) uses its own copy with tighter integration; this partial
+  is for Ensemble Room and Profile views.
+
+  Variables required (all injected by @app.context_processor inject_nav_context):
+    current_user_name, current_user_initials, current_user_tint (list[2]),
+    current_user_avatar (resolved URL or ''), current_user_avatar_raw,
+    current_user_bio, current_user_tint_idx, nav_tints_json,
+    char_avatars (list of {name, url}), char_avatars_json
+#}
+
+<style>
+  /* Panel animation */
+  .by-cfg-panel { overflow: hidden; }
+  .by-cfg-panel-inner {
+    transform: translateX(100%);
+    transition: transform 280ms cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+  .by-cfg-panel.open .by-cfg-panel-inner { transform: translateX(0); }
+
+  /* Config swatch + char buttons */
+  .cfg-swatch {
+    width: 28px; height: 28px; border-radius: 4px;
+    border: 2px solid transparent; cursor: pointer; flex-shrink: 0;
+    transition: transform 120ms, border-color 120ms;
+  }
+  .cfg-swatch:hover { transform: scale(1.15); }
+  .cfg-swatch.selected { border-color: var(--by-ink); transform: scale(1.1); }
+  .cfg-char-btn { transition: transform 120ms; cursor: pointer; }
+  .cfg-char-btn:hover { transform: scale(1.04); }
+</style>
+
+<!-- ═══════════════════════ USER CONFIG PANEL ═══════════════════════ -->
+<div id="modal-my-config" class="by-cfg-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)"
+       onclick="_closeCfgModal()"></div>
+  <div class="by-cfg-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col"
+       style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4"
+         style="border-bottom:var(--by-bd);">
+      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Personal info</h3>
+      <button onclick="_closeCfgModal()"
+              style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+
+      <!-- Avatar section -->
+      <div>
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Avatar</div>
+
+        <!-- Preview row -->
+        <div class="flex items-center gap-4 mb-4">
+          <div class="relative flex-shrink-0" style="width:64px;height:64px;">
+            <img id="cfg-av-img" class="av object-cover"
+                 src="{{ current_user_avatar or '' }}"
+                 style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
+                 alt="{{ current_user_initials }}">
+            <span id="cfg-av-init" class="av flex items-center justify-center"
+                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:#fff;
+                         background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
+                         {{ 'display:none;' if current_user_avatar else '' }}">
+              {{ current_user_initials }}
+            </span>
+          </div>
+          <div>
+            <div id="cfg-av-label" class="text-[11px] font-semibold" style="color:var(--by-ink)">
+              {% if current_user_avatar_raw and current_user_avatar_raw.startswith('char:') and current_user_avatar_raw[5:].isdigit() %}
+                {{ char_avatars[current_user_avatar_raw[5:]|int].name }}
+              {% elif current_user_avatar_raw and current_user_avatar_raw.startswith('data:') %}
+                Custom photo
+              {% else %}
+                Gradient initials
+              {% endif %}
+            </div>
+            <div class="text-[10.5px] mt-0.5" style="color:var(--by-ink-3)">
+              Pick a character, upload a photo,<br>or choose a gradient colour.
+            </div>
+          </div>
+        </div>
+
+        <!-- Character grid (3 columns) -->
+        <div class="grid grid-cols-3 gap-2 mb-3" id="cfg-char-grid">
+          {% for ch in char_avatars %}
+          <button type="button" class="cfg-char-btn flex flex-col items-center gap-1 p-1.5 border"
+                  style="border-color:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-ink){% else %}var(--by-bg-3){% endif %};
+                         background:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-yes-soft){% else %}var(--by-bg){% endif %};"
+                  onclick="cfgPickCharacter({{ loop.index0 }})">
+            <img src="{{ ch.url }}" alt="{{ ch.name }}"
+                 style="width:52px;height:52px;border-radius:50%;display:block;">
+            <span style="font-family:var(--by-f-mono);font-size:8.5px;color:var(--by-ink-3);
+                         letter-spacing:.04em;line-height:1.2;text-align:center;">{{ ch.name }}</span>
+          </button>
+          {% endfor %}
+        </div>
+
+        <!-- Upload photo -->
+        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold"
+               style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg);">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+               viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload photo
+          <input type="file" accept="image/*" class="hidden" onchange="cfgHandleUpload(this)">
+        </label>
+
+        <!-- Gradient colour swatches -->
+        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold" style="color:var(--by-ink-3)">
+          Gradient colour
+        </div>
+        <div class="flex gap-2 flex-wrap" id="cfg-tint-swatches"></div>
+      </div>
+
+      <!-- Name fields -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest"
+                 style="color:var(--by-ink-3)">First name</label>
+          <input type="text" id="cfg-first" placeholder="Sofia"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest"
+                 style="color:var(--by-ink-3)">Last name</label>
+          <input type="text" id="cfg-last" placeholder="Reyes"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest"
+               style="color:var(--by-ink-3)">Bio</label>
+        <textarea id="cfg-bio" rows="4" placeholder="A few words about yourself…"
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed"
+          style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)"></textarea>
+      </div>
+
+      <div id="cfg-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+
+      <!-- Change password -->
+      <div style="border-top:var(--by-bd-soft);padding-top:1.25rem">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">
+          Change password
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest"
+                   style="color:var(--by-ink-3)">Current password</label>
+            <input type="password" id="cfg-pw-current" placeholder="••••••••"
+              class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+              style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest"
+                     style="color:var(--by-ink-3)">New password</label>
+              <input type="password" id="cfg-pw-new" placeholder="••••••••"
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest"
+                     style="color:var(--by-ink-3)">Confirm</label>
+              <input type="password" id="cfg-pw-confirm" placeholder="••••••••"
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            </div>
+          </div>
+          <button onclick="changePassword()"
+                  class="w-full border py-2.5 text-sm font-semibold"
+                  style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2)">
+            Update password
+          </button>
+          <div id="cfg-pw-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
+      <button onclick="_closeCfgModal()"
+              class="flex-1 border py-2.5 text-sm font-semibold"
+              style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)">
+        Cancel
+      </button>
+      <button onclick="saveMyConfig()"
+              class="flex-1 btn-spot py-2.5 text-sm">
+        Save
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Config state (set once at page load) ──────────────────────────────────
+  const NAV_TINTS    = {{ nav_tints_json | safe }};
+  const CHAR_AVATARS = {{ char_avatars_json | safe }};
+  let _cfgTintIndex   = {{ current_user_tint_idx }};
+  let _cfgInitialName = {{ current_user_name | tojson }};
+  let _cfgInitialBio  = {{ current_user_bio  | tojson }};
+  const _cfgAvatarRaw = {{ current_user_avatar_raw | tojson }};
+  let _cfgAvatarMode  = !_cfgAvatarRaw ? 'gradient'
+                      : _cfgAvatarRaw.startsWith('char:') ? 'char' : 'upload';
+  let _cfgCharIndex   = _cfgAvatarMode === 'char' ? parseInt(_cfgAvatarRaw.split(':')[1]) : -1;
+  let _cfgUploadData  = _cfgAvatarMode === 'upload' ? _cfgAvatarRaw : null;
+
+  // ── User menu toggle ──────────────────────────────────────────────────────
+  function toggleUserMenu(forceClose) {
+    const drop = document.getElementById('user-menu-drop');
+    if (!drop) return;
+    const open = forceClose === false ? true
+               : forceClose === true  ? false
+               : drop.classList.contains('hidden');
+    drop.classList.toggle('hidden', !open);
+    if (open) {
+      setTimeout(() => {
+        document.addEventListener('click', function _umHandler(e) {
+          if (!document.getElementById('user-menu-wrap')?.contains(e.target)) {
+            drop.classList.add('hidden');
+            document.removeEventListener('click', _umHandler);
+          }
+        });
+      }, 0);
+    }
+  }
+
+  // ── Panel open / close ────────────────────────────────────────────────────
+  function _openCfgModal() {
+    const el = document.getElementById('modal-my-config');
+    el.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+    document.body.style.overflow = 'hidden';
+  }
+
+  function _closeCfgModal() {
+    const el = document.getElementById('modal-my-config');
+    el.classList.remove('open');
+    const inner = el.querySelector('.by-cfg-panel-inner');
+    const done = () => {
+      el.classList.add('hidden');
+      inner && inner.removeEventListener('transitionend', done);
+      document.body.style.overflow = '';
+    };
+    inner ? inner.addEventListener('transitionend', done) : done();
+  }
+
+  // ── Avatar preview ────────────────────────────────────────────────────────
+  function _updateCfgPreview() {
+    const img  = document.getElementById('cfg-av-img');
+    const init = document.getElementById('cfg-av-init');
+    const lbl  = document.getElementById('cfg-av-label');
+    if (_cfgAvatarMode === 'gradient') {
+      const t = NAV_TINTS[_cfgTintIndex];
+      init.style.background = `linear-gradient(135deg,${t[0]},${t[1]})`;
+      init.style.display = '';
+      img.src = ''; img.style.display = 'none';
+      if (lbl) lbl.textContent = 'Gradient initials';
+    } else {
+      const src = _cfgAvatarMode === 'char' ? CHAR_AVATARS[_cfgCharIndex].url : _cfgUploadData;
+      img.src = src; img.style.display = '';
+      init.style.display = 'none';
+      if (lbl) lbl.textContent = _cfgAvatarMode === 'char' ? CHAR_AVATARS[_cfgCharIndex].name : 'Custom photo';
+    }
+  }
+
+  function _updateHeaderAvatar(avatarUrl, initials, gradient) {
+    document.querySelectorAll('.by-um-av-img').forEach(img => {
+      if (avatarUrl) { img.src = avatarUrl; img.style.display = ''; }
+      else { img.src = ''; img.style.display = 'none'; }
+    });
+    document.querySelectorAll('.by-um-av-init').forEach(init => {
+      if (!avatarUrl) { init.style.background = gradient; init.textContent = initials; init.style.display = ''; }
+      else { init.style.display = 'none'; }
+    });
+  }
+
+  function cfgPickCharacter(idx) {
+    _cfgAvatarMode = 'char'; _cfgCharIndex = idx; _cfgUploadData = null;
+    document.querySelectorAll('.cfg-char-btn').forEach((b, i) => {
+      b.style.borderColor = i === idx ? 'var(--by-ink)' : 'var(--by-bg-3)';
+      b.style.background  = i === idx ? 'var(--by-yes-soft)' : 'var(--by-bg)';
+    });
+    document.querySelectorAll('.cfg-swatch').forEach(s => s.classList.remove('selected'));
+    _updateCfgPreview();
+  }
+
+  function cfgHandleUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const tmpImg = new Image();
+      tmpImg.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200; canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        const s = Math.min(tmpImg.width, tmpImg.height);
+        const sx = (tmpImg.width - s) / 2, sy = (tmpImg.height - s) / 2;
+        ctx.drawImage(tmpImg, sx, sy, s, s, 0, 0, 200, 200);
+        _cfgUploadData = canvas.toDataURL('image/jpeg', 0.82);
+        _cfgAvatarMode = 'upload'; _cfgCharIndex = -1;
+        document.querySelectorAll('.cfg-char-btn').forEach(b => {
+          b.style.borderColor = 'var(--by-bg-3)'; b.style.background = 'var(--by-bg)';
+        });
+        document.querySelectorAll('.cfg-swatch').forEach(s => s.classList.remove('selected'));
+        _updateCfgPreview();
+      };
+      tmpImg.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function cfgPickTint(idx) {
+    _cfgTintIndex = idx; _cfgAvatarMode = 'gradient'; _cfgCharIndex = -1; _cfgUploadData = null;
+    document.querySelectorAll('.cfg-swatch').forEach((s, i) => s.classList.toggle('selected', i === idx));
+    document.querySelectorAll('.cfg-char-btn').forEach(b => {
+      b.style.borderColor = 'var(--by-bg-3)'; b.style.background = 'var(--by-bg)';
+    });
+    _updateCfgPreview();
+  }
+
+  // ── Open config panel ─────────────────────────────────────────────────────
+  function openMyConfig() {
+    const nameParts = _cfgInitialName.trim().split(/\s+/);
+    document.getElementById('cfg-first').value = nameParts[0] || '';
+    document.getElementById('cfg-last').value  = nameParts.slice(1).join(' ');
+    document.getElementById('cfg-bio').value   = _cfgInitialBio || '';
+
+    const wrap = document.getElementById('cfg-tint-swatches');
+    wrap.innerHTML = NAV_TINTS.map((t, i) => `
+      <button type="button" class="cfg-swatch ${i === _cfgTintIndex && _cfgAvatarMode === 'gradient' ? 'selected' : ''}"
+        style="background:linear-gradient(135deg,${t[0]},${t[1]})"
+        onclick="cfgPickTint(${i})" title="Colour ${i + 1}"></button>
+    `).join('');
+
+    document.querySelectorAll('.cfg-char-btn').forEach((b, i) => {
+      const sel = _cfgAvatarMode === 'char' && i === _cfgCharIndex;
+      b.style.borderColor = sel ? 'var(--by-ink)' : 'var(--by-bg-3)';
+      b.style.background  = sel ? 'var(--by-yes-soft)' : 'var(--by-bg)';
+    });
+
+    _updateCfgPreview();
+    document.getElementById('cfg-status').classList.add('hidden');
+    _openCfgModal();
+  }
+
+  // ── Feedback banner ───────────────────────────────────────────────────────
+  function showCfgFeedback(elId, msg, type) {
+    const el = document.getElementById(elId);
+    el.className = 'px-4 py-3 text-sm font-medium text-center border';
+    if (type === 'success') {
+      Object.assign(el.style, { background: '#F0FFF8', color: '#166534', borderColor: '#D1FAE5' });
+    } else {
+      Object.assign(el.style, { background: '#FFF0EE', color: 'var(--by-tomato)', borderColor: 'var(--by-tomato)' });
+    }
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    if (type === 'success') setTimeout(() => el.classList.add('hidden'), 5000);
+  }
+
+  // ── Save config ───────────────────────────────────────────────────────────
+  async function saveMyConfig() {
+    const first = document.getElementById('cfg-first').value.trim();
+    const last  = document.getElementById('cfg-last').value.trim();
+    const bio   = document.getElementById('cfg-bio').value.trim();
+    if (!first) { showCfgFeedback('cfg-status', 'First name is required.', 'error'); return; }
+    const avatarPayload = _cfgAvatarMode === 'gradient' ? 'gradient'
+                        : _cfgAvatarMode === 'char'     ? `char:${_cfgCharIndex}`
+                        : _cfgUploadData;
+    try {
+      const res  = await fetch('/api/profile/update-self', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ first_name: first, last_name: last, bio, tint_index: _cfgTintIndex, avatar: avatarPayload }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const tint     = NAV_TINTS[_cfgTintIndex];
+        const gradient = `linear-gradient(135deg,${tint[0]},${tint[1]})`;
+        _updateHeaderAvatar(data.avatar_url || null, data.initials, gradient);
+        document.querySelectorAll('.by-um-name').forEach(el => el.textContent = data.name);
+        _cfgInitialName = data.name;
+        _cfgInitialBio  = data.bio !== undefined ? data.bio : bio;
+        showCfgFeedback('cfg-status', 'Saved!', 'success');
+        setTimeout(() => _closeCfgModal(), 900);
+      } else {
+        showCfgFeedback('cfg-status', data.error || 'Could not save.', 'error');
+      }
+    } catch {
+      showCfgFeedback('cfg-status', 'Network error — try again.', 'error');
+    }
+  }
+
+  // ── Change password ───────────────────────────────────────────────────────
+  async function changePassword() {
+    const current = document.getElementById('cfg-pw-current').value;
+    const newPw   = document.getElementById('cfg-pw-new').value.trim();
+    const confirm = document.getElementById('cfg-pw-confirm').value.trim();
+    if (!current) { showCfgFeedback('cfg-pw-status', 'Enter your current password.', 'error'); return; }
+    if (newPw.length < 6) { showCfgFeedback('cfg-pw-status', 'New password must be at least 6 characters.', 'error'); return; }
+    if (newPw !== confirm) { showCfgFeedback('cfg-pw-status', 'Passwords do not match.', 'error'); return; }
+    try {
+      const res  = await fetch('/api/profile/change-password', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ current_password: current, new_password: newPw }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        ['cfg-pw-current', 'cfg-pw-new', 'cfg-pw-confirm'].forEach(id =>
+          document.getElementById(id).value = '');
+        showCfgFeedback('cfg-pw-status', 'Password updated.', 'success');
+      } else {
+        showCfgFeedback('cfg-pw-status', data.error || 'Could not update password.', 'error');
+      }
+    } catch {
+      showCfgFeedback('cfg-pw-status', 'Network error — try again.', 'error');
+    }
+  }
+</script>

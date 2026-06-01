@@ -1,0 +1,74 @@
+{# Scene Switcher — shown only for Stage_Manager role_type users.
+   Dropdown button for the top navbar. Works in any layout.
+   Requires: is_sm_user, current_user_identity (injected by inject_nav_context). #}
+{% if is_sm_user %}
+<div class="relative" id="by-scene-wrap">
+  <button id="by-scene-btn"
+          onclick="document.getElementById('by-scene-menu').classList.toggle('hidden')"
+          style="display:flex;align-items:center;gap:8px;padding:6px 12px;
+                 border:var(--by-bd-thick);background:var(--by-bg);cursor:pointer;
+                 font-family:var(--by-f-mono);font-size:11px;letter-spacing:.12em;
+                 text-transform:uppercase;color:var(--by-ink);white-space:nowrap;">
+    SWITCH!
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"
+         style="flex-shrink:0;" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+    </svg>
+  </button>
+
+  <div id="by-scene-menu" class="hidden"
+       style="position:absolute;right:0;top:calc(100% + 4px);min-width:172px;
+              background:var(--by-bg);border:var(--by-bd-thick);
+              box-shadow:var(--by-sh-1);z-index:200;">
+    <p style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.14em;
+              text-transform:uppercase;color:var(--by-ink-3);padding:10px 12px 6px;">
+      Switch scene
+    </p>
+    <a href="/switch-view/stage_manager" id="by-scene-studio"
+       style="display:flex;align-items:center;gap:10px;padding:8px 12px 8px 12px;
+              font-family:var(--by-f-body);font-size:13px;text-decoration:none;
+              color:var(--by-ink-2);
+              {% if current_user_identity == 'stage_manager' %}font-weight:700;background:var(--by-bg-2);{% endif %}">
+      <span style="width:6px;height:6px;flex-shrink:0;background:var(--by-yes);"></span>
+      Studio
+      {% if current_user_identity == 'stage_manager' %}
+      <span style="margin-left:auto;font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">NOW</span>
+      {% endif %}
+    </a>
+    <a href="/switch-view/teacher" id="by-scene-ensemble"
+       style="display:flex;align-items:center;gap:10px;padding:8px 12px 8px 12px;
+              font-family:var(--by-f-body);font-size:13px;text-decoration:none;
+              color:var(--by-ink-2);
+              {% if current_user_identity == 'teacher' %}font-weight:700;background:var(--by-bg-2);{% endif %}">
+      <span style="width:6px;height:6px;flex-shrink:0;background:var(--by-yes);"></span>
+      Ensemble Room
+      {% if current_user_identity == 'teacher' %}
+      <span style="margin-left:auto;font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">NOW</span>
+      {% endif %}
+    </a>
+  </div>
+</div>
+<script>
+(function(){
+  var studio   = document.getElementById('by-scene-studio');
+  var ensemble = document.getElementById('by-scene-ensemble');
+  var studioBase   = studio   ? studio.style.background   : '';
+  var ensembleBase = ensemble ? ensemble.style.background : '';
+  if (studio) {
+    studio.onmouseover = function(){ this.style.background = 'var(--by-bg-2)'; };
+    studio.onmouseout  = function(){ this.style.background = studioBase; };
+  }
+  if (ensemble) {
+    ensemble.onmouseover = function(){ this.style.background = 'var(--by-bg-2)'; };
+    ensemble.onmouseout  = function(){ this.style.background = ensembleBase; };
+  }
+  document.addEventListener('click', function(e){
+    var wrap = document.getElementById('by-scene-wrap');
+    var menu = document.getElementById('by-scene-menu');
+    if (wrap && menu && !wrap.contains(e.target)){
+      menu.classList.add('hidden');
+    }
+  });
+})();
+</script>
+{% endif %}

@@ -1,0 +1,108 @@
+{#
+  _sidebar.html — BigYes primary navigation sidebar (canonical, shared partial)
+  ============================================================
+  Include this in any Stage Manager page:
+    {% include 'partials/_sidebar.html' %}
+
+  Context variables (all injected by context_processor — no manual passing needed):
+    request.path         — active-link detection
+    is_stage_manager     — controls Backstage section visibility
+    can_view_finances    — controls Finances link
+    shows                — optional list; first item shown in "Tonight" card
+#}
+
+<aside id="main-sidebar"
+       class="hidden lg:flex lg:flex-col border-r hairline sticky top-0 h-screen overflow-y-auto"
+       style="background:var(--by-bg);">
+
+  {# ── Wordmark ── #}
+  <div class="px-5 pt-6 pb-5">
+    <a href="/" class="by-display" style="font-size:22px;color:var(--by-ink);text-decoration:none;line-height:1;">
+      Big<span class="by-yes-block" style="font-size:20px;padding:0 10px 3px;">Yes</span>
+    </a>
+    <div class="by-eyebrow mt-2">Studio · BCN</div>
+  </div>
+
+  {# ── Org box ── #}
+  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2" style="border:var(--by-bd);background:var(--by-bg-2);">
+    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0"
+          style="background:var(--by-yes);border:var(--by-bd);font-family:var(--by-f-mono);font-size:9px;font-weight:700;color:var(--by-ink);">BIG</span>
+    <div class="flex-1 min-w-0 overflow-hidden">
+      <div class="text-[12.5px] truncate block w-full" style="font-family:var(--by-f-sans);font-weight:700;color:var(--by-ink);">Barcelona Improv Group</div>
+      <div class="by-eyebrow truncate block w-full">Stage Manager workspace</div>
+    </div>
+  </div>
+
+  {# ── Primary nav ── #}
+  <nav id="sidebar-nav" class="px-3 flex-1">
+
+    <div class="by-eyebrow px-2 pt-2 pb-1">Stage</div>
+
+    <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      Dashboard
+    </a>
+    <a href="/performers" class="nav-item {% if request.path == '/performers' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5"/><circle cx="17" cy="9" r="2.4"/><path d="M15 20c.3-2.5 1.8-4 3.5-4 1.2 0 2.2.6 2.5 1.5"/></svg>
+      Performers
+    </a>
+    <a href="/classes" class="nav-item {% if request.path == '/classes' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
+      Classes &amp; Cohorts
+    </a>
+    <a href="/backstage/shows" class="nav-item {% if request.path == '/backstage/shows' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4M2 10h20"/><path d="M8 15h4M8 18h2"/></svg>
+      Shows &amp; Bookings
+    </a>
+
+    <div class="by-eyebrow px-2 pt-5 pb-1">Backstage</div>
+
+<a href="/backstage/scene-library" class="nav-item {% if request.path == '/backstage/scene-library' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M3 12h18"/></svg>
+      Scene Library
+    </a>
+    {% if can_view_finances %}
+    <a href="/backstage/activity-log" class="nav-item {% if request.path == '/backstage/activity-log' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      Activity Log
+    </a>
+    <a href="/backstage/callboard" class="nav-item {% if request.path == '/backstage/callboard' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v13H4z"/><path d="M4 4l8 8.5L20 4"/></svg>
+      Callboard
+    </a>
+    <a href="/backstage/finances" class="nav-item {% if request.path == '/backstage/finances' %}active{% endif %}"
+       style="color:var(--by-yes-deep);font-weight:700;">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      Finances
+      <span class="ml-auto text-[9px] font-mono px-1.5 py-0.5 border"
+            style="background:var(--by-yes);border-color:var(--by-ink);color:var(--by-ink);">✦</span>
+    </a>
+    <a href="/backstage/reports" class="nav-item {% if request.path == '/backstage/reports' %}active{% endif %}">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      Reports
+    </a>
+    {% endif %}
+
+  </nav>
+
+  {# ── Recent activity feed ── #}
+  {% if recent_activity %}
+  <div class="mx-3 mb-3" style="border-left: 3px solid var(--by-yes); background: var(--by-night); padding: 10px 12px 10px 11px;">
+    <div class="by-eyebrow mb-2" style="color: var(--by-night-on); letter-spacing: 0.12em;">Recent activity</div>
+    {% for item in recent_activity %}
+    <div class="{% if not loop.last %}mb-2{% endif %}">
+      <span style="font-family: var(--by-f-body); font-size: 12px; font-weight: 600; color: var(--by-yes);">{{ item.actor_name }}</span>
+      <span style="font-family: var(--by-f-body); font-size: 12px; color: var(--by-night-on); line-height: 1.4; display: block;">{{ item.message }}</span>
+    </div>
+    {% endfor %}
+    <a href="/backstage/activity-log"
+       style="display: block; margin-top: 9px; font-family: var(--by-f-mono); font-size: 10px;
+              letter-spacing: 0.1em; text-transform: uppercase; color: var(--by-yes);
+              text-decoration: none; opacity: 0.8;"
+       onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+      View all logs →
+    </a>
+  </div>
+  {% endif %}
+
+</aside>

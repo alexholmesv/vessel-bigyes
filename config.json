@@ -1,0 +1,26 @@
+{
+  "archetype": "school",
+  "display_name": "School / Theater",
+  "description": "BigYes boilerplate — class scheduling, student management, and subscription MRR trackers. Supports conditional Multi-Role Views.",
+  "supports_multirole": true,
+  "identity_types": ["owner", "manager", "teacher", "student"],
+  "default_config": {
+    "use_multirole_views": false,
+    "features": {
+      "financial_ledger": true,
+      "client_crud": true,
+      "class_scheduling": true,
+      "belt_system": false,
+      "email_notifications": true,
+      "google_drive_backup": false
+    }
+  },
+  "nav_items": {
+    "owner":   ["dashboard", "students", "classes", "financials", "settings"],
+    "manager": ["dashboard", "students", "classes", "settings"],
+    "teacher": ["dashboard", "classes"],
+    "student": ["dashboard"]
+  },
+  "color_primary": "indigo",
+  "version": "1.0.0"
+}

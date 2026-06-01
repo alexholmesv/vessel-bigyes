@@ -1,0 +1,21 @@
+{% if recent_activity %}
+<div style="
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 260px;
+    background: var(--by-bg);
+    border: var(--by-bd-thick);
+    box-shadow: var(--by-sh-1);
+    z-index: 40;
+    padding: 10px 14px 12px;">
+  <p class="by-eyebrow" style="margin-bottom: 8px; color: var(--by-ink-3);">Recent activity</p>
+  {% for item in recent_activity %}
+  <p style="font-family: var(--by-f-body); font-size: 12.5px; color: var(--by-ink-2);
+            line-height: 1.45; {% if not loop.last %}margin-bottom: 5px;{% endif %}">
+    <span style="font-weight: 600; color: var(--by-ink);">{{ item.actor_name }}</span>
+    {{ item.message }}.
+  </p>
+  {% endfor %}
+</div>
+{% endif %}

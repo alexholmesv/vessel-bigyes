@@ -1,0 +1,632 @@
+{% extends "backstage_layout.html" %}
+
+{% block page_title %}Callboard{% endblock %}
+
+{% block page_header %}
+<header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+  <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
+    <div class="min-w-0">
+      <div class="by-eyebrow mb-1">Backstage</div>
+      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+        The <span class="by-yes-block">Callboard</span>
+      </h1>
+    </div>
+    <div class="ml-auto flex items-center gap-3 flex-shrink-0 pt-1">
+      <span style="font-family:var(--by-f-mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+                   display:inline-block;padding:2px 8px;
+                   background:var(--by-yes);color:var(--by-ink);" class="hidden lg:inline-block">Restricted</span>
+      {% include 'partials/_header_user_pill.html' %}
+    </div>
+  </div>
+</header>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .by-input, .by-select, .by-textarea {
+    width:100%; background:var(--by-bg); border:var(--by-bd-thick);
+    color:var(--by-ink); font-family:var(--by-f-body); font-size:14px;
+    padding:10px 14px; outline:none; transition:box-shadow 120ms;
+    appearance:none; -webkit-appearance:none; background-image:none !important;
+  }
+  .by-input:focus, .by-select:focus, .by-textarea:focus { box-shadow:var(--by-sh-yes); }
+  .by-textarea { resize:vertical; min-height:200px; line-height:1.6; }
+
+  /* ── Overlay select — BigYes-styled face + invisible native select on top ── */
+  .by-so-wrap { position:relative; }
+  .by-so-face {
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    background:var(--by-bg); border:1.5px solid var(--by-ink);
+    color:var(--by-ink); font-family:var(--by-f-body); font-size:14px;
+    padding:10px 14px; pointer-events:none; line-height:1.4;
+  }
+  .by-so-label { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .by-so-chevron { color:var(--by-ink-3); font-size:11px; flex-shrink:0; }
+  .by-so-wrap:focus-within .by-so-face { box-shadow:4px 4px 0 0 var(--by-yes); }
+  .by-so-wrap select {
+    position:absolute; inset:0; width:100%; height:100%;
+    opacity:0; cursor:pointer; z-index:1;
+  }
+
+  .by-btn-primary {
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--by-yes); border:var(--by-bd-thick); color:var(--by-ink);
+    font-family:var(--by-f-sans); font-size:13.5px; font-weight:700;
+    padding:10px 20px; cursor:pointer; letter-spacing:.02em; white-space:nowrap;
+    transition:box-shadow 120ms, transform 100ms;
+  }
+  .by-btn-primary:hover:not(:disabled) { box-shadow:var(--by-sh-1); transform:translate(-1px,-1px); }
+  .by-btn-primary:active:not(:disabled) { box-shadow:none; transform:translate(0,0); }
+  .by-btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+
+  .cb-badge {
+    display:inline-block; font-family:var(--by-f-mono); font-size:9px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; padding:2px 8px; border:var(--by-bd); white-space:nowrap;
+  }
+  .cb-badge-sent    { background:#2A8A4F; color:#fff; border-color:#1D6138; }
+  .cb-badge-pending { background:var(--by-yes); color:var(--by-ink); }
+  .cb-badge-failed  { background:var(--by-tomato); color:#fff; border-color:#B83218; }
+
+  .log-row {
+    display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start;
+    padding:12px 16px; border-bottom:var(--by-bd-soft); transition:background 100ms;
+    cursor:pointer;
+  }
+  .log-row:last-child { border-bottom:none; }
+  .log-row:hover { background:var(--by-yes-soft); }
+
+  /* Student search dropdown */
+  .cb-search-drop {
+    position:absolute; left:0; right:0; top:100%; z-index:60;
+    background:var(--by-bg); border:var(--by-bd-thick); border-top:none;
+    max-height:220px; overflow-y:auto; box-shadow:var(--by-sh-1);
+  }
+  .cb-search-row {
+    padding:10px 14px; cursor:pointer; border-bottom:1px solid var(--by-bg-3);
+    transition:background 80ms;
+  }
+  .cb-search-row:last-child { border-bottom:none; }
+  .cb-search-row:hover { background:var(--by-yes-soft); }
+
+  /* Selected target chip */
+  .cb-target-chip {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 10px; border:var(--by-bd-thick); background:var(--by-yes);
+    font-family:var(--by-f-mono); font-size:11px; font-weight:700;
+    letter-spacing:.06em; color:var(--by-ink); margin-top:8px;
+  }
+
+  /* Right-slide detail drawer */
+  .by-log-overlay {
+    display:none; position:fixed; inset:0; z-index:49; background:rgba(20,18,16,.45);
+  }
+  .by-log-overlay.open { display:block; }
+  .by-log-drawer {
+    position:fixed; top:0; right:0; bottom:0; z-index:50;
+    width:min(560px,100vw); display:flex; flex-direction:column;
+    background:var(--by-bg); border-left:var(--by-bd-thick);
+    transform:translateX(100%);
+    transition:transform 240ms cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;
+  }
+  .by-log-drawer.open { transform:translateX(0); }
+
+  .thread-row { padding:10px 0; border-bottom:1px solid var(--by-bg-3); }
+  .thread-row:last-child { border-bottom:none; }
+  .reply-item { margin-top:8px; padding:8px 12px; background:var(--by-bg-2); border-left:3px solid var(--by-yes); }
+
+  .read-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .read-dot.read   { background:#2A8A4F; }
+  .read-dot.unread { background:var(--by-bg-3); border:1px solid var(--by-ink-4); }
+
+  #cb-toast {
+    position:fixed; bottom:28px; right:28px; z-index:999;
+    min-width:260px; max-width:420px; border:var(--by-bd-thick);
+    padding:13px 18px; font-family:var(--by-f-body); font-size:13px; font-weight:600;
+    box-shadow:var(--by-sh-1); transition:opacity 200ms, transform 200ms;
+    opacity:0; transform:translateY(8px); pointer-events:none;
+  }
+  #cb-toast.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+  #cb-toast.ok  { background:var(--by-yes); color:var(--by-ink); }
+  #cb-toast.err { background:var(--by-tomato); color:#fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="flex-1 px-4 lg:px-7 py-6 lg:py-8">
+
+  <div class="mb-6">
+    <p class="text-[13px]" style="color:var(--by-ink-3);">
+      Dispatch directives to your cast. No projecting — the mic is already hot. Messages land in every inbox simultaneously, whether they're ready or not.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+
+    <!-- ── Directives Composer ── -->
+    <section style="border:var(--by-bd-thick);background:var(--by-bg);">
+      <header class="px-5 py-4 flex items-center gap-3" style="border-bottom:var(--by-bd);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             style="width:17px;height:17px;flex-shrink:0;">
+          <path d="M4 4h16v13H4z"/><path d="M4 4l8 8.5L20 4"/>
+        </svg>
+        <div>
+          <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">The Directives Composer</div>
+          <div class="by-eyebrow mt-0.5">Write · Target · Broadcast · Hope for the best</div>
+        </div>
+      </header>
+
+      <form id="blastForm" class="px-5 py-5 flex flex-col gap-5">
+        <!-- Hidden field carries the actual target value for the API -->
+        <input type="hidden" id="targetGroup" value="{{ 'u' + preset_member.id if preset_member else 'all_members' }}" />
+
+        <div>
+          <label class="by-eyebrow block mb-2">Audience</label>
+
+          <!-- Selected target chip -->
+          <div id="cb-target-chip" class="cb-target-chip" style="display:{% if preset_member %}inline-flex{% else %}none{% endif %};">
+            <span id="cb-target-label">{% if preset_member %}{{ preset_member.name }}{% else %}—{% endif %}</span>
+            <button type="button" onclick="clearTarget()"
+              style="background:none;border:none;cursor:pointer;color:var(--by-ink);font-size:14px;line-height:1;padding:0;">×</button>
+          </div>
+
+          <!-- 1. Student search -->
+          <div class="mt-2 mb-3">
+            <div class="by-eyebrow mb-1.5">Find a student</div>
+            <div class="relative">
+              <input id="cb-student-search" type="text" class="by-input"
+                     placeholder="Type name or email…"
+                     autocomplete="off"
+                     oninput="cbSearchStudents(this.value)"
+                     onblur="setTimeout(cbHideDrop,160)" />
+              <div id="cb-student-drop" class="cb-search-drop hidden"></div>
+            </div>
+          </div>
+
+          <!-- 2. Class selector -->
+          <div>
+            <div class="by-eyebrow mb-1.5">Or message a class</div>
+            <div class="by-select-wrap">
+              <select id="cb-class-select" onchange="cbSelectClass(this)"
+                      style="width:100%;">
+                <option value="">— Select a class —</option>
+                {% for cls in all_classes %}
+                <option value="{{ cls.id }}">{{ cls.title }} · {{ cls.schedule }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- 3. Global broadcast -->
+          <div class="mt-3">
+            <div class="by-eyebrow mb-1.5">Or broadcast to everyone</div>
+            <div class="flex gap-2 flex-wrap">
+              <button type="button" onclick="cbSelectTarget('all_members','📣 All Members')"
+                class="px-3 py-1.5 text-[12px] font-semibold"
+                style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);cursor:pointer;font-family:var(--by-f-body);">
+                📣 All Members
+              </button>
+              <button type="button" onclick="cbSelectTarget('all_students','🎭 All Students')"
+                class="px-3 py-1.5 text-[12px] font-semibold"
+                style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);cursor:pointer;font-family:var(--by-f-body);">
+                🎭 All Students
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="by-eyebrow block mb-2" for="subject">Subject Line</label>
+          <input id="subject" type="text" class="by-input"
+                 placeholder="e.g. Rehearsal moved — read the room" required />
+        </div>
+
+        <div>
+          <label class="by-eyebrow block mb-2" for="messageBody">Scene Directions</label>
+          <textarea id="messageBody" class="by-textarea"
+                    placeholder="Write your message here. No projecting — the mic is hot."></textarea>
+        </div>
+
+        <div class="flex items-center gap-4 pt-1">
+          <button type="submit" id="blastBtn" class="by-btn-primary">
+            📣 Broadcast Scene Directions
+          </button>
+          <span id="blastSpinner" class="hidden by-eyebrow" style="color:var(--by-ink-3);">Dispatching…</span>
+        </div>
+      </form>
+    </section>
+
+    <!-- ── Transmission Log ── -->
+    <section id="logPanel" style="border:var(--by-bd-thick);background:var(--by-bg);">
+      <header class="px-5 py-4 flex items-center justify-between gap-3" style="border-bottom:var(--by-bd);">
+        <div class="flex items-center gap-3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               style="width:17px;height:17px;flex-shrink:0;">
+            <path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>
+          </svg>
+          <div>
+            <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">Transmission Log</div>
+            <div class="by-eyebrow mt-0.5">What was said when everyone thought they were off mic</div>
+          </div>
+        </div>
+        <span class="by-eyebrow">{{ mail_logs | length }} entries</span>
+      </header>
+
+      <div id="logList" style="max-height:560px;overflow-y:auto;">
+        {% if mail_logs %}
+          {% for log in mail_logs %}
+          <div class="log-row" data-log-id="{{ log.id }}" onclick="openLogDetail({{ log.id }})">
+            <div class="min-w-0">
+              <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">
+                {% if log.recipient_name %}
+                  👤 {{ log.recipient_name }}
+                {% elif log.recipient_group == 'all_members' %}
+                  📣 All Members
+                {% elif log.recipient_group == 'all_students' %}
+                  🎭 All Students
+                {% elif log.recipient_group and log.recipient_group.startswith('c') %}
+                  📚 Cohort {{ log.recipient_group | upper }}
+                {% else %}
+                  {{ log.recipient_group or '—' }}
+                {% endif %}
+              </div>
+              <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">{{ log.subject }}</div>
+              <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">
+                {{ log.sender_name }} · {{ log.created_at[:16] | replace('T',' ') }}
+              </div>
+            </div>
+            <div class="flex-shrink-0 pt-0.5 flex flex-col items-end gap-1.5">
+              {% if log.status == 'sent' %}
+                <span class="cb-badge cb-badge-sent">Delivered</span>
+              {% elif log.status == 'pending' %}
+                <span class="cb-badge cb-badge-pending">On Stage</span>
+              {% else %}
+                <span class="cb-badge cb-badge-failed">Trainwreck</span>
+              {% endif %}
+              <span style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">View →</span>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="px-6 py-14 text-center">
+            <div class="by-display text-[20px] mb-2" style="color:var(--by-ink-4);">( silence )</div>
+            <div class="text-[13px]" style="color:var(--by-ink-4);">No transmissions yet. The booth awaits its first broadcast.</div>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div id="cb-toast"></div>
+
+<!-- ── Message Detail Drawer ── -->
+<div id="log-overlay" class="by-log-overlay" onclick="closeLogDetail()"></div>
+<div id="log-drawer" class="by-log-drawer">
+
+  <!-- Drawer header -->
+  <div class="px-5 py-4 flex items-start justify-between gap-4 flex-shrink-0"
+       style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
+    <div class="min-w-0">
+      <div class="by-eyebrow mb-0.5">Transmission Detail</div>
+      <div id="drawerSubject" class="by-display text-[22px] leading-tight" style="color:var(--by-ink);">—</div>
+    </div>
+    <button onclick="closeLogDetail()" class="flex-shrink-0 w-9 h-9 flex items-center justify-center mt-0.5"
+            style="border:var(--by-bd-thick);background:var(--by-bg);">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Drawer body -->
+  <div id="drawerBody" class="flex-1 px-5 py-5 flex flex-col gap-5">
+    <div class="py-8 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // ── Audience: member data ─────────────────────────────────────────────
+  const CB_MEMBERS = [
+    {% for m in all_members %}
+    {"id":{{ m.id | tojson }},"name":{{ m.name | tojson }},"email":{{ (m.email or '') | tojson }},"identity":{{ (m.identity or '') | tojson }}}{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  function cbEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  function cbSelectTarget(id, label) {
+    document.getElementById('targetGroup').value = id;
+    document.getElementById('cb-target-label').textContent = label;
+    document.getElementById('cb-target-chip').style.display = 'inline-flex';
+    // Reset class select
+    const cls = document.getElementById('cb-class-select');
+    if (cls) cls.value = '';
+  }
+
+  window.clearTarget = function() {
+    document.getElementById('targetGroup').value = '';
+    document.getElementById('cb-target-chip').style.display = 'none';
+    const cls = document.getElementById('cb-class-select');
+    if (cls) cls.value = '';
+  };
+
+  window.cbSelectClass = function(sel) {
+    if (!sel.value) return;
+    const label = sel.options[sel.selectedIndex].text;
+    cbSelectTarget(sel.value, '📚 ' + label);
+  };
+
+  function cbHideDrop() {
+    const d = document.getElementById('cb-student-drop');
+    if (d) d.classList.add('hidden');
+  }
+
+  window.cbSearchStudents = function(query) {
+    const drop = document.getElementById('cb-student-drop');
+    if (!drop) return;
+    const q = query.trim().toLowerCase();
+    if (!q) { drop.classList.add('hidden'); drop.innerHTML = ''; return; }
+
+    const results = CB_MEMBERS.filter(m =>
+      m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q)
+    ).slice(0, 12);
+
+    if (!results.length) {
+      drop.innerHTML = `<div class="cb-search-row by-eyebrow" style="color:var(--by-ink-4);">No members found.</div>`;
+      drop.classList.remove('hidden');
+      return;
+    }
+
+    drop.innerHTML = results.map(m => {
+      const roleColor = m.identity === 'stage_manager'
+        ? 'background:var(--by-yes);color:var(--by-ink);'
+        : m.identity === 'teacher'
+          ? 'background:#E0EEE8;color:#1D6138;'
+          : 'background:var(--by-bg-3);color:var(--by-ink-3);';
+      return `<div class="cb-search-row" onmousedown="cbPickStudent('${cbEsc(m.id)}','${cbEsc(m.name)}','${cbEsc(m.email)}')">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <div style="font-family:var(--by-f-sans);font-weight:600;font-size:13px;color:var(--by-ink);">${cbEsc(m.name)}</div>
+            <div style="font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-4);">${cbEsc(m.email)}</div>
+          </div>
+          <span style="font-family:var(--by-f-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;flex-shrink:0;${roleColor}">${cbEsc(m.identity.replace(/_/g,' '))}</span>
+        </div>
+      </div>`;
+    }).join('');
+    drop.classList.remove('hidden');
+  };
+
+  window.cbPickStudent = function(id, name, email) {
+    cbSelectTarget(id, `👤 ${name}`);
+    const search = document.getElementById('cb-student-search');
+    const drop   = document.getElementById('cb-student-drop');
+    if (search) search.value = name;
+    if (drop)   drop.classList.add('hidden');
+  };
+
+  // Legacy compat (no longer used but kept for safety)
+  function bySoSync(sel) {}
+  document.addEventListener('DOMContentLoaded', function () {});
+
+  const toast = document.getElementById('cb-toast');
+  let toastTimer;
+  function showToast(msg, type) {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = `show ${type}`;
+    toastTimer = setTimeout(() => { toast.className = ''; }, 4200);
+  }
+
+  function prependLogRow(log) {
+    const logList = document.getElementById('logList');
+    const empty = logList.querySelector('.px-6.py-14');
+    if (empty) empty.remove();
+    const row = document.createElement('div');
+    row.className = 'log-row';
+    let lbl = log.target;
+    if (lbl === 'all_members') lbl = '📣 All Members';
+    else if (lbl === 'all_students') lbl = '🎭 All Students';
+    else if (lbl.startsWith('c')) lbl = '📚 Cohort ' + lbl.toUpperCase();
+    else if (lbl.startsWith('u')) lbl = '👤 ' + lbl;
+    const now = new Date().toISOString().slice(0,16).replace('T',' ');
+    row.innerHTML = `
+      <div class="min-w-0">
+        <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">${lbl}</div>
+        <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(log.subject)}</div>
+        <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">You · ${now}</div>
+      </div>
+      <div class="flex-shrink-0 pt-0.5 flex flex-col items-end gap-1.5">
+        <span class="cb-badge cb-badge-pending">On Stage</span>
+        <span style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">View →</span>
+      </div>`;
+    if (log.id) row.dataset.logId = log.id;
+    logList.insertAdjacentElement('afterbegin', row);
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  async function refreshClassOptions() {
+    try {
+      const res  = await fetch('/api/classes');
+      const data = await res.json();
+      if (!data.ok) return;
+      const sel = document.getElementById('targetGroup');
+      const existing = sel.querySelector('optgroup[label="Class Cohorts"]');
+      if (existing) existing.remove();
+      if (data.classes && data.classes.length) {
+        const grp = document.createElement('optgroup');
+        grp.label = 'Class Cohorts';
+        data.classes.forEach(cls => {
+          const opt = document.createElement('option');
+          opt.value = cls.id;
+          opt.textContent = `${cls.title} — ${cls.schedule}`;
+          grp.appendChild(opt);
+        });
+        const individualGrp = sel.querySelector('optgroup[label="Individual"]');
+        sel.insertBefore(grp, individualGrp);
+      }
+    } catch { /* silently ignore — stale options are non-critical */ }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refreshClassOptions();
+  });
+
+  // ── Log Detail Drawer ────────────────────────────────────────────────
+  function openLogDetail(logId) {
+    const overlay = document.getElementById('log-overlay');
+    const drawer  = document.getElementById('log-drawer');
+    const body    = document.getElementById('drawerBody');
+    const subject = document.getElementById('drawerSubject');
+
+    subject.textContent = '—';
+    body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>';
+    overlay.classList.add('open');
+    drawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    fetch(`/api/comms/log/${logId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok || !data.log) { body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-tomato);">Could not load message.</div>'; return; }
+        const log = data.log;
+        subject.textContent = log.subject || '(no subject)';
+
+        const threads = log.threads || [];
+        const totalRecip  = threads.length;
+        const readCount   = threads.filter(t => t.is_read).length;
+        const replyCount  = threads.reduce((sum, t) => sum + (t.replies?.length || 0), 0);
+        const unreadCount = totalRecip - readCount;
+
+        // KPI strip
+        const kpiHtml = `
+          <div class="grid grid-cols-3 gap-2">
+            <div style="border:var(--by-bd);background:var(--by-bg-2);padding:10px 14px;">
+              <div class="by-eyebrow">Recipients</div>
+              <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">${totalRecip}</div>
+            </div>
+            <div style="border:var(--by-bd);background:${readCount > 0 ? 'var(--by-yes-soft)' : 'var(--by-bg-2)'};padding:10px 14px;">
+              <div class="by-eyebrow">Read</div>
+              <div class="font-display text-[26px] leading-none mt-1" style="color:${readCount > 0 ? '#2A8A4F' : 'var(--by-ink-4)'};">${readCount}</div>
+            </div>
+            <div style="border:var(--by-bd);background:${replyCount > 0 ? 'var(--by-yes-soft)' : 'var(--by-bg-2)'};padding:10px 14px;">
+              <div class="by-eyebrow">Replies</div>
+              <div class="font-display text-[26px] leading-none mt-1" style="color:${replyCount > 0 ? 'var(--by-yes-deep)' : 'var(--by-ink-4)'};">${replyCount}</div>
+            </div>
+          </div>`;
+
+        // Meta
+        const metaHtml = `
+          <div style="border:var(--by-bd);background:var(--by-bg-2);padding:12px 16px;">
+            <div class="flex items-center gap-3 flex-wrap">
+              <div>
+                <div class="by-eyebrow">From</div>
+                <div class="text-[14px] font-semibold mt-0.5" style="color:var(--by-ink);">${esc(log.sender_name || '—')}</div>
+              </div>
+              <div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;">
+                <div class="by-eyebrow">Sent</div>
+                <div class="text-[13px] font-mono mt-0.5" style="color:var(--by-ink-3);">${(log.created_at||'').slice(0,16).replace('T',' ')}</div>
+              </div>
+              ${log.recipient_name ? `<div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;"><div class="by-eyebrow">To</div><div class="text-[14px] font-semibold mt-0.5" style="color:var(--by-ink);">${esc(log.recipient_name)}</div></div>` : ''}
+              ${log.recipient_group && !log.recipient_name ? `<div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;"><div class="by-eyebrow">Audience</div><div class="text-[13px] font-mono mt-0.5" style="color:var(--by-ink-3);">${esc(log.recipient_group)}</div></div>` : ''}
+            </div>
+          </div>`;
+
+        // Message body
+        const msgHtml = `
+          <div>
+            <div class="by-eyebrow mb-2">Message</div>
+            <div style="border:var(--by-bd);background:var(--by-bg);padding:16px;font-size:14px;line-height:1.7;color:var(--by-ink-2);white-space:pre-wrap;">${esc(log.body || '')}</div>
+          </div>`;
+
+        // Recipient threads
+        let threadsHtml = '';
+        if (threads.length) {
+          const rows = threads.map(t => {
+            const replies = (t.replies || []).map(r => `
+              <div class="reply-item mt-2">
+                <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">${esc(r.sender_name)} replied</div>
+                <div class="text-[13px]" style="color:var(--by-ink-2);">${esc(r.body)}</div>
+                <div class="by-eyebrow mt-1" style="font-size:9.5px;">${(r.created_at||'').slice(0,16).replace('T',' ')}</div>
+              </div>`).join('');
+            return `
+              <div class="thread-row">
+                <div class="flex items-center gap-2.5">
+                  <span class="read-dot ${t.is_read ? 'read' : 'unread'}"></span>
+                  <span class="text-[13.5px] font-semibold" style="color:var(--by-ink);">${esc(t.recipient_name || t.member_id)}</span>
+                  <span class="by-eyebrow ml-auto">${t.is_read ? 'Read' : 'Unread'}${t.replies?.length ? ` · ${t.replies.length} repl${t.replies.length===1?'y':'ies'}` : ''}</span>
+                </div>
+                ${replies}
+              </div>`;
+          }).join('');
+          threadsHtml = `
+            <div>
+              <div class="by-eyebrow mb-2">Recipients (${totalRecip} · ${readCount} read · ${replyCount} repl${replyCount===1?'y':'ies'})</div>
+              <div style="border:var(--by-bd);">${rows}</div>
+            </div>`;
+        }
+
+        body.innerHTML = kpiHtml + metaHtml + msgHtml + (threadsHtml || '');
+      })
+      .catch(() => {
+        body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-tomato);">Network error loading message details.</div>';
+      });
+  }
+
+  function closeLogDetail() {
+    document.getElementById('log-overlay').classList.remove('open');
+    document.getElementById('log-drawer').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Also allow newly prepended rows to be clickable
+  document.getElementById('logList').addEventListener('click', function(e) {
+    const row = e.target.closest('.log-row[data-log-id]');
+    if (row && row.dataset.logId) openLogDetail(parseInt(row.dataset.logId));
+  });
+
+  document.getElementById('blastForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn     = document.getElementById('blastBtn');
+    const spinner = document.getElementById('blastSpinner');
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+    const targetVal = document.getElementById('targetGroup').value.trim();
+    if (!targetVal) {
+      showToast('Select an audience first — who should receive this?', 'err');
+      btn.disabled = false; spinner.classList.add('hidden');
+      return;
+    }
+    const payload = {
+      target_group: targetVal,
+      subject:      document.getElementById('subject').value.trim(),
+      message_body: document.getElementById('messageBody').value.trim(),
+    };
+    try {
+      const res  = await fetch('/api/comms/send-blast', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok && data.status === 'yes_and') {
+        showToast(`Yes, And… ${data.count} scroll(s) dispatched!`, 'ok');
+        prependLogRow({ target:payload.target_group, subject:payload.subject, id:data.log_id });
+        this.reset();
+        clearTarget();
+        const search = document.getElementById('cb-student-search');
+        if (search) search.value = '';
+      } else {
+        showToast(`Stage Fright: ${data.error || 'Unknown failure'}`, 'err');
+      }
+    } catch {
+      showToast('Total Trainwreck — network error. Check the wings.', 'err');
+    } finally {
+      btn.disabled = false;
+      spinner.classList.add('hidden');
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,351 @@
+{# Shows & Bookings section — card renderer, sync handlers, edit wiring.
+   Included by admin.html only when show_section == 'shows_bookings'. #}
+<script>
+(function () {
+  // ─── helpers ──────────────────────────────────────────────────────────────
+  function sbEsc(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  const _MON2 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // ─── render ───────────────────────────────────────────────────────────────
+  function sbRender(shows) {
+    const grid    = document.getElementById('sb-card-grid');
+    const countEl = document.getElementById('sb-count');
+    if (!grid) return;
+    if (countEl) countEl.textContent = shows.length;
+
+    if (!shows.length) {
+      const emptyMsg =
+        _sbFilter === 'past'     ? `The stage is dark. No past shows in the archive yet.` :
+        _sbFilter === 'upcoming' ? `Nothing on deck — click <strong>Sync Shows</strong> to see what's coming.` :
+        `No shows yet — click <strong>Sync Shows</strong> to pull from the live site.`;
+      grid.innerHTML = `<div class="py-12 text-center text-[13px]" style="color:var(--by-ink-4)">${emptyMsg}</div>`;
+      return;
+    }
+
+    grid.innerHTML = shows.map(s => {
+      // ── date badge
+      let mon = '—', dayNum = '—';
+      if (s.date) {
+        const p = s.date.split('-');
+        mon    = _MON2[parseInt(p[1], 10) - 1] || '—';
+        dayNum = parseInt(p[2], 10);
+      }
+
+      // ── booking metrics
+      const cap      = parseInt(s.capacity    || 0);
+      const sold     = parseInt(s.tickets_sold || 0);
+      const hasCap   = cap > 0;
+      // sold=255 with cap=0 is the sentinel written by sync when sold-out but capacity unknown
+      const syncSold = !hasCap && sold > 0;
+      const pct      = hasCap ? Math.min(100, Math.round(sold / cap * 100)) : 0;
+      const soldOut  = (hasCap && sold >= cap) || syncSold;
+      const stripCol = soldOut          ? 'var(--by-tomato)'
+                     : pct >= 75        ? '#E5A800'
+                     : hasCap && pct > 0 ? '#2A8A4F'
+                     : 'var(--by-ink-3)';
+
+      // ── booking badge (top-right of card)
+      const bookingBadge = soldOut
+        ? `<span class="text-[10px] font-black px-2 py-0.5 tracking-wide"
+             style="background:var(--by-tomato);color:#fff;border:1.5px solid var(--by-ink)">SOLD OUT</span>`
+        : hasCap
+          ? `<span class="text-[12px] font-black" style="color:${stripCol}">${pct}%&#8202;
+               <span class="text-[10px] font-mono" style="color:var(--by-ink-3)">${sold}/${cap}</span>
+             </span>`
+          : `<span class="text-[10px]" style="color:var(--by-ink-4)">Set capacity</span>`;
+
+      // ── booking progress bar (only when we have real capacity data)
+      const barHTML = hasCap && !soldOut ? `
+        <div class="mt-2 flex items-center gap-2">
+          <div class="flex-1 h-2 border" style="border-color:var(--by-ink-3);background:var(--by-bg-2);">
+            <div style="width:${pct}%;height:100%;background:${stripCol};transition:width .4s"></div>
+          </div>
+        </div>` : '';
+
+      // ── cost chip
+      const costChip = s.cost
+        ? `<span class="text-[10px] font-bold px-1.5 py-0.5 border"
+             style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-yes)">${sbEsc(s.cost)}</span>`
+        : '';
+
+      // ── revenue override chip (inline, compact)
+      const revChip = s.revenue_override != null
+        ? `<span class="text-[9.5px] px-1.5 py-0.5 border"
+             style="border-color:var(--by-ink-3);color:var(--by-ink-3)">€${parseFloat(s.revenue_override).toFixed(0)} override</span>`
+        : '';
+
+      // ── cast bubbles (up to 6, then overflow count)
+      const cast = s.cast || [];
+      const castRow = cast.length
+        ? cast.slice(0, 6).map(p => {
+            const nm  = p.name || '';
+            const pts = nm.split(' ');
+            const ini = pts.length >= 2
+              ? (pts[0][0] + pts[pts.length-1][0]).toUpperCase()
+              : nm.slice(0,2).toUpperCase();
+            return `<span title="${sbEsc(nm)}"
+              class="w-6 h-6 flex items-center justify-center text-[9px] font-black border shrink-0"
+              style="background:var(--by-yes);border-color:var(--by-ink);color:var(--by-ink)">${sbEsc(ini)}</span>`;
+          }).join('')
+          + (cast.length > 6 ? `<span class="text-[10px] font-semibold" style="color:var(--by-ink-3)">+${cast.length - 6}</span>` : '')
+          + `<span class="text-[10px] ml-0.5" style="color:var(--by-ink-3)">${cast.length} performer${cast.length === 1 ? '' : 's'}</span>`
+        : `<span class="text-[10px]" style="color:var(--by-ink-4)">No performers listed</span>`;
+
+      // ── day abbreviation
+      const dayChip = { Friday:'FRI', Saturday:'SAT', Sunday:'SUN' }[s.day] || (s.day || '—').toUpperCase();
+
+      return `
+        <div class="flex border overflow-hidden"
+          style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:3px 3px 0 0 var(--by-ink);">
+
+          <!-- status strip -->
+          <div class="w-1.5 shrink-0" style="background:${stripCol}"></div>
+
+          <!-- amber date column -->
+          <div class="w-16 shrink-0 flex flex-col items-center justify-center border-r py-4 gap-0"
+            style="background:var(--by-yes);border-color:var(--by-ink)">
+            <div class="text-[9px] font-black uppercase tracking-widest" style="color:var(--by-ink-2)">${sbEsc(String(mon))}</div>
+            <div class="text-[28px] font-black leading-none" style="color:var(--by-ink)">${dayNum}</div>
+            <div class="text-[8px] font-black mt-1 tracking-wider" style="color:var(--by-ink-2)">${dayChip}</div>
+          </div>
+
+          <!-- main content -->
+          <div class="flex-1 min-w-0 px-4 py-3 flex flex-col gap-2">
+
+            <!-- row 1: title + booking badge -->
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="text-[14px] font-black leading-snug" style="color:var(--by-ink)">${sbEsc(s.title)}</div>
+                <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                  <span class="text-[10.5px]" style="color:var(--by-ink-3)">${sbEsc(s.time || '—')}</span>
+                  ${costChip}
+                  ${revChip}
+                </div>
+              </div>
+              <div class="shrink-0 pt-0.5 text-right">${bookingBadge}</div>
+            </div>
+
+            <!-- booking bar -->
+            ${barHTML}
+
+            <!-- row 2: cast + edit button -->
+            <div class="flex items-center justify-between gap-3 mt-0.5">
+              <div class="flex items-center gap-1 flex-wrap min-w-0">${castRow}</div>
+              <button onclick='editShow(${JSON.stringify(s)})'
+                class="shrink-0 px-3 py-1.5 text-[11px] font-bold border flex items-center gap-1.5"
+                style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2);">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
+            </div>
+
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ─── filter state ─────────────────────────────────────────────────────────
+  let _allShows   = [];
+  let _sbFilter   = 'all';
+  const _today    = new Date().toISOString().slice(0, 10);
+
+  function sbApplyFilter() {
+    const filtered =
+      _sbFilter === 'upcoming' ? _allShows.filter(s => !s.date || s.date >= _today) :
+      _sbFilter === 'past'     ? _allShows.filter(s =>  s.date && s.date <  _today) :
+      _allShows;
+    sbRender(filtered);
+    sbUpdateTabs();
+  }
+
+  function sbUpdateTabs() {
+    const upcoming = _allShows.filter(s => !s.date || s.date >= _today).length;
+    const past     = _allShows.filter(s =>  s.date && s.date <  _today).length;
+    const counts   = { all: _allShows.length, upcoming, past };
+    ['all', 'upcoming', 'past'].forEach(f => {
+      const btn   = document.getElementById(`sbtab-${f}`);
+      const badge = document.getElementById(`sbtab-${f}-count`);
+      if (!btn) return;
+      const active = f === _sbFilter;
+      btn.style.background    = active ? 'var(--by-yes)' : 'var(--by-bg-2)';
+      btn.style.color         = active ? 'var(--by-ink)' : 'var(--by-ink-2)';
+      btn.style.borderColor   = active ? 'var(--by-ink)' : 'var(--by-ink-3)';
+      if (badge) badge.textContent = counts[f] != null ? `(${counts[f]})` : '';
+    });
+    const countEl    = document.getElementById('sb-count');
+    const shown      = _sbFilter === 'upcoming' ? upcoming : _sbFilter === 'past' ? past : _allShows.length;
+    if (countEl) countEl.textContent = shown;
+    // update KPI strip
+    const kpiTotal    = document.getElementById('sb-kpi-total');
+    const kpiUpcoming = document.getElementById('sb-kpi-upcoming');
+    const kpiPast     = document.getElementById('sb-kpi-past');
+    if (kpiTotal)    kpiTotal.textContent    = _allShows.length;
+    if (kpiUpcoming) kpiUpcoming.textContent = upcoming;
+    if (kpiPast)     kpiPast.textContent     = past;
+  }
+
+  window.sbSetFilter = function (f) {
+    _sbFilter = f;
+    sbApplyFilter();
+  };
+
+  // ─── load from API ─────────────────────────────────────────────────────────
+  window.sbLoad = async function sbLoad(silent) {
+    try {
+      const res  = await fetch('/api/backstage/shows');
+      const data = await res.json();
+      if (data.ok) {
+        _allShows = data.shows;
+        sbApplyFilter();
+        if (!silent) flashToast(`${data.shows.length} show${data.shows.length === 1 ? '' : 's'} loaded`);
+      } else {
+        flashToast('Could not load shows: ' + (data.error || '?'), 'error');
+      }
+    } catch { flashToast('Network error loading shows.', 'error'); }
+  }
+
+  // ─── Sync Bookings ────────────────────────────────────────────────────────
+  window.sbSyncBookings = async function () {
+    const btn = document.getElementById('btn-sync-bookings');
+    const bar = document.getElementById('sb-status-bar');
+    btn.disabled = true; btn.textContent = 'Syncing…';
+    bar.textContent = 'Checking booking status on barcelonaimprovgroup.com…';
+    bar.classList.remove('hidden'); bar.style.color = 'var(--by-ink-3)';
+    try {
+      const res  = await fetch('/api/shows/sync-booking', { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        const scraped = data.scraped  ?? 0;
+        const matched = data.synced   ?? 0;
+        const so      = data.sold_out ?? 0;
+        const unmatched = scraped - matched;
+        let msg = `✓ Booking sync — ${scraped} event${scraped===1?'':'s'} found on site, ${matched} matched in DB`;
+        if (so > 0)       msg += `, ${so} sold out`;
+        if (unmatched > 0) msg += ` (${unmatched} title${unmatched===1?'':'s'} not matched — try Sync Shows first)`;
+        msg += '.';
+        bar.textContent = msg;
+        bar.style.color = so > 0 ? 'var(--by-tomato)' : '#2A8A4F';
+        flashToast(so > 0 ? `${so} show${so===1?'':'s'} marked sold out.` : 'All matched shows available.');
+        sbLoad(true);
+      } else {
+        bar.textContent = `Sync failed: ${data.error || 'unknown'}`;
+        bar.style.color = 'var(--by-tomato)';
+      }
+    } catch {
+      bar.textContent = 'Network error — sync not completed.';
+      bar.style.color = 'var(--by-tomato)';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg> Sync Bookings`;
+    }
+  };
+
+  // ─── Sync Shows from live site ────────────────────────────────────────────
+  window.sbSyncShows = async function () {
+    const btn = document.getElementById('btn-sb-sync-shows');
+    const bar = document.getElementById('sb-status-bar');
+    btn.disabled = true; btn.textContent = 'Syncing…';
+    bar.textContent = 'Fetching show listings from barcelonaimprovgroup.com…';
+    bar.classList.remove('hidden'); bar.style.color = 'var(--by-ink-3)';
+    try {
+      const res  = await fetch('/api/backstage/box-office/sync', { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        const added   = data.new_instances ?? 0;
+        const scraped = data.scraped       ?? 0;
+        bar.textContent = added > 0
+          ? `✓ ${added} new show${added===1?'':'s'} added (${scraped} found on site).`
+          : `✓ ${scraped} show${scraped===1?'':'s'} found — all already up to date.`;
+        bar.style.color = '#2A8A4F';
+        flashToast(added > 0 ? `${added} new shows added.` : 'Shows up to date.');
+        sbLoad(true);
+      } else {
+        bar.textContent = `Sync failed: ${data.error || 'unknown'}`;
+        bar.style.color = 'var(--by-tomato)';
+      }
+    } catch {
+      bar.textContent = 'Network error — sync not completed.';
+      bar.style.color = 'var(--by-tomato)';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Sync Shows`;
+    }
+  };
+
+  // ─── Edit show — wire up the shared modal with new fields ─────────────────
+  const _origEditShow = window.editShow;
+  window.editShow = function (show) {
+    window._editShowId      = show.id;
+    window._editShowCost    = show.cost            != null ? show.cost            : null;
+    window._editShowRevenue = show.revenue_override != null ? show.revenue_override : null;
+    document.getElementById('esh-title').value        = show.title      || '';
+    document.getElementById('esh-day').value          = show.day        || 'Friday';
+    document.getElementById('esh-date').value         = show.date       || '';
+    document.getElementById('esh-time').value         = show.time       || '';
+    document.getElementById('esh-capacity').value     = show.capacity   || '';
+    document.getElementById('esh-tickets-sold').value = show.tickets_sold || '';
+    document.getElementById('esh-error').textContent  = '';
+    const delBtn = document.getElementById('esh-delete-btn');
+    if (delBtn) delBtn.dataset.title = show.title || '';
+    openModal('modal-edit-show');
+  };
+
+  // ─── Save edit ────────────────────────────────────────────────────────────
+  window.saveEditShow = async function () {
+    const id = window._editShowId;
+    if (!id) return;
+    const body = {
+      title:            document.getElementById('esh-title').value.trim(),
+      day:              document.getElementById('esh-day').value,
+      date:             document.getElementById('esh-date').value.trim(),
+      time:             document.getElementById('esh-time').value.trim(),
+      capacity:         parseInt(document.getElementById('esh-capacity').value || '0') || 0,
+      tickets_sold:     parseInt(document.getElementById('esh-tickets-sold').value || '0') || 0,
+      cost:             window._editShowCost    != null ? window._editShowCost    : null,
+      revenue_override: window._editShowRevenue != null ? window._editShowRevenue : null,
+    };
+    const errEl = document.getElementById('esh-error');
+    if (!body.title || !body.day || !body.time) {
+      errEl.textContent = 'Title, day, and time are required.'; return;
+    }
+    try {
+      const res  = await fetch(`/api/show/update/${id}`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        closeModal('modal-edit-show');
+        flashToast(`"${body.title}" saved.`);
+        window.sbLoad(true);
+      } else { errEl.textContent = data.error || 'Could not save.'; }
+    } catch { errEl.textContent = 'Network error — try again.'; }
+  };
+
+  // ─── Delete from inside edit modal ────────────────────────────────────────
+  window.eshDeleteShow = function () {
+    const id    = window._editShowId;
+    const title = document.getElementById('esh-delete-btn')?.dataset.title
+                  || document.getElementById('esh-title').value || 'this show';
+    closeModal('modal-edit-show');
+    deleteShow(id, title);
+  };
+
+  // ─── Auto-init on page load ───────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('sb-card-grid')) return;
+    if (typeof SB_SHOWS_INIT !== 'undefined') {
+      _allShows = SB_SHOWS_INIT;
+      sbApplyFilter();
+    } else {
+      sbLoad(true);
+    }
+  });
+})();
+</script>

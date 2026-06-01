@@ -1,0 +1,311 @@
+{% extends "backstage_layout.html" %}
+
+{% block page_title %}Money Makes The World Go Round{% endblock %}
+
+{% block page_header %}
+<header class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+  <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
+    <div class="min-w-0">
+      <div class="by-eyebrow mb-1">Backstage · Finance</div>
+      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+        Money makes the world <span class="by-yes-block">go round</span>
+      </h1>
+      <p class="mt-2 text-[13px]" style="color:var(--by-ink-3);">Yes, and… it also pays for the studio. Treat these numbers with the gravity they deserve.</p>
+    </div>
+    <div class="ml-auto flex items-center gap-3 flex-shrink-0 pt-1">
+      <span style="font-family:var(--by-f-mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+                   display:inline-block;padding:2px 8px;
+                   background:var(--by-yes);color:var(--by-ink);" class="hidden lg:inline-block">Restricted ✦</span>
+      {% include 'partials/_header_user_pill.html' %}
+    </div>
+  </div>
+</header>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .by-card {
+    border:1.5px solid var(--by-ink);
+    background:var(--by-bg);
+    box-shadow:var(--by-sh-1);
+  }
+
+  .fin-input {
+    padding:7px 10px; border:var(--by-bd-thick); background:var(--by-bg);
+    font-family:var(--by-f-body); font-size:13px; color:var(--by-ink);
+    outline:none; appearance:none;
+  }
+  .fin-input:focus { box-shadow:0 0 0 2px var(--by-yes); }
+
+  .fin-btn {
+    display:inline-flex; align-items:center;
+    padding:7px 16px; border:var(--by-bd-thick); background:var(--by-yes);
+    font-family:var(--by-f-body); font-size:13px; font-weight:600; color:var(--by-ink);
+    cursor:pointer; text-decoration:none;
+  }
+  .fin-btn:hover { background:var(--by-yes-deep); }
+
+  .fin-btn-ghost {
+    display:inline-flex; align-items:center;
+    padding:7px 14px; border:var(--by-bd-thick); background:transparent;
+    font-family:var(--by-f-body); font-size:13px; font-weight:500; color:var(--by-ink-3);
+    cursor:pointer; text-decoration:none;
+  }
+  .fin-btn-ghost:hover { background:var(--by-bg-3); color:var(--by-ink); }
+
+  .fin-preset-btn {
+    padding:5px 11px; border:var(--by-bd-thick); background:var(--by-bg);
+    font-family:var(--by-f-body); font-size:12px; font-weight:500; color:var(--by-ink-3);
+    cursor:pointer;
+  }
+  .fin-preset-btn:hover, .fin-preset-btn.active {
+    background:var(--by-ink); color:var(--by-bg);
+  }
+
+  .fin-badge-amber {
+    background:var(--by-yes); color:var(--by-ink);
+    font-family:var(--by-f-mono); font-size:9px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; padding:2px 7px;
+  }
+  .fin-badge-tomato {
+    background:var(--by-tomato); color:#fff;
+    font-family:var(--by-f-mono); font-size:9px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; padding:2px 7px;
+  }
+  .fin-badge-green {
+    background:#2A8A4F; color:#fff;
+    font-family:var(--by-f-mono); font-size:9px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; padding:2px 7px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Filter bar ── -->
+<div class="px-4 lg:px-7 py-4 border-b" style="border-color:#D4C9B3;background:var(--by-bg-2);">
+  <form id="fin-filter-form" method="GET" action="/backstage/finances">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <!-- Preset pills -->
+      <div class="flex flex-col gap-1 sm:col-span-2 lg:col-span-2">
+        <span class="by-eyebrow" style="font-size:9.5px;">Quick range</span>
+        <div class="flex gap-1.5 flex-wrap">
+          <button type="button" onclick="finPreset('this_month')"
+                  class="fin-preset-btn h-9 px-3" id="preset-this_month">This month</button>
+          <button type="button" onclick="finPreset('last_month')"
+                  class="fin-preset-btn h-9 px-3" id="preset-last_month">Last month</button>
+          <button type="button" onclick="finPreset('this_year')"
+                  class="fin-preset-btn h-9 px-3" id="preset-this_year">This year</button>
+        </div>
+      </div>
+      <!-- Date pickers -->
+      <div class="flex flex-col gap-1">
+        <label class="by-eyebrow" for="fin-from" style="font-size:9.5px;">From</label>
+        <input id="fin-from" name="date_from" type="date"
+               value="{{ filter_date_from }}" class="fin-input w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="by-eyebrow" for="fin-to" style="font-size:9.5px;">To</label>
+        <input id="fin-to" name="date_to" type="date"
+               value="{{ filter_date_to }}" class="fin-input w-full" />
+      </div>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <button type="submit" class="fin-btn h-10 px-5">Apply</button>
+      {% if filter_date_from or filter_date_to %}
+      <a href="/backstage/finances" class="fin-btn-ghost h-10 px-4 flex items-center">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<main class="max-w-5xl mx-auto px-4 lg:px-6 py-8 lg:py-10">
+
+  <!-- ── Aggregate KPI cards ── -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-10">
+    <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+      <div class="by-eyebrow">Gross Income</div>
+      <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">
+        €{{ "%.2f"|format(total_gross) }}
+      </div>
+      <div class="mt-1 text-[12px]" style="color:var(--by-ink-4);">Classes + Shows</div>
+    </div>
+    <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+      <div class="by-eyebrow">Total Expenses</div>
+      <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-tomato);">
+        €{{ "%.2f"|format(total_expenses) }}
+      </div>
+      <div class="mt-1 text-[12px]" style="color:var(--by-ink-4);">Fees &amp; overheads</div>
+    </div>
+    <div class="border hairline px-3.5 py-2.5" style="background:{{ 'var(--by-yes)' if net_balance >= 0 else 'var(--by-bg)' }};">
+      <div class="by-eyebrow">Net Balance</div>
+      <div class="font-display text-[26px] leading-none mt-1"
+           style="color:{{ '#2A8A4F' if net_balance >= 0 else 'var(--by-tomato)' }};">
+        {{ '+' if net_balance > 0 else '' }}€{{ "%.2f"|format(net_balance) }}
+      </div>
+      <div class="mt-1 text-[12px]" style="color:var(--by-ink-4);">Organisational bottom line</div>
+    </div>
+  </div>
+
+  <!-- ── Class Balances Table ── -->
+  <div class="mb-10">
+    <div class="by-eyebrow mb-3">Class Financials</div>
+    <div class="by-card overflow-hidden">
+      <div class="by-table-wrap">
+      <table class="w-full text-[13px]" style="border-collapse:collapse;min-width:560px;">
+        <thead>
+          <tr style="background:var(--by-bg-2);">
+            <th class="text-left px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Class</th>
+            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Enrolled</th>
+            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Per Student</th>
+            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Gross</th>
+            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Fees</th>
+            <th class="text-right px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Net</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in class_balances %}
+          <tr class="border-t" style="border-color:#D4C9B3;background:var(--by-bg);">
+            <td class="px-5 py-3 font-semibold" style="color:var(--by-ink);">{{ b.title }}</td>
+            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">{{ b.enrolled }}</td>
+            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">
+              {% if b.per_student > 0 %}€{{ "%.2f"|format(b.per_student) }}{% else %}—{% endif %}
+            </td>
+            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink);">
+              {% if b.gross > 0 %}€{{ "%.2f"|format(b.gross) }}{% else %}—{% endif %}
+            </td>
+            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-tomato);">
+              {% if b.fees > 0 %}−€{{ "%.2f"|format(b.fees) }}{% else %}—{% endif %}
+            </td>
+            <td class="px-5 py-3 text-right font-semibold"
+                style="color:{{ '#2A8A4F' if b.net >= 0 else 'var(--by-tomato)' }};">
+              {{ '+' if b.net > 0 else '' }}€{{ "%.2f"|format(b.net) }}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="px-5 py-8 text-center by-eyebrow">No classes found.</td></tr>
+          {% endfor %}
+        </tbody>
+        {% if class_balances %}
+        <tfoot>
+          <tr style="background:var(--by-bg-2); border-top:1.5px solid var(--by-ink);">
+            <td class="px-5 py-2.5 font-bold text-[12px]" colspan="3" style="color:var(--by-ink);">Class Totals</td>
+            <td class="px-4 py-2.5 text-right font-bold font-mono text-[12px]" style="color:var(--by-ink);">
+              €{{ "%.2f"|format(class_balances|sum(attribute='gross')) }}
+            </td>
+            <td class="px-4 py-2.5 text-right font-bold font-mono text-[12px]" style="color:var(--by-tomato);">
+              {% set tf = class_balances|sum(attribute='fees') %}
+              {% if tf > 0 %}−€{{ "%.2f"|format(tf) }}{% else %}—{% endif %}
+            </td>
+            <td class="px-5 py-2.5 text-right font-bold text-[12px]"
+                style="color:{{ '#2A8A4F' if class_balances|sum(attribute='net') >= 0 else 'var(--by-tomato)' }};">
+              €{{ "%.2f"|format(class_balances|sum(attribute='net')) }}
+            </td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Show Balances Table ── -->
+  <div>
+    <div class="by-eyebrow mb-3">Show Financials</div>
+    <div class="by-card overflow-hidden">
+      <div class="by-table-wrap">
+      <table class="w-full text-[13px]" style="border-collapse:collapse;min-width:480px;">
+        <thead>
+          <tr style="background:var(--by-bg-2);">
+            <th class="text-left px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Show</th>
+            <th class="text-left px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Date</th>
+            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Ticket Price</th>
+            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Fees</th>
+            <th class="text-right px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Net</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in show_balances %}
+          <tr class="border-t" style="border-color:#D4C9B3;background:var(--by-bg);">
+            <td class="px-5 py-3 font-semibold" style="color:var(--by-ink);">{{ b.title }}</td>
+            <td class="px-4 py-3 font-mono text-[12px]" style="color:var(--by-ink-3);">{{ b.date or '—' }}</td>
+            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">
+              {% if b.ticket_price > 0 %}€{{ "%.2f"|format(b.ticket_price) }}{% else %}—{% endif %}
+            </td>
+            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-tomato);">
+              {% if b.fees > 0 %}−€{{ "%.2f"|format(b.fees) }}{% else %}—{% endif %}
+            </td>
+            <td class="px-5 py-3 text-right font-semibold"
+                style="color:{{ '#2A8A4F' if b.net >= 0 else 'var(--by-tomato)' }};">
+              {{ '+' if b.net > 0 else '' }}€{{ "%.2f"|format(b.net) }}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="px-5 py-8 text-center by-eyebrow">No shows found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <p class="mt-3 text-[12px]" style="color:var(--by-ink-4);">
+      Show gross revenue reflects ticket price × attendance. Attendance tracking is not yet implemented — gross shows €0 until wired.
+    </p>
+  </div>
+
+</main>
+
+<script>
+(function () {
+  function isoDate(d) {
+    return d.toISOString().slice(0, 10);
+  }
+
+  function finPreset(p) {
+    const now = new Date();
+    let from, to;
+    if (p === 'this_month') {
+      from = new Date(now.getFullYear(), now.getMonth(), 1);
+      to   = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    } else if (p === 'last_month') {
+      from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      to   = new Date(now.getFullYear(), now.getMonth(), 0);
+    } else if (p === 'this_year') {
+      from = new Date(now.getFullYear(), 0, 1);
+      to   = new Date(now.getFullYear(), 11, 31);
+    }
+    document.getElementById('fin-from').value = isoDate(from);
+    document.getElementById('fin-to').value   = isoDate(to);
+    document.getElementById('fin-filter-form').submit();
+  }
+
+  window.finPreset = finPreset;
+
+  // Highlight the matching preset button based on current URL params
+  const from = document.getElementById('fin-from').value;
+  const to   = document.getElementById('fin-to').value;
+  if (from && to) {
+    const now = new Date();
+    const checks = {
+      this_month: [
+        isoDate(new Date(now.getFullYear(), now.getMonth(), 1)),
+        isoDate(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
+      ],
+      last_month: [
+        isoDate(new Date(now.getFullYear(), now.getMonth() - 1, 1)),
+        isoDate(new Date(now.getFullYear(), now.getMonth(), 0)),
+      ],
+      this_year: [
+        isoDate(new Date(now.getFullYear(), 0, 1)),
+        isoDate(new Date(now.getFullYear(), 11, 31)),
+      ],
+    };
+    for (const [key, [f, t]] of Object.entries(checks)) {
+      if (from === f && to === t) {
+        const btn = document.getElementById('preset-' + key);
+        if (btn) btn.classList.add('active');
+      }
+    }
+  }
+}());
+</script>
+{% endblock %}

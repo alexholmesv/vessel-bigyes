@@ -1,0 +1,315 @@
+{# ── BigYes Custom Select ────────────────────────────────────────────────
+   Replaces all native <select> elements with a fully-styled custom dropdown.
+   The native select stays in the DOM (hidden) — JS can still read .value.
+   Include once per page layout, before </body> or inside <head>.
+#}
+<style>
+  /* Custom select — wrapper */
+  .by-cs {
+    position: relative;
+    display: block;
+  }
+
+  /* Trigger button */
+  .by-cs-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--by-bg);
+    border: 1.5px solid var(--by-ink);
+    color: var(--by-ink);
+    font-family: var(--by-f-body);
+    font-size: var(--by-t-body);
+    cursor: pointer;
+    user-select: none;
+    min-height: 34px;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: left;
+  }
+  .by-cs-trigger:focus {
+    outline: none;
+    box-shadow: 4px 4px 0 0 var(--by-yes);
+  }
+  .by-cs-trigger[aria-disabled="true"] {
+    opacity: 0.38;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Selected value label inside trigger */
+  .by-cs-value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .by-cs-value--ph { color: var(--by-ink-3, #888); }
+
+  /* Chevron */
+  .by-cs-chevron {
+    flex-shrink: 0;
+    width: 10px;
+    height: 6px;
+    transition: transform 0.12s;
+    color: var(--by-ink);
+  }
+  .by-cs--open .by-cs-chevron { transform: rotate(180deg); }
+
+  /* Dropdown list */
+  .by-cs-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: var(--by-bg);
+    border: 1.5px solid var(--by-ink);
+    box-shadow: 4px 4px 0 0 var(--by-ink);
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .by-cs--open .by-cs-list { display: block; }
+
+  /* Option group label */
+  .by-cs-grp {
+    padding: 5px 10px 3px;
+    font-family: var(--by-f-mono, monospace);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--by-ink-3, #888);
+    border-top: 1px solid var(--by-bg-3, #ddd);
+  }
+  .by-cs-grp:first-child { border-top: none; }
+
+  /* Individual option */
+  .by-cs-opt {
+    padding: 8px 10px;
+    cursor: pointer;
+    font-family: var(--by-f-body);
+    font-size: var(--by-t-body);
+    color: var(--by-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .by-cs-opt:hover,
+  .by-cs-opt--hi { background: var(--by-yes); }
+  .by-cs-opt--sel { font-weight: 700; }
+  .by-cs-opt--dis {
+    opacity: 0.38;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Suppress the legacy CSS-triangle pseudo-element when our component is inside */
+  .by-select-wrap:has(.by-cs)::after,
+  .select-wrap:has(.by-cs)::after { display: none; }
+</style>
+<script>
+(function () {
+  const CHEVRON = `<svg class="by-cs-chevron" viewBox="0 0 10 6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M0 0l5 6 5-6z"/></svg>`;
+
+  function buildOpts(select, list) {
+    list.innerHTML = '';
+    for (const child of select.children) {
+      if (child.tagName === 'OPTGROUP') {
+        const lbl = document.createElement('li');
+        lbl.className = 'by-cs-grp';
+        lbl.textContent = child.label;
+        list.appendChild(lbl);
+        for (const opt of child.children) appendOpt(opt, list);
+      } else if (child.tagName === 'OPTION') {
+        appendOpt(child, list);
+      }
+    }
+  }
+
+  function appendOpt(opt, list) {
+    const li = document.createElement('li');
+    li.className = 'by-cs-opt';
+    li.dataset.value = opt.value;
+    li.textContent = opt.textContent;
+    if (opt.disabled) li.classList.add('by-cs-opt--dis');
+    list.appendChild(li);
+  }
+
+  function syncTrigger(select, trigger, list) {
+    const val = select.value;
+    const idx = select.selectedIndex;
+    const opt = idx >= 0 ? select.options[idx] : null;
+    const valueEl = trigger.querySelector('.by-cs-value');
+
+    if (opt && opt.value !== '') {
+      valueEl.textContent = opt.textContent;
+      valueEl.classList.remove('by-cs-value--ph');
+    } else {
+      valueEl.textContent = opt ? opt.textContent : '';
+      valueEl.classList.toggle('by-cs-value--ph', !opt || opt.value === '');
+    }
+
+    list.querySelectorAll('.by-cs-opt').forEach(li => {
+      li.classList.toggle('by-cs-opt--sel', li.dataset.value === val);
+    });
+
+    const dis = select.disabled;
+    trigger.setAttribute('aria-disabled', dis ? 'true' : 'false');
+    if (dis) trigger.removeAttribute('tabindex');
+    else trigger.setAttribute('tabindex', '0');
+  }
+
+  function init(select) {
+    if (select._bycs) return;
+    /* Skip selects already handled by the .by-so-wrap overlay pattern */
+    if (select.closest('.by-so-wrap')) return;
+
+    select._bycs = true;
+
+    /* Build DOM */
+    const wrap = document.createElement('div');
+    wrap.className = 'by-cs';
+
+    const trigger = document.createElement('div');
+    trigger.className = 'by-cs-trigger';
+    trigger.setAttribute('role', 'combobox');
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('tabindex', '0');
+    trigger.innerHTML = `<span class="by-cs-value"></span>${CHEVRON}`;
+
+    const list = document.createElement('ul');
+    list.className = 'by-cs-list';
+    list.setAttribute('role', 'listbox');
+
+    wrap.appendChild(trigger);
+    wrap.appendChild(list);
+
+    select.parentNode.insertBefore(wrap, select);
+    wrap.appendChild(select);      /* move native select inside; keep it as value store */
+    select.style.display = 'none';
+
+    buildOpts(select, list);
+    syncTrigger(select, trigger, list);
+
+    /* Open / close helpers */
+    const isOpen  = () => wrap.classList.contains('by-cs--open');
+    const doOpen  = () => {
+      if (select.disabled) return;
+      wrap.classList.add('by-cs--open');
+      trigger.setAttribute('aria-expanded', 'true');
+      const sel = list.querySelector('.by-cs-opt--sel');
+      if (sel) sel.scrollIntoView({ block: 'nearest' });
+    };
+    const doClose = () => {
+      wrap.classList.remove('by-cs--open');
+      trigger.setAttribute('aria-expanded', 'false');
+      list.querySelectorAll('.by-cs-opt--hi').forEach(li => li.classList.remove('by-cs-opt--hi'));
+    };
+
+    /* Trigger click */
+    trigger.addEventListener('mousedown', e => {
+      e.preventDefault();          /* keep focus on trigger */
+      isOpen() ? doClose() : doOpen();
+    });
+
+    /* Option click */
+    list.addEventListener('click', e => {
+      const li = e.target.closest('.by-cs-opt');
+      if (!li || li.classList.contains('by-cs-opt--dis')) return;
+      select.value = li.dataset.value;
+      syncTrigger(select, trigger, list);
+      doClose();
+      trigger.focus();
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    /* Hover highlight */
+    list.addEventListener('mouseover', e => {
+      const li = e.target.closest('.by-cs-opt');
+      if (!li) return;
+      list.querySelectorAll('.by-cs-opt--hi').forEach(el => el.classList.remove('by-cs-opt--hi'));
+      if (!li.classList.contains('by-cs-opt--dis')) li.classList.add('by-cs-opt--hi');
+    });
+
+    /* Keyboard */
+    trigger.addEventListener('keydown', e => {
+      const opts = [...list.querySelectorAll('.by-cs-opt:not(.by-cs-opt--dis)')];
+      const hi = list.querySelector('.by-cs-opt--hi');
+      let idx = hi ? opts.indexOf(hi) : -1;
+
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (!isOpen()) { doOpen(); return; }
+        if (hi) {
+          select.value = hi.dataset.value;
+          syncTrigger(select, trigger, list);
+          doClose();
+          trigger.focus();
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      } else if (e.key === 'Escape') {
+        doClose(); trigger.focus();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!isOpen()) { doOpen(); return; }
+        if (hi) hi.classList.remove('by-cs-opt--hi');
+        idx = Math.min(idx + 1, opts.length - 1);
+        opts[idx]?.classList.add('by-cs-opt--hi');
+        opts[idx]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (hi) hi.classList.remove('by-cs-opt--hi');
+        idx = Math.max(idx - 1, 0);
+        opts[idx]?.classList.add('by-cs-opt--hi');
+        opts[idx]?.scrollIntoView({ block: 'nearest' });
+      }
+    });
+
+    /* Close on outside click */
+    document.addEventListener('click', e => {
+      if (!wrap.contains(e.target)) doClose();
+    }, true);
+
+    /* Watch for dynamic option injection (innerHTML assignments) */
+    new MutationObserver(() => {
+      buildOpts(select, list);
+      syncTrigger(select, trigger, list);
+    }).observe(select, { childList: true, subtree: true, characterData: true });
+
+    /* Watch disabled / attribute changes */
+    new MutationObserver(() => syncTrigger(select, trigger, list))
+      .observe(select, { attributes: true, attributeFilter: ['disabled'] });
+
+    /* Intercept programmatic .value = '' assignments */
+    const proto = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+    Object.defineProperty(select, 'value', {
+      get: () => proto.get.call(select),
+      set: v  => { proto.set.call(select, v); syncTrigger(select, trigger, list); },
+      configurable: true,
+    });
+
+    /* Expose a manual refresh for edge-cases */
+    select._bycsRefresh = () => { buildOpts(select, list); syncTrigger(select, trigger, list); };
+  }
+
+  function initAll() {
+    document.querySelectorAll('select').forEach(init);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+
+  window.bySelectInit    = init;
+  window.bySelectRefresh = el => { if (el && el._bycsRefresh) el._bycsRefresh(); };
+})();
+</script>

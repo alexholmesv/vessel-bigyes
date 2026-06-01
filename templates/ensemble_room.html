@@ -1,0 +1,1783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes · Ensemble Room</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Archivo Black"', 'system-ui', 'sans-serif'],
+          sans:    ['"Archivo"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          body:    ['"Manrope"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono:    ['"DM Mono"', 'ui-monospace', 'monospace'],
+        },
+        colors: {
+          'by-yes':         '#FFC629',
+          'by-yes-deep':    '#E5A800',
+          'by-yes-soft':    '#FFE7A0',
+          'by-ink':         '#141210',
+          'by-ink-2':       '#2A2723',
+          'by-ink-3':       '#5C544A',
+          'by-ink-4':       '#8A8073',
+          'by-bg':          '#F4EEE2',
+          'by-bg-2':        '#ECE3D0',
+          'by-bg-3':        '#E2D6BB',
+          'by-tomato':      '#E5482A',
+          'by-tomato-deep': '#B83218',
+          'by-night':       '#141210',
+          'by-night-on':    '#C9BFA8',
+        },
+        boxShadow: {
+          'by-hard':     '4px 4px 0 0 #141210',
+          'by-hard-yes': '4px 4px 0 0 #FFC629',
+        },
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-r-1:4px; --by-r-pill:999px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-bd-dash:1px dashed var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
+  }
+
+  html, body { background: var(--by-bg); }
+  body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing:antialiased; padding-bottom: 64px; }
+  @media (min-width: 1024px) { body { padding-bottom: 0; } }
+  .font-display { font-family: var(--by-f-display); font-weight:900; letter-spacing:-0.02em; text-transform:uppercase; }
+  .font-mono { font-family: var(--by-f-mono); }
+
+  .by-display { font-family:var(--by-f-display); font-weight:900; line-height:0.88; letter-spacing:-0.02em; text-transform:uppercase; }
+  .by-eyebrow { font-family:var(--by-f-mono); font-size:var(--by-t-mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--by-ink-3); }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+
+  .hairline { border-color: var(--by-ink); }
+
+  /* Chips */
+  .chip { display:inline-flex; align-items:center; gap:.375rem; padding:.15rem .55rem; border-radius:999px; font-family:var(--by-f-mono); font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--by-ink); line-height:1.2; background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
+  .chip .dot { width:6px; height:6px; border-radius:999px; flex-shrink:0; background:var(--by-ink); }
+  .chip-active .dot   { background:#2A8A4F; }
+  .chip-upcoming .dot { background:var(--by-ink); }
+  .chip-past          { background:var(--by-bg-2); color:var(--by-ink-3); border-color:var(--by-ink-3); }
+  .chip-past .dot     { background:var(--by-ink-3); }
+  .chip-live          { background:var(--by-tomato); color:#fff; border-color:var(--by-ink); }
+  .chip-live .dot     { background:#fff; box-shadow:0 0 0 3px rgba(229,72,42,.25); animation:chip-pulse 1.6s infinite; }
+  @keyframes chip-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.6} }
+  .text-live-indicator { color: var(--by-tomato); }
+
+  /* Sidebar nav */
+  .nav-item { display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; color:var(--by-ink-3); font-family:var(--by-f-body); font-size:13.5px; font-weight:500; border:none; border-left:4px solid transparent; text-decoration:none; transition:background var(--by-snap),color var(--by-snap); }
+  .nav-item:hover { color:var(--by-ink); background:var(--by-bg-2); }
+  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+  .nav-item .ico { width:18px; height:18px; flex:0 0 18px; }
+
+  /* Buttons */
+  .btn-spot  { background:var(--by-yes); color:var(--by-ink); font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
+  .btn-spot:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
+  .btn-spot:active { transform:translate(4px,4px); box-shadow:none; }
+  .btn-live  { background:var(--by-tomato); color:#fff; font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
+  .btn-live:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
+  .btn-ghost { border:1px solid var(--by-ink); background:transparent; color:var(--by-ink); font-weight:500; }
+  .btn-ghost:hover { background:var(--by-bg-2); }
+
+  /* Avatar */
+  .av { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:999px; font-weight:800; font-size:12px; color:var(--by-ink); box-shadow:inset 0 0 0 1px rgba(20,18,16,.2); flex-shrink:0; }
+
+  /* Tabs */
+  .tab { padding:.5rem .85rem; border-radius:var(--by-r-1); font-size:13px; color:var(--by-ink-3); font-weight:500; display:inline-flex; gap:.45rem; align-items:center; border:1px solid transparent; cursor:pointer; }
+  .tab:hover { color:var(--by-ink); background:var(--by-bg-2); }
+  .tab.active { color:var(--by-ink); background:var(--by-bg-2); border-color:var(--by-ink); }
+  .tab .count { font-family:var(--by-f-mono); font-size:10.5px; color:var(--by-ink-3); background:var(--by-bg-3); padding:1px 6px; border-radius:999px; }
+  .tab.active .count { color:var(--by-ink); background:var(--by-yes); }
+
+  /* Class card */
+  .class-card { border:1px solid var(--by-ink); background:var(--by-bg); padding:14px; cursor:pointer; transition:background-color 120ms, box-shadow 120ms; }
+  .class-card:hover   { background:var(--by-bg-2); box-shadow:var(--by-sh-1); }
+  .class-card.selected { background:var(--by-yes-soft); box-shadow:var(--by-sh-yes); }
+
+  /* Attendance pills */
+  .att { display:inline-flex; gap:2px; padding:2px; background:var(--by-bg-3); border:1px solid var(--by-ink); border-radius:var(--by-r-1); }
+  .att button { padding:3px 8px; border-radius:2px; font-size:11px; color:var(--by-ink-3); font-weight:600; cursor:pointer; }
+  .att button:hover { color:var(--by-ink); background:var(--by-bg-2); }
+  .att button.on[data-v="P"] { color:#fff; background:#2A8A4F; }
+  .att button.on[data-v="L"] { color:var(--by-ink); background:var(--by-yes); }
+  .att button.on[data-v="A"] { color:#fff; background:var(--by-tomato); }
+
+  /* Roster row */
+  .roster-row:hover td { background:var(--by-bg-2); }
+  .roster-row td { transition:background-color 120ms ease; border-top:1px solid var(--by-bg-3); }
+
+  /* Points pill */
+  .pts { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:999px; background:rgba(255,198,41,.12); border:1px solid rgba(255,198,41,.35); color:var(--by-yes-deep); font-family:var(--by-f-mono); font-size:11.5px; font-weight:600; }
+  .pts.flash { animation:ptsFlash 1.2s ease-out 1; }
+  @keyframes ptsFlash { 0%{background:rgba(255,198,41,.5);color:var(--by-ink);transform:scale(1.18)} 100%{background:rgba(255,198,41,.12);color:var(--by-yes-deep);transform:scale(1)} }
+
+  /* Difficulty picker */
+  .diff { padding:10px 12px; border:1px solid var(--by-bd-soft); background:var(--by-bg-2); text-align:left; transition:all 120ms; cursor:pointer; }
+  .diff:hover { border-color:var(--by-ink); box-shadow:var(--by-sh-1); transform:translate(-1px,-1px); }
+  .diff .name { color:var(--by-ink); font-weight:700; font-size:13px; font-family:var(--by-f-sans); }
+  .diff .meta { color:var(--by-ink-3); font-size:11px; margin-top:2px; font-family:var(--by-f-mono); }
+  .diff .bar  { display:flex; gap:2px; margin-top:8px; }
+  .diff .bar i { display:block; height:3px; width:14px; border-radius:2px; background:var(--by-bg-3); }
+  .diff .bar i.on { background:var(--by-yes); }
+
+  /* Live challenge card */
+  .live-card { border:1px solid var(--by-ink); }
+  .live-card.armed { border-color:var(--by-yes); box-shadow:var(--by-sh-yes); }
+  .live-card-inner { background:var(--by-bg-2); padding:18px; }
+
+  /* Week strip — paper with amber today highlight */
+  .week-col { flex:1 1 0; min-width:0; padding:8px 7px 10px; border-left:1px solid var(--by-bg-3); transition:background var(--by-snap); }
+  .week-col:first-child { border-left:none; }
+  .week-col.is-today { background:var(--by-yes-soft); border-left:2px solid var(--by-yes); }
+  .week-pill { display:block; width:100%; text-align:left; padding:4px 6px; margin-top:5px;
+    border:var(--by-bd-thick); background:var(--by-yes); font-family:var(--by-f-mono);
+    font-size:10px; line-height:1.4; cursor:pointer; transition:all 120ms; color:var(--by-ink); font-weight:600; }
+  .week-pill:hover { background:var(--by-yes-soft); box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(-1px,-1px); }
+  .week-pill.selected { background:var(--by-ink); color:var(--by-yes); border-color:var(--by-ink); }
+
+  /* KPI stat bar */
+  .stat-kpi { flex:1; padding:10px 14px; border:1px solid var(--by-ink); background:var(--by-bg-2); }
+
+  /* Panel tabs */
+  .panel-tab { padding:.4rem .75rem; font-size:12.5px; font-weight:600; font-family:var(--by-f-sans); color:var(--by-ink-3); border-bottom:2px solid transparent; cursor:pointer; transition:color 120ms, border-color 120ms; }
+  .panel-tab:hover { color:var(--by-ink); }
+  .panel-tab.active { color:var(--by-ink); border-bottom-color:var(--by-yes); }
+
+  /* Message form */
+  .msg-select, .msg-input, .msg-textarea {
+    width:100%; padding:8px 10px; border:var(--by-bd); background:var(--by-bg);
+    font-family:var(--by-f-body); font-size:13px; color:var(--by-ink); outline:none;
+  }
+  .msg-select:focus, .msg-input:focus, .msg-textarea:focus { box-shadow:var(--by-sh-yes); }
+  .msg-textarea { resize:vertical; min-height:72px; }
+
+  /* Pulse */
+  .pulse-ring { animation:pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
+
+  /* ── Page header: amber-accent on paper ────────────────────────────── */
+  #page-header { background:var(--by-bg) !important; border-bottom:3px solid var(--by-yes) !important; }
+  #page-header #headerGreeting { color:var(--by-ink) !important; }
+
+  /* Unified sidebar slide-over (hidden by default, all screen sizes) */
+  .app-sidebar {
+    position:fixed; top:0; bottom:0; left:0; z-index:50;
+    width:260px; display:flex; flex-direction:column;
+    background:var(--by-bg); border-right:var(--by-bd-thick);
+    transform:translateX(-100%);
+    transition:transform 240ms cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;
+  }
+  .app-sidebar.open { transform:translateX(0); }
+  .app-sidebar-overlay {
+    display:none; position:fixed; inset:0; z-index:49;
+    background:rgba(20,18,16,.45);
+  }
+  .app-sidebar-overlay.open { display:block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-thumb { background:var(--by-bg-3); border-radius:999px; }
+  ::-webkit-scrollbar-thumb:hover { background:var(--by-ink-4); }
+
+  details > summary { list-style:none; cursor:pointer; }
+  details > summary::-webkit-details-marker { display:none; }
+
+  /* Mobile chrome */
+  .by-mob-bar {
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 16px; height:56px;
+    background:var(--by-bg); border-bottom:var(--by-bd-thick);
+  }
+  @media (min-width:1024px) { .by-mob-bar { display:none; } }
+  .by-ham { width:44px; height:44px; flex-shrink:0; border:var(--by-bd-thick); background:var(--by-bg); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px; cursor:pointer; }
+  .by-ham span { display:block; width:18px; height:1.5px; background:var(--by-ink); }
+  .by-mob-drawer { position:fixed; top:56px; bottom:64px; left:0; z-index:35; width:280px; background:var(--by-bg); border-right:var(--by-bd-thick); transform:translateX(-100%); transition:transform 240ms cubic-bezier(.2,.8,.2,1); overflow-y:auto; }
+  .by-mob-drawer.open { transform:translateX(0); }
+  @media (min-width:1024px) { .by-mob-drawer { display:none; } }
+  .by-mob-overlay { display:none; position:fixed; inset:0; z-index:34; background:rgba(20,18,16,.45); }
+  .by-mob-overlay.open { display:block; }
+  .by-mob-tabs { position:fixed; bottom:0; left:0; right:0; z-index:40; height:64px; display:flex; background:var(--by-bg); border-top:var(--by-bd-thick); }
+  .by-mob-tabs a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 4px 10px; font-family:var(--by-f-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--by-ink-3); border-right:1px solid var(--by-bg-3); text-decoration:none; min-height:44px; }
+  .by-mob-tabs a:last-child { border-right:0; }
+  .by-mob-tabs a.active { color:var(--by-ink); background:var(--by-yes); }
+  .by-mob-tabs svg { width:20px; height:20px; }
+  @media (min-width:1024px) { .by-mob-tabs { display:none; } }
+
+  .by-cta-bar { position:sticky; bottom:64px; z-index:20; display:flex; gap:8px; padding:12px 16px; background:var(--by-bg); border-top:var(--by-bd-thick); margin:16px -28px -28px; }
+  .by-cta-bar .by-cta-btn { flex:1; min-height:48px; padding:14px 16px; font-family:var(--by-f-sans); font-size:14px; font-weight:700; border:var(--by-bd-thick); cursor:pointer; }
+  .by-cta-btn-primary { background:var(--by-yes); color:var(--by-ink); box-shadow:var(--by-sh-1); }
+  .by-cta-btn-ghost   { background:transparent; color:var(--by-ink); }
+  @media (min-width:1024px) { .by-cta-bar { position:static; border-top:0; padding:0; margin:0; display:flex; gap:8px; } .by-cta-bar .by-cta-btn { flex:0 0 auto; } }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.25rem;font-size:.8rem;font-weight:600;background:var(--by-yes);color:var(--by-ink);border:1.5px solid var(--by-ink);box-shadow:var(--by-sh-1);opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
+
+<!-- Unified sidebar slide-over (all screen sizes) -->
+<div id="sidebar-overlay" class="app-sidebar-overlay" onclick="toggleSidebar()"></div>
+<aside id="app-sidebar" class="app-sidebar">
+  <div class="px-5 pt-6 pb-4 flex items-start justify-between">
+    <div>
+      <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+        Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+      </a>
+      <div class="by-eyebrow mt-1.5">Barcelona Improv</div>
+    </div>
+    <button onclick="toggleSidebar()" class="mt-1 w-8 h-8 flex items-center justify-center" style="border:var(--by-bd);background:var(--by-bg-2);">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2" style="border:var(--by-bd);background:var(--by-bg-2);">
+    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="background:var(--by-yes);border:var(--by-bd);font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-ink);">T</span>
+    <div class="flex-1 min-w-0">
+      <div class="text-[12.5px] truncate" style="font-family:var(--by-f-sans);font-weight:700;color:var(--by-ink);">Teacher view</div>
+      <div class="by-eyebrow truncate">{{ current_user_name }}</div>
+    </div>
+  </div>
+
+  <nav class="px-3 flex-1">
+    <div class="by-eyebrow px-2 pt-1 pb-1">Navigate</div>
+    <a href="/" class="nav-item active" onclick="toggleSidebar()">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      Ensemble Room
+    </a>
+    <a href="#week-strip" class="nav-item" onclick="toggleSidebar()">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
+      This Week
+    </a>
+    <a href="#activity-box" class="nav-item" onclick="toggleSidebar()">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.663 17h4.673M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      Activity Box
+    </a>
+    <button onclick="openMsgModal(); toggleSidebar();" class="nav-item w-full text-left">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Message Students
+    </button>
+  </nav>
+
+  {% set next_cls = active_classes[0] if active_classes else none %}
+  <div class="m-3 p-3" style="border:var(--by-bd);background:var(--by-bg-2);">
+    <div class="by-eyebrow flex items-center gap-2">
+      <span class="pulse-ring w-1.5 h-1.5 flex-shrink-0" style="border-radius:999px;background:var(--by-yes);"></span>
+      Next class
+    </div>
+    {% if next_cls %}
+    <div class="mt-1.5 font-display text-[15px] leading-snug" style="color:var(--by-ink);">{{ next_cls.title }}</div>
+    <div class="by-eyebrow mt-0.5">{{ next_cls.schedule }} · {{ next_cls.students | length }} enrolled</div>
+    {% else %}
+    <div class="mt-1.5 text-[13px]" style="color:var(--by-ink-3);">No active classes</div>
+    {% endif %}
+  </div>
+</aside>
+
+<!-- Mobile top bar -->
+<header class="by-mob-bar">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  </a>
+  <button class="by-ham" aria-label="Open menu" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="min-h-screen flex flex-col">
+
+  <!-- ══════ MAIN (full width) ══════ -->
+  <div class="flex flex-col min-w-0 flex-1">
+
+    <!-- Sticky header -->
+    <header id="page-header" class="sticky top-0 z-30" style="background:var(--by-bg);border-bottom:3px solid var(--by-yes);">
+      <div class="px-4 lg:px-7 py-3 flex items-center gap-3">
+        <!-- Sidebar toggle -->
+        <button onclick="toggleSidebar()" class="hidden lg:flex h-9 w-9 items-center justify-center flex-shrink-0 btn-ghost" title="Toggle sidebar">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="leading-tight min-w-0">
+          <div class="by-eyebrow">Barcelona Improv · Teacher</div>
+          <div id="headerGreeting" class="font-display text-[22px] lg:text-[26px] leading-tight" style="color:var(--by-ink);"></div>
+        </div>
+
+        <div class="relative flex-1 max-w-xs ml-4 hidden md:block" id="search-wrap">
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--by-ink-4);pointer-events:none;z-index:1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="searchInput" type="text" placeholder="Search classes or students…"
+            class="w-full outline-none pl-9 pr-3 py-2 text-[13px]"
+            style="background:var(--by-bg-2);border:var(--by-bd);font-family:var(--by-f-body);color:var(--by-ink);"
+            autocomplete="off"
+            oninput="searchEnsemble(this.value)"
+            onfocus="searchEnsemble(this.value); this.style.boxShadow='var(--by-sh-yes)'"
+            onblur="setTimeout(clearSearch,180); this.style.boxShadow=''" />
+          <!-- Search results dropdown -->
+          <div id="searchDrop" class="hidden absolute left-0 right-0 top-full mt-0.5 z-50"
+               style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);max-height:320px;overflow-y:auto;">
+          </div>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <!-- Quick Message button -->
+        <button onclick="openMsgPanel()" class="btn-ghost h-9 px-3 text-[13px] flex items-center gap-2" style="font-family:var(--by-f-body);">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message
+        </button>
+
+        {% include 'partials/_scene_switcher.html' %}
+        {% include 'partials/_inbox_btn.html' %}
+
+        <div class="relative flex-shrink-0" id="user-menu-wrap">
+          <button id="user-menu-btn" onclick="toggleUserMenu()"
+                  class="flex items-center gap-2 cursor-pointer h-9 px-2"
+                  style="border:var(--by-bd);background:var(--by-bg);">
+            <img class="by-um-av-img av object-cover flex-shrink-0"
+                 src="{{ current_user_avatar or '' }}"
+                 style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                 alt="{{ current_user_initials }}">
+            <span class="by-um-av-init av flex items-center justify-center flex-shrink-0"
+                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+              {{ current_user_initials }}
+            </span>
+            <div class="hidden md:block leading-tight text-left">
+              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
+              <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Faculty</div>
+            </div>
+            <svg class="h-3 w-3 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--by-ink-4);" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          </button>
+          <div id="user-menu-drop" class="hidden" style="position:absolute;top:calc(100% + 6px);right:0;z-index:60;min-width:168px;background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
+            <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
+              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);">{{ current_user_name }}</div>
+              <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Teacher</div>
+            </div>
+            <button onclick="openMyConfig(); toggleUserMenu(true)" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b" style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
+              <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Config
+            </button>
+            <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5" style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);text-decoration:none;">
+              <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Log out
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs row -->
+      <div class="px-4 lg:px-7 pb-3 flex items-center gap-1.5">
+        <button class="tab active" data-tab="active">
+          Active <span class="count" id="cntActive">{{ active_classes | length }}</span>
+        </button>
+        <button class="tab" data-tab="upcoming">
+          Upcoming <span class="count" id="cntUpcoming">{{ future_classes | length }}</span>
+        </button>
+        <button class="tab" data-tab="past">
+          Past <span class="count" id="cntPast">{{ past_classes | length }}</span>
+        </button>
+        <div class="flex-1"></div>
+        <div class="by-eyebrow hidden sm:block">Term · <span style="color:var(--by-ink);">Spring 2026</span></div>
+      </div>
+    </header>
+
+
+    <!-- ══ Dashboard hero: KPI strip ══ -->
+    {% set total_stu = namespace(n=0) %}
+    {% for c in active_classes %}{% set total_stu.n = total_stu.n + (c.students | length) %}{% endfor %}
+    {% set wk_sessions = namespace(n=0) %}
+    {% for d in week_days %}{% set wk_sessions.n = wk_sessions.n + (d.classes | length) %}{% endfor %}
+    <div class="px-4 lg:px-7 pt-5 pb-4 border-b" style="background:var(--by-bg);border-color:var(--by-ink);">
+      <div class="by-eyebrow mb-1">Faculty · {{ today_label }}</div>
+      <h1 class="by-display text-[32px] lg:text-[40px] mb-4" style="color:var(--by-ink);line-height:1.0;">
+        Ensemble <span class="by-yes-block" style="font-size:inherit;padding:0 14px 5px;">Room</span>
+      </h1>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div class="border px-3.5 py-2.5" style="background:var(--by-yes);border-color:var(--by-ink);box-shadow:var(--by-sh-1);">
+          <div class="by-eyebrow">Active Classes</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ active_classes | length }}</div>
+        </div>
+        <div class="border px-3.5 py-2.5" style="background:var(--by-bg-2);border-color:var(--by-ink);">
+          <div class="by-eyebrow">Total Students</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ total_stu.n }}</div>
+        </div>
+        <div class="border px-3.5 py-2.5 col-span-2 sm:col-span-1" style="background:var(--by-bg-2);border-color:var(--by-ink);">
+          <div class="by-eyebrow">Sessions This Week</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ wk_sessions.n }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Week at a Glance ══ -->
+    <section id="week-strip" class="mx-4 lg:mx-7 mt-5 border" style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-yes);">
+      <div class="px-4 py-3 flex items-center justify-between" style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
+        <div class="font-display text-[22px]" style="color:var(--by-ink);">This Week</div>
+        <button onclick="openMonthView()" class="h-8 px-3 text-[11.5px] flex items-center gap-1.5" style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-body);cursor:pointer;font-weight:600;">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+          View month
+        </button>
+      </div>
+      <div class="flex overflow-x-auto" style="min-height:88px;">
+        {% for day in week_days %}
+        <div class="week-col {% if day.is_today %}is-today{% endif %}">
+          <div class="by-eyebrow" style="color:{% if day.is_today %}var(--by-yes-deep){% else %}var(--by-ink-3){% endif %};">{{ day.short }}</div>
+          <div class="font-display text-[15px] leading-none mt-0.5" style="color:{% if day.is_today %}var(--by-ink){% else %}var(--by-ink){% endif %};">{{ day.date_num }}</div>
+          {% if day.classes %}
+            {% for cls in day.classes %}
+            <button class="week-pill" data-class-id="{{ cls.id }}" onclick="selectClass('{{ cls.id }}')">
+              <div class="font-semibold truncate" style="font-family:var(--by-f-sans);font-size:10px;">{{ cls.title | truncate(16, true, '…') }}</div>
+              <div style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-3);margin-top:1px;">{{ cls.time }}</div>
+            </button>
+            {% endfor %}
+          {% else %}
+          <div class="mt-3 text-[10px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">—</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- ══ Activity Box ══ -->
+    <section id="activity-box" class="mx-4 lg:mx-7 mt-3 mb-5 border" style="background:var(--by-bg);border-color:var(--by-ink);border-top:3px solid var(--by-yes);">
+      <div class="px-5 py-3 flex items-center justify-between border-b" style="border-color:var(--by-ink);">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-display text-[18px]" style="color:var(--by-ink);">Activity Box</span>
+          <span id="actCategory" class="chip text-[10px]" style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);">Warm-Up</span>
+          <span id="actCounter" class="by-eyebrow">1 / 50</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span id="actDuration" class="by-eyebrow hidden sm:block">5 – 10 min</span>
+          <span class="by-eyebrow hidden sm:block">·</span>
+          <span id="actPlayers" class="by-eyebrow hidden sm:block">Whole group</span>
+        </div>
+      </div>
+      <div class="px-5 py-4 lg:flex lg:gap-8 lg:items-start">
+        <div class="flex-1 min-w-0">
+          <h3 id="actTitle" class="font-display text-[24px] lg:text-[28px] leading-tight" style="color:var(--by-ink);">Yes-And Circle</h3>
+          <p id="actDesc" class="mt-2 text-[13px] leading-relaxed" style="color:var(--by-ink-2);max-width:65ch;">
+            Players stand in a circle and build a shared imaginary world one "Yes, and…" at a time.
+          </p>
+          <div id="actTip" class="mt-3 px-3 py-2.5 text-[12px]" style="background:var(--by-yes-soft);border-left:3px solid var(--by-yes-deep);color:var(--by-ink-2);">
+            <span class="by-eyebrow" style="color:var(--by-yes-deep);">Teaching note · </span>Watch for "yes, but" sneaking in.
+          </div>
+        </div>
+        <div class="mt-4 lg:mt-0 flex items-center gap-2 flex-shrink-0">
+          <button onclick="prevActivity()" class="h-9 w-9 flex items-center justify-center btn-ghost">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button onclick="shuffleActivity()" class="h-9 w-9 flex items-center justify-center btn-ghost" title="Shuffle">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 3h5v5M4 20l16-16M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+          </button>
+          <button onclick="nextActivity()" class="h-9 w-9 flex items-center justify-center"
+            style="background:var(--by-yes);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Class strip ══ -->
+    <section class="px-4 lg:px-7 pt-5 pb-4">
+      <div id="classStrip" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+    </section>
+
+
+    <!-- ══ Main grid: Roster + Right panel ══ -->
+    <main class="px-4 lg:px-7 pb-6 grid grid-cols-12 gap-4 lg:gap-5">
+
+      <!-- Roster (8 cols) -->
+      <section class="col-span-12 xl:col-span-8 border hairline" style="background:var(--by-bg);">
+
+        <!-- Roster header -->
+        <header class="px-5 py-4 flex items-start gap-4 border-b hairline">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 id="selTitle" class="font-display text-[24px] leading-tight" style="color:var(--by-ink);">Select a class above</h2>
+              <span id="selChip" class="chip chip-active hidden"><span class="dot"></span>Active</span>
+            </div>
+            <div class="mt-1 flex items-center gap-3 flex-wrap text-[12.5px]" style="color:var(--by-ink-3);">
+              <span id="selSchedule" class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                —
+              </span>
+              <span id="selTerm" class="font-mono" style="color:var(--by-ink-3);">—</span>
+            </div>
+          </div>
+          <!-- Enrolled KPI -->
+          <div class="text-right flex-shrink-0">
+            <div class="by-eyebrow">Enrolled</div>
+            <div class="font-display text-[28px] leading-none mt-0.5" style="color:var(--by-ink);">
+              <span id="selEnrolled">—</span><span class="text-[14px]" style="color:var(--by-ink-4);">/<span id="selCap">—</span></span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Attendance KPI bar -->
+        <div class="px-5 py-3 flex items-center gap-3 border-b hairline flex-wrap" style="background:var(--by-bg-2);">
+          <div class="stat-kpi flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#2A8A4F;"></span>
+            <div>
+              <div class="by-eyebrow">Present</div>
+              <div class="font-display text-[20px] leading-none" style="color:#2A8A4F;"><span id="presentCount">0</span></div>
+            </div>
+          </div>
+          <div class="stat-kpi flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-yes-deep);"></span>
+            <div>
+              <div class="by-eyebrow">Late</div>
+              <div class="font-display text-[20px] leading-none" style="color:var(--by-yes-deep);"><span id="lateCount">0</span></div>
+            </div>
+          </div>
+          <div class="stat-kpi flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-tomato);"></span>
+            <div>
+              <div class="by-eyebrow">Absent</div>
+              <div class="font-display text-[20px] leading-none" style="color:var(--by-tomato);"><span id="absentCount">0</span></div>
+            </div>
+          </div>
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-1.5">
+            <button id="markAllPresent" class="btn-ghost h-7 px-2 text-[11.5px]" style="font-family:var(--by-f-body);">Mark all present (+10)</button>
+          </div>
+        </div>
+
+        <!-- Roster table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="by-eyebrow border-b hairline">
+                <th class="font-medium pl-5 pr-3 py-2.5">Student</th>
+                <th class="font-medium px-3 py-2.5">Points</th>
+                <th class="font-medium px-3 py-2.5 hidden sm:table-cell">Streak</th>
+                <th class="font-medium pl-3 pr-5 py-2.5 text-right">Attendance · today</th>
+              </tr>
+            </thead>
+            <tbody id="rosterBody">
+              <tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">
+                Select a class above to open its roster.
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Roster footer -->
+        <footer class="px-5 py-3 border-t hairline flex items-center justify-between gap-2 text-[12px]" style="color:var(--by-ink-3);">
+          <div id="rosterFooterMsg" class="text-[12px]" style="color:var(--by-ink-3);">No class selected.</div>
+          <button id="msgClassBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="font-family:var(--by-f-body);" onclick="openMsgPanel()">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Message this cohort
+          </button>
+        </footer>
+      </section>
+
+
+      <!-- Right panel (4 cols) -->
+      <aside class="col-span-12 xl:col-span-4 flex flex-col gap-4">
+
+        <!-- Live Challenge card -->
+        <div id="liveCard" class="live-card">
+          <div class="live-card-inner">
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" style="background:rgba(229,72,42,.1);border:1px solid rgba(229,72,42,.3);">
+                  <svg class="w-4 h-4 text-live-indicator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+                </div>
+                <div>
+                  <div class="by-eyebrow text-live-indicator">Live Challenge</div>
+                  <div id="liveTitle" class="font-display text-[22px] leading-tight" style="color:var(--by-ink);">Deploy a prompt</div>
+                </div>
+              </div>
+              <span id="liveStatus" class="chip chip-past"><span class="dot"></span>Idle</span>
+            </div>
+
+            <!-- Idle: difficulty picker -->
+            <div id="idleState" class="mt-4">
+              <p class="text-[12.5px] leading-snug mb-3" style="color:var(--by-ink-3);">
+                Pick a difficulty. Challenge stays open <b style="color:var(--by-ink-2);">48 hours</b> — students respond within <b style="color:var(--by-ink-2);">30 seconds</b> and earn <b style="color:var(--by-yes-deep);">+15 pts</b>.
+              </p>
+              <div class="grid grid-cols-2 gap-2">
+                <button class="diff" data-diff="Beginner" data-api-diff="beginner">
+                  <div class="name">Beginner</div><div class="meta">Warm-up · 1 step</div>
+                  <div class="bar"><i class="on"></i><i></i><i></i><i></i></div>
+                </button>
+                <button class="diff" data-diff="Intermediate" data-api-diff="intermediate">
+                  <div class="name">Intermediate</div><div class="meta">Game of scene</div>
+                  <div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                </button>
+                <button class="diff" data-diff="Upper-Int." data-api-diff="intermediate">
+                  <div class="name">Upper-Int.</div><div class="meta">2-step heighten</div>
+                  <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+                </button>
+                <button class="diff" data-diff="Advanced" data-api-diff="advanced">
+                  <div class="name">Advanced</div><div class="meta">Status flip · Δ</div>
+                  <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Live: active challenge -->
+            <div id="liveState" class="mt-4 hidden">
+              <div class="by-eyebrow">Difficulty</div>
+              <div id="liveDiff" class="font-display text-[15px]" style="color:var(--by-ink);">—</div>
+              <div class="mt-3 border hairline p-4" style="background:var(--by-bg);">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-2 h-2 rounded-full" style="background:var(--by-tomato);animation:chip-pulse 1.6s infinite;"></div>
+                  <div class="text-[11.5px] font-semibold text-live-indicator">Challenge active · 48h window</div>
+                </div>
+                <div class="text-[12px]" style="color:var(--by-ink-3);">
+                  <span id="respCount" class="font-mono text-[15px]" style="color:var(--by-ink);">0</span>
+                  of <span id="respTotal" class="font-mono">0</span> students responded
+                </div>
+              </div>
+              <button id="newChallenge" class="btn-live w-full h-10 mt-3 text-[13px]">Deploy another challenge</button>
+            </div>
+
+          </div>
+
+          <!-- Recent challenges list -->
+          <div class="border-t hairline">
+            <div class="px-5 py-4 flex items-center justify-between border-b hairline">
+              <div class="font-display text-[20px]" style="color:var(--by-ink);">Recent Challenges</div>
+              <span class="by-eyebrow">Last 7 days</span>
+            </div>
+            <ul id="recentChallenges" class="divide-y text-[12.5px]" style="border-color:var(--by-bg-3);">
+              <li class="px-5 py-3 text-center text-[12px]" style="color:var(--by-ink-3);">No challenges yet this week.</li>
+            </ul>
+          </div>
+        </div>
+
+
+      </aside>
+    </main>
+
+    <footer class="px-4 lg:px-7 py-4 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3);">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4);">v0.9.2 "Curtain Call"</span></div>
+      <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+    </footer>
+  </div>
+</div>
+
+<!-- ══ Shared right-drawer styles ══ -->
+<style>
+  .by-drawer-overlay {
+    display:none; position:fixed; inset:0; z-index:49; background:rgba(20,18,16,.45);
+  }
+  .by-drawer-overlay.open { display:block; }
+  .by-drawer {
+    position:fixed; top:0; right:0; bottom:0; z-index:50;
+    width:min(480px, 100vw);
+    background:var(--by-bg); border-left:var(--by-bd-thick);
+    display:flex; flex-direction:column;
+    transform:translateX(100%);
+    transition:transform 240ms cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;
+  }
+  .by-drawer.open { transform:translateX(0); }
+  .by-drawer-wide { width:min(640px, 100vw); }
+</style>
+
+<!-- ══ Student Detail Drawer ══ -->
+<div id="student-drawer-overlay" class="by-drawer-overlay" onclick="closeStudentDrawer()"></div>
+<div id="student-drawer" class="by-drawer">
+  <div class="px-5 py-4 flex items-start justify-between gap-4 flex-shrink-0"
+       style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
+    <div class="flex items-center gap-3 min-w-0">
+      <span id="sd-av" class="flex-shrink-0 w-12 h-12 flex items-center justify-center font-display text-[18px]"
+            style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);">?</span>
+      <div class="min-w-0">
+        <div class="by-eyebrow mb-0.5">Student Profile</div>
+        <div id="sd-name" class="font-display text-[22px] leading-tight truncate" style="color:var(--by-ink);">—</div>
+      </div>
+    </div>
+    <button onclick="closeStudentDrawer()" class="flex-shrink-0 w-9 h-9 flex items-center justify-center mt-0.5 btn-ghost">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div id="sd-body" class="flex-1 px-5 py-5 flex flex-col gap-4 overflow-y-auto"></div>
+</div>
+
+<!-- ══ Message Students drawer ══ -->
+<div id="msg-drawer-overlay" class="by-drawer-overlay" onclick="closeMsgModal()"></div>
+<div id="msg-drawer" class="by-drawer">
+  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--by-ink);">
+    <div class="font-display text-[22px]" style="color:var(--by-ink);">Message Students</div>
+    <button onclick="closeMsgModal()" class="w-9 h-9 flex items-center justify-center btn-ghost">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="p-5 flex flex-col gap-4 overflow-y-auto flex-1">
+
+    <!-- ── Recipients section ── -->
+    <div>
+      <div class="by-eyebrow mb-2">Recipients</div>
+
+      <!-- Selected recipient chips -->
+      <div id="msgChips" class="flex flex-wrap gap-1.5 mb-3 min-h-[28px]">
+        <span class="by-eyebrow" style="color:var(--by-ink-4);font-size:11px;" id="msgNoRecip">No recipients selected yet.</span>
+      </div>
+
+      <!-- Student search -->
+      <div class="mb-3">
+        <label class="by-eyebrow block mb-1.5">Search a student</label>
+        <div class="relative">
+          <input id="msgStudentSearch" type="text" placeholder="Type student name…" class="msg-input w-full"
+            autocomplete="off" oninput="filterStudents(this.value)" onfocus="filterStudents(this.value)" />
+          <div id="msgStudentDrop"
+            class="hidden absolute left-0 right-0 z-20 border-x border-b"
+            style="background:var(--by-bg);border-color:var(--by-ink);max-height:200px;overflow-y:auto;top:100%;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Class checklist -->
+      <div>
+        <div class="by-eyebrow mb-1.5">Message a class (select one or more)</div>
+        <div id="msgClassList" class="flex flex-col gap-1.5"></div>
+      </div>
+    </div>
+
+    <!-- ── Subject ── -->
+    <div>
+      <label class="by-eyebrow block mb-1.5">Subject</label>
+      <input id="msgSubject" type="text" placeholder="e.g. Notes from today's session" class="msg-input w-full" />
+    </div>
+
+    <!-- ── Body ── -->
+    <div class="flex flex-col flex-1">
+      <label class="by-eyebrow block mb-1.5">Message</label>
+      <textarea id="msgBody" placeholder="Write your message…" class="msg-textarea w-full" style="min-height:120px;flex:1;"></textarea>
+    </div>
+
+    <!-- ── Actions ── -->
+    <div class="flex gap-3 pt-1">
+      <button id="msgSendBtn" onclick="sendTeacherMessage()"
+        class="flex-1 h-11 font-display text-[14px] flex items-center justify-center gap-2"
+        style="background:var(--by-yes);color:var(--by-ink);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);cursor:pointer;">
+        Send →
+      </button>
+      <button onclick="closeMsgModal()" class="h-11 px-4 btn-ghost text-[13px]" style="font-family:var(--by-f-body);">Cancel</button>
+    </div>
+    <div id="msgConfirm" class="hidden text-center text-[12px] py-2" style="color:#2A8A4F;font-family:var(--by-f-mono);">
+      ✓ Message sent
+    </div>
+  </div>
+</div>
+
+<!-- ══ Month View drawer ══ -->
+<div id="month-drawer-overlay" class="by-drawer-overlay" onclick="closeMonthView()"></div>
+<div id="month-drawer" class="by-drawer by-drawer-wide">
+  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--by-ink);">
+    <div class="font-display text-[22px]" style="color:var(--by-ink);">Monthly View</div>
+    <button onclick="closeMonthView()" class="w-9 h-9 flex items-center justify-center btn-ghost">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div id="monthGrid" class="p-5"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ DATA ═══ -->
+<script>
+  const CLASSES = {{ classes_json | safe }};
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════ APP ════ -->
+<script>
+(function () {
+  const $  = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function tintFor(id){
+    const p=[['#FBBF24','#F472B6'],['#22D3EE','#FBBF24'],['#A78BFA','#FBBF24'],['#34D399','#FBBF24'],['#60A5FA','#22D3EE'],['#FB7185','#FBBF24']];
+    let h=0; for(const ch of String(id)) h=(h*31+ch.charCodeAt(0))|0;
+    return p[Math.abs(h)%p.length];
+  }
+
+  // ── State ──────────────────────────────────────────────────────────────
+  const STATE = {
+    tab: 'active',
+    selectedId: null,
+    attendance: {},
+    challenge: { phase:'idle', startedAt:null, difficulty:null, responses:0 },
+  };
+
+  // ── Tabs ───────────────────────────────────────────────────────────────
+  function setTab(t) {
+    STATE.tab = t;
+    $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+    renderStrip();
+    const sel = CLASSES.find(c => c.id === STATE.selectedId);
+    if (!sel || sel.status !== t) {
+      const first = CLASSES.find(c => c.status === t);
+      STATE.selectedId = first ? first.id : null;
+      renderSelected();
+    }
+  }
+  $$('.tab').forEach(t => t.addEventListener('click', () => setTab(t.dataset.tab)));
+
+  // ── Select class (from card or week pill) ─────────────────────────────
+  window.selectClass = function(id) {
+    const cls = CLASSES.find(c => c.id === id);
+    if (!cls) return;
+    STATE.tab = cls.status;
+    $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === cls.status));
+    STATE.selectedId = id;
+    renderStrip();
+    renderSelected();
+    updateWeekPills();
+    // Scroll roster into view on mobile
+    if (window.innerWidth < 1024) {
+      const rosterEl = document.querySelector('main');
+      if (rosterEl) rosterEl.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  };
+
+  // ── Week strip pills ───────────────────────────────────────────────────
+  function updateWeekPills() {
+    $$('.week-pill').forEach(p => {
+      p.classList.toggle('selected', p.dataset.classId === STATE.selectedId);
+    });
+  }
+
+  // ── Class strip ────────────────────────────────────────────────────────
+  function classCardHTML(c) {
+    const isSel    = c.id === STATE.selectedId;
+    const enrolled = c.students.length || 0;
+    const chip =
+      c.status === 'active'   ? '<span class="chip chip-active"><span class="dot"></span>In term</span>'   :
+      c.status === 'upcoming' ? '<span class="chip chip-upcoming"><span class="dot"></span>Upcoming</span>' :
+                                '<span class="chip chip-past"><span class="dot"></span>Past</span>';
+    return `
+      <div class="class-card ${isSel ? 'selected' : ''}" data-id="${esc(c.id)}">
+        <div class="flex items-start justify-between gap-2">
+          <div class="font-display text-[15.5px] leading-tight" style="color:var(--by-ink);">${esc(c.title)}</div>
+          ${chip}
+        </div>
+        <div class="mt-2 text-[12px] flex items-center gap-1.5" style="color:var(--by-ink-3);">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          ${esc(c.sched)}
+        </div>
+        <div class="mt-1 text-[11.5px] font-mono" style="color:var(--by-ink-3);">${esc(c.term)}</div>
+        <div class="mt-3 pt-3 flex items-center justify-between" style="border-top:1px solid var(--by-bg-3);">
+          <span class="text-[11.5px]" style="color:var(--by-ink-3);">${esc(c.room)}</span>
+          <span class="text-[13px] font-mono" style="color:var(--by-ink);"><b>${enrolled}</b><span style="color:var(--by-ink-4);">/${c.cap}</span></span>
+        </div>
+      </div>`;
+  }
+
+  function renderStrip() {
+    const items = CLASSES.filter(c => c.status === STATE.tab);
+    $('#classStrip').innerHTML = items.map(classCardHTML).join('') ||
+      `<div class="col-span-full text-center text-[12.5px] py-8 border hairline" style="background:var(--by-bg-2);color:var(--by-ink-3);">No classes in this bucket.</div>`;
+  }
+
+  $('#classStrip').addEventListener('click', e => {
+    const card = e.target.closest('.class-card');
+    if (!card) return;
+    selectClass(card.dataset.id);
+  });
+
+  // ── Roster ─────────────────────────────────────────────────────────────
+  function rowTemplate(s) {
+    const t   = s.tint || tintFor(s.id);
+    const att = STATE.attendance[s.id];
+    return `
+      <tr class="roster-row" data-id="${esc(s.id)}">
+        <td class="pl-5 pr-3 py-2.5">
+          <div class="flex items-center gap-3">
+            <span class="av" style="background:linear-gradient(135deg,${t[0]},${t[1]});border:1.5px solid var(--by-ink);">${esc(s.initials)}</span>
+            <div class="leading-tight">
+              <div class="text-[13.5px] font-semibold" style="color:var(--by-ink);">${esc(s.name)}</div>
+              <div class="text-[11px] font-mono" style="color:var(--by-ink-3);">${esc(s.id)}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-3 py-2.5">
+          <span class="pts" id="pts-${esc(s.id)}">${s.pts} <span style="color:var(--by-ink-3);">pts</span></span>
+        </td>
+        <td class="px-3 py-2.5 hidden sm:table-cell">
+          <span class="text-[12.5px] font-mono" style="color:var(--by-ink-2);">${s.streak}<span style="color:var(--by-ink-3);"> wks</span></span>
+        </td>
+        <td class="pl-3 pr-5 py-2.5 text-right">
+          <div class="att inline-flex" data-id="${esc(s.id)}">
+            <button data-v="P" class="${att==='P'?'on':''}">P</button>
+            <button data-v="L" class="${att==='L'?'on':''}">L</button>
+            <button data-v="A" class="${att==='A'?'on':''}">A</button>
+          </div>
+        </td>
+      </tr>`;
+  }
+
+  function renderSelected() {
+    const c = CLASSES.find(x => x.id === STATE.selectedId);
+
+    if (!c) {
+      $('#selTitle').textContent = 'Select a class above';
+      $('#selChip').classList.add('hidden');
+      $('#selSchedule').innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> —`;
+      $('#selTerm').textContent = '—';
+      $('#selEnrolled').textContent = '—';
+      $('#selCap').textContent = '—';
+      $('#respTotal').textContent = '0';
+      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">Select a class above to open its roster.</td></tr>`;
+      $('#rosterFooterMsg').textContent = 'No class selected.';
+      $('#msgClassBtn').style.display = 'none';
+      updateAttendanceCounts();
+      return;
+    }
+
+    $('#selTitle').textContent = c.title;
+    const chip = $('#selChip');
+    chip.classList.remove('hidden');
+    chip.innerHTML = `<span class="dot"></span>${c.status === 'active' ? 'Active' : c.status === 'upcoming' ? 'Upcoming' : 'Past'}`;
+    chip.className = `chip chip-${c.status === 'active' ? 'active' : c.status === 'upcoming' ? 'upcoming' : 'past'}`;
+    $('#selSchedule').innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> ${esc(c.sched)}`;
+    $('#selTerm').textContent = c.term;
+    $('#selEnrolled').textContent = c.students.length;
+    $('#selCap').textContent = c.cap;
+    $('#respTotal').textContent = c.students.length;
+    $('#rosterFooterMsg').textContent = `${c.title} · ${c.students.length} student${c.students.length !== 1 ? 's' : ''}`;
+    $('#msgClassBtn').style.display = 'flex';
+
+    if (!c.students.length) {
+      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center text-[13px]" style="color:var(--by-ink-3);">Roster opens when this class becomes active.</td></tr>`;
+    } else {
+      $('#rosterBody').innerHTML = c.students.map(rowTemplate).join('');
+    }
+    updateAttendanceCounts();
+
+    // Pre-select this class in the message dropdown
+    const msgSel = $('#msgTarget');
+    if (msgSel) {
+      const opt = Array.from(msgSel.options).find(o => o.value === c.id);
+      if (opt) msgSel.value = c.id;
+    }
+  }
+
+  // ── Attendance ─────────────────────────────────────────────────────────
+  async function setAttendance(studentId, value) {
+    const prev = STATE.attendance[studentId];
+    STATE.attendance[studentId] = value;
+
+    const row = document.querySelector(`tr[data-id="${studentId}"] .att`);
+    if (row) row.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === value));
+    updateAttendanceCounts();
+
+    const apiStatus = value === 'P' ? 'present' : value === 'L' ? 'late' : 'absent';
+    const c = CLASSES.find(x => x.id === STATE.selectedId);
+    if (!c) return;
+
+    try {
+      const res  = await fetch('/api/attendance', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ class_id:c.id, student_id:studentId, status:apiStatus }),
+      });
+      const data = await res.json();
+      if (data.ok && data.new_balance != null) {
+        const stu = c.students.find(s => s.id === studentId);
+        if (stu) {
+          stu.pts = data.new_balance;
+          const el = $(`#pts-${studentId}`);
+          if (el) {
+            el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+            el.innerHTML = `${data.new_balance} <span style="color:var(--by-ink-3);">pts</span>`;
+          }
+          flashToast(`${stu.name} · +10 pts → ${data.new_balance} pts`);
+        }
+      } else if (!data.ok) {
+        STATE.attendance[studentId] = prev;
+        if (row) row.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === prev));
+        updateAttendanceCounts();
+        flashToast(`Error: ${data.error || 'Could not record attendance'}`);
+      }
+    } catch {
+      flashToast('Network error — attendance not saved');
+    }
+  }
+
+  function updateAttendanceCounts() {
+    const c = CLASSES.find(x => x.id === STATE.selectedId);
+    let p=0, l=0, a=0;
+    if (c) c.students.forEach(s => {
+      const v = STATE.attendance[s.id];
+      if (v==='P') p++; else if (v==='L') l++; else if (v==='A') a++;
+    });
+    $('#presentCount').textContent = p;
+    $('#lateCount').textContent    = l;
+    $('#absentCount').textContent  = a;
+  }
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.att button');
+    if (!btn) return;
+    setAttendance(btn.parentElement.dataset.id, btn.dataset.v);
+  });
+
+  $('#markAllPresent').addEventListener('click', () => {
+    const c = CLASSES.find(x => x.id === STATE.selectedId);
+    if (!c) return;
+    c.students.forEach(s => setAttendance(s.id, 'P'));
+  });
+
+  // ── Toast ───────────────────────────────────────────────────────────────
+  let _toastTimer;
+  function flashToast(msg) {
+    const el = $('#toast');
+    el.textContent = msg; el.style.opacity = '1';
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 2200);
+  }
+  window.flashToast = flashToast;
+
+  // ── Live Challenge ──────────────────────────────────────────────────────
+  const recentChallenges = [];
+
+  function setLivePhase(phase) {
+    STATE.challenge.phase = phase;
+    $('#idleState').classList.toggle('hidden', phase !== 'idle');
+    $('#liveState').classList.toggle('hidden', phase !== 'live');
+    $('#liveCard').classList.toggle('armed', phase === 'live');
+    const status = $('#liveStatus');
+    if (phase === 'idle') {
+      status.className = 'chip chip-past';
+      status.innerHTML = '<span class="dot"></span>Idle';
+      $('#liveTitle').textContent = 'Deploy a prompt';
+    }
+    if (phase === 'live') {
+      status.className = 'chip chip-live';
+      status.innerHTML = '<span class="dot"></span>Active · 48h';
+      $('#liveTitle').textContent = 'Challenge active';
+    }
+  }
+
+  async function deployChallenge(difficulty, apiDiff) {
+    const c = CLASSES.find(x => x.id === STATE.selectedId);
+    if (!c) { flashToast('Select an active class first'); return; }
+    if (!c.students.length) { flashToast('No students enrolled in this class'); return; }
+
+    try {
+      const res  = await fetch('/api/challenge/deploy', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ class_id:c.id, difficulty:apiDiff }),
+      });
+      const data = await res.json();
+      if (!data.ok) { flashToast(`Error: ${data.error || 'Could not deploy challenge'}`); return; }
+
+      STATE.challenge = { phase:'live', startedAt:Date.now(), difficulty, responses:0 };
+      $('#liveDiff').textContent    = difficulty;
+      $('#respCount').textContent   = 0;
+      $('#respTotal').textContent   = c.students.length;
+      setLivePhase('live');
+      flashToast(`Challenge deployed · ${difficulty} · 48h window`);
+
+      recentChallenges.unshift({ diff:difficulty, class:c.title, when:'just now', count:c.students.length });
+      if (recentChallenges.length > 5) recentChallenges.pop();
+      renderRecentChallenges();
+    } catch { flashToast('Network error — challenge not deployed'); }
+  }
+
+  function renderRecentChallenges() {
+    if (!recentChallenges.length) return;
+    $('#recentChallenges').innerHTML = recentChallenges.map(r =>
+      `<li class="px-5 py-2.5 flex items-center justify-between">
+        <span style="color:var(--by-ink-2);">${esc(r.diff)} · ${esc(r.class.split('·')[0].trim())}</span>
+        <span class="font-mono" style="color:var(--by-ink-3);">${r.count} stu · ${esc(r.when)}</span>
+      </li>`
+    ).join('');
+  }
+
+  document.addEventListener('click', e => {
+    const diff = e.target.closest('.diff');
+    if (diff) deployChallenge(diff.dataset.diff, diff.dataset.apiDiff);
+  });
+  $('#newChallenge').addEventListener('click', () => setLivePhase('idle'));
+
+  // ── Message Students (multi-recipient) ─────────────────────────────────
+  const _msgSelected = new Map(); // id → {id, label, type}
+
+  function _renderChips() {
+    const container = $('#msgChips');
+    const noRecip   = $('#msgNoRecip');
+    const items = Array.from(_msgSelected.values());
+    if (!items.length) {
+      if (noRecip) noRecip.style.display = '';
+      container.querySelectorAll('.msg-chip').forEach(c => c.remove());
+      return;
+    }
+    if (noRecip) noRecip.style.display = 'none';
+    container.querySelectorAll('.msg-chip').forEach(c => c.remove());
+    items.forEach(r => {
+      const chip = document.createElement('span');
+      chip.className = 'msg-chip flex items-center gap-1 px-2 py-0.5 text-[11.5px] font-semibold cursor-pointer';
+      chip.style.cssText = 'background:var(--by-yes);border:var(--by-bd);font-family:var(--by-f-mono);';
+      chip.innerHTML = `${esc(r.label)} <span style="font-size:14px;line-height:1;" onclick="event.stopPropagation()">×</span>`;
+      chip.querySelector('span').addEventListener('click', () => { _msgSelected.delete(r.id); _renderChips(); _renderClassList(); });
+      container.appendChild(chip);
+    });
+  }
+
+  function _renderClassList() {
+    const container = $('#msgClassList');
+    if (!container) return;
+    const activeClasses = CLASSES.filter(c => c.status === 'active');
+    container.innerHTML = '';
+    if (!activeClasses.length) { container.innerHTML = '<span class="by-eyebrow" style="color:var(--by-ink-4);">No active classes.</span>'; return; }
+    activeClasses.forEach(c => {
+      const checked = _msgSelected.has(c.id);
+      const row = document.createElement('label');
+      row.className = 'flex items-center gap-2.5 px-3 py-2 cursor-pointer';
+      row.style.cssText = `border:var(--by-bd);background:${checked ? 'var(--by-yes-soft)' : 'var(--by-bg)'};`;
+      row.innerHTML = `
+        <input type="checkbox" ${checked ? 'checked' : ''} style="width:14px;height:14px;accent-color:var(--by-yes-deep);flex-shrink:0;" />
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-[13px] truncate">${esc(c.title)}</div>
+          <div class="by-eyebrow">${esc(c.sched)} · ${c.students.length} student${c.students.length!==1?'s':''}</div>
+        </div>`;
+      row.querySelector('input').addEventListener('change', e => {
+        if (e.target.checked) _msgSelected.set(c.id, { id:c.id, label:`${c.title.split(' ').slice(0,3).join(' ')} (${c.students.length})`, type:'class' });
+        else _msgSelected.delete(c.id);
+        _renderChips();
+        _renderClassList();
+      });
+      container.appendChild(row);
+    });
+  }
+
+  window.filterStudents = function(query) {
+    const drop = $('#msgStudentDrop');
+    if (!drop) return;
+    if (!query.trim()) { drop.classList.add('hidden'); return; }
+    const q = query.toLowerCase();
+    const activeClasses = CLASSES.filter(c => c.status === 'active');
+    const seen = new Set(); const results = [];
+    activeClasses.forEach(c => c.students.forEach(s => {
+      if (!seen.has(s.id) && s.name.toLowerCase().includes(q)) {
+        seen.add(s.id); results.push({...s, cls: c.title});
+      }
+    }));
+    if (!results.length) { drop.innerHTML = '<div class="px-3 py-2 text-[12px]" style="color:var(--by-ink-3);">No students found.</div>'; drop.classList.remove('hidden'); return; }
+    drop.innerHTML = results.sort((a,b)=>a.name.localeCompare(b.name)).map(s =>
+      `<div class="px-3 py-2 text-[13px] cursor-pointer flex items-center justify-between"
+            style="border-bottom:1px solid var(--by-bg-3);"
+            onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background=''"
+            onclick="addStudentRecip('${esc(s.id)}','${esc(s.name)}')">
+        <span class="font-semibold">${esc(s.name)}</span>
+        <span class="by-eyebrow">${esc(s.cls.split(' ').slice(0,2).join(' '))}</span>
+      </div>`
+    ).join('');
+    drop.classList.remove('hidden');
+  };
+
+  window.addStudentRecip = function(id, name) {
+    _msgSelected.set(id, { id, label:name, type:'student' });
+    _renderChips();
+    const search = $('#msgStudentSearch');
+    const drop   = $('#msgStudentDrop');
+    if (search) search.value = '';
+    if (drop) drop.classList.add('hidden');
+  };
+
+  // Close student dropdown on outside click
+  document.addEventListener('click', e => {
+    const drop = $('#msgStudentDrop');
+    const inp  = $('#msgStudentSearch');
+    if (drop && inp && !inp.contains(e.target) && !drop.contains(e.target)) {
+      drop.classList.add('hidden');
+    }
+  });
+
+  window.openMsgPanel = function() { openMsgModal(); };
+
+  window.openMsgModal = function(preselect) {
+    _renderClassList();
+    _renderChips();
+    // Pre-select a class or individual student
+    if (preselect || STATE.selectedId) {
+      const pid = preselect || STATE.selectedId;
+      if (pid.startsWith('u')) {
+        // Individual student
+        let sName = pid;
+        CLASSES.forEach(c => { const s = c.students.find(x => x.id === pid); if (s) sName = s.name; });
+        if (!_msgSelected.has(pid)) {
+          _msgSelected.set(pid, { id:pid, label:sName, type:'student' });
+          _renderChips();
+        }
+      } else {
+        const c = CLASSES.find(x => x.id === pid);
+        if (c && !_msgSelected.has(pid)) {
+          _msgSelected.set(pid, { id:pid, label:`${c.title.split(' ').slice(0,3).join(' ')} (${c.students.length})`, type:'class' });
+          _renderChips();
+          _renderClassList();
+        }
+      }
+    }
+    $('#msg-drawer').classList.add('open');
+    $('#msg-drawer-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => { $('#msgSubject')?.focus(); }, 260);
+  };
+
+  window.closeMsgModal = function() {
+    $('#msg-drawer').classList.remove('open');
+    $('#msg-drawer-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    const drop = $('#msgStudentDrop');
+    if (drop) drop.classList.add('hidden');
+  };
+
+  function buildMsgOptions() {} // no-op — kept for legacy call sites
+
+  // ── Search ─────────────────────────────────────────────────────────────
+  window.searchEnsemble = function(query) {
+    const drop = $('#searchDrop');
+    if (!drop) return;
+    const q = query.trim().toLowerCase();
+    if (!q) { drop.classList.add('hidden'); drop.innerHTML = ''; return; }
+
+    // Match classes
+    const matchedClasses = CLASSES.filter(c =>
+      c.title.toLowerCase().includes(q) || c.sched.toLowerCase().includes(q)
+    );
+
+    // Match students (deduplicated across classes)
+    const seen = new Set(); const matchedStudents = [];
+    CLASSES.forEach(c => c.students.forEach(s => {
+      if (!seen.has(s.id) && s.name.toLowerCase().includes(q)) {
+        seen.add(s.id);
+        matchedStudents.push({ ...s, cls: c.title, cls_id: c.id });
+      }
+    }));
+
+    if (!matchedClasses.length && !matchedStudents.length) {
+      drop.innerHTML = `<div class="px-4 py-3 by-eyebrow" style="color:var(--by-ink-4);">No results for "${esc(query)}"</div>`;
+      drop.classList.remove('hidden');
+      return;
+    }
+
+    let html = '';
+    if (matchedClasses.length) {
+      html += `<div class="px-4 pt-3 pb-1 by-eyebrow" style="border-bottom:var(--by-bd-soft);">Classes</div>`;
+      html += matchedClasses.map(c => `
+        <div class="px-4 py-2.5 flex items-center gap-3 cursor-pointer"
+             style="border-bottom:1px solid var(--by-bg-3);"
+             onmousedown="selectClass('${esc(c.id)}');document.getElementById('searchInput').value='';clearSearch();"
+             onmouseover="this.style.background='var(--by-yes-soft)'"
+             onmouseout="this.style.background=''">
+          <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
+          <div class="min-w-0">
+            <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(c.title)}</div>
+            <div class="by-eyebrow">${esc(c.sched)} · ${c.students.length} student${c.students.length!==1?'s':''}</div>
+          </div>
+        </div>`).join('');
+    }
+    if (matchedStudents.length) {
+      html += `<div class="px-4 pt-3 pb-1 by-eyebrow" style="border-bottom:var(--by-bd-soft);">Students</div>`;
+      html += matchedStudents.map(s => `
+        <div class="px-4 py-2.5 flex items-center gap-3 cursor-pointer"
+             style="border-bottom:1px solid var(--by-bg-3);"
+             onmousedown="openStudentDrawer('${esc(s.id)}');document.getElementById('searchInput').value='';clearSearch();"
+             onmouseover="this.style.background='var(--by-yes-soft)'"
+             onmouseout="this.style.background=''">
+          <span class="w-8 h-8 flex-shrink-0 flex items-center justify-center text-[11px] font-bold"
+                style="background:linear-gradient(135deg,${s.tint[0]},${s.tint[1]});border:var(--by-bd);color:#fff;">
+            ${esc(s.initials)}
+          </span>
+          <div class="min-w-0">
+            <div class="text-[13px] font-semibold" style="color:var(--by-ink);">${esc(s.name)}</div>
+            <div class="by-eyebrow">${esc(s.cls)} · ${s.pts} pts</div>
+          </div>
+        </div>`).join('');
+    }
+
+    drop.innerHTML = html;
+    drop.classList.remove('hidden');
+  };
+
+  window.clearSearch = function() {
+    const drop = $('#searchDrop');
+    if (drop) { drop.classList.add('hidden'); drop.innerHTML = ''; }
+  };
+
+  // ── Student Detail Drawer ───────────────────────────────────────────────
+  window.openStudentDrawer = function(studentId) {
+    // Collect student data from all classes
+    let student = null;
+    const enrolledClasses = [];
+    CLASSES.forEach(c => {
+      const s = c.students.find(x => x.id === studentId);
+      if (s) { student = s; enrolledClasses.push(c); }
+    });
+    if (!student) return;
+
+    // Avatar
+    const av = $('#sd-av');
+    if (av) {
+      av.textContent = student.initials;
+      av.style.background = `linear-gradient(135deg,${student.tint[0]},${student.tint[1]})`;
+      av.style.color = '#fff';
+    }
+    $('#sd-name').textContent = student.name;
+
+    const classRows = enrolledClasses.map(c => `
+      <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--by-bg-3);">
+        <div class="min-w-0">
+          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(c.title)}</div>
+          <div class="by-eyebrow">${esc(c.sched)}</div>
+        </div>
+        <button onclick="selectClass('${esc(c.id)}');closeStudentDrawer();"
+          class="h-7 px-2 text-[11px] btn-ghost flex-shrink-0 ml-3" style="font-family:var(--by-f-body);">View class →</button>
+      </div>`).join('');
+
+    const attBtns = STATE.attendance[student.id] || null;
+
+    $('#sd-body').innerHTML = `
+      <div class="grid grid-cols-2 gap-2">
+        <div style="border:var(--by-bd);background:var(--by-yes);padding:12px 14px;">
+          <div class="by-eyebrow">Yes-And Points</div>
+          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--by-ink);">${student.pts}</div>
+        </div>
+        <div style="border:var(--by-bd);background:var(--by-bg-2);padding:12px 14px;">
+          <div class="by-eyebrow">Attendance Streak</div>
+          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--by-ink);">${student.streak}<span class="text-[14px]" style="color:var(--by-ink-3);"> wk</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="by-eyebrow mb-2">Enrolled Classes</div>
+        <div style="border:var(--by-bd);background:var(--by-bg);">
+          ${classRows || '<div class="px-4 py-3 by-eyebrow" style="color:var(--by-ink-4);">Not enrolled in any active class.</div>'}
+        </div>
+      </div>
+      <div>
+        <div class="by-eyebrow mb-2">Today's Attendance</div>
+        <div class="att inline-flex" data-id="${esc(student.id)}">
+          <button data-v="P" class="${attBtns==='P'?'on':''}">Present</button>
+          <button data-v="L" class="${attBtns==='L'?'on':''}">Late</button>
+          <button data-v="A" class="${attBtns==='A'?'on':''}">Absent</button>
+        </div>
+      </div>
+      <div>
+        <div class="by-eyebrow mb-2">Quick Actions</div>
+        <button onclick="openMsgModal('${esc(student.id)}');closeStudentDrawer();"
+          class="w-full h-10 font-display text-[13px] flex items-center justify-center gap-2"
+          style="background:var(--by-bg-2);border:var(--by-bd-thick);cursor:pointer;">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message ${esc(student.name.split(' ')[0])}
+        </button>
+      </div>`;
+
+    $('#student-drawer').classList.add('open');
+    $('#student-drawer-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeStudentDrawer = function() {
+    $('#student-drawer').classList.remove('open');
+    $('#student-drawer-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  window.sendTeacherMessage = async function() {
+    const targets = Array.from(_msgSelected.keys());
+    const subject = ($('#msgSubject')?.value || '').trim();
+    const body    = ($('#msgBody')?.value    || '').trim();
+
+    if (!targets.length) { flashToast('Add at least one recipient'); return; }
+    if (!subject)        { flashToast('Add a subject line'); return; }
+    if (!body)           { flashToast('Write your message'); return; }
+
+    const btn = $('#msgSendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      const res  = await fetch('/api/teacher/message', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ targets, subject, body }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        flashToast(`Sent to ${data.sent} recipient${data.sent!==1?'s':''} across ${data.targets} target${data.targets!==1?'s':''}`);
+        $('#msgSubject').value = '';
+        $('#msgBody').value    = '';
+        _msgSelected.clear();
+        _renderChips();
+        _renderClassList();
+        const confirm = $('#msgConfirm');
+        if (confirm) {
+          confirm.classList.remove('hidden');
+          setTimeout(() => { confirm.classList.add('hidden'); closeMsgModal(); }, 1800);
+        }
+      } else {
+        flashToast(`Error: ${data.error || 'Could not send'}`);
+      }
+    } catch {
+      flashToast('Network error — message not sent');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send →';
+    }
+  };
+
+  // ── Keyboard shortcut ───────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    const tag = (document.activeElement?.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault(); $('#searchInput')?.focus();
+    }
+  });
+
+  // ── Boot ────────────────────────────────────────────────────────────────
+  renderStrip();
+  const firstActive = CLASSES.find(c => c.status === 'active');
+  if (firstActive) {
+    STATE.selectedId = firstActive.id;
+    renderStrip();
+    renderSelected();
+    updateWeekPills();
+  }
+  setLivePhase('idle');
+  buildMsgOptions();
+
+  // ── Improv greeting ────────────────────────────────────────────────────
+  (function() {
+    const firstName = '{{ current_user_name }}'.split(' ')[0];
+    const greetings = [
+      'Yes, and…', 'Welcome back,', 'Ready to play,', 'On your feet,',
+      'Make your partner look good,', 'Accept every offer,', 'Present &amp; listening,',
+      'Trust your instincts,', 'Find the game,', 'Justify everything,',
+    ];
+    const g = greetings[Math.floor(Math.random() * greetings.length)];
+    const el = document.getElementById('headerGreeting');
+    if (el) el.innerHTML = `${g} <span style="color:var(--by-yes-deep);">${firstName}</span>`;
+  })();
+
+  // ── Sidebar toggle ──────────────────────────────────────────────────────
+  window.toggleSidebar = function() {
+    const s = document.getElementById('app-sidebar');
+    const o = document.getElementById('sidebar-overlay');
+    const open = s.classList.toggle('open');
+    o.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  // ── Month view ──────────────────────────────────────────────────────────
+  window.openMonthView = function() {
+    const overlay = document.getElementById('month-drawer-overlay');
+    const grid    = document.getElementById('monthGrid');
+
+    // Build a simple 5-week calendar for the current month
+    const now   = new Date();
+    const year  = now.getFullYear();
+    const month = now.getMonth();
+    const firstDay   = new Date(year, month, 1).getDay(); // 0=Sun
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const monthName = now.toLocaleString('default', { month: 'long' });
+
+    // Map classes by JS day-of-week index (Mon=0)
+    const classByDay = {};
+    CLASSES.filter(c => c.status === 'active').forEach(c => {
+      const dayMap = {Monday:0,Tuesday:1,Wednesday:2,Thursday:3,Friday:4,Saturday:5,Sunday:6};
+      const parts  = c.sched.split(' ');
+      if (dayMap[parts[0]] !== undefined) {
+        const d = dayMap[parts[0]];
+        if (!classByDay[d]) classByDay[d] = [];
+        classByDay[d].push(c);
+      }
+    });
+
+    // First cell offset (JS: Sun=0, we want Mon=0)
+    const startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+
+    let html = `<div class="by-eyebrow mb-4">${monthName} ${year}</div>`;
+    html += '<div class="grid grid-cols-7 gap-1">';
+    dayNames.forEach(d => {
+      html += `<div class="by-eyebrow text-center pb-1" style="font-size:9px;">${d}</div>`;
+    });
+    for (let i = 0; i < startOffset; i++) html += '<div></div>';
+    const today = new Date().getDate();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const col = (startOffset + day - 1) % 7; // 0=Mon
+      const isToday = (day === today);
+      const hasClass = classByDay[col] && classByDay[col].length > 0;
+      html += `<div class="p-1 text-center" style="border:1px solid var(--by-bg-3);${isToday ? 'background:var(--by-yes-soft);' : ''}">
+        <div class="text-[12px] font-semibold" style="color:${isToday ? 'var(--by-ink)' : 'var(--by-ink-3)'};">${day}</div>
+        ${hasClass ? classByDay[col].map(c => `<div class="mt-0.5 px-1 text-[9px] truncate" style="background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-mono);">${c.title.split(' ').slice(0,2).join(' ')}</div>`).join('') : ''}
+      </div>`;
+    }
+    html += '</div>';
+    grid.innerHTML = html;
+    document.getElementById('month-drawer').classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeMonthView = function() {
+    document.getElementById('month-drawer').classList.remove('open');
+    document.getElementById('month-drawer-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════ ACTIVITY BOX ════ -->
+<script>
+(function() {
+  const GAMES = [
+    // ── Warm-Up ────────────────────────────────────────────────────────
+    { cat:"Warm-Up", title:"Yes-And Circle", dur:"5 – 10 min", players:"Whole group",
+      desc:"Players stand in a circle. One person makes a statement about an imaginary shared reality. The next person starts with \"Yes, and…\" and adds to it, building the world one offer at a time.",
+      tip:"Watch for \"yes, but\" sneaking in. Pause and ask the group to notice the difference in energy." },
+    { cat:"Warm-Up", title:"Zip Zap Zop", dur:"5 min", players:"8 – 20",
+      desc:"Players pass a vocal ping around the circle using the words Zip → Zap → Zop in sequence, pointing at the receiver. Speed up gradually and introduce mistakes as energy.",
+      tip:"Eliminate players on wrong words to raise stakes. Use it as a focus calibration tool." },
+    { cat:"Warm-Up", title:"Sound Ball", dur:"5 – 8 min", players:"Whole group",
+      desc:"Players throw an imaginary ball across the circle, accompanying each throw and catch with a sound. The catcher must mirror the energy of the throw before sending a new sound.",
+      tip:"Introduce multiple balls simultaneously to challenge focus and presence." },
+    { cat:"Warm-Up", title:"Machine", dur:"8 – 12 min", players:"Whole group",
+      desc:"One player begins a repetitive movement with sound. Others join one at a time, connecting to the machine physically and sonically until everyone is part of it.",
+      tip:"Ask the machine to speed up, slow down, or break. Watch for ensemble listening." },
+    { cat:"Warm-Up", title:"Pass the Face", dur:"5 – 8 min", players:"8 – 16",
+      desc:"One player makes an expression and sends it around the circle. Each player receives and transforms the expression slightly before passing it on. No words.",
+      tip:"Debrief on how quickly the expression morphed — great conversation starter on assumptions." },
+    { cat:"Warm-Up", title:"Emotional Quadrants", dur:"8 – 10 min", players:"Whole group",
+      desc:"Divide the room into four corners, each labeled with an emotion. Players walk through space, matching their physicality to the quadrant they enter, transitioning fluidly.",
+      tip:"Call out emotion labels or let players discover them through movement. Works well silently." },
+    { cat:"Warm-Up", title:"String of Pearls", dur:"5 min", players:"Whole group",
+      desc:"One player says a word. The next player says a word that is meaningfully connected to it. Each addition is a new pearl — the chain reveals the group's associative mind.",
+      tip:"Call a freeze and ask the group to trace the chain back. Often delightfully strange." },
+    { cat:"Warm-Up", title:"Columbian Hypnosis", dur:"8 – 12 min", players:"Pairs",
+      desc:"One player holds their palm 6 inches from a partner's face. The partner must keep that distance at all times as the hand moves through space. Switch leader on a signal.",
+      tip:"Escalate to groups of three, then full ensemble leading each other around the room." },
+    { cat:"Warm-Up", title:"Kitty Wants a Corner", dur:"8 min", players:"10 – 20",
+      desc:"Players each stand in a spot. One player is 'it' and asks others for their corner. While negotiations happen, players secretly swap corners. The 'it' player tries to steal a spot.",
+      tip:"Use to shake off self-consciousness quickly — it's immediately chaotic and playful." },
+    { cat:"Warm-Up", title:"Energy Ball", dur:"5 min", players:"Whole group",
+      desc:"Players visualise an energy ball in their hands and pass it across the circle. The ball can change size, weight, and temperature. Receivers must respond to what they actually get.",
+      tip:"Ask players to name what they felt they received. Often reveals unspoken assumptions." },
+    // ── Status ─────────────────────────────────────────────────────────
+    { cat:"Status", title:"Status Walk", dur:"10 min", players:"Whole group",
+      desc:"Players move through space assigned a status from 1 (lowest) to 10 (highest). Without speaking, they negotiate status through posture, gaze, pace, and proxemics.",
+      tip:"Try 5-and-5: half the group at 2, half at 9. Then flip them suddenly." },
+    { cat:"Status", title:"Dinner Party", dur:"15 – 20 min", players:"4 – 8",
+      desc:"A dinner party scene where each player holds a secret status number. Characters interact, trying to rise in status or protect their position through social manoeuvre.",
+      tip:"Debrief on how status shifted. Often different from what players assumed." },
+    { cat:"Status", title:"Job Interview", dur:"10 min", players:"2",
+      desc:"A classic interview scene where both player play status from opposite ends — then switch mid-scene. The interviewer becomes desperate; the candidate becomes imperious.",
+      tip:"Watch for the exact moment status flips. The group can call 'flip' to trigger the swap." },
+    { cat:"Status", title:"King's Court", dur:"15 min", players:"5 – 10",
+      desc:"One player is the King or Queen. All others are courtiers whose every status is dictated by a glance, gesture, or word from the monarch. Favours rise and fall in real time.",
+      tip:"Let a low-status player inherit the throne mid-scene and watch the whole court recalibrate." },
+    { cat:"Status", title:"Dog and Owner", dur:"8 – 12 min", players:"Pairs",
+      desc:"One player is a dog, one is the owner. Play the relationship truthfully. Then switch — the dog has high status, the owner has low status. Explore what changes.",
+      tip:"This scene cracks the myth that role determines status. The real world rarely works that way." },
+    { cat:"Status", title:"Gibberish Status", dur:"10 min", players:"2 – 4",
+      desc:"A scene played entirely in made-up language. Status must be conveyed through physicality, tone, rhythm, and prosody alone. No recognisable words allowed.",
+      tip:"Have observers guess each character's status before the debrief. Results are often unanimous." },
+    { cat:"Status", title:"Power Object", dur:"10 min", players:"3 – 5",
+      desc:"A mundane object sits in the centre of the scene. Whoever holds it has absolute status. Players find organic reasons to take or surrender it in the course of the scene.",
+      tip:"Try it with an object that has no natural authority — a dirty sock works well." },
+    { cat:"Status", title:"Status Cards", dur:"15 min", players:"4 – 8",
+      desc:"Each player draws a secret card: ace is lowest, king is highest. Players play a scene without revealing their card. Audience guesses the status order at the end.",
+      tip:"Compare actual card order with perceived order. Discrepancies are your best teaching moments." },
+    // ── Scene Work ─────────────────────────────────────────────────────
+    { cat:"Scene Work", title:"CROW", dur:"15 – 20 min", players:"2",
+      desc:"Establish Character, Relationship, Objective, and Where in the first 60 seconds. Players practise making their CROW visible through specifics — not labels.",
+      tip:"Ring a bell each time something specific (not generic) is established. Track density." },
+    { cat:"Scene Work", title:"First Line / Last Line", dur:"15 min", players:"2 – 3",
+      desc:"The facilitator provides the exact first line and last line of a scene. Players must build a coherent journey between the two given anchors.",
+      tip:"Use absurdly mismatched lines. The creative constraint reveals a lot about narrative instinct." },
+    { cat:"Scene Work", title:"Half-Life", dur:"15 min", players:"2 – 3",
+      desc:"Play a 2-minute scene. Then replay it in 1 minute, keeping all essential beats. Then 30 seconds. Then 15. Then 8. Find what truly matters by what survives.",
+      tip:"The final 8-second version usually produces the funniest and most truthful distillation." },
+    { cat:"Scene Work", title:"Replay", dur:"20 min", players:"2 – 4",
+      desc:"A short scene is played once. Then replayed in a completely different genre: horror, soap opera, Shakespearean tragedy, nature documentary, silent film.",
+      tip:"Let the audience call the genre. Helps players understand how framing shapes meaning." },
+    { cat:"Scene Work", title:"One Word at a Time", dur:"10 – 15 min", players:"2 – 4",
+      desc:"Two players have a conversation or tell a story with each player contributing exactly one word at a time. The mind must surrender control of where the sentence goes.",
+      tip:"Start with a short story before attempting dialogue. Story is easier to sustain jointly." },
+    { cat:"Scene Work", title:"Typewriter", dur:"15 min", players:"3 – 6",
+      desc:"One player narrates as if typing a story; others physically enact exactly what is described, no more and no less. The narrator can edit on the fly.",
+      tip:"Swap the narrator mid-story for a wild tonal shift. Hilarious and reveals editorial voice." },
+    { cat:"Scene Work", title:"Gibberish Scene", dur:"10 – 15 min", players:"2 – 3",
+      desc:"A full emotionally truthful scene played in made-up language. Meaning is communicated through body language, tone, and relationship — nothing else.",
+      tip:"Follow with the same scene in English. Players are often surprised how much richer it becomes." },
+    { cat:"Scene Work", title:"Swedish Dubbing", dur:"15 min", players:"4",
+      desc:"Two players mime a scene in silence while two others voice them from the side in ridiculous accents and non-matching dialogue. Physical and vocal performers must stay in sync.",
+      tip:"Let the voicers take the scene somewhere the movers don't expect. Watch them commit anyway." },
+    { cat:"Scene Work", title:"Conducted Story", dur:"10 – 15 min", players:"5 – 10",
+      desc:"A conductor points at players who must continue a group story mid-sentence. Points can happen at any moment, including mid-word. The story must remain coherent.",
+      tip:"Reward players who use unusual bridging words — 'Furthermore,' 'Meanwhile, in an unrelated cave…'" },
+    { cat:"Scene Work", title:"Organic Scene", dur:"15 min", players:"2 – 4",
+      desc:"A scene with no explicit setup, no characters defined in advance. Players enter one at a time and allow who they are and what they want to emerge from the moment.",
+      tip:"Forbid any scene-setting lines. No 'Ah Doctor, I've come for my appointment.' Just exist." },
+    { cat:"Scene Work", title:"Object Work", dur:"12 min", players:"2",
+      desc:"A scene in which at least one specific, carefully handled imaginary object must be present throughout. The object is the anchor for all blocking and relationship.",
+      tip:"Grade quality of object work separately from scene work. Many players neglect it once talking starts." },
+    { cat:"Scene Work", title:"Emotional Orchestra", dur:"15 min", players:"5 +",
+      desc:"A scene is played while a conductor raises and lowers the emotional volume of different players or the ensemble as a whole — like an orchestra of feeling.",
+      tip:"Contrast a scene at emotional level 1 with level 10. The jump is viscerally effective." },
+    // ── Character ──────────────────────────────────────────────────────
+    { cat:"Character", title:"Character Walk", dur:"12 min", players:"Whole group",
+      desc:"Players walk through the space and gradually develop a character from the ground up — feet, knees, hips, spine, shoulders, neck, face — adding one layer at a time.",
+      tip:"Prompt character history through the body: 'What has this spine been through? What does this walk want?'" },
+    { cat:"Character", title:"Archetype Carousel", dur:"15 min", players:"Whole group",
+      desc:"Players cycle through eight classic archetypes (hero, trickster, caregiver, sage…) in the space, embodying each for 90 seconds before snapping to the next on a signal.",
+      tip:"Ask players to find the archetype they resist most. That resistance is usually the gold." },
+    { cat:"Character", title:"Give Your Partner a Gift", dur:"10 min", players:"Pairs",
+      desc:"One player mimes giving an imaginary gift. The receiver accepts it in full character, letting it reveal something true about who they are in the scene.",
+      tip:"The gift doesn't need to be an object — it can be information, an action, a moment." },
+    { cat:"Character", title:"The Expert", dur:"10 min", players:"1 + interviewer",
+      desc:"A player becomes a world authority on a subject they know nothing about. An interviewer asks increasingly specific questions. The expert must remain completely credible.",
+      tip:"Pair with status: experts who are low-status in life but high-status in their domain." },
+    { cat:"Character", title:"Character Obituary", dur:"10 min", players:"Pairs",
+      desc:"Players write or improvise an obituary for a character they've been playing. Define them through how they died, who loved them, and what they left unfinished.",
+      tip:"Reveals emotional truth players often skip in scenes. Strong backstory shapes present behaviour." },
+    { cat:"Character", title:"Walk Like", dur:"8 min", players:"Whole group",
+      desc:"Players move through the space receiving constant prompts: 'Walk like someone who has just received bad news.' 'Like someone who owns the building.' Snap between types.",
+      tip:"Move from stereotypes into specifics: 'Walk like someone who got bad news but can't show it.'" },
+    { cat:"Character", title:"Emotional Recall", dur:"15 min", players:"2",
+      desc:"Before a scene, each player takes 60 seconds to privately recall a real memory that resonates with the scene's emotional world. They then bring that charge into the work.",
+      tip:"Keep the memory private — this is not a sharing exercise. The charge is what matters, not the story." },
+    { cat:"Character", title:"Persona Swap", dur:"15 min", players:"2",
+      desc:"Midway through a scene, a signal is given and both players instantly swap each other's full physicality and personality — then continue the same scene.",
+      tip:"Watch for the moment players stop performing the character and start inhabiting them." },
+    { cat:"Character", title:"Superhero Intro", dur:"10 min", players:"4 – 8",
+      desc:"Players take turns introducing each other to the group as superheroes. The introduced player must immediately fully commit to the superhero they've been given.",
+      tip:"Superheroes with mundane powers — 'The Reasonable One' — often produce the richest scenes." },
+    { cat:"Character", title:"Two Truths One Lie", dur:"10 min", players:"Whole group",
+      desc:"Each player shares three things about their character. Two are true; one is a lie. The group debates which is the lie. Then the character plays a short scene.",
+      tip:"Use as a scene starter — the 'lie' often becomes the most interesting dramaturgical hook." },
+    // ── Group ──────────────────────────────────────────────────────────
+    { cat:"Group", title:"Advance and Retreat", dur:"10 min", players:"Whole group",
+      desc:"The ensemble moves through space as a single organism — without a leader. When the group advances, it advances together. When it retreats, all retreat. No one conducts.",
+      tip:"Debrief: who felt they were leading? Who felt led? Often nobody, and everyone, simultaneously." },
+    { cat:"Group", title:"Group Agreement", dur:"10 – 15 min", players:"Whole group",
+      desc:"The group must make a collective decision — what to eat, where to go — without speaking. Agreement is reached through gesture, breath, and spatial positioning alone.",
+      tip:"Time how long it takes. Do it again. The improvement curve is fast and satisfying to witness." },
+    { cat:"Group", title:"Blob Tag", dur:"8 min", players:"10 – 20",
+      desc:"One player is 'it'. When they tag someone, that person joins hands to form the blob. The blob chases others together. Only the free ends can tag.",
+      tip:"A joyful state-changer. Use between heavy scene work to reset the room's energy." },
+    { cat:"Group", title:"Cross the Line", dur:"10 min", players:"Whole group",
+      desc:"A line divides the room. The facilitator makes statements. Players step across the line if the statement is true for them, make eye contact, then step back in silence.",
+      tip:"Start with easy truths (I have a sibling) and move toward the work (I have blocked an offer today)." },
+    { cat:"Group", title:"Viewpoints", dur:"20 – 30 min", players:"Whole group",
+      desc:"Players move through space exploring Tempo, Duration, Repetition, Spatial Relationship, and Architecture independently. The facilitator layers one element at a time.",
+      tip:"Begin with just Tempo. Add one element per session. Full Viewpoints work takes months." },
+    { cat:"Group", title:"The Understudy", dur:"15 min", players:"4 – 6",
+      desc:"A scene is running. One player leaves. An 'understudy' enters cold and must seamlessly take over the departed character, reading context from what they observe.",
+      tip:"The understudy can ask the audience 'What am I like?' for one sentence of character briefing." },
+    { cat:"Group", title:"Last Person Standing", dur:"15 min", players:"8 – 16",
+      desc:"A scene begins with all players. Anyone the audience finds uninteresting (or who drops an offer) is pointed off stage by the group. Last one standing wins.",
+      tip:"Teaches players to always be doing something that matters — ambiguity gets you eliminated fast." },
+    { cat:"Group", title:"Group Soundscape", dur:"10 min", players:"Whole group",
+      desc:"Eyes closed, players build a collective soundscape for a given location — forest, airport, medieval market. No words. One sound at a time then layered.",
+      tip:"Follow immediately with a scene set in that location. Players arrive in a fully inhabited world." },
+    { cat:"Group", title:"Group Scene", dur:"20 min", players:"Whole group",
+      desc:"The entire ensemble is in one scene simultaneously. No one is watching from the wings. Every player must find a reason to be there and serve the collective story.",
+      tip:"Post-debrief: what was your scene function? Protagonist, environment, chorus, or obstacle?" },
+    { cat:"Group", title:"Freeze Tag", dur:"10 – 15 min", players:"Whole group",
+      desc:"Two players perform. Any observer can call 'freeze', tap out one player, take their exact physical position, and start an entirely new scene justified by that shape.",
+      tip:"Encourage unusual physical initiations — they force more creative scene-starting." },
+  ];
+
+  let _actIdx = 0;
+
+  function renderActivity() {
+    const g = GAMES[_actIdx];
+    document.getElementById('actCategory').textContent = g.cat;
+    document.getElementById('actTitle').textContent    = g.title;
+    document.getElementById('actDuration').textContent = g.dur;
+    document.getElementById('actPlayers').textContent  = g.players;
+    document.getElementById('actDesc').textContent     = g.desc;
+    document.getElementById('actTip').innerHTML =
+      `<span class="by-eyebrow" style="color:var(--by-yes-deep);">Teaching note · </span>${g.tip}`;
+    document.getElementById('actCounter').textContent  = `${_actIdx + 1} / ${GAMES.length}`;
+
+    // Category colour
+    const catColors = {
+      'Warm-Up':    'background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);',
+      'Status':     'background:#fce7f3;border-color:#ec4899;color:var(--by-ink);',
+      'Scene Work': 'background:#dbeafe;border-color:#3b82f6;color:var(--by-ink);',
+      'Character':  'background:#dcfce7;border-color:#22c55e;color:var(--by-ink);',
+      'Group':      'background:#ede9fe;border-color:#8b5cf6;color:var(--by-ink);',
+    };
+    document.getElementById('actCategory').style.cssText = catColors[g.cat] ||
+      'background:var(--by-bg-2);border-color:var(--by-ink);color:var(--by-ink);';
+  }
+
+  window.nextActivity = function() {
+    _actIdx = (_actIdx + 1) % GAMES.length;
+    renderActivity();
+  };
+  window.prevActivity = function() {
+    _actIdx = (_actIdx - 1 + GAMES.length) % GAMES.length;
+    renderActivity();
+  };
+  window.shuffleActivity = function() {
+    _actIdx = Math.floor(Math.random() * GAMES.length);
+    renderActivity();
+  };
+
+  renderActivity();
+})();
+</script>
+
+<!-- Mobile bottom tabs -->
+<nav class="by-mob-tabs">
+  <a href="/" class="active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    Room
+  </a>
+  <a href="#week-strip">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
+    Week
+  </a>
+  <a href="#" onclick="openMsgModal(); return false;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Message
+  </a>
+  <a href="#activity-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.663 17h4.673M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+    Games
+  </a>
+</nav>
+
+{% include 'partials/_user_config_modal.html' %}
+{% include 'partials/_forced_pw_modal.html' %}
+{% include 'partials/_inbox_modal.html' %}
+
+</body>
+</html>

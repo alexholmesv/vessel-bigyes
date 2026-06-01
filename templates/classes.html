@@ -1,0 +1,2559 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes — Classes &amp; Cohorts</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ["'Archivo Black'", 'system-ui', 'sans-serif'],
+          sans:    ["'Archivo'",       'ui-sans-serif', 'system-ui'],
+          body:    ["'Manrope'",       'ui-sans-serif', 'system-ui'],
+          mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
+        },
+        colors: {
+          'by-yes':      '#FFC629', 'by-yes-deep': '#E5A800', 'by-yes-soft': '#FFE7A0',
+          'by-ink':      '#141210', 'by-ink-2':    '#2A2723', 'by-ink-3':    '#5C544A', 'by-ink-4': '#8A8073',
+          'by-bg':       '#F4EEE2', 'by-bg-2':     '#ECE3D0', 'by-bg-3':     '#E2D6BB',
+          'by-tomato':   '#E5482A', 'by-tomato-deep': '#B83218',
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+  }
+  html, body { background: var(--by-bg); }
+  body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing: antialiased; padding-bottom: 64px; }
+  @media (min-width:1024px) { body { padding-bottom: 0; } }
+
+  .by-display { font-family:var(--by-f-display); font-weight:900; letter-spacing:-0.02em; text-transform:uppercase; }
+  .by-eyebrow { font-family:var(--by-f-mono); font-size:var(--by-t-mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--by-ink-3); }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+  .hairline { border-color: var(--by-ink); }
+
+  /* ── Mobile chrome ─── */
+  .by-mob-bar {
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 16px; background:var(--by-bg); border-bottom:var(--by-bd-thick);
+  }
+  .by-ham { width:44px; height:44px; border:var(--by-bd-thick); background:var(--by-bg);
+    display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; }
+  .by-ham span { display:block; width:16px; height:1.5px; background:var(--by-ink); }
+  @media (min-width:1024px) { .by-ham { display:none; } }
+
+  .by-mob-overlay { display:none; position:fixed; inset:0; z-index:40; background:rgba(20,18,16,.45); }
+  .by-mob-overlay.open { display:block; }
+  .by-mob-drawer {
+    position:fixed; top:0; left:0; bottom:0; z-index:50; width:272px;
+    background:var(--by-bg); border-right:var(--by-bd-thick);
+    transform:translateX(-100%); transition:transform 240ms cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;
+  }
+  .by-mob-drawer.open { transform:translateX(0); }
+  @media (min-width:1024px) { .by-mob-bar,.by-mob-overlay,.by-mob-drawer { display:none !important; } }
+
+  /* ── Sidebar nav ─── */
+  .nav-item {
+    display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:0;
+    font-family:var(--by-f-body); font-size:13.5px; font-weight:500; color:var(--by-ink-3);
+    text-decoration:none; transition:background var(--by-snap),color var(--by-snap);
+    border:none; border-left:4px solid transparent;
+  }
+  .nav-item:hover { background:var(--by-bg-2); color:var(--by-ink); }
+  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+  .nav-item .ico { width:18px; height:18px; flex:0 0 18px; color:var(--by-ink-3); }
+  .nav-item.active .ico { color:var(--by-ink); }
+
+  /* ── Card ─── */
+  .by-card { background:var(--by-bg); border:var(--by-bd-thick); box-shadow:var(--by-sh-1); }
+
+  /* ── Section stripe divider (from design snapshot) ─── */
+  .by-section-divider {
+    height:28px; margin:0;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--by-bg-3) 0px, var(--by-bg-3) 6px,
+      var(--by-bg) 6px, var(--by-bg) 14px
+    );
+    border-top:var(--by-bd); border-bottom:var(--by-bd);
+  }
+
+  /* ── Class group headers ─── */
+  .class-group-hdr { display:none; margin-bottom:8px; }
+  .class-group-hdr.visible { display:block; }
+
+  /* ── Select reset — BigYes design on all dropdowns ─── */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--by-bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23141210'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: var(--by-bd-thick);
+    color: var(--by-ink);
+    font-family: var(--by-f-body);
+    font-size: 13px;
+    padding: 6px 32px 6px 10px;
+    cursor: pointer;
+    outline: none;
+  }
+  select:focus { box-shadow: 0 0 0 2px var(--by-yes); }
+  select:disabled { opacity: 0.38; cursor: not-allowed; }
+  .by-select-wrap { position: relative; }
+  .by-select-wrap::after {
+    content: ''; position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%); pointer-events: none;
+    width: 0; height: 0;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 5px solid var(--by-ink-3);
+  }
+  .by-select-wrap > select { background-image: none !important; padding-right: 32px; }
+
+  /* ── Chips ─── */
+  .chip { display:inline-flex; align-items:center; gap:.3rem;
+    padding:.12rem .5rem; border-radius:999px; border:1px solid var(--by-ink);
+    font-family:var(--by-f-mono); font-size:10.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase;
+    background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
+  .chip .dot { width:5px; height:5px; border-radius:999px; flex-shrink:0; }
+  .chip-active .dot { background:#2A8A4F; }
+  .chip-future .dot { background:#6B5CE7; }
+  .chip-past   .dot { background:var(--by-ink-4); }
+
+  /* ── Filter pills ─── */
+  .filter-pill {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:6px 14px; border-radius:999px; border:var(--by-bd-thick);
+    font-family:var(--by-f-mono); font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
+    background:var(--by-bg); color:var(--by-ink-3); cursor:pointer;
+    transition:background 80ms, color 80ms, border-color 80ms;
+    white-space:nowrap;
+  }
+  .filter-pill:hover { background:var(--by-bg-2); color:var(--by-ink); }
+  .filter-pill.active { background:var(--by-ink); color:var(--by-bg); border-color:var(--by-ink); }
+  .filter-pill .pill-count {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:999px;
+    font-size:9px; font-weight:700;
+    background:rgba(255,255,255,.15);
+  }
+  .filter-pill:not(.active) .pill-count { background:var(--by-bg-3); color:var(--by-ink); }
+
+  /* ── Accordion class card ─── */
+  .class-card { background:var(--by-bg); border:var(--by-bd-thick); box-shadow:var(--by-sh-1); }
+  .class-card-header {
+    width:100%; text-align:left; display:flex; align-items:center; gap:10px;
+    padding:12px 14px; cursor:pointer;
+    background:transparent; border:none; outline:none;
+    transition:background 80ms;
+  }
+  .class-card-header:hover { background:var(--by-bg-2); }
+  .class-card-header:focus-visible { outline:2px solid var(--by-yes); outline-offset:-2px; }
+  .card-chevron { flex-shrink:0; transition:transform 200ms; color:var(--by-ink-3); }
+  .card-chevron.open { transform:rotate(180deg); }
+
+  .card-body {
+    overflow:hidden; transition:max-height 240ms cubic-bezier(.4,0,.2,1);
+    max-height:0;
+  }
+  .card-body.open { max-height:9999px; }
+
+  /* ── Buttons ─── */
+  .btn-primary {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:10px 18px; border:var(--by-bd-thick);
+    background:var(--by-yes); color:var(--by-ink);
+    font-family:var(--by-f-sans); font-weight:700; font-size:13px;
+    box-shadow:var(--by-sh-1); cursor:pointer; text-decoration:none;
+    transition:box-shadow 80ms, transform 80ms;
+  }
+  .btn-primary:hover { transform:translate(-1px,-1px); box-shadow:5px 5px 0 0 var(--by-ink); }
+  .btn-ghost {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 14px; border:var(--by-bd-thick);
+    background:var(--by-bg); color:var(--by-ink);
+    font-family:var(--by-f-sans); font-weight:600; font-size:12.5px; cursor:pointer;
+    transition:background 80ms;
+  }
+  .btn-ghost:hover { background:var(--by-bg-2); }
+  .btn-danger {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:4px 10px; border:1px solid var(--by-tomato);
+    background:var(--by-bg); color:var(--by-tomato);
+    font-family:var(--by-f-mono); font-size:10px; font-weight:500; letter-spacing:.06em; text-transform:uppercase;
+    cursor:pointer; transition:background 80ms, color 80ms; white-space:nowrap;
+  }
+  .btn-danger:hover { background:var(--by-tomato); color:#fff; }
+  .btn-enroll {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:7px 14px; border-radius:999px; border:var(--by-bd-thick);
+    background:var(--by-yes); color:var(--by-ink);
+    font-family:var(--by-f-sans); font-weight:700; font-size:12px;
+    cursor:pointer; transition:background 80ms, box-shadow 80ms;
+  }
+  .btn-enroll:hover { background:var(--by-yes-deep); box-shadow:2px 2px 0 0 var(--by-ink); }
+  .btn-week {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 16px; border-radius:999px; border:var(--by-bd-thick);
+    font-family:var(--by-f-sans); font-weight:700; font-size:12.5px; cursor:pointer;
+    text-decoration:none; transition:box-shadow 80ms, transform 80ms;
+  }
+  .btn-week:hover { transform:translate(-1px,-1px); box-shadow:3px 3px 0 0 var(--by-ink); }
+  .btn-spot { background:var(--by-yes); color:var(--by-ink); font-weight:700; letter-spacing:.01em; border:1.5px solid var(--by-ink); box-shadow:var(--by-sh-1); cursor:pointer; }
+  .btn-spot:hover { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
+  .btn-spot:active { transform:translate(4px,4px); box-shadow:none; }
+
+  /* ── Role-type creation cards ─── */
+  .rt-card {
+    position:relative; border:2px solid var(--by-ink); padding:14px 12px;
+    cursor:pointer; box-shadow:var(--by-sh-1);
+    transition:transform 60ms ease,box-shadow 60ms ease;
+    user-select:none; -webkit-user-select:none;
+    background:var(--by-bg); color:var(--by-ink);
+  }
+  .rt-card:active { transform:translate(2px,2px); box-shadow:2px 2px 0 var(--by-ink); }
+  .rt-card.rt-patron         { background:var(--by-bg);       color:var(--by-ink); }
+  .rt-card.rt-company-player { background:var(--by-bg-2);     color:var(--by-ink); }
+  .rt-card.rt-mocatriz       { background:var(--by-yes-soft); color:var(--by-ink); }
+  .rt-card.rt-stage-manager  { background:var(--by-bg-3);     color:var(--by-ink); }
+  .rt-card.selected.rt-patron         { background:var(--by-ink); color:var(--by-bg); box-shadow:none; }
+  .rt-card.selected.rt-company-player { background:var(--by-ink); color:var(--by-bg); box-shadow:none; }
+  .rt-card.selected.rt-mocatriz       { background:var(--by-yes); color:var(--by-ink); box-shadow:none; }
+  .rt-card.selected.rt-stage-manager  { background:var(--by-ink); color:var(--by-bg); box-shadow:none; }
+  .rt-card .rt-name { font-weight:800; font-size:14px; letter-spacing:.01em; }
+  .rt-card .rt-desc { font-size:11px; margin-top:4px; opacity:.65; line-height:1.35; }
+  .rt-card .rt-check {
+    position:absolute; top:8px; right:8px; width:16px; height:16px;
+    border-radius:999px; border:2px solid currentColor; opacity:.25;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .rt-card.selected .rt-check { opacity:1; }
+  .rt-card.selected .rt-check::after { content:""; width:8px; height:8px; border-radius:999px; background:currentColor; }
+
+  /* ── Gradient colour swatches (My Config) ─── */
+  .cfg-swatch { width:28px; height:28px; border-radius:50%; border:2px solid transparent; cursor:pointer; transition:transform 80ms,border-color 80ms; flex-shrink:0; }
+  .cfg-swatch:hover { transform:scale(1.15); }
+  .cfg-swatch.selected { border-color:var(--by-ink); transform:scale(1.1); }
+  .cfg-char-btn { cursor:pointer; transition:border-color 100ms,background 100ms,transform 100ms; }
+  .cfg-char-btn:hover { transform:scale(1.04); }
+
+  /* ── Avatar ─── */
+  .av {
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:999px; font-family:var(--by-f-mono); font-weight:800; letter-spacing:.02em; flex-shrink:0;
+    box-shadow:inset 0 0 0 1px rgba(20,18,16,.2);
+  }
+
+  /* ── Slide-in panel (right panels) ─── */
+  .by-panel { overflow:hidden; }
+  .by-panel-inner {
+    transform:translateX(100%);
+    transition:transform 280ms cubic-bezier(.2,.8,.2,1);
+    box-shadow:-4px 0 0 0 var(--by-ink);
+    max-width:100vw;
+  }
+  .by-panel.open .by-panel-inner { transform:translateX(0); }
+
+  /* ── Inline enroll search (inside class panel) ─── */
+  #cp-enroll-list { border:var(--by-bd); max-height:220px; overflow-y:auto; }
+  .cp-enroll-row {
+    display:flex; align-items:center; gap:10px;
+    padding:8px 12px; border-bottom:var(--by-bd-soft);
+    transition:background 80ms;
+  }
+  .cp-enroll-row:hover { background:var(--by-bg-2); }
+  .cp-enroll-row:last-child { border-bottom:none; }
+  .enroll-row {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px; border-bottom:var(--by-bd-soft);
+    transition:background 80ms;
+  }
+  .enroll-row:hover { background:var(--by-bg-2); }
+  .enroll-row:last-child { border-bottom:none; }
+  .enroll-row-name { flex:1; min-width:0; font-size:13px; font-weight:600; color:var(--by-ink); }
+  .enroll-row-role { font-family:var(--by-f-mono); font-size:10px; color:var(--by-ink-3); letter-spacing:.08em; text-transform:uppercase; }
+  .enroll-row-btn {
+    flex-shrink:0; padding:5px 12px; border-radius:999px; border:var(--by-bd-thick);
+    background:var(--by-yes); color:var(--by-ink);
+    font-family:var(--by-f-mono); font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    cursor:pointer; transition:background 80ms, box-shadow 80ms;
+    white-space:nowrap;
+  }
+  .enroll-row-btn:hover { background:var(--by-yes-deep); box-shadow:2px 2px 0 0 var(--by-ink); }
+  .enroll-row-btn:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; }
+
+  /* ── Calendar ─── */
+  .cal-col { min-height:160px; }
+  .cal-session {
+    border-left:3px solid var(--by-yes-deep);
+    background:var(--by-yes-soft);
+    padding:4px 8px; margin-bottom:4px;
+  }
+  .cal-col.today { background:var(--by-yes-soft); }
+  .cal-col.today .cal-day-header { background:var(--by-yes); }
+
+  /* ── Mobile calendar day-list ─── */
+  .cal-mobile-day {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:10px 16px; border-bottom:var(--by-bd-soft);
+  }
+  .cal-mobile-day:last-child { border-bottom:none; }
+  .cal-mobile-day-hd {
+    flex-shrink:0; width:44px; text-align:center;
+    padding:4px 0; border:1px solid var(--by-bg-3); background:var(--by-bg-2);
+  }
+  .cal-mobile-day-hd.today {
+    background:var(--by-yes); border-color:var(--by-ink);
+  }
+  .cal-mobile-sessions { flex:1; min-width:0; padding-top:2px; }
+
+  /* ── Term card ─── */
+  .term-card { background:var(--by-bg); border:var(--by-bd-thick); }
+  .term-status-dot { width:8px; height:8px; border-radius:999px; flex-shrink:0; }
+
+  /* ── Collapse (for term section and past-classes toggle) ─── */
+  .collapse-toggle { cursor:pointer; user-select:none; }
+  .collapse-content { overflow:hidden; transition:max-height 200ms ease; }
+  .collapse-content.closed { max-height:0; }
+  .collapse-chevron { transition:transform 200ms; }
+  .collapse-chevron.open { transform:rotate(180deg); }
+
+  /* Progress bar */
+  .progress-track { background:var(--by-bg-3); height:4px; }
+  .progress-fill  { height:4px; background:var(--by-yes-deep); }
+
+  /* ── Toast ─── */
+  #toast {
+    position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--by-ink); color:var(--by-bg);
+    font-family:var(--by-f-mono); font-size:12px; letter-spacing:.08em;
+    padding:10px 20px; border:var(--by-bd-thick);
+    opacity:0; pointer-events:none;
+    transition:opacity 180ms, transform 180ms;
+    white-space:nowrap; z-index:100;
+  }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  #toast.error { background:var(--by-tomato); }
+</style>
+{% include 'partials/_byselect.html' %}
+</head>
+<body>
+
+{# ── Flash messages ── #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
+  {% for cat, msg in messages %}
+  <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm"
+       style="background:var(--by-bg); {% if cat=='error' %}border-color:var(--by-tomato);color:var(--by-tomato);{% elif cat=='success' %}border-color:#2A8A4F;color:#2A8A4F;{% else %}border-color:var(--by-ink);color:var(--by-ink-2);{% endif %}">
+    <span>{{ msg }}</span>
+    <button onclick="this.parentElement.remove()" class="ml-1 text-xs" style="color:var(--by-ink-3)">✕</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+{# ── Mobile top bar ── #}
+<header class="by-mob-bar lg:hidden">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  </a>
+  <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+<div id="mob-overlay" class="by-mob-overlay" onclick="toggleMobDrawer()"></div>
+<nav id="mob-drawer" class="by-mob-drawer">
+  <div class="px-4 py-4 border-b hairline">
+    <div class="by-eyebrow">Stage Manager</div>
+    <div class="by-display text-[18px]" style="color:var(--by-ink)">Studio · BCN</div>
+  </div>
+  <div class="px-3 py-3">
+    <a href="/"           class="nav-item" onclick="toggleMobDrawer()">Dashboard</a>
+    <a href="/performers" class="nav-item" onclick="toggleMobDrawer()">Performers</a>
+    <a href="/classes"    class="nav-item active" onclick="toggleMobDrawer()">Classes &amp; Cohorts</a>
+    <a href="/privacy"    class="nav-item" onclick="toggleMobDrawer()">Privacy Center</a>
+    <div class="by-eyebrow px-2 pt-4 pb-1">Backstage</div>
+    <a href="/backstage/scene-library" class="nav-item" onclick="toggleMobDrawer()">Scene Library</a>
+    <a href="/backstage/reports"       class="nav-item" onclick="toggleMobDrawer()">Reports</a>
+    <a href="/backstage/activity-log"  class="nav-item" onclick="toggleMobDrawer()">Activity Log</a>
+  </div>
+</nav>
+
+{# ── Full-viewport shell ── #}
+<div class="min-h-screen flex flex-col lg:grid lg:grid-cols-[248px_1fr]">
+
+  {# ════ SIDEBAR ════ #}
+  {% include 'partials/_sidebar.html' %}
+
+  {# ════ MAIN COLUMN ════ #}
+  <main class="flex-1 min-w-0 overflow-x-hidden">
+
+    {# ── Sticky application header ── #}
+    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+      <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
+
+        <!-- Right-pinned action group -->
+        <div class="flex items-center gap-4 ml-auto flex-shrink-0">
+
+          <!-- Sync classes from website -->
+          <button id="btn-sync-classes" onclick="syncClasses()"
+                  title="Sync classes from barcelonaimprovgroup.com"
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
+                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
+            Yes-And the Schedule!
+          </button>
+
+          <!-- Add class -->
+          <button onclick="openModal('modal-add-class')"
+                  title="Add class"
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
+                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
+            Add class
+          </button>
+
+          <!-- Add show -->
+          <button onclick="openModal('modal-add-show')"
+                  title="Add show"
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
+                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
+            Add show
+          </button>
+
+          <!-- Add performer -->
+          <button onclick="openModal('modal-add-person')"
+                  title="Add performer"
+                  class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2"
+                  style="border:var(--by-bd-thick); background:var(--by-yes); color:var(--by-ink); font-family:var(--by-f-sans); font-weight:800; letter-spacing:0.02em; text-transform:uppercase;">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="hidden lg:inline">Add performer</span>
+          </button>
+
+          <!-- Scene switcher -->
+          {% include 'partials/_scene_switcher.html' %}
+
+          <!-- User profile pill -->
+          {% include 'partials/_inbox_btn.html' %}
+          <div class="relative flex-shrink-0" id="user-menu-wrap">
+            <button id="user-menu-btn" onclick="toggleUserMenu()"
+                    class="flex items-center gap-2 cursor-pointer h-9 px-2"
+                    style="border:var(--by-bd); background:var(--by-bg);">
+              <!-- Avatar -->
+              <img id="header-av-img" class="av object-cover flex-shrink-0"
+                   src="{{ current_user_avatar or '' }}"
+                   style="width:28px;height:28px;border:2px solid #000;border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                   alt="{{ current_user_initials }}">
+              <span id="header-av-init" class="av flex items-center justify-center flex-shrink-0"
+                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                {{ current_user_initials }}
+              </span>
+              <!-- Name + role -->
+              <div class="hidden lg:block leading-tight text-left">
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
+                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C544A;margin-top:1px;">Stage Manager</div>
+              </div>
+              <!-- Live-status dot -->
+              <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full"
+                    style="width:8px;height:8px;background:#E5482A;box-shadow:0 0 0 2px #fff,0 0 0 3px #E5482A;"></span>
+            </button>
+            <!-- Dropdown -->
+            <div id="user-menu-drop" class="hidden" style="
+              position:absolute; top:calc(100% + 6px); right:0; z-index:60;
+              min-width:160px; background:var(--by-bg); border:var(--by-bd-thick);
+              box-shadow:var(--by-sh-1);">
+              <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);line-height:1.2">{{ current_user_name }}</div>
+                <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Stage Manager</div>
+              </div>
+              <button onclick="openMyConfig(); toggleUserMenu(true)"
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b"
+                style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
+                <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Config
+              </button>
+              <a href="/logout"
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5"
+                style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);display:flex;text-decoration:none;">
+                <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Log out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {# ── Page header ── #}
+    <div class="px-4 lg:px-7 pt-6 pb-4 border-b hairline">
+      <div class="flex items-start gap-4 flex-wrap">
+        <div>
+          <div class="by-eyebrow mb-1">Stage Manager · Cohort Management</div>
+          <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+            Classes &amp; <span class="by-yes-block">Cohorts</span>
+          </h1>
+        </div>
+      </div>
+
+      {# KPI strip #}
+      <div class="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-yes);">
+          <div class="by-eyebrow">Active classes</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ active_classes|length }}</div>
+        </div>
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+          <div class="by-eyebrow">Total enrolled</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ total_enrolled }}</div>
+        </div>
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+          <div class="by-eyebrow">Upcoming</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ future_classes|length }}</div>
+        </div>
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+          <div class="by-eyebrow">Past classes</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink-3);">{{ past_classes|length }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-4 lg:px-7 py-6 space-y-8">
+
+      {# ══════════════════════════════════════════
+         1. STUDIO CALENDAR
+      ══════════════════════════════════════════ #}
+      <section>
+        <div class="mb-4">
+          <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+            <div>
+              <div class="by-eyebrow mb-0.5">Studio · BCN · What's On This Week</div>
+              <h2 class="font-display text-[18px] sm:text-[20px]" style="color:var(--by-ink);">
+                {% if view_mode == 'month' %}
+                  <span style="color:var(--by-yes-deep);">{{ month_label }}</span><span class="hidden sm:inline"> — Full House View</span>
+                {% else %}
+                  <span class="hidden sm:inline">Week of </span><span style="color:var(--by-yes-deep);">{{ week_label }}</span>
+                {% endif %}
+              </h2>
+              <div class="by-eyebrow mt-1">The schedule doesn't lie. Your availability might.</div>
+            </div>
+            {# Desktop nav — hidden on mobile #}
+            <div class="hidden sm:flex items-center gap-2">
+              {% if view_mode == 'month' %}
+              <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week" style="background:var(--by-bg);color:var(--by-ink);">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
+              </a>
+              <a href="/classes?view=month" class="btn-week" style="background:var(--by-bg-2);color:var(--by-ink);">This Month</a>
+              <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week" style="background:var(--by-yes);color:var(--by-ink);">
+                Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+              </a>
+              <a href="/classes" class="btn-week" style="background:var(--by-ink);color:var(--by-yes);text-decoration:none;">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Week View
+              </a>
+              {% else %}
+              <a href="/classes?week_start={{ prev_week }}" class="btn-week" style="background:var(--by-bg);color:var(--by-ink);">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
+              </a>
+              <a href="/classes?week_start={{ week_start_monday }}" class="btn-week" style="background:var(--by-bg-2);color:var(--by-ink);">Today</a>
+              <a href="/classes?week_start={{ next_week }}" class="btn-week" style="background:var(--by-yes);color:var(--by-ink);">
+                Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+              </a>
+              <a href="/classes?view=month" class="btn-week" style="background:var(--by-ink);color:var(--by-yes);text-decoration:none;">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Full Month
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          {# Mobile nav — full-width button row, visible only on mobile #}
+          <div class="flex sm:hidden gap-1.5">
+            {% if view_mode == 'month' %}
+            <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg);color:var(--by-ink);">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
+            </a>
+            <a href="/classes?view=month" class="btn-week flex-1 justify-center" style="background:var(--by-bg-2);color:var(--by-ink);">This Month</a>
+            <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week flex-1 justify-center" style="background:var(--by-yes);color:var(--by-ink);">
+              Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </a>
+            {% else %}
+            <a href="/classes?week_start={{ prev_week }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg);color:var(--by-ink);">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
+            </a>
+            <a href="/classes?week_start={{ week_start_monday }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg-2);color:var(--by-ink);">Today</a>
+            <a href="/classes?week_start={{ next_week }}" class="btn-week flex-1 justify-center" style="background:var(--by-yes);color:var(--by-ink);">
+              Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if view_mode == 'month' %}
+        <div class="by-card overflow-hidden">
+          <div class="overflow-x-auto">
+            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:var(--by-bd-thick);">
+              {% for dname in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] %}
+              <div class="px-2 py-2 text-center border-r hairline last:border-r-0" style="background:var(--by-bg-2);">
+                <span class="font-display text-[11px]" style="color:var(--by-ink);">{{ dname }}</span>
+              </div>
+              {% endfor %}
+            </div>
+            {% for week in month_weeks %}
+            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--by-bg-3);">
+              {% for day in week %}
+              <div class="border-r hairline last:border-r-0 p-1.5 min-h-[80px]"
+                   style="{% if not day.in_month %}opacity:.35;{% endif %}{% if day.is_today %}background:var(--by-yes-soft);{% endif %}">
+                <div class="mb-1">
+                  <span class="font-display text-[12px]"
+                    style="{% if day.is_today %}background:var(--by-ink);color:var(--by-yes);padding:1px 5px;{% else %}color:var(--by-ink-3);{% endif %}">
+                    {{ day.label }}
+                  </span>
+                </div>
+                {% for session in day.sessions %}
+                <div class="cal-session mb-1">
+                  <div class="text-[10px] font-semibold leading-tight truncate" style="color:var(--by-ink);">{{ session.title }}</div>
+                  <div class="by-eyebrow mt-0.5" style="font-size:8.5px;">{{ session.time }}</div>
+                </div>
+                {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+
+        {# Mobile day-list (< sm) #}
+        <div class="by-card overflow-hidden sm:hidden">
+          {% for day in calendar_days %}
+          <div class="cal-mobile-day">
+            <div class="cal-mobile-day-hd {% if day.is_today %}today{% endif %}">
+              <div class="font-display text-[13px]" style="color:var(--by-ink);">{{ day.short }}</div>
+              <div class="by-eyebrow" style="font-size:9px;color:{% if day.is_today %}var(--by-ink-2){% else %}var(--by-ink-4){% endif %};">{{ day.label }}</div>
+            </div>
+            <div class="cal-mobile-sessions">
+              {% if day.sessions %}
+                {% for session in day.sessions %}
+                <div class="cal-session" style="margin-bottom:{% if not loop.last %}6px{% else %}0{% endif %};">
+                  <div class="text-[12px] font-semibold leading-tight" style="color:var(--by-ink);">{{ session.title }}</div>
+                  <div class="by-eyebrow mt-0.5" style="font-size:9px;">{{ session.time }} · {{ session.count }} cast</div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <span class="by-eyebrow" style="font-size:10px;color:var(--by-bg-3);">No sessions</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        {# Desktop grid (sm+) #}
+        <div class="by-card overflow-hidden hidden sm:block">
+          <div class="overflow-x-auto">
+            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:var(--by-bd-thick);">
+              {% for day in calendar_days %}
+              <div class="cal-col {% if day.is_today %}today{% endif %} border-r hairline last:border-r-0">
+                <div class="cal-day-header px-3 py-2.5 border-b hairline"
+                     style="{% if day.is_today %}background:var(--by-yes);{% else %}background:var(--by-bg-2);{% endif %}">
+                  <div class="font-display text-[12px]" style="color:var(--by-ink);">{{ day.short }}</div>
+                  <div class="by-eyebrow" style="color:{% if day.is_today %}var(--by-ink-2){% else %}var(--by-ink-4){% endif %}">{{ day.label }}</div>
+                </div>
+                <div class="p-2 min-h-[100px]">
+                  {% if day.sessions %}
+                    {% for session in day.sessions %}
+                    <div class="cal-session mb-1">
+                      <div class="text-[11.5px] font-semibold leading-tight" style="color:var(--by-ink);">{{ session.title }}</div>
+                      <div class="by-eyebrow mt-0.5" style="font-size:9.5px;">{{ session.time }} · {{ session.count }}</div>
+                    </div>
+                    {% endfor %}
+                  {% else %}
+                  <div class="flex items-center justify-center h-full pt-4">
+                    <span class="by-eyebrow" style="font-size:10px;color:var(--by-bg-3);">—</span>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-3 flex items-center gap-4 flex-wrap">
+          <div class="flex items-center gap-1.5">
+            <div style="width:12px;height:12px;background:var(--by-yes);border:1px solid var(--by-ink);flex-shrink:0;"></div>
+            <span class="by-eyebrow">Today</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <div style="width:3px;height:12px;background:var(--by-yes-deep);flex-shrink:0;"></div>
+            <span class="by-eyebrow">Class session</span>
+          </div>
+        </div>
+      </section>
+
+      {# ── Section stripe divider ── #}
+      <div class="by-section-divider"></div>
+
+      {# ══════════════════════════════════════════
+         2. TERM BOUNDARY MANAGER
+      ══════════════════════════════════════════ #}
+      <section>
+        <button class="collapse-toggle flex items-center gap-3 mb-4 w-full text-left"
+                onclick="toggleCollapse('term-section', this)">
+          <h2 class="font-display text-[18px]" style="color:var(--by-ink);">Season Acts &amp; Curtain Calls</h2>
+          <div class="by-eyebrow">Plot your arc, darling. Four terms. No intermission. Make it count.</div>
+          <svg class="collapse-chevron w-4 h-4 ml-auto open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--by-ink-3)"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="term-section" class="collapse-content" style="max-height:999px;">
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            {% for term in terms %}
+            {% set today_str = today.isoformat() %}
+            {% set is_active = term.start_date <= today_str and today_str <= term.end_date %}
+            {% set is_past   = term.end_date   < today_str %}
+            <div class="term-card p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="term-status-dot"
+                    style="background:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}#6B5CE7{% endif %}"></span>
+                  <span class="font-display text-[15px]" style="color:var(--by-ink);">{{ term.name }}</span>
+                </div>
+                <span class="by-eyebrow" style="color:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}#6B5CE7{% endif %}">
+                  {{ 'Active' if is_active else ('Past' if is_past else 'Upcoming') }}
+                </span>
+              </div>
+              <div class="space-y-2 mb-3">
+                <div>
+                  <label class="by-eyebrow block mb-1">Start</label>
+                  <input type="date" id="term-start-{{ term.id }}"
+                         value="{{ term.start_date }}"
+                         class="w-full border px-2 py-1.5 text-[12.5px] focus:outline-none"
+                         style="border-color:var(--by-ink);background:var(--by-bg);font-family:var(--by-f-mono);color:var(--by-ink-2);" />
+                </div>
+                <div>
+                  <label class="by-eyebrow block mb-1">End</label>
+                  <input type="date" id="term-end-{{ term.id }}"
+                         value="{{ term.end_date }}"
+                         class="w-full border px-2 py-1.5 text-[12.5px] focus:outline-none"
+                         style="border-color:var(--by-ink);background:var(--by-bg);font-family:var(--by-f-mono);color:var(--by-ink-2);" />
+                </div>
+              </div>
+              <button onclick="saveTerm('{{ term.id }}')"
+                      class="w-full btn-ghost text-[11.5px] justify-center py-2">Lock It In!</button>
+              <div id="term-status-{{ term.id }}" class="hidden mt-2 text-[11px] text-center font-mono" style="color:var(--by-ink-3)"></div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      {# ── Section stripe divider ── #}
+      <div class="by-section-divider"></div>
+
+      {# ══════════════════════════════════════════
+         3. THE TROUPE'S WORKSHOPS
+      ══════════════════════════════════════════ #}
+      <section>
+        <div class="flex items-center gap-3 mb-4 flex-wrap">
+          <div class="flex-1">
+            <h2 class="font-display text-[18px]" style="color:var(--by-ink);">
+              The Troupe's <span class="by-yes-block" style="font-size:inherit;padding:0 10px 3px;">Workshops</span>
+            </h2>
+            <div class="by-eyebrow mt-1">Every class begins with a blank stage. Nobody knows what happens next. That's the point.</div>
+          </div>
+          <button id="btn-sync-classes-section" onclick="syncClasses()"
+                  title="Sync classes from barcelonaimprovgroup.com"
+                  class="btn-ghost flex items-center gap-1.5 h-8 px-2.5 text-[11.5px] flex-shrink-0"
+                  style="border:var(--by-bd); font-family:var(--by-f-mono); letter-spacing:.06em; text-transform:uppercase;">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
+            Sync
+          </button>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button class="filter-pill active" data-filter="active" onclick="applyClassFilter('active')">
+              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:#2A8A4F;flex-shrink:0;"></span>
+              On Stage
+              <span class="pill-count">{{ active_classes|length }}</span>
+            </button>
+            <button class="filter-pill" data-filter="future" onclick="applyClassFilter('future')">
+              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:#6B5CE7;flex-shrink:0;"></span>
+              Warming Up
+              <span class="pill-count">{{ future_classes|length }}</span>
+            </button>
+            <button class="filter-pill" data-filter="past" onclick="applyClassFilter('past')">
+              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--by-ink-4);flex-shrink:0;"></span>
+              Curtain Down
+              <span class="pill-count">{{ past_classes|length }}</span>
+            </button>
+            <button class="filter-pill" data-filter="all" onclick="applyClassFilter('all')" style="margin-left:auto;">
+              Full Ensemble
+              <span class="pill-count">{{ (active_classes|length) + (future_classes|length) + (past_classes|length) }}</span>
+            </button>
+          </div>
+        </div>
+
+        {# Vertical class card list #}
+        <div id="classes-grid" class="flex flex-col gap-2">
+
+          {# ── Group header: On Stage ── #}
+          <div class="class-group-hdr" data-group="active">
+            <div class="flex items-center justify-between px-4 py-2.5"
+                 style="background:var(--by-yes);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);margin-bottom:2px;">
+              <div>
+                <div class="font-display text-[16px]" style="color:var(--by-ink);">On Stage</div>
+                <div class="by-eyebrow mt-0.5">Currently running · attendance required · no understudy available</div>
+              </div>
+              <span class="font-display text-[24px]" style="color:var(--by-ink);">{{ active_classes|length }}</span>
+            </div>
+          </div>
+
+          {# ── On Stage (Active) ── #}
+          {% for cls in active_classes %}
+          <div class="class-card cursor-pointer" data-status="active" id="class-card-{{ cls.id }}"
+               onclick="openClassPanel('{{ cls.id }}')">
+            <div class="flex items-stretch" style="transition:background 80ms;">
+              <div class="flex-shrink-0" style="width:3px;background:#2A8A4F;"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+                <div class="flex-1 min-w-0">
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="chip chip-active" style="font-size:9px;padding:.06rem .38rem;"><span class="dot"></span>On Stage</span>
+                    {% if cls.get('fee') %}<span class="by-eyebrow" style="background:var(--by-yes);color:var(--by-ink);padding:1px 5px;font-size:8.5px;">{{ cls.fee }}</span>{% endif %}
+                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center gap-2.5 flex-shrink-0">
+                  <div class="text-right">
+                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink);">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow" style="font-size:8px;">cast</div>
+                  </div>
+                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          {# ── Group header: Warming Up ── #}
+          <div class="class-group-hdr mt-4" data-group="future">
+            <div class="flex items-center justify-between px-4 py-2.5"
+                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid #6B5CE7;box-shadow:var(--by-sh-1);margin-bottom:2px;">
+              <div>
+                <div class="font-display text-[16px]" style="color:var(--by-ink);">Warming Up</div>
+                <div class="by-eyebrow mt-0.5">Upcoming · vocals not yet loosened · anticipation building</div>
+              </div>
+              <span class="font-display text-[24px]" style="color:#6B5CE7;">{{ future_classes|length }}</span>
+            </div>
+          </div>
+
+          {# ── Warming Up (Future) ── #}
+          {% for cls in future_classes %}
+          <div class="class-card cursor-pointer" data-status="future" id="class-card-{{ cls.id }}" style="display:none;"
+               onclick="openClassPanel('{{ cls.id }}')">
+            <div class="flex items-stretch">
+              <div class="flex-shrink-0" style="width:3px;background:#6B5CE7;"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+                <div class="flex-1 min-w-0">
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="chip chip-future" style="font-size:9px;padding:.06rem .38rem;border-color:#6B5CE7;color:#6B5CE7;"><span class="dot"></span>Warming Up</span>
+                    {% if cls.get('fee') %}<span class="by-eyebrow" style="background:var(--by-yes);color:var(--by-ink);padding:1px 5px;font-size:8.5px;">{{ cls.fee }}</span>{% endif %}
+                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center gap-2.5 flex-shrink-0">
+                  <div class="text-right">
+                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink);">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow" style="font-size:8px;">cast</div>
+                  </div>
+                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          {# ── Group header: Curtain Down ── #}
+          <div class="class-group-hdr mt-4" data-group="past">
+            <div class="flex items-center justify-between px-4 py-2.5"
+                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid var(--by-ink-4);opacity:.85;margin-bottom:2px;">
+              <div>
+                <div class="font-display text-[16px]" style="color:var(--by-ink-2);">Curtain Down</div>
+                <div class="by-eyebrow mt-0.5">Completed · the applause has faded · the memories linger</div>
+              </div>
+              <span class="font-display text-[24px]" style="color:var(--by-ink-4);">{{ past_classes|length }}</span>
+            </div>
+          </div>
+
+          {# ── Curtain Down (Past) ── #}
+          {% for cls in past_classes %}
+          <div class="class-card cursor-pointer" data-status="past" id="class-card-{{ cls.id }}" style="display:none;opacity:.65;"
+               onclick="openClassPanel('{{ cls.id }}')">
+            <div class="flex items-stretch">
+              <div class="flex-shrink-0" style="width:3px;background:var(--by-ink-4);"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+                <div class="flex-1 min-w-0">
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink-2);">{{ cls.title }}</div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="chip chip-past" style="font-size:9px;padding:.06rem .38rem;border-color:var(--by-ink-4);color:var(--by-ink-4);"><span class="dot"></span>Curtain Down</span>
+                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center gap-2.5 flex-shrink-0">
+                  <div class="text-right">
+                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink-3);">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow" style="font-size:8px;color:var(--by-ink-4);">graduated</div>
+                  </div>
+                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-4);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          {# Empty state #}
+          {% if not active_classes and not future_classes and not past_classes %}
+          <div class="by-card px-6 py-12 text-center">
+            <div class="font-display text-[18px] mb-2" style="color:var(--by-ink-3);">The stage is empty!</div>
+            <div class="text-[13px]" style="color:var(--by-ink-4);">Hit "Add class" and get this troupe rolling!</div>
+          </div>
+          {% endif %}
+
+        </div>
+      </section>
+
+    </div>{# /px-4 py-6 #}
+
+    <footer class="px-4 lg:px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3)">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span></div>
+      <div class="flex items-center gap-4">
+        <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+      </div>
+    </footer>
+  </main>
+</div>
+
+{# ── Toast ── #}
+<div id="toast"></div>
+
+{# ── Class detail panel (slide-in right) ── #}
+<div id="class-panel" class="by-panel hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeClassPanel()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[480px] flex flex-col"
+       style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    {# Header #}
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd-thick);">
+      <div>
+        <h3 id="cp-title" class="font-display text-[18px]" style="color:var(--by-ink);"></h3>
+        <div id="cp-meta" class="by-eyebrow mt-0.5"></div>
+      </div>
+      <button onclick="closeClassPanel()" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3);background:none;border:none;cursor:pointer;">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    {# Tab bar #}
+    <div class="flex-shrink-0 flex" style="border-bottom:var(--by-bd-thick);">
+      <button id="cp-tab-btn-cast" onclick="switchCpTab('cast')"
+              style="flex:1;padding:10px 0;font-family:var(--by-f-sans);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;background:var(--by-bg);color:var(--by-ink);border-bottom:2.5px solid var(--by-yes);transition:color 120ms,border-color 120ms;">
+        Cast
+      </button>
+      {% if can_view_finances %}
+      <button id="cp-tab-btn-finances" onclick="openClassFinances(_cpClassId)"
+              style="flex:1;padding:10px 0;font-family:var(--by-f-sans);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;background:var(--by-bg);color:var(--by-ink-3);border-bottom:2.5px solid transparent;transition:color 120ms,border-color 120ms;">
+        Finances
+      </button>
+      {% endif %}
+    </div>
+
+    {# Body — scrollable #}
+    <div class="flex-1 overflow-y-auto min-h-0">
+
+      {# ── Cast tab ── #}
+      <div id="cp-tab-cast">
+
+        {# Teacher section #}
+        <div class="px-5 pt-4 pb-4" style="border-bottom:var(--by-bd-soft);">
+          <div class="by-eyebrow mb-2">Teacher</div>
+          <div id="cp-teacher-display" class="flex items-center gap-2 mb-3 min-h-[26px]"></div>
+          <div class="flex gap-2">
+            <div class="by-select-wrap flex-1">
+              <select id="cp-teacher-select"
+                      class="w-full border px-3 py-2 text-[13px] focus:outline-none"
+                      style="border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);">
+              </select>
+            </div>
+            <button onclick="assignTeacher()"
+                    style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 14px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);white-space:nowrap;">
+              Assign
+            </button>
+          </div>
+        </div>
+
+        {# Cast list #}
+        <div class="px-5 pt-4 pb-3">
+          <div class="by-eyebrow mb-3">Students</div>
+          <div id="cp-roster"></div>
+        </div>
+
+        {# Add to cast #}
+        <div class="px-5 pt-3 pb-5" style="border-top:var(--by-bd-soft);">
+          <div class="by-eyebrow mb-2">Add Student</div>
+          <div style="position:relative;" class="mb-2">
+            <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--by-ink-4);pointer-events:none;"
+                 class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input id="cp-enroll-search" type="search" placeholder="Search by name…" autocomplete="off"
+                   class="w-full border px-3 py-2 text-[13px] focus:outline-none"
+                   style="padding-left:34px;border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);"
+                   oninput="filterCpEnrollList(this.value)" />
+          </div>
+          <div id="cp-enroll-list"></div>
+          <div id="cp-enroll-empty" class="by-eyebrow py-4 text-center" style="display:none;color:var(--by-ink-4);">No members to add.</div>
+        </div>
+
+      </div>{# /cp-tab-cast #}
+
+      {% if can_view_finances %}
+      {# ── Finances tab ── #}
+      <div id="cp-tab-finances" class="px-5 py-4 space-y-5 hidden">
+
+        {# Revenue calculator #}
+        <div style="background:var(--by-bg-2);border:1.5px solid var(--by-ink);padding:16px;box-shadow:4px 4px 0 0 var(--by-ink);">
+          <div class="by-eyebrow mb-3">Revenue Calculator</div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <div class="by-eyebrow mb-1" style="font-size:10px;">Enrolled students</div>
+              <div id="cfin-enrolled" class="font-display text-[24px]" style="color:var(--by-ink);">0</div>
+            </div>
+            <div>
+              <div class="by-eyebrow mb-1" style="font-size:10px;">Tuition rate (€ / student)</div>
+              <input id="cfin-rate" type="number" min="0" step="0.01" placeholder="0.00"
+                     oninput="calcClassNet()"
+                     style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:15px;font-weight:700;padding:4px 8px;outline:none;" />
+            </div>
+          </div>
+          <div class="border-t pt-3 grid grid-cols-3 gap-2 text-center" style="border-color:var(--by-bg-3);">
+            <div>
+              <div class="by-eyebrow" style="font-size:9px;">Revenue</div>
+              <div id="cfin-gross" class="font-display text-[17px]" style="color:var(--by-ink);">€0.00</div>
+            </div>
+            <div>
+              <div class="by-eyebrow" style="font-size:9px;">Expenses</div>
+              <div id="cfin-fees-total" class="font-display text-[17px]" style="color:var(--by-tomato);">€0.00</div>
+            </div>
+            <div>
+              <div class="by-eyebrow" style="font-size:9px;">Net</div>
+              <div id="cfin-net" class="font-display text-[17px]" style="color:#2A8A4F;">€0.00</div>
+            </div>
+          </div>
+        </div>
+
+        {# Expense line items #}
+        <div>
+          <div class="by-eyebrow mb-2">Expense Line Items</div>
+          <ul id="cfin-fee-list" class="space-y-1.5 mb-3"></ul>
+          <div style="border:1px solid var(--by-bg-3);background:var(--by-bg-2);padding:12px;" class="space-y-2">
+            <div class="by-eyebrow mb-1" style="font-size:9px;">Add expense</div>
+            <input id="cfin-fee-title" type="text" placeholder="Description (e.g. Room rental)"
+                   style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-body);font-size:13px;padding:6px 10px;outline:none;" />
+            <div class="flex gap-2">
+              <input id="cfin-fee-amount" type="number" min="0" step="0.01" placeholder="Amount €"
+                     style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:13px;padding:6px 10px;outline:none;" />
+              <button onclick="addCfinFee()"
+                      style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 16px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);">
+                + Add
+              </button>
+            </div>
+            <div id="cfin-fee-status" class="hidden text-[11px]" style="color:var(--by-tomato);"></div>
+          </div>
+        </div>
+
+      </div>{# /cp-tab-finances #}
+      {% endif %}
+
+    </div>
+
+    {# Footer #}
+    <div class="flex-shrink-0 px-5 py-4 flex items-center gap-2 flex-wrap" style="border-top:var(--by-bd);">
+      <button class="btn-danger ml-auto" onclick="deleteClassFromPanel()">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Cut from the Show
+      </button>
+    </div>
+
+  </div>
+</div>
+
+{# ── Delete confirmation panel ── #}
+<div id="delete-confirm-panel" class="by-panel hidden fixed inset-0 z-[60]" role="dialog">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.6)" onclick="cancelDeletePanel()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[360px] flex flex-col"
+       style="background:var(--by-bg); border-left:2px solid var(--by-tomato);">
+    <div class="px-5 py-5 border-b" style="border-color:var(--by-tomato);background:#FFF5F3;">
+      <div class="text-[11.5px] font-mono uppercase tracking-widest mb-2" style="color:var(--by-tomato);">⚠ Hold your horses, Hamlet!</div>
+      <h3 id="dcp-title" class="font-display text-[20px]" style="color:var(--by-ink);">Cut from the Show?</h3>
+    </div>
+    <div class="flex-1 px-5 py-5">
+      <p id="dcp-body" class="text-[13.5px] leading-relaxed" style="color:var(--by-ink-2);"></p>
+      <div class="mt-4 border px-4 py-3 text-[12px]" style="border-color:var(--by-bg-3);background:var(--by-bg-2);color:var(--by-ink-3);">
+        This deletes ALL enrollment records, attendance history, and challenge reactions. There are no second acts after this curtain call.
+      </div>
+    </div>
+    <div class="flex-shrink-0 px-5 py-4 flex gap-3" style="border-top:var(--by-bd);">
+      <button onclick="cancelDeletePanel()" class="btn-ghost flex-1 justify-center">No wait, keep them!</button>
+      <button onclick="confirmDeleteClass()" class="flex-1 border px-4 py-2.5 text-[13px] font-semibold"
+              style="border-color:var(--by-tomato);color:#fff;background:var(--by-tomato);">
+        Yes, strike the set
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ALL_STUDENTS = {{ all_students_json | safe }};
+  const ALL_TEACHERS = {{ all_teachers_json | safe }};
+
+  // ── Drawer ────────────────────────────────────────────────
+  function toggleMobDrawer() {
+    const d = document.getElementById('mob-drawer');
+    const o = document.getElementById('mob-overlay');
+    const open = d.classList.toggle('open');
+    o.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  // ── Toast ────────────────────────────────────────────────
+  let _toastTimer;
+  function flashToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show' + (type === 'error' ? ' error' : '');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => t.className = '', 3200);
+  }
+
+  // ── Collapse (term section toggle) ───────────────────────
+  function toggleCollapse(id, btn) {
+    const el = document.getElementById(id);
+    const chevron = btn.querySelector('.collapse-chevron');
+    const isClosed = el.classList.contains('closed');
+    if (isClosed) {
+      el.style.maxHeight = el.scrollHeight + 'px';
+      el.classList.remove('closed');
+      if (chevron) chevron.classList.add('open');
+    } else {
+      el.style.maxHeight = '0';
+      el.classList.add('closed');
+      if (chevron) chevron.classList.remove('open');
+    }
+  }
+
+  // ── Filter pills ─────────────────────────────────────────
+  function applyClassFilter(filter) {
+    document.querySelectorAll('#classes-grid .class-card').forEach(card => {
+      const status = card.dataset.status;
+      card.style.display = (filter === 'all' || status === filter) ? '' : 'none';
+    });
+    document.querySelectorAll('.filter-pill').forEach(pill => {
+      pill.classList.toggle('active', pill.dataset.filter === filter);
+    });
+    // Show group headers only when "Full Ensemble" (all) is selected
+    document.querySelectorAll('.class-group-hdr').forEach(hdr => {
+      hdr.classList.toggle('visible', filter === 'all');
+    });
+  }
+
+  // ── Accordion card toggle ─────────────────────────────────
+  function toggleCard(btn) {
+    const card = btn.closest('.class-card');
+    const body = card.querySelector('.card-body');
+    const chevron = btn.querySelector('.card-chevron');
+    const isOpen = body.classList.contains('open');
+    if (isOpen) {
+      body.classList.remove('open');
+      chevron.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      body.classList.add('open');
+      chevron.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  // ── Panel roster renderer ─────────────────────────────────
+  function _renderPanelRoster(classId) {
+    const d = _CP_DATA[classId] || {};
+    const rosterEl = document.getElementById('cp-roster');
+    if (!rosterEl) return;
+    if (!(d.students || []).length) {
+      rosterEl.innerHTML = '<p class="by-eyebrow py-3 text-center" style="color:var(--by-ink-4);">No one cast yet.</p>';
+    } else {
+      rosterEl.innerHTML = (d.students || []).map(s => {
+        const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        return `<div class="flex items-center gap-2.5 py-2.5 border-b" style="border-color:var(--by-bg-3);" id="cp-row-${classId}-${s.id}">
+          <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:#fff;flex-shrink:0;">${inits}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
+            <div class="by-eyebrow">${s.roleType} · ${s.pts} pts</div>
+          </div>
+          <button class="btn-danger" onclick="unenrollFromPanel('${s.id}','${classId}','${_esc(s.name)}',this)">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            Drop
+          </button>
+        </div>`;
+      }).join('');
+    }
+    // Update meta line
+    const metaEl = document.getElementById('cp-meta');
+    if (metaEl) {
+      const parts = [];
+      if (d.schedule) parts.push(d.schedule);
+      if (d.fee)      parts.push(d.fee);
+      const n = (d.students||[]).length;
+      parts.push(n + ' cast');
+      metaEl.textContent = parts.join(' · ');
+    }
+  }
+
+  // ── Teacher section ───────────────────────────────────────
+  function _renderPanelTeacher(classId) {
+    const d         = _CP_DATA[classId] || {};
+    const displayEl = document.getElementById('cp-teacher-display');
+    const sel       = document.getElementById('cp-teacher-select');
+    if (!displayEl || !sel) return;
+
+    const teacherInDB = ALL_TEACHERS.find(t => t.id === d.teacherId);
+
+    if (teacherInDB) {
+      const inits = teacherInDB.name.split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      displayEl.innerHTML = `
+        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#22D3EE,#FBBF24);color:#fff;flex-shrink:0;">${inits}</span>
+        <span class="text-[13px] font-semibold" style="color:var(--by-ink);">${_esc(teacherInDB.name)}</span>`;
+    } else if (d.teacherName && d.teacherName !== '—') {
+      displayEl.innerHTML = `<span class="text-[12px] font-semibold" style="color:var(--by-tomato);">&#9888; ${_esc(d.teacherName)} — not found in member database</span>`;
+    } else {
+      displayEl.innerHTML = `<span class="by-eyebrow" style="color:var(--by-ink-4);">No teacher assigned.</span>`;
+    }
+
+    if (ALL_TEACHERS.length) {
+      sel.innerHTML = ALL_TEACHERS.map(t =>
+        `<option value="${_esc(t.id)}"${t.id === d.teacherId ? ' selected' : ''}>${_esc(t.name)}</option>`
+      ).join('');
+    } else {
+      sel.innerHTML = '<option value="" disabled>No teachers in database</option>';
+    }
+  }
+
+  async function assignTeacher() {
+    const classId = _cpClassId;
+    if (!classId) return;
+    const sel       = document.getElementById('cp-teacher-select');
+    const teacherId = sel ? sel.value : '';
+    if (!teacherId) return;
+    try {
+      const res  = await fetch('/api/class/assign-teacher', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ class_id: classId, teacher_id: teacherId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const teacher = ALL_TEACHERS.find(t => t.id === teacherId);
+        if (_CP_DATA[classId]) {
+          _CP_DATA[classId].teacherId   = teacherId;
+          _CP_DATA[classId].teacherName = teacher ? teacher.name : (data.teacher_name || '');
+        }
+        _renderPanelTeacher(classId);
+        flashToast(`Teacher set to ${teacher ? teacher.name : 'new teacher'}.`);
+      } else {
+        flashToast(data.error || 'Could not assign teacher.', 'error');
+      }
+    } catch {
+      flashToast('Network error — try again.', 'error');
+    }
+  }
+
+  // ── Inline enroll (inside class panel) ───────────────────
+  let _cpAvailable = [];
+
+  function _populateCpEnrollList(classId) {
+    const d = _CP_DATA[classId] || {};
+    const enrolled = new Set((d.students || []).map(s => s.id));
+    _cpAvailable = ALL_STUDENTS.filter(s => !enrolled.has(s.id));
+    document.getElementById('cp-enroll-search').value = '';
+    _renderCpEnrollList(_cpAvailable, classId);
+  }
+
+  function filterCpEnrollList(query) {
+    const q = query.trim().toLowerCase();
+    _renderCpEnrollList(
+      q ? _cpAvailable.filter(s => s.name.toLowerCase().includes(q)) : _cpAvailable,
+      _cpClassId
+    );
+  }
+
+  function _renderCpEnrollList(students, classId) {
+    const listEl  = document.getElementById('cp-enroll-list');
+    const emptyEl = document.getElementById('cp-enroll-empty');
+    if (!students.length) {
+      listEl.innerHTML = '';
+      emptyEl.style.display = '';
+      return;
+    }
+    emptyEl.style.display = 'none';
+    listEl.innerHTML = students.map(s => {
+      const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      return `<div class="cp-enroll-row" id="cper-${s.id}">
+        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:#fff;flex-shrink:0;">${inits}</span>
+        <div class="flex-1 min-w-0">
+          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
+          <div class="by-eyebrow">${s.role_type || 'Patron'}</div>
+        </div>
+        <button class="enroll-row-btn" onclick="enrollStudent('${s.id}','${_esc(s.name)}','${_esc(classId)}',this)">
+          Add
+        </button>
+      </div>`;
+    }).join('');
+  }
+
+  async function enrollStudent(studentId, studentName, classId, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    try {
+      const res  = await fetch('/api/class/enroll', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ class_id: classId, student_id: studentId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        // Remove from available list
+        const row = document.getElementById(`cper-${studentId}`);
+        if (row) { row.style.transition = 'opacity 150ms'; row.style.opacity = '0'; setTimeout(() => row.remove(), 160); }
+        // Remove from in-memory available pool
+        _cpAvailable = _cpAvailable.filter(s => s.id !== studentId);
+        // Update in-memory class data
+        if (_CP_DATA[classId]) {
+          const _enrolled = _cpAvailable.find(s => s.id === studentId);
+          _CP_DATA[classId].students.push({ id: studentId, name: studentName, pts: 0, roleType: _enrolled ? _enrolled.role_type : 'Patron' });
+          _CP_DATA[classId].enrolledCount = (_CP_DATA[classId].enrolledCount || 0) + 1;
+        }
+        // Refresh roster
+        if (_cpClassId === classId) _renderPanelRoster(classId);
+        // Update count badge on grid card
+        const card = document.getElementById(`class-card-${classId}`);
+        if (card) {
+          const countEl = card.querySelector('.enrolled-count');
+          if (countEl) countEl.textContent = _CP_DATA[classId]?.enrolledCount ?? '';
+        }
+        flashToast(`${studentName} added to the cast!`);
+      } else {
+        flashToast(data.error || 'Could not enroll.', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Add'; }
+      }
+    } catch {
+      flashToast('Network error — try again.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Add'; }
+    }
+  }
+
+  // ── Save term ─────────────────────────────────────────────
+  async function saveTerm(termId) {
+    const startEl  = document.getElementById(`term-start-${termId}`);
+    const endEl    = document.getElementById(`term-end-${termId}`);
+    const statusEl = document.getElementById(`term-status-${termId}`);
+    try {
+      const res  = await fetch('/api/terms/update', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ term_id: termId, start_date: startEl.value, end_date: endEl.value }),
+      });
+      const data = await res.json();
+      statusEl.classList.remove('hidden');
+      if (data.ok) {
+        statusEl.textContent = '✓ Saved';
+        statusEl.style.color = '#2A8A4F';
+        flashToast(`${termId} boundaries saved`);
+        setTimeout(() => statusEl.classList.add('hidden'), 3000);
+      } else {
+        statusEl.textContent = data.error || 'Error saving.';
+        statusEl.style.color = 'var(--by-tomato)';
+      }
+    } catch {
+      statusEl.classList.remove('hidden');
+      statusEl.textContent = 'Network error.';
+      statusEl.style.color = 'var(--by-tomato)';
+    }
+  }
+
+  // ── User menu (sticky header) ─────────────────────────
+  function toggleUserMenu(forceClose) {
+    const drop = document.getElementById('user-menu-drop');
+    if (!drop) return;
+    const open = forceClose === true ? false
+               : (forceClose === false ? true : drop.classList.contains('hidden'));
+    drop.classList.toggle('hidden', !open);
+    if (open) {
+      setTimeout(() => {
+        document.addEventListener('click', function handler(e) {
+          if (!document.getElementById('user-menu-wrap')?.contains(e.target)) {
+            drop.classList.add('hidden');
+            document.removeEventListener('click', handler);
+          }
+        });
+      }, 0);
+    }
+  }
+  // Legacy alias (used by old templates if any)
+  function clToggleMenu(force) { toggleUserMenu(force === false ? true : force === true ? false : undefined); }
+
+  // ── HTML escape helper ────────────────────────────────
+  function _esc(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Class finances modal ──────────────────────────────
+  let _cfinClassId  = null;
+  let _cfinEnrolled = 0;
+  let _cfinFees     = [];
+
+  async function openClassFinances(classId) {
+    _cfinClassId  = classId;
+    const d = _CP_DATA[classId] || {};
+    _cfinEnrolled = d.enrolledCount || 0;
+    document.getElementById('cfin-enrolled').textContent = _cfinEnrolled;
+    const feeMatch = (d.fee || '').replace(/,/g, '').match(/[\d]+(?:\.\d{1,2})?/);
+    document.getElementById('cfin-rate').value = feeMatch ? feeMatch[0] : '';
+    document.getElementById('cfin-fee-title').value  = '';
+    document.getElementById('cfin-fee-amount').value = '';
+    document.getElementById('cfin-fee-status').classList.add('hidden');
+    try {
+      const res  = await fetch(`/api/class/${classId}/finances`);
+      const data = await res.json();
+      if (!data.ok) { flashToast(data.error || 'Could not load finances.', 'error'); return; }
+      _cfinFees = data.fees || [];
+    } catch { flashToast('Network error.', 'error'); return; }
+    renderCfinFees();
+    calcClassNet();
+    switchCpTab('finances');
+  }
+
+  function calcClassNet() {
+    const rate     = parseFloat(document.getElementById('cfin-rate').value) || 0;
+    const revenue  = _cfinEnrolled * rate;
+    const expenses = _cfinFees.reduce((s, f) => s + parseFloat(f.fee_amount || 0), 0);
+    const net      = revenue - expenses;
+    document.getElementById('cfin-gross').textContent      = `€${revenue.toFixed(2)}`;
+    document.getElementById('cfin-gross').style.color      = revenue > 0 ? '#2A8A4F' : 'var(--by-ink)';
+    document.getElementById('cfin-fees-total').textContent = `€${expenses.toFixed(2)}`;
+    document.getElementById('cfin-net').textContent        = `€${net.toFixed(2)}`;
+    document.getElementById('cfin-net').style.color        = net >= 0 ? '#2A8A4F' : 'var(--by-tomato)';
+  }
+
+  function renderCfinFees() {
+    const list = document.getElementById('cfin-fee-list');
+    if (!_cfinFees.length) {
+      list.innerHTML = '<li class="by-eyebrow py-2 text-center" style="color:var(--by-ink-4);">No expenses added yet.</li>';
+      calcClassNet();
+      return;
+    }
+    list.innerHTML = _cfinFees.map(f => `
+      <li class="flex items-center gap-2 px-3 py-2 border" style="border-color:var(--by-bg-3);background:var(--by-bg);">
+        <span class="flex-1 text-[13px]" style="color:var(--by-ink);">${_esc(f.title)}</span>
+        <span class="font-mono text-[12px]" style="color:var(--by-tomato);">−€${parseFloat(f.fee_amount).toFixed(2)}</span>
+        <button onclick="deleteCfinFee('${_esc(f.id)}')"
+                style="color:var(--by-ink-4);background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </li>`).join('');
+    calcClassNet();
+  }
+
+  async function addCfinFee() {
+    const title  = document.getElementById('cfin-fee-title').value.trim();
+    const amount = parseFloat(document.getElementById('cfin-fee-amount').value) || 0;
+    const statusEl = document.getElementById('cfin-fee-status');
+    if (!title) { statusEl.textContent = 'Title required.'; statusEl.classList.remove('hidden'); return; }
+    statusEl.classList.add('hidden');
+    try {
+      const res  = await fetch(`/api/class/${_cfinClassId}/finances/fee`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, fee_amount: amount }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        _cfinFees.push(data.fee);
+        document.getElementById('cfin-fee-title').value  = '';
+        document.getElementById('cfin-fee-amount').value = '';
+        renderCfinFees();
+      } else {
+        statusEl.textContent = data.error || 'Failed to add fee.';
+        statusEl.classList.remove('hidden');
+      }
+    } catch { statusEl.textContent = 'Network error.'; statusEl.classList.remove('hidden'); }
+  }
+
+  async function deleteCfinFee(feeId) {
+    try {
+      const res  = await fetch(`/api/finances/fee/delete/${feeId}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) { _cfinFees = _cfinFees.filter(f => f.id !== feeId); renderCfinFees(); }
+    } catch { flashToast('Network error.', 'error'); }
+  }
+
+  // ── Sync classes from website ─────────────────────────
+  async function syncClasses() {
+    const btn = document.getElementById('btn-sync-classes');
+    if (btn) { btn.disabled = true; btn.textContent = 'Syncing the runsheet…'; }
+    try {
+      const res  = await fetch('/api/backstage/sync-classes', { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        flashToast(`Scene check! ${data.new_classes || 0} new, ${data.updated_classes || 0} updated. Reloading…`);
+        setTimeout(() => location.reload(), 2200);
+      } else {
+        flashToast(data.error || 'The internet dropped its scene partner.', 'error');
+      }
+    } catch { flashToast('Network ghosted us. Try again.', 'error'); }
+    finally { if (btn) { btn.disabled = false; btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg> Yes-And the Schedule!'; } }
+  }
+
+  // ── Class detail panel ────────────────────────────────
+  let _cpClassId = null, _cpEnrolled = 0, _cpTitle = '';
+  const _CP_DATA = {};
+
+  {% set all_classes_combined = active_classes + future_classes + past_classes %}
+  (function () {
+    {% for cls in all_classes_combined %}
+    _CP_DATA[{{ cls.id | tojson }}] = {
+      title: {{ cls.title | tojson }},
+      schedule: {{ cls.schedule | tojson }},
+      fee: {{ (cls.fee or '') | tojson }},
+      enrolledCount: {{ cls.enrolled_count }},
+      teacherId: {{ (cls.teacher_id or '') | tojson }},
+      teacherName: {{ (cls.teacher_name or '') | tojson }},
+      students: [{% for s in cls.students %}{ id: {{ s.id | tojson }}, name: {{ s.name | tojson }}, pts: {{ s.get('yes_and_points',0) or 0 }}, roleType: {{ (s.get('role_type','Patron')) | tojson }} }{% if not loop.last %},{% endif %}{% endfor %}],
+    };
+    {% endfor %}
+  })();
+
+  function openClassPanel(classId) {
+    _cpClassId  = classId;
+    const d     = _CP_DATA[classId] || {};
+    _cpTitle    = d.title || classId;
+    _cpEnrolled = d.enrolledCount || 0;
+    document.getElementById('cp-title').textContent = _cpTitle;
+    switchCpTab('cast');
+    _renderPanelTeacher(classId);
+    _renderPanelRoster(classId);
+    _populateCpEnrollList(classId);
+    const panel = document.getElementById('class-panel');
+    panel.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('open')));
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeClassPanel() {
+    const panel = document.getElementById('class-panel');
+    panel.classList.remove('open');
+    const inner = panel.querySelector('.by-panel-inner');
+    const done = () => { panel.classList.add('hidden'); inner.removeEventListener('transitionend', done); };
+    inner.addEventListener('transitionend', done);
+    _cpClassId = null;
+    document.body.style.overflow = '';
+  }
+
+  function switchCpTab(tab) {
+    const castTab = document.getElementById('cp-tab-cast');
+    const finTab  = document.getElementById('cp-tab-finances');
+    const castBtn = document.getElementById('cp-tab-btn-cast');
+    const finBtn  = document.getElementById('cp-tab-btn-finances');
+    if (tab === 'finances' && finTab) {
+      castTab.classList.add('hidden');
+      finTab.classList.remove('hidden');
+      castBtn.style.color = 'var(--by-ink-3)';
+      castBtn.style.borderBottomColor = 'transparent';
+      finBtn.style.color = 'var(--by-ink)';
+      finBtn.style.borderBottomColor = 'var(--by-yes)';
+    } else {
+      castTab.classList.remove('hidden');
+      if (finTab) finTab.classList.add('hidden');
+      castBtn.style.color = 'var(--by-ink)';
+      castBtn.style.borderBottomColor = 'var(--by-yes)';
+      if (finBtn) { finBtn.style.color = 'var(--by-ink-3)'; finBtn.style.borderBottomColor = 'transparent'; }
+    }
+  }
+
+  function deleteClassFromPanel() {
+    document.getElementById('dcp-title').textContent = 'Cut "' + _cpTitle + '" from the Show?';
+    document.getElementById('dcp-body').textContent =
+      'You\'re about to strike the set for "' + _cpTitle + '". Every student, every attendance mark, every improv dare — gone. The audience will not remember. Actually, they will. This is permanent.';
+    const panel = document.getElementById('delete-confirm-panel');
+    panel.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('open')));
+  }
+
+  function cancelDeletePanel() {
+    const panel = document.getElementById('delete-confirm-panel');
+    panel.classList.remove('open');
+    const inner = panel.querySelector('.by-panel-inner');
+    const done = () => { panel.classList.add('hidden'); inner.removeEventListener('transitionend', done); };
+    inner.addEventListener('transitionend', done);
+  }
+
+  async function confirmDeleteClass() {
+    const classId = _cpClassId, title = _cpTitle;
+    cancelDeletePanel();
+    closeClassPanel();
+    await new Promise(r => setTimeout(r, 350));
+    try {
+      const res  = await fetch('/api/class/delete/' + classId, { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        const card = document.getElementById('class-card-' + classId);
+        if (card) { card.style.transition = 'opacity 200ms'; card.style.opacity = '0'; setTimeout(() => card.remove(), 210); }
+        flashToast('"' + title + '" has left the building. Scene struck.');
+      } else {
+        flashToast(data.error || 'Could not delete class.', 'error');
+      }
+    } catch { flashToast('Network dropped its cue. Try again.', 'error'); }
+  }
+
+  function deleteClass(classId, title) {
+    _cpClassId = classId;
+    _cpTitle   = title;
+    deleteClassFromPanel();
+  }
+
+  function unenrollFromPanel(userId, classId, studentName, btn) {
+    byConfirm({
+      title:     'Drop from workshop?',
+      body:      studentName + ' will be removed from this class. They\'ll keep their Yes-And points. The ensemble will go on.',
+      label:     'Drop them',
+      danger:    true,
+      onConfirm: () => _doUnenroll(userId, classId, studentName, btn),
+    });
+  }
+  async function _doUnenroll(userId, classId, studentName, btn) {
+    btn.disabled = true; btn.textContent = '…';
+    try {
+      const res  = await fetch('/api/classes/unenroll', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, class_id: classId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        // Remove from roster display
+        const row = document.getElementById('cp-row-' + classId + '-' + userId);
+        if (row) { row.style.transition = 'opacity 200ms'; row.style.opacity = '0'; setTimeout(() => row.remove(), 210); }
+        // Update in-memory data
+        if (_CP_DATA[classId]) {
+          const dropped = _CP_DATA[classId].students.find(s => s.id === userId);
+          _CP_DATA[classId].students = _CP_DATA[classId].students.filter(s => s.id !== userId);
+          _CP_DATA[classId].enrolledCount = Math.max(0, (_CP_DATA[classId].enrolledCount || 1) - 1);
+          // Add dropped student back to the available pool
+          if (dropped) {
+            _cpAvailable.push({ id: dropped.id, name: dropped.name, role_type: dropped.roleType });
+            _renderCpEnrollList(_cpAvailable, classId);
+          }
+        }
+        // Update meta line
+        _renderPanelRoster(classId);
+        // Update count badge on grid card
+        const card = document.getElementById('class-card-' + classId);
+        if (card) {
+          const countEl = card.querySelector('.enrolled-count');
+          if (countEl) countEl.textContent = _CP_DATA[classId]?.enrolledCount ?? '';
+        }
+        flashToast(studentName + ' dropped from the scene.');
+        if (data.warnings && data.warnings.length) setTimeout(() => flashToast('⚠ ' + data.warnings[0], 'error'), 3400);
+      } else {
+        flashToast(data.error || 'Could not unenroll.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg> Drop';
+      }
+    } catch { flashToast('Network error — try again.', 'error'); btn.disabled = false; }
+  }
+</script>
+
+{# ── Add Person ── #}
+<div id="modal-add-person" class="by-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-person')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+      <div>
+        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Person</h3>
+        <div class="text-[11.5px] mt-0.5" style="color:var(--by-ink-3)">Patron · Company Player · Mocatriz · Stage Manager</div>
+      </div>
+      <button onclick="closeModal('modal-add-person')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Full Name</label>
+          <input type="text" id="new-person-name" placeholder="Ana García"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Email</label>
+          <input type="email" id="new-person-email" placeholder="ana@bigyes.local"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        </div>
+      </div>
+      <div>
+        <label class="mb-3 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Role Type</label>
+        <div class="grid grid-cols-2 gap-3" id="rt-card-group">
+          <div class="rt-card rt-patron selected" data-rt="Patron" onclick="selectRoleType('Patron')">
+            <div class="rt-check"></div>
+            <div class="rt-name">Patron</div>
+            <div class="rt-desc">Classes · Cohorts · Level tracking</div>
+          </div>
+          <div class="rt-card rt-company-player" data-rt="Company_Player" onclick="selectRoleType('Company_Player')">
+            <div class="rt-check"></div>
+            <div class="rt-name">Company Player</div>
+            <div class="rt-desc">Shows · Bookings · House Teams</div>
+          </div>
+          <div class="rt-card rt-mocatriz" data-rt="Mocatriz" onclick="selectRoleType('Mocatriz')">
+            <div class="rt-check"></div>
+            <div class="rt-name">Mocatriz ✦</div>
+            <div class="rt-desc">All assignments</div>
+          </div>
+          <div class="rt-card rt-stage-manager" data-rt="Stage_Manager" onclick="selectRoleType('Stage_Manager')">
+            <div class="rt-check"></div>
+            <div class="rt-name">Stage Manager</div>
+            <div class="rt-desc">Admin · Roster · Backstage</div>
+          </div>
+        </div>
+        <input type="hidden" id="new-person-role-type" value="Patron" />
+      </div>
+
+      <!-- Access Level (student/teacher subrole — hidden for Stage Manager) -->
+      <div id="subrole-section">
+        <label class="mb-2 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Access Level</label>
+        <div class="flex gap-2">
+          <button type="button" id="sys-role-btn-student" onclick="selectSystemRole('student')"
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
+            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-yes); color:var(--by-ink)">
+            Student
+          </button>
+          <button type="button" id="sys-role-btn-teacher" onclick="selectSystemRole('teacher')"
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
+            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-bg); color:var(--by-ink-2)">
+            Teacher
+          </button>
+        </div>
+        <input type="hidden" id="new-person-role" value="student" />
+        <div class="mt-1.5 text-[11px] leading-relaxed" style="color:var(--by-ink-4)">
+          <strong style="color:var(--by-ink-3)">Student</strong> sees the Student dashboard.
+          <strong style="color:var(--by-ink-3)">Teacher</strong> accesses the Ensemble Room.
+        </div>
+      </div>
+
+      <div id="add-person-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
+      <button onclick="closeModal('modal-add-person')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+      <button onclick="createPerson()" class="flex-1 btn-spot py-2.5 text-sm">Add Person</button>
+    </div>
+  </div>
+</div>
+
+{# ── Add Class ── #}
+<div id="modal-add-class" class="by-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-class')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Class</h3>
+      <button onclick="closeModal('modal-add-class')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Class Name</label>
+        <input type="text" id="new-class-name" placeholder="e.g. Level 2 Improv"
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day</label>
+          <div class="by-select-wrap">
+            <select id="new-class-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+              {% for d in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time</label>
+          <input type="time" id="new-class-time" value="18:00"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Select Term</label>
+        <div class="by-select-wrap">
+          <select id="new-class-term" onchange="handleTermChange(this)"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <option value="">— No specific term —</option>
+            {% for term in terms %}
+            <option value="{{ term.id }}" data-start="{{ term.start_date }}" data-end="{{ term.end_date }}">
+              {{ term.name }} &nbsp;({{ term.start_date }} → {{ term.end_date }})
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div id="past-term-warning" style="display:none; background:var(--by-yes-soft); border:var(--by-bd-thick); padding:12px 14px;">
+        <div class="flex items-start gap-2">
+          <span style="font-size:18px; flex-shrink:0;">🕰️</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-semibold" style="color:var(--by-ink); line-height:1.4;">Time travel hasn't been invented yet. This term has already ended, are you sure?</p>
+            <div class="flex gap-2 mt-2.5">
+              <button type="button" onclick="confirmPastTerm()" class="btn-spot text-[11px] px-3 py-1.5">Confirm — log it anyway</button>
+              <button type="button" onclick="resetTermSelect()" class="btn-ghost text-[11px] px-3 py-1.5">Pick another term</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Assign Teacher</label>
+        <div class="by-select-wrap">
+          <select id="new-class-teacher" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            {% if teachers %}
+              {% for t in teachers.values() %}
+              <option value="{{ t.id }}">{{ t.name }}</option>
+              {% endfor %}
+            {% else %}
+            <option value="" disabled>No teachers found</option>
+            {% endif %}
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Initial Enrollment</label>
+        <div style="position:relative;">
+          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--by-ink-4);pointer-events:none;" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="roster-search" placeholder="Search students by name…" autocomplete="off"
+            oninput="filterRosterSearch(this.value)"
+            class="w-full border px-3 py-2.5 text-sm focus:outline-none"
+            style="padding-left:34px; border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        </div>
+        <div id="roster-search-list" style="max-height:160px; overflow-y:auto; border:1px solid var(--by-ink); border-top:none; background:var(--by-bg);"></div>
+        <div id="roster-selected-summary" class="mt-2 text-[11px]" style="color:var(--by-ink-3); font-family:var(--by-f-mono);display:none;">
+          <span id="roster-selected-count">0</span> patron(s) selected for initial enrollment
+        </div>
+        <p class="mt-3 text-[12px] px-3 py-2.5" style="background:var(--by-bg-2); border:var(--by-bd); color:var(--by-ink-2); line-height:1.5;">
+          <strong>Tip:</strong> Don't stress about adding everyone right now! You can always add or adjust users in this class at any time via the Classes &amp; Cohorts page later.
+        </p>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Tuition Fee <span style="color:var(--by-ink-4); font-weight:400;">(optional)</span></label>
+        <input type="text" id="new-class-fee" placeholder="e.g. €120 / term · Free"
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        <p class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Free-form. Used in tuition pipeline reports.</p>
+      </div>
+      <div id="add-class-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
+      <button onclick="closeModal('modal-add-class')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+      <button onclick="createClass()" class="flex-1 btn-spot py-2.5 text-sm">Add Class</button>
+    </div>
+  </div>
+</div>
+
+{# ── Add Show ── #}
+<div id="modal-add-show" class="by-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-show')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+      <div>
+        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Schedule a Show</h3>
+        <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3)">Link a show type or create a one-off</div>
+      </div>
+      <button onclick="closeModal('modal-add-show')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Show Type</label>
+        <div class="by-select-wrap">
+          <select id="show-type-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" onchange="onShowTypeChange()">
+            <option value="">— New one-off (enter title below) —</option>
+          </select>
+        </div>
+        <p id="show-type-hint" class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Select an existing type to reuse its description, or leave blank to create a one-off.</p>
+      </div>
+      <div id="show-title-wrap">
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Title <span style="color:var(--by-tomato)">*</span></label>
+        <input type="text" id="show-title" placeholder="e.g. Friday Night Harold"
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day <span style="color:var(--by-tomato)">*</span></label>
+          <div class="by-select-wrap">
+            <select id="show-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+              {% for d in ['Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time <span style="color:var(--by-tomato)">*</span></label>
+          <input type="time" id="show-time" value="20:00"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Date</label>
+          <input type="date" id="show-date"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Ticket cost</label>
+          <input type="text" id="show-cost" placeholder="e.g. €12 / Free"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+        </div>
+      </div>
+      <div>
+        <div class="mb-2 flex items-center justify-between">
+          <label class="text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Cast</label>
+          <span id="cast-count" class="text-[11px] font-mono" style="color:var(--by-ink-4)">0 selected</span>
+        </div>
+        <div id="cast-list" class="border divide-y max-h-44 overflow-y-auto" style="border-color:var(--by-ink);">
+          <div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>
+        </div>
+      </div>
+      <div id="add-show-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
+      <button onclick="closeModal('modal-add-show')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+      <button onclick="createShow()" class="flex-1 btn-spot py-2.5 text-sm">Schedule Show</button>
+    </div>
+  </div>
+</div>
+
+{# ── My Config ── #}
+<div id="modal-my-config" class="by-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-my-config')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Personal info</h3>
+      <button onclick="closeModal('modal-my-config')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+      <!-- Avatar section -->
+      <div>
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Avatar</div>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="relative flex-shrink-0" style="width:64px;height:64px;">
+            <img id="cfg-av-img" class="av object-cover"
+                 src="{{ current_user_avatar or '' }}"
+                 style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
+                 alt="{{ current_user_initials }}">
+            <span id="cfg-av-init" class="av flex items-center justify-center"
+                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:#fff;
+                         background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
+                         {{ 'display:none;' if current_user_avatar else '' }}">
+              {{ current_user_initials }}
+            </span>
+          </div>
+          <div>
+            <div id="cfg-av-label" class="text-[11px] font-semibold" style="color:var(--by-ink)">
+              {% if current_user_avatar_raw.startswith('char:') and current_user_avatar_raw[5:].isdigit() %}{{ char_avatars[current_user_avatar_raw[5:]|int].name }}{% elif current_user_avatar_raw.startswith('data:') %}Custom photo{% else %}Gradient initials{% endif %}
+            </div>
+            <div class="text-[10.5px] mt-0.5" style="color:var(--by-ink-3)">Pick a character, upload a photo,<br>or choose a gradient colour.</div>
+          </div>
+        </div>
+        <!-- Character grid -->
+        <div class="grid grid-cols-3 gap-2 mb-3" id="cfg-char-grid">
+          {% for ch in char_avatars %}
+          <button type="button" class="cfg-char-btn flex flex-col items-center gap-1 p-1.5 border"
+                  style="border-color:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-ink){% else %}var(--by-bg-3){% endif %};background:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-yes-soft){% else %}var(--by-bg){% endif %};"
+                  onclick="cfgPickCharacter({{ loop.index0 }})">
+            <img src="{{ ch.url }}" alt="{{ ch.name }}" style="width:52px;height:52px;border-radius:50%;display:block;">
+            <span style="font-family:var(--by-f-mono);font-size:8.5px;color:var(--by-ink-3);letter-spacing:.04em;line-height:1.2;text-align:center;">{{ ch.name }}</span>
+          </button>
+          {% endfor %}
+        </div>
+        <!-- Upload photo -->
+        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold"
+               style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg);">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload photo
+          <input type="file" accept="image/*" class="hidden" onchange="cfgHandleUpload(this)">
+        </label>
+        <!-- Gradient colour swatches -->
+        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold" style="color:var(--by-ink-3)">Gradient colour</div>
+        <div class="flex gap-2 flex-wrap" id="cfg-tint-swatches"></div>
+      </div>
+      <!-- Name fields -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">First name</label>
+          <input type="text" id="cfg-first" placeholder="Sofia"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Last name</label>
+          <input type="text" id="cfg-last" placeholder="Reyes"
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+        </div>
+      </div>
+      <!-- Bio -->
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Bio</label>
+        <textarea id="cfg-bio" rows="4" placeholder="A few words about yourself…"
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed"
+          style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)"></textarea>
+      </div>
+      <div id="cfg-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+      <!-- Change password -->
+      <div style="border-top:var(--by-bd-soft);padding-top:1.25rem">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Change password</div>
+        <div class="space-y-3">
+          <div>
+            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Current password</label>
+            <input type="password" id="cfg-pw-current" placeholder="••••••••"
+              class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+              style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">New password</label>
+              <input type="password" id="cfg-pw-new" placeholder="••••••••"
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Confirm</label>
+              <input type="password" id="cfg-pw-confirm" placeholder="••••••••"
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            </div>
+          </div>
+          <button onclick="changePassword()" class="w-full border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2)">Update password</button>
+          <div id="cfg-pw-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
+      <button onclick="closeModal('modal-my-config')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)">Cancel</button>
+      <button onclick="saveMyConfig()" class="flex-1 btn-spot py-2.5 text-sm">Save</button>
+    </div>
+  </div>
+</div>
+
+{# ── Class Finances Modal ── #}
+<!-- Data vars for new modals -->
+<script>
+  const SHOW_TYPES      = {{ show_types_json | safe }};
+  const CAST_PERFORMERS = {{ cast_performers_json | safe }};
+  const NAV_TINTS       = {{ nav_tints_json | safe }};
+  const CHAR_AVATARS    = {{ char_avatars_json | safe }};
+  let _cfgTintIndex   = {{ current_user_tint_idx }};
+  let _cfgInitialName = {{ current_user_name | tojson }};
+  let _cfgInitialBio  = {{ current_user_bio  | tojson }};
+  const _cfgAvatarRaw = {{ current_user_avatar_raw | tojson }};
+  let _cfgAvatarMode = !_cfgAvatarRaw ? 'gradient'
+                     : _cfgAvatarRaw.startsWith('char:') ? 'char' : 'upload';
+  let _cfgCharIndex  = _cfgAvatarMode === 'char' ? parseInt(_cfgAvatarRaw.split(':')[1]) : -1;
+  let _cfgUploadData = _cfgAvatarMode === 'upload' ? _cfgAvatarRaw : null;
+
+  // Enrollment eligible (students) for the Add Class modal search
+  const _enrollEligible = ({{ roster_json | safe }} || []).filter(u => u.role_type !== 'Stage_Manager');
+  let _selectedStudentIds = new Set();
+  let _pastTermConfirmed  = false;
+  const TERMS_DATA = {{ terms_json | safe }};
+</script>
+
+<!-- Modal + Config scripts -->
+<script>
+  // ── Modal helpers ─────────────────────────────────────────
+  function openModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+    document.body.style.overflow = 'hidden';
+    if (id === 'modal-add-class') _resetClassModal();
+    if (id === 'modal-add-show')  initShowModal();
+  }
+  function closeModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('open');
+    const inner = el.querySelector('.by-panel-inner');
+    if (inner) {
+      const done = () => { el.classList.add('hidden'); inner.removeEventListener('transitionend', done); };
+      inner.addEventListener('transitionend', done);
+    } else {
+      el.classList.add('hidden');
+    }
+    document.body.style.overflow = '';
+  }
+
+  // ── Feedback banner helper ────────────────────────────────
+  function showFeedback(elId, msg, type) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    el.className = 'rounded-xl px-4 py-3 text-sm font-medium text-center border';
+    const tokens = type === 'success'
+      ? ['bg-green-950', 'text-green-300', 'border-green-800']
+      : ['bg-rose-950',  'text-red-300',   'border-red-800'];
+    el.classList.add(...tokens);
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    if (type === 'success') setTimeout(() => el.classList.add('hidden'), 5000);
+  }
+
+  // ── Avatar helpers ────────────────────────────────────────
+  function _updateCfgPreview() {
+    const img  = document.getElementById('cfg-av-img');
+    const init = document.getElementById('cfg-av-init');
+    const lbl  = document.getElementById('cfg-av-label');
+    if (_cfgAvatarMode === 'gradient') {
+      const t = NAV_TINTS[_cfgTintIndex];
+      init.style.background = `linear-gradient(135deg,${t[0]},${t[1]})`;
+      init.style.display = '';
+      img.src = ''; img.style.display = 'none';
+      if (lbl) lbl.textContent = 'Gradient initials';
+    } else {
+      const src = _cfgAvatarMode === 'char' ? CHAR_AVATARS[_cfgCharIndex].url : _cfgUploadData;
+      img.src = src; img.style.display = '';
+      init.style.display = 'none';
+      if (lbl) lbl.textContent = _cfgAvatarMode === 'char' ? CHAR_AVATARS[_cfgCharIndex].name : 'Custom photo';
+    }
+  }
+
+  function _updateHeaderAvatar(avatarUrl, initials, gradient) {
+    const img  = document.getElementById('header-av-img');
+    const init = document.getElementById('header-av-init');
+    if (!img || !init) return;
+    if (avatarUrl) {
+      img.src = avatarUrl; img.style.display = '';
+      init.style.display = 'none';
+    } else {
+      init.style.background = gradient;
+      init.textContent = initials;
+      init.style.display = ''; img.src = ''; img.style.display = 'none';
+    }
+  }
+
+  function cfgPickCharacter(idx) {
+    _cfgAvatarMode = 'char'; _cfgCharIndex = idx; _cfgUploadData = null;
+    document.querySelectorAll('.cfg-char-btn').forEach((b, i) => {
+      b.style.borderColor = i === idx ? 'var(--by-ink)' : 'var(--by-bg-3)';
+      b.style.background  = i === idx ? 'var(--by-yes-soft)' : 'var(--by-bg)';
+    });
+    document.querySelectorAll('.cfg-swatch').forEach(s => s.classList.remove('selected'));
+    _updateCfgPreview();
+  }
+
+  function cfgHandleUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const tmpImg = new Image();
+      tmpImg.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200; canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        const s = Math.min(tmpImg.width, tmpImg.height);
+        const sx = (tmpImg.width - s) / 2, sy = (tmpImg.height - s) / 2;
+        ctx.drawImage(tmpImg, sx, sy, s, s, 0, 0, 200, 200);
+        _cfgUploadData = canvas.toDataURL('image/jpeg', 0.82);
+        _cfgAvatarMode = 'upload'; _cfgCharIndex = -1;
+        document.querySelectorAll('.cfg-char-btn').forEach(b => {
+          b.style.borderColor = 'var(--by-bg-3)'; b.style.background = 'var(--by-bg)';
+        });
+        document.querySelectorAll('.cfg-swatch').forEach(s => s.classList.remove('selected'));
+        _updateCfgPreview();
+      };
+      tmpImg.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function cfgPickTint(idx) {
+    _cfgTintIndex = idx; _cfgAvatarMode = 'gradient'; _cfgCharIndex = -1; _cfgUploadData = null;
+    document.querySelectorAll('.cfg-swatch').forEach((s, i) => s.classList.toggle('selected', i === idx));
+    document.querySelectorAll('.cfg-char-btn').forEach(b => {
+      b.style.borderColor = 'var(--by-bg-3)'; b.style.background = 'var(--by-bg)';
+    });
+    _updateCfgPreview();
+  }
+
+  // ── My Config panel ───────────────────────────────────────
+  function openMyConfig() {
+    const nameParts = _cfgInitialName.trim().split(/\s+/);
+    document.getElementById('cfg-first').value = nameParts[0] || '';
+    document.getElementById('cfg-last').value  = nameParts.slice(1).join(' ');
+    document.getElementById('cfg-bio').value   = _cfgInitialBio || '';
+
+    // Build colour swatches
+    const wrap = document.getElementById('cfg-tint-swatches');
+    wrap.innerHTML = NAV_TINTS.map((t, i) => `
+      <button type="button" class="cfg-swatch ${i === _cfgTintIndex && _cfgAvatarMode === 'gradient' ? 'selected' : ''}"
+        style="background:linear-gradient(135deg,${t[0]},${t[1]})"
+        onclick="cfgPickTint(${i})" title="Colour ${i+1}"></button>
+    `).join('');
+
+    // Sync char grid selected state
+    document.querySelectorAll('.cfg-char-btn').forEach((b, i) => {
+      const sel = _cfgAvatarMode === 'char' && i === _cfgCharIndex;
+      b.style.borderColor = sel ? 'var(--by-ink)' : 'var(--by-bg-3)';
+      b.style.background  = sel ? 'var(--by-yes-soft)' : 'var(--by-bg)';
+    });
+
+    _updateCfgPreview();
+    document.getElementById('cfg-status').classList.add('hidden');
+    openModal('modal-my-config');
+  }
+
+  async function saveMyConfig() {
+    const first = document.getElementById('cfg-first').value.trim();
+    const last  = document.getElementById('cfg-last').value.trim();
+    const bio   = document.getElementById('cfg-bio').value.trim();
+    if (!first) { showFeedback('cfg-status', 'First name is required.', 'error'); return; }
+    const avatarPayload = _cfgAvatarMode === 'gradient' ? 'gradient'
+                        : _cfgAvatarMode === 'char'     ? `char:${_cfgCharIndex}`
+                        : _cfgUploadData;
+    try {
+      const res  = await fetch('/api/profile/update-self', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ first_name: first, last_name: last, bio, tint_index: _cfgTintIndex, avatar: avatarPayload }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const newName     = data.name;
+        const newInitials = data.initials;
+        const tint        = NAV_TINTS[_cfgTintIndex];
+        const gradient    = `linear-gradient(135deg,${tint[0]},${tint[1]})`;
+        _updateHeaderAvatar(data.avatar_url || null, newInitials, gradient);
+        _cfgInitialName = newName;
+        _cfgInitialBio  = data.bio !== undefined ? data.bio : bio;
+        showFeedback('cfg-status', 'Saved!', 'success');
+        setTimeout(() => {
+          const _m = document.getElementById('modal-my-config');
+          if (_m) { _m.classList.remove('open'); setTimeout(() => { _m.classList.add('hidden'); document.body.style.overflow = ''; }, 280); }
+        }, 900);
+      } else {
+        showFeedback('cfg-status', data.error || 'Could not save.', 'error');
+      }
+    } catch {
+      showFeedback('cfg-status', 'Network error — try again.', 'error');
+    }
+  }
+
+  async function changePassword() {
+    const current = document.getElementById('cfg-pw-current').value;
+    const newPw   = document.getElementById('cfg-pw-new').value.trim();
+    const confirm = document.getElementById('cfg-pw-confirm').value.trim();
+    if (!current) { showFeedback('cfg-pw-status', 'Enter your current password.', 'error'); return; }
+    if (newPw.length < 6) { showFeedback('cfg-pw-status', 'New password must be at least 6 characters.', 'error'); return; }
+    if (newPw !== confirm) { showFeedback('cfg-pw-status', 'Passwords do not match.', 'error'); return; }
+    try {
+      const res  = await fetch('/api/profile/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: current, new_password: newPw }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        document.getElementById('cfg-pw-current').value = '';
+        document.getElementById('cfg-pw-new').value     = '';
+        document.getElementById('cfg-pw-confirm').value = '';
+        showFeedback('cfg-pw-status', 'Password updated.', 'success');
+      } else {
+        showFeedback('cfg-pw-status', data.error || 'Could not update password.', 'error');
+      }
+    } catch {
+      showFeedback('cfg-pw-status', 'Network error — try again.', 'error');
+    }
+  }
+
+  // ── Show modal ────────────────────────────────────────────
+  function initShowModal() {
+    const sel = document.getElementById('show-type-select');
+    sel.innerHTML = '<option value="">— New one-off (enter title below) —</option>'
+      + SHOW_TYPES.map(t => `<option value="${_esc(t.id)}">${_esc(t.title)}</option>`).join('');
+
+    const castList = document.getElementById('cast-list');
+    if (CAST_PERFORMERS.length) {
+      castList.innerHTML = CAST_PERFORMERS.map(p => `
+        <label class="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" style="background:var(--by-bg);" onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'">
+          <input type="checkbox" value="${_esc(p.id)}" class="cast-pick w-3.5 h-3.5" onchange="updateCastCount()" style="background:var(--by-bg);" />
+          <span class="text-[13px] font-medium" style="color:var(--by-ink)">${_esc(p.name)}</span>
+          <span class="ml-auto text-[11px] font-mono" style="color:var(--by-ink-3)">${_esc(p.role_type || '')}</span>
+        </label>`).join('');
+    } else {
+      castList.innerHTML = '<div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>';
+    }
+    document.getElementById('cast-count').textContent = '0 selected';
+    document.getElementById('show-title').value = '';
+    document.getElementById('show-date').value  = '';
+    document.getElementById('show-cost').value  = '';
+    document.getElementById('show-time').value  = '20:00';
+    document.getElementById('add-show-status').classList.add('hidden');
+    onShowTypeChange();
+  }
+
+  function onShowTypeChange() {
+    const typeId    = document.getElementById('show-type-select').value;
+    const titleWrap = document.getElementById('show-title-wrap');
+    titleWrap.style.display = typeId ? 'none' : '';
+    document.getElementById('show-title').required = !typeId;
+  }
+
+  function updateCastCount() {
+    const n = document.querySelectorAll('.cast-pick:checked').length;
+    document.getElementById('cast-count').textContent = `${n} selected`;
+  }
+
+  async function createShow() {
+    const typeId  = document.getElementById('show-type-select').value;
+    const title   = document.getElementById('show-title').value.trim();
+    const day     = document.getElementById('show-day').value;
+    const time    = document.getElementById('show-time').value;
+    const date    = document.getElementById('show-date').value || null;
+    const cost    = document.getElementById('show-cost').value.trim() || null;
+    const castIds = [...document.querySelectorAll('.cast-pick:checked')].map(el => el.value);
+
+    if (!time) { showFeedback('add-show-status', 'Please enter a time.', 'error'); return; }
+    if (!typeId && !title) { showFeedback('add-show-status', 'Enter a title or select a show type.', 'error'); return; }
+
+    try {
+      const res  = await fetch('/api/show/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, day, time, show_type_id: typeId || null, date, cost, cast_ids: castIds }),
+      });
+      const data = await res.json();
+      if (data.ok) { closeModal('modal-add-show'); window.location.reload(); }
+      else showFeedback('add-show-status', data.error || 'Failed to create show.', 'error');
+    } catch { showFeedback('add-show-status', 'Network error — please try again.', 'error'); }
+  }
+
+  // ── Term selection & past-term warning ───────────────────
+  function handleTermChange(selectEl) {
+    _pastTermConfirmed = false;
+    const opt = selectEl.options[selectEl.selectedIndex];
+    const endDate = opt.dataset.end;
+    const warningEl = document.getElementById('past-term-warning');
+    if (endDate && endDate < new Date().toISOString().slice(0, 10)) {
+      warningEl.style.display = '';
+    } else {
+      warningEl.style.display = 'none';
+    }
+  }
+
+  function confirmPastTerm() {
+    _pastTermConfirmed = true;
+    document.getElementById('past-term-warning').style.display = 'none';
+  }
+
+  function resetTermSelect() {
+    document.getElementById('new-class-term').value = '';
+    document.getElementById('past-term-warning').style.display = 'none';
+    _pastTermConfirmed = false;
+  }
+
+  // ── Enrollment search (Add Class modal) ──────────────────
+  function _renderRosterList(students) {
+    const listEl = document.getElementById('roster-search-list');
+    if (!students.length) {
+      listEl.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--by-ink-4);">No students found.</div>';
+      return;
+    }
+    listEl.innerHTML = students.map(s => {
+      const checked = _selectedStudentIds.has(s.id) ? 'checked' : '';
+      const label   = s.role_type === 'Mocatriz' ? `${s.name} ✦` : s.name;
+      return `<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--by-bg-3);"
+                     onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background=''">
+        <input type="checkbox" value="${s.id}" ${checked}
+               onchange="toggleRosterStudent('${s.id}', this.checked)"
+               style="accent-color:var(--by-yes-deep);width:14px;height:14px;flex-shrink:0;" />
+        <span style="font-size:13px;font-weight:600;color:var(--by-ink);">${label}</span>
+        <span style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;margin-left:auto;">${s.role_type || 'Patron'}</span>
+      </label>`;
+    }).join('');
+  }
+
+  function filterRosterSearch(query) {
+    const q = query.trim().toLowerCase();
+    const filtered = q ? _enrollEligible.filter(s => s.name.toLowerCase().includes(q)) : _enrollEligible;
+    _renderRosterList(filtered);
+  }
+
+  function toggleRosterStudent(id, checked) {
+    checked ? _selectedStudentIds.add(id) : _selectedStudentIds.delete(id);
+    const summaryEl = document.getElementById('roster-selected-summary');
+    const countEl   = document.getElementById('roster-selected-count');
+    countEl.textContent = _selectedStudentIds.size;
+    summaryEl.style.display = _selectedStudentIds.size > 0 ? '' : 'none';
+  }
+
+  function _resetClassModal() {
+    document.getElementById('new-class-name').value  = '';
+    document.getElementById('new-class-day').value   = 'Monday';
+    document.getElementById('new-class-time').value  = '18:00';
+    document.getElementById('new-class-term').value  = '';
+    document.getElementById('new-class-fee').value   = '';
+    document.getElementById('roster-search').value   = '';
+    document.getElementById('past-term-warning').style.display = 'none';
+    document.getElementById('roster-selected-summary').style.display = 'none';
+    _selectedStudentIds.clear();
+    _pastTermConfirmed = false;
+    _renderRosterList(_enrollEligible);
+  }
+
+  async function createClass() {
+    const name      = document.getElementById('new-class-name').value.trim();
+    const day       = document.getElementById('new-class-day').value;
+    const time      = document.getElementById('new-class-time').value;
+    const teacherId = document.getElementById('new-class-teacher').value;
+    const termEl    = document.getElementById('new-class-term');
+    const termId    = termEl.value;
+    const fee       = (document.getElementById('new-class-fee').value || '').trim() || null;
+
+    if (!name || !time || !teacherId) {
+      showFeedback('add-class-status', 'Please fill in all fields.', 'error');
+      return;
+    }
+    if (termId) {
+      const opt     = termEl.options[termEl.selectedIndex];
+      const endDate = opt.dataset.end;
+      const today   = new Date().toISOString().slice(0, 10);
+      if (endDate && endDate < today && !_pastTermConfirmed) {
+        document.getElementById('past-term-warning').style.display = '';
+        showFeedback('add-class-status', 'Please confirm the past-term warning first.', 'error');
+        return;
+      }
+    }
+    try {
+      const payload = { name, day, time, teacher_id: teacherId, student_ids: [..._selectedStudentIds] };
+      if (termId) payload.term_id = termId;
+      if (fee)    payload.fee = fee;
+      const res  = await fetch('/api/class/create', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (data.ok) { closeModal('modal-add-class'); window.location.reload(); }
+      else showFeedback('add-class-status', data.error || 'Failed to create class.', 'error');
+    } catch { showFeedback('add-class-status', 'Network error — please try again.', 'error'); }
+  }
+
+  // ── Role-type card selection ──────────────────────────────
+  function selectRoleType(roleType) {
+    document.querySelectorAll('#rt-card-group .rt-card').forEach(card => {
+      card.classList.toggle('selected', card.dataset.rt === roleType);
+    });
+    document.getElementById('new-person-role-type').value = roleType;
+    const isStageManager = roleType === 'Stage_Manager';
+    const subroleSection = document.getElementById('subrole-section');
+    if (subroleSection) subroleSection.classList.toggle('hidden', isStageManager);
+  }
+
+  function selectSystemRole(identity) {
+    document.getElementById('new-person-role').value = identity;
+    const studentBtn = document.getElementById('sys-role-btn-student');
+    const teacherBtn = document.getElementById('sys-role-btn-teacher');
+    if (studentBtn) {
+      studentBtn.style.background = identity === 'student' ? 'var(--by-yes)' : 'var(--by-bg)';
+      studentBtn.style.color      = identity === 'student' ? 'var(--by-ink)' : 'var(--by-ink-2)';
+    }
+    if (teacherBtn) {
+      teacherBtn.style.background = identity === 'teacher' ? 'var(--by-yes)' : 'var(--by-bg)';
+      teacherBtn.style.color      = identity === 'teacher' ? 'var(--by-ink)' : 'var(--by-ink-2)';
+    }
+  }
+
+  // ── Create person ─────────────────────────────────────────
+  async function createPerson() {
+    const name     = document.getElementById('new-person-name').value.trim();
+    const email    = document.getElementById('new-person-email').value.trim();
+    const roleType = document.getElementById('new-person-role-type').value || 'Patron';
+    const identity = document.getElementById('new-person-role')?.value || 'student';
+
+    if (!name || !email) {
+      showFeedback('add-person-status', 'Name and email are both required.', 'error');
+      return;
+    }
+    try {
+      const res  = await fetch('/api/person/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, identity, role_type: roleType }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const _rtLabels = { Patron: 'Patron', Company_Player: 'Company Player', Mocatriz: 'Mocatriz ✦', Stage_Manager: 'Stage Manager' };
+        flashToast(`${data.user.name} added as ${_rtLabels[data.user.role_type] || data.user.role_type}`);
+        closeModal('modal-add-person');
+        document.getElementById('new-person-name').value  = '';
+        document.getElementById('new-person-email').value = '';
+        selectRoleType('Patron');
+        selectSystemRole('student');
+        document.getElementById('add-person-status').classList.add('hidden');
+        // Refresh so the new person appears
+        setTimeout(() => window.location.reload(), 400);
+      } else {
+        showFeedback('add-person-status', data.error || 'Could not create person.', 'error');
+      }
+    } catch { showFeedback('add-person-status', 'Network error — please try again.', 'error'); }
+  }
+</script>
+
+{% include 'partials/_forced_pw_modal.html' %}
+  {% include 'partials/_inbox_modal.html' %}
+
+</body>
+</html>

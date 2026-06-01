@@ -1,0 +1,47 @@
+{#
+  _stat_row.html — Horizontal KPI strip (row of stat cards)
+  ============================================================
+  DESIGN FLAGS:
+    • Strip background ........... transparent (inherits page bg)
+    • Strip border-bottom ........ var(--by-bd-soft)    → 1px soft
+    • Each cell divider .......... border-right: var(--by-bd-soft)
+    • Label color ................ var(--by-ink-3)
+    • Value color ................ var(--by-ink)
+    • Highlight cell bg .......... var(--by-yes-soft)   → light marigold wash
+
+  DOM IDs:
+    id="kpi-strip"              — outer row wrapper (JS reads child cells)
+    id="kpi-{{ slug }}"         — each individual stat cell
+
+  Jinja variables expected:
+    stats  (list of dicts)  — each dict has:
+      slug   (str)  — id suffix, e.g. "members"
+      label  (str)  — eyebrow label
+      value  (str)  — display value
+      hi     (bool) — if true, applies yellow wash background
+
+  Usage:
+    {% set stats = [
+        { 'slug': 'members',  'label': 'Members',      'value': total_members|string },
+        { 'slug': 'active',   'label': 'Active',        'value': active|string, 'hi': true },
+        { 'slug': 'shows',    'label': 'Shows (month)', 'value': shows_month|string },
+    ] %}
+    {% include 'partials/_stat_row.html' %}
+#}
+
+<div id="kpi-strip"
+     class="flex items-stretch divide-x border-b"
+     style="border-color:var(--by-ink); divide-color:var(--by-ink);">
+
+  {% for stat in stats %}
+  <div id="kpi-{{ stat.slug }}"
+       class="flex flex-col gap-0.5 px-5 py-3 flex-1"
+       {% if stat.get('hi') %}style="background:var(--by-yes-soft);"{% endif %}>
+
+    <p class="by-eyebrow">{{ stat.label }}</p>
+    <p class="by-h-sans text-[22px]" style="color:var(--by-ink);">{{ stat.value }}</p>
+
+  </div>
+  {% endfor %}
+
+</div>

@@ -1,0 +1,807 @@
+{% extends "backstage_layout.html" %}
+
+{% block page_title %}Analytics Reports{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js v4 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+/* ── filter bar ── */
+.filter-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.f-label { font-family:var(--by-f-mono); font-size:9.5px; letter-spacing:.1em;
+           text-transform:uppercase; color:var(--by-ink-3); white-space:nowrap; }
+.f-select {
+  font-family:var(--by-f-mono); font-size:11px; color:var(--by-ink);
+  background:var(--by-bg); border:1.5px solid var(--by-ink); padding:5px 28px 5px 8px;
+  appearance:none; -webkit-appearance:none; cursor:pointer; outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23141210'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 8px center;
+}
+.f-select:disabled { opacity:.38; cursor:not-allowed; }
+.f-sep { width:1.5px; height:20px; background:var(--by-bg-3); flex-shrink:0; }
+.btn-apply {
+  font-family:var(--by-f-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  background:var(--by-yes); border:1.5px solid var(--by-ink); padding:5px 14px;
+  cursor:pointer; color:var(--by-ink); font-weight:700;
+  box-shadow:2px 2px 0 0 var(--by-ink); transition:box-shadow .08s, transform .08s;
+}
+.btn-apply:hover  { box-shadow:3px 3px 0 0 var(--by-ink); transform:translate(-1px,-1px); }
+.btn-apply:active { box-shadow:0 0 0 0; transform:translate(2px,2px); }
+.filter-active { background:var(--by-ink); color:var(--by-bg); }
+
+/* ── cards ── */
+.rpt-card { border:var(--by-bd); background:var(--by-bg); display:flex; flex-direction:column; }
+.rpt-card-head { border-bottom:var(--by-bd); padding:14px 18px 12px;
+                 display:flex; align-items:flex-start; gap:12px; }
+.rpt-card-icon { width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+                 border:var(--by-bd); background:var(--by-yes); flex-shrink:0; }
+.rpt-card-body { padding:16px 18px; flex:1; }
+
+/* ── stat tile ── */
+.stat-tile { border:var(--by-bd); padding:10px 14px; background:var(--by-bg-2); }
+.stat-tile .val { font-family:var(--by-f-display); font-size:22px; color:var(--by-ink); line-height:1.1; }
+.stat-tile .lbl { font-family:var(--by-f-mono); font-size:9px; letter-spacing:.1em;
+                  text-transform:uppercase; color:var(--by-ink-3); margin-top:2px; }
+
+/* ── chart wrapper ── */
+.chart-box { border:var(--by-bd); background:var(--by-bg); padding:12px 14px;
+             position:relative; min-height:200px; display:flex; flex-direction:column; }
+.chart-box-title { font-family:var(--by-f-mono); font-size:9px; font-weight:700;
+                   letter-spacing:.1em; text-transform:uppercase; color:var(--by-ink-3);
+                   margin-bottom:8px; }
+.chart-box canvas { flex:1; min-height:0; }
+.chart-empty { font-family:var(--by-f-mono); font-size:10px; color:var(--by-ink-4);
+               text-align:center; padding:30px 0; }
+
+/* ── table ── */
+.rpt-table { width:100%; border-collapse:collapse; font-size:12px; }
+.rpt-table th { font-family:var(--by-f-mono); font-size:9.5px; letter-spacing:.1em;
+                text-transform:uppercase; color:var(--by-ink-3); text-align:left;
+                padding:6px 8px; border-bottom:var(--by-bd); white-space:nowrap; }
+.rpt-table td { padding:7px 8px; border-bottom:1px solid var(--by-bg-3);
+                vertical-align:middle; font-size:12px; color:var(--by-ink-2); }
+.rpt-table tr:last-child td { border-bottom:none; }
+.rpt-table tr:hover td { background:var(--by-bg-2); }
+.scroll-table { max-height:300px; overflow-y:auto; overflow-x:auto; -webkit-overflow-scrolling:touch; border:var(--by-bd); }
+.rpt-table { min-width:480px; }
+.scroll-table table { margin:0; }
+.scroll-table thead th { position:sticky; top:0; background:var(--by-bg-2); z-index:1; }
+
+/* ── badge ── */
+.badge { display:inline-flex; align-items:center; padding:1px 6px;
+         font-family:var(--by-f-mono); font-size:9px; font-weight:700;
+         letter-spacing:.08em; border:1px solid currentColor; white-space:nowrap; }
+.badge-green  { color:#166534; background:#dcfce7; border-color:#166534; }
+.badge-yellow { color:#854d0e; background:var(--by-yes-soft); border-color:var(--by-yes-deep); }
+.badge-red    { color:var(--by-tomato-deep); background:#fef2f2; border-color:var(--by-tomato); }
+.badge-gray   { color:var(--by-ink-3); background:var(--by-bg-2); border-color:var(--by-bg-3); }
+.badge-night  { color:var(--by-night-on,#C9BFA8); background:var(--by-ink); border-color:var(--by-ink); }
+
+/* ── loading / error ── */
+.skeleton { background:linear-gradient(90deg,var(--by-bg-2) 25%,var(--by-bg-3) 50%,var(--by-bg-2) 75%);
+            background-size:200% 100%; animation:ske 1.4s infinite; }
+@keyframes ske { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.rpt-error { font-family:var(--by-f-mono); font-size:11px; color:var(--by-tomato);
+             padding:10px 12px; border:1px solid var(--by-tomato); background:#fef2f2; }
+.status-ok  { color:#166534; }
+.status-err { color:var(--by-tomato); }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+  <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
+    <div class="min-w-0">
+      <div class="by-eyebrow mb-1">Backstage · Analytics</div>
+      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+        Analytics <span class="by-yes-block">Reports</span>
+      </h1>
+    </div>
+    <div class="ml-auto flex items-center gap-3 flex-shrink-0 pt-1">
+      {% include 'partials/_header_user_pill.html' %}
+    </div>
+  </div>
+</header>
+<div id="filter-strip" style="border-bottom:var(--by-bd);background:var(--by-bg-2);">
+  <div class="max-w-[1440px] mx-auto px-6 py-3 filter-bar">
+    <span class="f-label">Year</span>
+    <select id="f-year" class="f-select" onchange="onFilterChange()">
+      <option value="">All time</option>
+    </select>
+    <div class="f-sep"></div>
+    <span class="f-label">Term</span>
+    <select id="f-term" class="f-select" onchange="onFilterChange()" disabled>
+      <option value="">All terms</option>
+    </select>
+    <div class="f-sep"></div>
+    <span class="f-label">Month</span>
+    <select id="f-month" class="f-select" onchange="onFilterChange()" disabled>
+      <option value="">All months</option>
+      <option value="1">January</option><option value="2">February</option>
+      <option value="3">March</option><option value="4">April</option>
+      <option value="5">May</option><option value="6">June</option>
+      <option value="7">July</option><option value="8">August</option>
+      <option value="9">September</option><option value="10">October</option>
+      <option value="11">November</option><option value="12">December</option>
+    </select>
+    <div class="f-sep"></div>
+    <span class="f-label">Week</span>
+    <select id="f-week" class="f-select" onchange="onFilterChange()" disabled>
+      <option value="">All weeks</option>
+    </select>
+    <div class="f-sep"></div>
+    <button class="btn-apply" id="btn-apply" onclick="applyFilters()">Apply</button>
+    <button onclick="clearFilters()"
+            style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.08em;color:var(--by-ink-3);background:none;border:none;cursor:pointer;padding:4px 6px;text-decoration:underline;text-transform:uppercase;">
+      Clear
+    </button>
+    <div class="ml-auto">
+      <span id="filter-label" class="by-eyebrow" style="color:var(--by-ink-4);">Showing all time</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<main class="max-w-[1440px] mx-auto px-6 py-8">
+
+  <div class="mb-7">
+    <div class="by-eyebrow">Backstage Intelligence · Financial Access Required</div>
+    <h1 style="font-family:var(--by-f-display);font-size:26px;line-height:1.1;color:var(--by-ink);margin-top:4px;">
+      The Numbers Never Lie.<br>
+      <span style="color:var(--by-yes-deep);">The Stage Manager Might.</span>
+    </h1>
+  </div>
+
+  <!-- ── KPI strip ── -->
+  <div id="kpi-strip" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+    <div class="stat-tile skeleton" style="height:64px;"></div>
+    <div class="stat-tile skeleton" style="height:64px;"></div>
+    <div class="stat-tile skeleton" style="height:64px;"></div>
+    <div class="stat-tile skeleton" style="height:64px;"></div>
+  </div>
+
+  <!-- ── Four cards ── -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+    <!-- Card Alpha -->
+    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-alpha">
+      <div class="rpt-card-head">
+        <div class="rpt-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="by-eyebrow">Card Alpha</div>
+          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">VIP Patrons, Churn Risk &amp; Patron LTV</div>
+          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Stage-Hog Index</div>
+        </div>
+        <span id="alpha-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+      </div>
+      <div class="rpt-card-body" id="alpha-body">
+        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:180px;"></div>
+      </div>
+    </div>
+
+    <!-- Card Beta -->
+    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-beta">
+      <div class="rpt-card-head">
+        <div class="rpt-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="by-eyebrow">Card Beta</div>
+          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">Production Margin Matrix &amp; ROI</div>
+          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Sleeper Hit vs Money Pit</div>
+        </div>
+        <span id="beta-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+      </div>
+      <div class="rpt-card-body" id="beta-body">
+        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:180px;"></div>
+      </div>
+    </div>
+
+    <!-- Card Gamma -->
+    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-gamma">
+      <div class="rpt-card-head">
+        <div class="rpt-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8" cy="15" r="1.5" fill="var(--by-ink)"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="by-eyebrow">Card Gamma</div>
+          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">Capacity Forecast &amp; Seasonal Velocity</div>
+          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Ghost Town Forecast</div>
+        </div>
+        <span id="gamma-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+      </div>
+      <div class="rpt-card-body" id="gamma-body">
+        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:180px;"></div>
+      </div>
+    </div>
+
+    <!-- Card Delta -->
+    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-delta">
+      <div class="rpt-card-head">
+        <div class="rpt-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><circle cx="9" cy="8" r="3"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5"/><path d="M17 11l2 2 4-4"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="by-eyebrow">Card Delta</div>
+          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">Backstage Ops &amp; Volunteer Attrition</div>
+          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Flake Alert Tracker</div>
+        </div>
+        <span id="delta-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+      </div>
+      <div class="rpt-card-body" id="delta-body">
+        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:180px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="mt-10 pt-5" style="border-top:1px solid #D4C9B3;">
+    <p class="by-eyebrow" style="color:var(--by-ink-4);">BigYes Analytics · Live DB · Chart anchors ready for expansion</p>
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const TERMS = {{ terms | tojson }};
+
+Chart.defaults.font.family    = '"DM Mono", ui-monospace, monospace';
+Chart.defaults.font.size      = 10;
+Chart.defaults.color          = '#5C544A';
+Chart.defaults.borderColor    = '#E2D6BB';
+Chart.defaults.elements.bar.borderRadius = 0;
+Chart.defaults.elements.bar.borderSkipped = false;
+Chart.defaults.plugins.legend.labels.boxWidth  = 10;
+Chart.defaults.plugins.legend.labels.padding   = 14;
+Chart.defaults.plugins.tooltip.backgroundColor = '#141210';
+Chart.defaults.plugins.tooltip.titleColor      = '#FFC629';
+Chart.defaults.plugins.tooltip.bodyColor       = '#C9BFA8';
+Chart.defaults.plugins.tooltip.cornerRadius    = 0;
+Chart.defaults.plugins.tooltip.padding         = 8;
+Chart.defaults.animation.duration              = 300;
+
+const C = {
+  yes:'#FFC629', yesSoft:'rgba(255,198,41,0.18)',
+  ink:'#141210', inkSoft:'rgba(20,18,16,0.12)',
+  tomato:'#E5482A', tomatoSoft:'rgba(229,72,42,0.15)',
+  green:'#166534', greenSoft:'rgba(22,101,52,0.12)',
+  muted:'#8A8073', bg2:'#ECE3D0', bg3:'#E2D6BB',
+};
+
+const CHARTS = {};
+function mkChart(id, config) {
+  if (CHARTS[id]) { CHARTS[id].destroy(); }
+  const el = document.getElementById(id);
+  if (!el) return null;
+  CHARTS[id] = new Chart(el, config);
+  return CHARTS[id];
+}
+
+const euro = n => '€' + (n || 0).toFixed(2);
+const pct  = n => (n || 0).toFixed(1) + '%';
+
+function badge(t, cls) { return `<span class="badge badge-${cls}">${t}</span>`; }
+function churnBadge(r) { return badge(r, {LOW:'green',MEDIUM:'yellow',HIGH:'red',GHOST:'gray'}[r]||'gray'); }
+function flakeBadge(r) { return badge(r, {SOLID:'green',WATCH:'yellow',FLAKY:'red',UNRELIABLE:'night'}[r]||'gray'); }
+function classifyBadge(c) {
+  const L = {HIDDEN_GEM:'💎 GEM',SOLID:'✓ SOLID',MONEY_PIT:'🔥 PIT',UNDER_REVIEW:'? REVIEW'};
+  const M = {HIDDEN_GEM:'green',SOLID:'yellow',MONEY_PIT:'red',UNDER_REVIEW:'gray'};
+  return badge(L[c]||c, M[c]||'gray');
+}
+function noData(msg='No data in this period — the improv troupe went on holiday.') {
+  return `<div class="chart-empty">${msg}</div>`;
+}
+function errHtml(msg) { return `<div class="rpt-error">Total Trainwreck: ${msg}</div>`; }
+function statusTag(msg, ok) {
+  return `<span class="by-eyebrow ${ok?'status-ok':'status-err'}">${ok?'Yes, And…':'Trainwreck'} — ${msg}</span>`;
+}
+
+async function fetchJSON(url) {
+  const r = await fetch(url);
+  const j = await r.json();
+  if (!r.ok || !j.ok) throw new Error(j.error || `HTTP ${r.status}`);
+  return j;
+}
+
+function getFilters() {
+  return {
+    year:    document.getElementById('f-year').value,
+    term_id: document.getElementById('f-term').value,
+    month:   document.getElementById('f-month').value,
+    week:    document.getElementById('f-week').value,
+  };
+}
+
+function buildQS() {
+  const f = getFilters();
+  const p = new URLSearchParams();
+  if (f.year)    p.set('year',    f.year);
+  if (f.term_id) p.set('term_id', f.term_id);
+  if (f.month && !f.term_id) p.set('month', f.month);
+  if (f.week  && !f.term_id) p.set('week',  f.week);
+  return p.toString() ? '?' + p.toString() : '';
+}
+
+function updateFilterLabel() {
+  const f = getFilters();
+  const lbl = document.getElementById('filter-label');
+  const btn = document.getElementById('btn-apply');
+  let parts = [];
+  if (f.year) parts.push(f.year);
+  if (f.term_id) {
+    const t = TERMS.find(x => x.id === f.term_id);
+    parts.push(t ? t.name : f.term_id);
+  } else {
+    if (f.month) {
+      const names = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      parts.push(names[+f.month] || f.month);
+    }
+    if (f.week) parts.push(`Wk ${f.week}`);
+  }
+  if (parts.length) {
+    lbl.textContent = 'Showing: ' + parts.join(' · ');
+    btn.classList.add('filter-active');
+  } else {
+    lbl.textContent = 'Showing all time';
+    btn.classList.remove('filter-active');
+  }
+}
+
+function onFilterChange() {
+  const year  = document.getElementById('f-year').value;
+  const term  = document.getElementById('f-term');
+  const month = document.getElementById('f-month');
+  const week  = document.getElementById('f-week');
+  term.disabled  = !year;
+  month.disabled = !year || !!term.value;
+  week.disabled  = !year || !!term.value;
+  if (term.value) { month.value = ''; week.value = ''; }
+  updateFilterLabel();
+}
+
+function clearFilters() {
+  ['f-year','f-term','f-month','f-week'].forEach(id => { document.getElementById(id).value = ''; });
+  onFilterChange();
+  applyFilters();
+}
+
+function applyFilters() {
+  updateFilterLabel();
+  loadKPI(); loadAlpha(); loadBeta(); loadGamma(); loadDelta();
+}
+
+function hBarConfig(labels, data, label, color) {
+  return {
+    type:'bar',
+    data:{ labels, datasets:[{ label, data, backgroundColor:color, borderColor:C.ink, borderWidth:1 }] },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ grid:{color:C.bg3}, ticks:{font:{size:9}} },
+        y:{ grid:{display:false}, ticks:{font:{size:9}} },
+      },
+    },
+  };
+}
+
+function vBarConfig(labels, datasets, stacked) {
+  return {
+    type:'bar',
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:datasets.length>1} },
+      scales:{
+        x:{ stacked:!!stacked, grid:{display:false}, ticks:{font:{size:9}} },
+        y:{ stacked:!!stacked, grid:{color:C.bg3}, ticks:{font:{size:9}} },
+      },
+    },
+  };
+}
+
+function lineConfig(labels, datasets) {
+  return {
+    type:'line',
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:datasets.length>1} },
+      scales:{
+        x:{ grid:{display:false}, ticks:{font:{size:9}} },
+        y:{ grid:{color:C.bg3}, ticks:{font:{size:9}} },
+      },
+      elements:{ line:{tension:0.2}, point:{radius:2, hoverRadius:4} },
+    },
+  };
+}
+
+function doughnutConfig(labels, data, colors) {
+  return {
+    type:'doughnut',
+    data:{ labels, datasets:[{ data, backgroundColor:colors, borderColor:C.ink, borderWidth:1.5 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'55%',
+      plugins:{ legend:{position:'right', labels:{font:{size:9}}} },
+    },
+  };
+}
+
+function chartBox(title, canvasId, height=220) {
+  return `<div class="chart-box">
+    <div class="chart-box-title">${title}</div>
+    <div style="height:${height}px;position:relative;"><canvas id="${canvasId}"></canvas></div>
+  </div>`;
+}
+
+async function loadKPI() {
+  const qs = buildQS();
+  const strip = document.getElementById('kpi-strip');
+  function kpi(val, lbl, danger) {
+    return `<div class="stat-tile">
+      <div class="val" style="${danger?'color:var(--by-tomato);':''}">${val}</div>
+      <div class="lbl">${lbl}</div>
+    </div>`;
+  }
+  try {
+    const [sp, sh, tr, vl] = await Promise.allSettled([
+      fetchJSON('/api/reports/top-spenders?limit=999' + (qs ? '&'+qs.slice(1) : '')),
+      fetchJSON('/api/reports/show-efficiency' + qs),
+      fetchJSON('/api/reports/seasonal-trends' + qs),
+      fetchJSON('/api/reports/volunteer-metrics' + qs),
+    ]);
+    const students   = sp.status==='fulfilled' ? sp.value.students||[] : [];
+    const shows      = sh.status==='fulfilled' ? sh.value.shows||[]    : [];
+    const trendsData = tr.status==='fulfilled' ? tr.value              : {};
+    const volsData   = vl.status==='fulfilled' ? vl.value              : {};
+    const totalLTV   = students.reduce((s,x)=>s+(x.ltv||0),0);
+    const totalGross = shows.reduce((s,x)=>s+(x.gross||0),0);
+    const riskMonths = (trendsData.monthly_show_utilization||[]).filter(m=>m.slow_probability_pct>50).length;
+    const flakeCount = (volsData.volunteers||[]).filter(v=>v.flake_risk==='FLAKY'||v.flake_risk==='UNRELIABLE').length;
+    strip.innerHTML =
+      kpi(euro(totalLTV),   'Total Patron LTV', false) +
+      kpi(euro(totalGross), 'Total Show Revenue', false) +
+      kpi(riskMonths,       'High-Risk Months', riskMonths > 0) +
+      kpi(flakeCount,       'Flake-Risk Volunteers', flakeCount > 0);
+  } catch(e) {
+    strip.innerHTML = '<div class="col-span-4 rpt-error">KPI pipeline: ' + e.message + '</div>';
+  }
+}
+
+async function loadAlpha() {
+  const qs = buildQS();
+  const body = document.getElementById('alpha-body');
+  const status = document.getElementById('alpha-status');
+  try {
+    const d = await fetchJSON('/api/reports/top-spenders?limit=50' + (qs ? '&'+qs.slice(1) : ''));
+    const students = d.students || [];
+    if (!students.length) { body.innerHTML = noData(); status.innerHTML = statusTag('0 patrons', true); return; }
+    const totalLTV  = students.reduce((s,x)=>s+(x.ltv||0),0);
+    const avgLTV    = totalLTV / students.length;
+    const highChurn = students.filter(x=>x.churn_risk==='HIGH'||x.churn_risk==='GHOST').length;
+    const reEnrol   = students.filter(x=>x.days_to_second_enrollment!=null);
+    const avgDays   = reEnrol.length ? Math.round(reEnrol.reduce((s,x)=>s+x.days_to_second_enrollment,0)/reEnrol.length) : null;
+    const churnCounts = {GHOST:0,HIGH:0,MEDIUM:0,LOW:0};
+    students.forEach(s => { churnCounts[s.churn_risk] = (churnCounts[s.churn_risk]||0)+1; });
+    const top12 = students.slice(0,12);
+    const classCounts = {};
+    students.forEach(s => {
+      const k = s.enrolled_count===0?'0':s.enrolled_count===1?'1':s.enrolled_count<=3?'2–3':'4+';
+      classCounts[k] = (classCounts[k]||0)+1;
+    });
+    body.innerHTML = `
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
+        <div class="stat-tile"><div class="val">${euro(totalLTV)}</div><div class="lbl">Total LTV</div></div>
+        <div class="stat-tile"><div class="val">${euro(avgLTV)}</div><div class="lbl">Avg LTV</div></div>
+        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${highChurn}</div><div class="lbl">Churn Risk</div></div>
+        <div class="stat-tile"><div class="val">${avgDays!=null?avgDays+'d':'—'}</div><div class="lbl">Avg Re-Enrol</div></div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        ${chartBox('LTV by Student (top 12)','chart-alpha-ltv',200)}
+        ${chartBox('Churn Risk Distribution','chart-alpha-churn',200)}
+        ${chartBox('Enrolment Count Distribution','chart-alpha-enrol',160)}
+        ${chartBox('Points vs Classes Enrolled','chart-alpha-pts',160)}
+      </div>
+      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Student Detail</div>
+      <div class="scroll-table"><table class="rpt-table">
+        <thead><tr>
+          <th>Student</th><th class="text-right">LTV</th>
+          <th class="text-center">Classes</th><th class="text-center">Days→2nd</th>
+          <th>Churn</th><th class="text-right">Points</th>
+        </tr></thead>
+        <tbody>
+          ${students.map(s=>`<tr>
+            <td><span style="font-weight:600;">${s.name}</span><br>
+                <span style="font-size:10px;color:var(--by-ink-4);">${s.email}</span></td>
+            <td class="text-right" style="font-family:var(--by-f-mono);">${euro(s.ltv)}</td>
+            <td class="text-center">${s.enrolled_count}</td>
+            <td class="text-center" style="font-family:var(--by-f-mono);">${s.days_to_second_enrollment!=null?s.days_to_second_enrollment+'d':'—'}</td>
+            <td>${churnBadge(s.churn_risk)}</td>
+            <td class="text-right" style="font-family:var(--by-f-mono);color:var(--by-yes-deep);">${s.yes_and_points||0}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    mkChart('chart-alpha-ltv', hBarConfig(top12.map(s=>s.name.split(' ')[0]), top12.map(s=>s.ltv), 'LTV (€)', C.yes));
+    mkChart('chart-alpha-churn', doughnutConfig(['Ghost','High','Medium','Low'],[churnCounts.GHOST,churnCounts.HIGH,churnCounts.MEDIUM,churnCounts.LOW],[C.muted,C.tomato,C.yes,C.green]));
+    const cKeys = Object.keys(classCounts).sort();
+    mkChart('chart-alpha-enrol', vBarConfig(cKeys,[{label:'Students',data:cKeys.map(k=>classCounts[k]),backgroundColor:C.yes,borderColor:C.ink,borderWidth:1}]));
+    const enrolled_groups = {};
+    students.forEach(s => { const k=s.enrolled_count; if(!enrolled_groups[k])enrolled_groups[k]=[]; enrolled_groups[k].push(s.yes_and_points||0); });
+    const egKeys = Object.keys(enrolled_groups).sort((a,b)=>+a-+b);
+    const egAvgs = egKeys.map(k=>{ const arr=enrolled_groups[k]; return Math.round(arr.reduce((s,v)=>s+v,0)/arr.length); });
+    mkChart('chart-alpha-pts', vBarConfig(egKeys.map(k=>`${k} class${k===1?'':'es'}`), [{label:'Avg Points',data:egAvgs,backgroundColor:C.ink,borderColor:C.ink,borderWidth:1}]));
+    status.innerHTML = statusTag(`${students.length} patrons`, true);
+  } catch(e) { body.innerHTML = errHtml(e.message); status.innerHTML = statusTag('error', false); }
+}
+
+async function loadBeta() {
+  const qs = buildQS();
+  const body = document.getElementById('beta-body');
+  const status = document.getElementById('beta-status');
+  try {
+    const d = await fetchJSON('/api/reports/show-efficiency' + qs);
+    const shows = d.shows || [];
+    if (!shows.length) { body.innerHTML = noData('No shows in this period — the stage is dark.'); status.innerHTML = statusTag('0 shows', true); return; }
+    const totalGross    = shows.reduce((s,x)=>s+(x.gross||0),0);
+    const totalNet      = shows.reduce((s,x)=>s+(x.net_profit||0),0);
+    const totalExpenses = shows.reduce((s,x)=>s+(x.total_expenses||0),0);
+    const gems = shows.filter(x=>x.classification==='HIDDEN_GEM').length;
+    const pits = shows.filter(x=>x.classification==='MONEY_PIT').length;
+    const roiColors  = shows.map(s=>s.classification==='HIDDEN_GEM'?C.green:s.classification==='MONEY_PIT'?C.tomato:s.classification==='SOLID'?C.yes:C.muted);
+    const showLabels = shows.map(s=>s.title.length>14?s.title.slice(0,12)+'…':s.title);
+    body.innerHTML = `
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
+        <div class="stat-tile"><div class="val">${euro(totalGross)}</div><div class="lbl">Total Gross</div></div>
+        <div class="stat-tile"><div class="val" style="color:${totalNet>=0?'#166534':'var(--by-tomato)'};">${euro(totalNet)}</div><div class="lbl">Net Profit</div></div>
+        <div class="stat-tile"><div class="val" style="color:#166534;">${gems}</div><div class="lbl">Hidden Gems</div></div>
+        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${pits}</div><div class="lbl">Money Pits</div></div>
+      </div>
+      ${(()=>{
+        const tiered = shows.filter(s=>s.has_tier_breakdown);
+        if (!tiered.length) return '';
+        const fpTix = tiered.reduce((s,x)=>s+(x.full_price_tickets||0),0);
+        const drTix = tiered.reduce((s,x)=>s+(x.door_tickets||0),0);
+        const dcTix = tiered.reduce((s,x)=>s+(x.discount_tickets||0),0);
+        const fpRev = tiered.reduce((s,x)=>s+(x.full_price_revenue||0),0);
+        const drRev = tiered.reduce((s,x)=>s+(x.door_revenue||0),0);
+        const dcRev = tiered.reduce((s,x)=>s+(x.discount_revenue||0),0);
+        return `<div class="grid grid-cols-3 gap-2 mb-5">
+          <div class="stat-tile" style="border-left:3px solid #166534;">
+            <div class="val" style="color:#166534;">${fpTix}</div>
+            <div class="lbl">Full-Price Tix · ${euro(fpRev)}</div>
+          </div>
+          <div class="stat-tile" style="border-left:3px solid var(--by-tomato);">
+            <div class="val" style="color:var(--by-tomato);">${drTix}</div>
+            <div class="lbl">Door Tix · ${euro(drRev)}</div>
+          </div>
+          <div class="stat-tile" style="border-left:3px solid #7B5EA7;">
+            <div class="val" style="color:#7B5EA7;">${dcTix}</div>
+            <div class="lbl">Discount Tix · ${euro(dcRev)}</div>
+          </div>
+        </div>`;
+      })()}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        ${chartBox('Gross / Expenses / Net per Show','chart-beta-margin',200)}
+        ${chartBox('ROI % per Show','chart-beta-roi',200)}
+        ${chartBox('Capacity Utilisation %','chart-beta-util',160)}
+        ${chartBox('Classification Breakdown','chart-beta-classify',160)}
+      </div>
+      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Show Detail</div>
+      <div class="scroll-table"><table class="rpt-table">
+        <thead><tr>
+          <th>Show</th><th class="text-right">Gross</th><th class="text-right">Expenses</th>
+          <th class="text-right">Net</th><th>ROI</th><th>Class</th><th>Ticket Breakdown</th>
+        </tr></thead>
+        <tbody>
+          ${shows.map(s=>{
+            let breakdown = '—';
+            if (s.has_tier_breakdown) {
+              const parts = [];
+              if (s.full_price_tickets) parts.push(`<span title="Full price" style="color:#166534;font-weight:700;">${s.full_price_tickets}×FP</span>`);
+              if (s.door_tickets)       parts.push(`<span title="Door" style="color:var(--by-tomato);font-weight:700;">${s.door_tickets}×DR</span>`);
+              if (s.discount_tickets)   parts.push(`<span title="Discount" style="color:#7B5EA7;font-weight:700;">${s.discount_tickets}×DC</span>`);
+              if (s.other_tickets)      parts.push(`<span title="Other" style="color:var(--by-ink-3);font-weight:700;">${s.other_tickets}×OT</span>`);
+              breakdown = parts.length ? parts.join(' ') : '0 tix';
+            }
+            return `<tr>
+              <td><span style="font-weight:600;">${s.title}</span><br>
+                  <span style="font-size:10px;color:var(--by-ink-4);">${s.date} · ${s.show_type}</span></td>
+              <td class="text-right" style="font-family:var(--by-f-mono);">${euro(s.gross)}</td>
+              <td class="text-right" style="font-family:var(--by-f-mono);color:var(--by-tomato);">${euro(s.total_expenses)}</td>
+              <td class="text-right" style="font-family:var(--by-f-mono);color:${s.net_profit>=0?'#166534':'var(--by-tomato)'};">${euro(s.net_profit)}</td>
+              <td style="font-family:var(--by-f-mono);">${pct(s.roi_pct)}</td>
+              <td>${classifyBadge(s.classification)}</td>
+              <td style="font-family:var(--by-f-mono);font-size:11px;">${breakdown}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table></div>`;
+    mkChart('chart-beta-margin', vBarConfig(showLabels,[
+      {label:'Gross',    data:shows.map(s=>s.gross),          backgroundColor:C.yes,    borderColor:C.ink, borderWidth:1},
+      {label:'Expenses', data:shows.map(s=>s.total_expenses), backgroundColor:C.tomato, borderColor:C.ink, borderWidth:1},
+      {label:'Net',      data:shows.map(s=>s.net_profit),     backgroundColor:C.ink,    borderColor:C.ink, borderWidth:1},
+    ]));
+    mkChart('chart-beta-roi', {type:'bar',data:{labels:showLabels,datasets:[{label:'ROI %',data:shows.map(s=>s.roi_pct),backgroundColor:roiColors,borderColor:C.ink,borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:C.bg3},ticks:{font:{size:9},callback:v=>v+'%'}}}}});
+    mkChart('chart-beta-util', vBarConfig(showLabels,[{label:'Utilisation %',data:shows.map(s=>s.utilization_pct),backgroundColor:shows.map(s=>s.utilization_pct>70?C.green:s.utilization_pct>40?C.yes:C.tomato),borderColor:C.ink,borderWidth:1}]));
+    const cls={HIDDEN_GEM:0,SOLID:0,MONEY_PIT:0,UNDER_REVIEW:0};
+    shows.forEach(s=>{cls[s.classification]=(cls[s.classification]||0)+1;});
+    mkChart('chart-beta-classify', doughnutConfig(['Hidden Gem','Solid','Money Pit','Under Review'],[cls.HIDDEN_GEM,cls.SOLID,cls.MONEY_PIT,cls.UNDER_REVIEW],[C.green,C.yes,C.tomato,C.muted]));
+    status.innerHTML = statusTag(`${shows.length} shows`, true);
+  } catch(e) { body.innerHTML = errHtml(e.message); status.innerHTML = statusTag('error', false); }
+}
+
+async function loadGamma() {
+  const qs = buildQS();
+  const body = document.getElementById('gamma-body');
+  const status = document.getElementById('gamma-status');
+  try {
+    const d = await fetchJSON('/api/reports/seasonal-trends' + qs);
+    const ma  = d.monthly_attendance             || [];
+    const msu = d.monthly_show_utilization       || [];
+    const dow = d.day_of_week_show_performance   || [];
+    const doa = d.day_of_week_attendance         || {};
+    const totalShows = d.total_shows_analysed    || 0;
+    const totalAtt   = d.total_attendance_records|| 0;
+    const slowMo     = msu.filter(m=>m.slow_probability_pct>50).length;
+    const msuSorted  = [...msu].sort((a,b)=>a.month.localeCompare(b.month));
+    const DOW_ORDER  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    const dowSorted  = DOW_ORDER.map(d=>dow.find(x=>x.day===d)||{day:d,avg_utilization_pct:0,show_count:0});
+    const doaSorted  = DOW_ORDER.map(d=>({day:d,count:doa[d]||0}));
+    body.innerHTML = `
+      <div class="grid grid-cols-3 gap-2 mb-5">
+        <div class="stat-tile"><div class="val">${totalShows}</div><div class="lbl">Shows Analysed</div></div>
+        <div class="stat-tile"><div class="val">${totalAtt}</div><div class="lbl">Attendance Records</div></div>
+        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${slowMo}</div><div class="lbl">High-Risk Months</div></div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        ${chartBox('Monthly Attendance (present / late / absent)','chart-gamma-att',200)}
+        ${chartBox('Day-of-Week Show Utilisation %','chart-gamma-dow',200)}
+        ${chartBox('Monthly Show Utilisation Trend','chart-gamma-util',160)}
+        ${chartBox('Day-of-Week Attendance Volume','chart-gamma-doa',160)}
+      </div>
+      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Slow-Period Risk by Month</div>
+      <div class="scroll-table"><table class="rpt-table">
+        <thead><tr>
+          <th>Month</th><th class="text-right">Avg Util %</th>
+          <th class="text-right">Shows</th><th>Slow Probability</th>
+        </tr></thead>
+        <tbody>
+          ${msuSorted.length?msuSorted.map(m=>`<tr>
+            <td style="font-family:var(--by-f-mono);">${m.month}</td>
+            <td class="text-right" style="font-family:var(--by-f-mono);">${pct(m.avg_utilization_pct)}</td>
+            <td class="text-right">${m.show_count}</td>
+            <td style="min-width:140px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;height:7px;background:var(--by-bg-3);border:1px solid var(--by-bg-3);">
+                  <div style="height:100%;width:${m.slow_probability_pct}%;background:${m.slow_probability_pct>60?'var(--by-tomato)':m.slow_probability_pct>30?'var(--by-yes)':'#166534'};"></div>
+                </div>
+                <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(m.slow_probability_pct)}</span>
+              </div>
+            </td>
+          </tr>`).join(''):'<tr><td colspan="4" class="chart-empty">No show date data in this period.</td></tr>'}
+        </tbody>
+      </table></div>`;
+    if (ma.length) {
+      mkChart('chart-gamma-att', {type:'line',data:{labels:ma.map(x=>x.month),datasets:[
+        {label:'Present',data:ma.map(x=>x.present),borderColor:C.green,backgroundColor:'rgba(22,101,52,0.15)',fill:true,tension:0.2,pointRadius:2},
+        {label:'Late',   data:ma.map(x=>x.late),   borderColor:C.yes,  backgroundColor:'rgba(255,198,41,0.15)',fill:true,tension:0.2,pointRadius:2},
+        {label:'Absent', data:ma.map(x=>x.absent),  borderColor:C.tomato,backgroundColor:'rgba(229,72,42,0.12)',fill:true,tension:0.2,pointRadius:2},
+      ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:C.bg3},ticks:{font:{size:9}}}}}});
+    }
+    mkChart('chart-gamma-dow', vBarConfig(dowSorted.map(x=>x.day.slice(0,3)),[{label:'Avg Util %',data:dowSorted.map(x=>x.avg_utilization_pct),backgroundColor:dowSorted.map(x=>x.avg_utilization_pct<40?C.tomato:x.avg_utilization_pct<60?C.yes:C.green),borderColor:C.ink,borderWidth:1}]));
+    if (msuSorted.length) {
+      mkChart('chart-gamma-util', lineConfig(msuSorted.map(x=>x.month),[{label:'Avg Util %',data:msuSorted.map(x=>x.avg_utilization_pct),borderColor:C.ink,backgroundColor:C.yesSoft,fill:true,tension:0.2,pointRadius:3}]));
+    }
+    mkChart('chart-gamma-doa', vBarConfig(doaSorted.map(x=>x.day.slice(0,3)),[{label:'Records',data:doaSorted.map(x=>x.count),backgroundColor:C.yes,borderColor:C.ink,borderWidth:1}]));
+    status.innerHTML = statusTag(`${totalShows} shows · ${totalAtt} records`, true);
+  } catch(e) { body.innerHTML = errHtml(e.message); status.innerHTML = statusTag('error', false); }
+}
+
+async function loadDelta() {
+  const qs = buildQS();
+  const body = document.getElementById('delta-body');
+  const status = document.getElementById('delta-status');
+  try {
+    const d = await fetchJSON('/api/reports/volunteer-metrics' + qs);
+    const vols  = d.volunteers             || [];
+    const roles = d.role_shortage_analysis || [];
+    const total = d.total_volunteers       || 0;
+    const flaky = vols.filter(v=>v.flake_risk==='FLAKY'||v.flake_risk==='UNRELIABLE').length;
+    const avgRel = vols.length ? vols.reduce((s,v)=>s+v.reliability_pct,0)/vols.length : 0;
+    const top10  = vols.slice(-10);
+    body.innerHTML = `
+      <div class="grid grid-cols-3 gap-2 mb-5">
+        <div class="stat-tile"><div class="val">${total}</div><div class="lbl">Volunteers</div></div>
+        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${flaky}</div><div class="lbl">Flake Risk</div></div>
+        <div class="stat-tile"><div class="val">${pct(avgRel)}</div><div class="lbl">Avg Reliability</div></div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        ${chartBox('Volunteer Reliability % (worst first)','chart-delta-rel',200)}
+        ${chartBox('Role Shortage Analysis','chart-delta-roles',200)}
+        ${chartBox('Shifts Completed vs Dropped','chart-delta-shifts',160)}
+        ${chartBox('Flake Risk Distribution','chart-delta-flake',160)}
+      </div>
+      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Volunteer Reliability Ranking</div>
+      <div class="scroll-table"><table class="rpt-table">
+        <thead><tr>
+          <th>Volunteer</th><th class="text-center">Done</th>
+          <th class="text-center">Dropped</th><th>Reliability</th><th>Risk</th>
+        </tr></thead>
+        <tbody>
+          ${vols.length?vols.map(v=>`<tr>
+            <td style="font-weight:600;">${v.name}</td>
+            <td class="text-center">${v.shifts_completed}</td>
+            <td class="text-center" style="color:var(--by-tomato);">${v.shifts_dropped}</td>
+            <td style="min-width:120px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:var(--by-bg-3);">
+                  <div style="height:100%;width:${v.reliability_pct}%;background:${v.reliability_pct<60?'var(--by-tomato)':v.reliability_pct<85?'var(--by-yes)':'#166534'};"></div>
+                </div>
+                <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(v.reliability_pct)}</span>
+              </div>
+            </td>
+            <td>${flakeBadge(v.flake_risk)}</td>
+          </tr>`).join(''):'<tr><td colspan="5" class="chart-empty">No volunteers designated yet.</td></tr>'}
+        </tbody>
+      </table></div>
+      <div class="by-eyebrow mb-2 mt-5" style="color:var(--by-ink-2);">Role Shortage Analysis</div>
+      <div class="scroll-table"><table class="rpt-table">
+        <thead><tr>
+          <th>Role</th><th class="text-center">Total</th>
+          <th class="text-center">Filled</th><th class="text-center">Open</th><th>Shortage</th>
+        </tr></thead>
+        <tbody>
+          ${roles.map(r=>`<tr>
+            <td style="font-family:var(--by-f-mono);">${r.role}</td>
+            <td class="text-center">${r.total_slots}</td>
+            <td class="text-center" style="color:#166534;">${r.filled_slots}</td>
+            <td class="text-center" style="color:var(--by-tomato);font-weight:700;">${r.open_slots}</td>
+            <td style="min-width:120px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:var(--by-bg-3);">
+                  <div style="height:100%;width:${r.shortage_pct}%;background:${r.shortage_pct>60?'var(--by-tomato)':'var(--by-yes)'};"></div>
+                </div>
+                <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(r.shortage_pct)}</span>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    mkChart('chart-delta-rel', hBarConfig(top10.map(v=>v.name.split(' ')[0]),top10.map(v=>v.reliability_pct),'Reliability %',top10.map(v=>v.reliability_pct<60?C.tomato:v.reliability_pct<85?C.yes:C.green)));
+    mkChart('chart-delta-roles', vBarConfig(roles.map(r=>r.role.replace('Bar - ','Bar ')),[{label:'Filled',data:roles.map(r=>r.filled_slots),backgroundColor:C.green,borderColor:C.ink,borderWidth:1},{label:'Open',data:roles.map(r=>r.open_slots),backgroundColor:C.tomato,borderColor:C.ink,borderWidth:1}]));
+    mkChart('chart-delta-shifts', vBarConfig(top10.map(v=>v.name.split(' ')[0]),[{label:'Completed',data:top10.map(v=>v.shifts_completed),backgroundColor:C.yes,borderColor:C.ink,borderWidth:1},{label:'Dropped',data:top10.map(v=>v.shifts_dropped),backgroundColor:C.tomato,borderColor:C.ink,borderWidth:1}]));
+    const fCounts={SOLID:0,WATCH:0,FLAKY:0,UNRELIABLE:0};
+    vols.forEach(v=>{fCounts[v.flake_risk]=(fCounts[v.flake_risk]||0)+1;});
+    mkChart('chart-delta-flake', doughnutConfig(['Solid','Watch','Flaky','Unreliable'],[fCounts.SOLID,fCounts.WATCH,fCounts.FLAKY,fCounts.UNRELIABLE],[C.green,C.yes,C.tomato,C.ink]));
+    status.innerHTML = statusTag(`${total} volunteers`, true);
+  } catch(e) { body.innerHTML = errHtml(e.message); status.innerHTML = statusTag('error', false); }
+}
+
+function initFilters() {
+  const cur = new Date().getFullYear();
+  const ysel = document.getElementById('f-year');
+  for (let y = 2023; y <= cur + 1; y++) {
+    const o = document.createElement('option'); o.value = y; o.textContent = y; ysel.appendChild(o);
+  }
+  const tsel = document.getElementById('f-term');
+  TERMS.forEach(t => {
+    const o = document.createElement('option'); o.value = t.id;
+    o.textContent = `${t.id} · ${t.name} (${t.start_date}→${t.end_date})`; tsel.appendChild(o);
+  });
+  const wsel = document.getElementById('f-week');
+  for (let w = 1; w <= 52; w++) {
+    const o = document.createElement('option'); o.value = w; o.textContent = `Week ${w}`; wsel.appendChild(o);
+  }
+}
+
+initFilters();
+loadKPI(); loadAlpha(); loadBeta(); loadGamma(); loadDelta();
+</script>
+{% endblock %}

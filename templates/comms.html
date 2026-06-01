@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes — Comms</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ["'Archivo Black'", 'system-ui', 'sans-serif'],
+          sans:    ["'Archivo'",       'ui-sans-serif', 'system-ui'],
+          body:    ["'Manrope'",       'ui-sans-serif', 'system-ui'],
+          mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
+        },
+        colors: {
+          'by-yes':         '#FFC629',
+          'by-yes-deep':    '#E5A800',
+          'by-yes-soft':    '#FFE7A0',
+          'by-ink':         '#141210',
+          'by-ink-2':       '#2A2723',
+          'by-ink-3':       '#5C544A',
+          'by-ink-4':       '#8A8073',
+          'by-bg':          '#F4EEE2',
+          'by-bg-2':        '#ECE3D0',
+          'by-bg-3':        '#E2D6BB',
+          'by-tomato':      '#E5482A',
+          'by-tomato-deep': '#B83218',
+          'by-night':       '#141210',
+          'by-night-on':    '#C9BFA8',
+        },
+        boxShadow: {
+          'by-hard':     '4px 4px 0 0 #141210',
+          'by-hard-yes': '4px 4px 0 0 #FFC629',
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  /* ── BigYes Design Tokens ──────────────────────────────────────────── */
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid #D4C9B3;
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: var(--by-f-body); background: var(--by-bg); color: var(--by-ink); font-size: 15px; }
+
+  .hairline { border-color: var(--by-bd-soft) !important; }
+
+  .by-eyebrow {
+    font-family: var(--by-f-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--by-ink-4);
+  }
+  .by-display { font-family: var(--by-f-display); font-weight: 900; line-height: .88; letter-spacing: -.02em; text-transform: uppercase; }
+  .by-yes-block { display: inline-block; background: var(--by-yes); color: var(--by-ink); padding: 0 12px 4px; transform: skew(-6deg); }
+
+  /* ── Sidebar nav items (shared with _sidebar.html) ─────────────────── */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    font-family: var(--by-f-body);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--by-ink-2);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 100ms;
+    margin-bottom: 1px;
+  }
+  .nav-item:hover { background: var(--by-bg-3); }
+  .nav-item.active { background: var(--by-night); color: var(--by-yes); font-weight: 700; }
+  .nav-item .ico { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* ── Mobile bar ─────────────────────────────────────────────────────── */
+  .by-mob-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 52px;
+    border-bottom: var(--by-bd);
+    background: var(--by-bg);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+  @media (min-width: 1024px) { .by-mob-bar { display: none; } }
+
+  .by-ham { background: none; border: none; cursor: pointer; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .by-ham span { display: block; width: 18px; height: 1.5px; background: var(--by-ink); }
+
+  .by-mob-drawer {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: min(280px, 80vw);
+    z-index: 60;
+    background: var(--by-bg);
+    border-right: var(--by-bd-thick);
+    transform: translateX(-100%);
+    transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+    overflow-y: auto;
+  }
+  .by-mob-drawer.open { transform: translateX(0); }
+  .by-mob-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 59;
+    background: rgba(20,18,16,.45);
+  }
+  .by-mob-overlay.open { display: block; }
+
+  /* ── Form controls ──────────────────────────────────────────────────── */
+  .by-input, .by-select, .by-textarea {
+    width: 100%;
+    background: var(--by-bg);
+    border: var(--by-bd-thick);
+    color: var(--by-ink);
+    font-family: var(--by-f-body);
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: box-shadow 120ms;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: none !important;
+  }
+  .by-input:focus, .by-select:focus, .by-textarea:focus { box-shadow: var(--by-sh-yes); }
+  .by-textarea { resize: vertical; min-height: 200px; line-height: 1.6; }
+
+  /* ── Overlay select — BigYes-styled face + invisible native select on top ── */
+  .by-so-wrap { position: relative; }
+  .by-so-face {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    background: var(--by-bg); border: 1.5px solid var(--by-ink);
+    color: var(--by-ink); font-family: var(--by-f-body); font-size: 14px;
+    padding: 10px 14px; pointer-events: none; line-height: 1.4;
+  }
+  .by-so-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .by-so-chevron { color: var(--by-ink-3); font-size: 11px; flex-shrink: 0; }
+  .by-so-wrap:focus-within .by-so-face { box-shadow: 4px 4px 0 0 var(--by-yes); }
+  .by-so-wrap select {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer; z-index: 1;
+  }
+
+  /* ── CTA button ─────────────────────────────────────────────────────── */
+  .by-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--by-yes);
+    border: var(--by-bd-thick);
+    color: var(--by-ink);
+    font-family: var(--by-f-sans);
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: box-shadow 120ms, transform 100ms;
+    white-space: nowrap;
+    letter-spacing: .02em;
+  }
+  .by-btn-primary:hover:not(:disabled) { box-shadow: var(--by-sh-1); transform: translate(-1px,-1px); }
+  .by-btn-primary:active:not(:disabled) { box-shadow: none; transform: translate(0,0); }
+  .by-btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ── Status badges ───────────────────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    font-family: var(--by-f-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: var(--by-bd);
+    white-space: nowrap;
+  }
+  .badge-sent    { background: #2A8A4F; color: #fff; border-color: #1D6138; }
+  .badge-pending { background: var(--by-yes); color: var(--by-ink); }
+  .badge-failed  { background: var(--by-tomato); color: #fff; border-color: #B83218; }
+
+  /* ── Log rows ────────────────────────────────────────────────────────── */
+  .log-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: start;
+    padding: 12px 16px;
+    border-bottom: var(--by-bd-soft);
+    transition: background 100ms;
+    cursor: pointer;
+  }
+  .log-row:last-child { border-bottom: none; }
+  .log-row:hover { background: var(--by-bg-2); }
+  .log-row.active { background: var(--by-yes-soft); border-left: 3px solid var(--by-yes); padding-left: 13px; }
+
+  /* ── Transmission detail panel ───────────────────────────────────────── */
+  #tx-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(520px, 100vw);
+    z-index: 200;
+    background: var(--by-bg);
+    border-left: var(--by-bd-thick);
+    box-shadow: -6px 0 0 0 var(--by-ink);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 240ms cubic-bezier(.2,.8,.2,1);
+  }
+  #tx-panel.open { transform: translateX(0); }
+  #tx-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: rgba(20,18,16,.45);
+  }
+  #tx-backdrop.open { display: block; }
+  .tx-thread-item {
+    padding: 10px 14px;
+    border: 1px solid var(--by-bg-3);
+    margin-bottom: 8px;
+  }
+  .tx-thread-item.mine { background: var(--by-yes-soft); margin-left: 24px; }
+  .tx-thread-item.theirs { background: var(--by-bg); margin-right: 24px; }
+
+  /* ── Toast ───────────────────────────────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 999;
+    min-width: 260px;
+    max-width: 420px;
+    border: var(--by-bd-thick);
+    padding: 13px 18px;
+    font-family: var(--by-f-body);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--by-sh-1);
+    transition: opacity 200ms, transform 200ms;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #toast.ok  { background: var(--by-yes); color: var(--by-ink); }
+  #toast.err { background: var(--by-tomato); color: #fff; }
+</style>
+{% include 'partials/_byselect.html' %}
+</head>
+<body>
+
+<!-- ── Mobile top bar ── -->
+<header class="by-mob-bar">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  </a>
+  <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+<div id="mob-overlay" class="by-mob-overlay" onclick="toggleMobDrawer()"></div>
+<nav id="mob-drawer" class="by-mob-drawer">
+  <div class="px-4 py-4 border-b hairline">
+    <div class="by-eyebrow">Stage Manager</div>
+    <div class="by-display text-[18px]" style="color:var(--by-ink);">Studio · BCN</div>
+  </div>
+  <div class="px-3 py-3">
+    <a href="/" class="nav-item" onclick="toggleMobDrawer()">Dashboard</a>
+    <a href="/performers" class="nav-item" onclick="toggleMobDrawer()">Roster</a>
+    <a href="/backstage/shows" class="nav-item" onclick="toggleMobDrawer()">Shows &amp; Bookings</a>
+    <a href="/classes" class="nav-item" onclick="toggleMobDrawer()">Classes &amp; Cohorts</a>
+    <div class="by-eyebrow px-2 pt-4 pb-1">Backstage</div>
+    <a href="/backstage/scene-library" class="nav-item" onclick="toggleMobDrawer()">Scene Library</a>
+    <a href="/backstage/reports" class="nav-item" onclick="toggleMobDrawer()">Reports</a>
+    <a href="/backstage/activity-log" class="nav-item" onclick="toggleMobDrawer()">Activity Log</a>
+    <a href="/backstage/comms" class="nav-item active" onclick="toggleMobDrawer()">Comms</a>
+    {% if can_view_finances %}
+    <a href="/backstage/finances" class="nav-item" style="color:var(--by-yes-deep);font-weight:700;" onclick="toggleMobDrawer()">Finances ✦</a>
+    {% endif %}
+  </div>
+</nav>
+
+
+<!-- ══ FULL-VIEWPORT LAYOUT: sidebar (248px) + main column ══ -->
+<div class="min-h-screen flex flex-col lg:grid lg:grid-cols-[248px_1fr]">
+
+  {# ════ SIDEBAR ════ #}
+  {% include 'partials/_sidebar.html' %}
+
+
+  <!-- ════ MAIN COLUMN ════ -->
+  <div class="flex flex-col min-w-0">
+
+    <!-- ─── Sticky page header ─── -->
+    <header class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+      <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
+        <div class="min-w-0">
+          <div class="by-eyebrow">Backstage</div>
+          <h1 class="font-display text-[20px] leading-tight mt-0.5" style="color:var(--by-ink);">Comms</h1>
+        </div>
+        <div class="ml-auto flex items-center gap-3 flex-shrink-0">
+          <span class="badge badge-pending hidden lg:inline">Restricted</span>
+          <!-- Scene switcher -->
+          {% include 'partials/_scene_switcher.html' %}
+          <!-- Inbox -->
+          {% include 'partials/_inbox_btn.html' %}
+          <!-- User pill -->
+          <div class="flex items-center gap-2 h-9 px-2.5" style="border:var(--by-bd);background:var(--by-bg);">
+            <span class="flex items-center justify-center flex-shrink-0"
+                  style="width:26px;height:26px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;">
+              {{ current_user_initials }}
+            </span>
+            <div class="hidden lg:block leading-tight">
+              <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
+              <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C544A;margin-top:1px;">Stage Manager</div>
+            </div>
+          </div>
+          <a href="/logout" class="hidden lg:flex items-center h-9 px-3 text-[12px]"
+             style="border:var(--by-bd);color:var(--by-tomato);background:var(--by-bg);font-family:var(--by-f-sans);font-weight:600;text-decoration:none;">
+            Log out
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── Page content ─── -->
+    <main class="flex-1 px-4 lg:px-7 py-6 lg:py-8">
+
+      <!-- Sub-heading -->
+      <div class="mb-6">
+        <p class="text-[13px]" style="color:var(--by-ink-3);">
+          Dispatch directives to your cast. Messages land in the external inbox and the in-app dashboard simultaneously.
+        </p>
+      </div>
+
+      <!-- ══ Two-column grid ══ -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+
+        <!-- ════════════════════════════════════════════════════════
+             LEFT — DIRECTIVES COMPOSER
+        ════════════════════════════════════════════════════════ -->
+        <section style="border:var(--by-bd-thick);background:var(--by-bg);">
+
+          <header class="px-5 py-4 flex items-center gap-3" style="border-bottom:var(--by-bd);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 style="width:17px;height:17px;flex-shrink:0;">
+              <path d="M4 4h16v13H4z"/><path d="M4 4l8 8.5L20 4"/>
+            </svg>
+            <div>
+              <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">The Directives Composer</div>
+              <div class="by-eyebrow mt-0.5">Write · Target · Broadcast</div>
+            </div>
+          </header>
+
+          <form id="blastForm" class="px-5 py-5 flex flex-col gap-5">
+
+            <!-- Audience -->
+            <div>
+              <label class="by-eyebrow block mb-2">Audience</label>
+              <div class="by-so-wrap">
+                <div class="by-so-face">
+                  <span class="by-so-label">📣 All Members</span>
+                  <span class="by-so-chevron">▾</span>
+                </div>
+                <select id="targetGroup" required onchange="bySoSync(this)">
+                  <optgroup label="Global Cast">
+                    <option value="all_members" {% if not preset_member %}selected{% endif %}>📣 All Members</option>
+                    <option value="all_students">🎭 All Students</option>
+                  </optgroup>
+                  {% if all_classes %}
+                  <optgroup label="Class Cohorts">
+                    {% for cls in all_classes %}
+                    <option value="{{ cls.id }}">{{ cls.title }} — {{ cls.schedule }}</option>
+                    {% endfor %}
+                  </optgroup>
+                  {% endif %}
+                  <optgroup label="Individual">
+                    {% for m in all_members %}
+                    <option value="{{ m.id }}"
+                      {% if preset_member and preset_member.id == m.id %}selected{% endif %}>
+                      {{ m.name }} ({{ m.identity }})
+                    </option>
+                    {% endfor %}
+                  </optgroup>
+                </select>
+              </div>
+              {% if preset_member %}
+              <p class="mt-2 text-[11px]" style="color:var(--by-ink-3);font-family:var(--by-f-mono);">
+                ↳ Pre-scoped to {{ preset_member.name }}
+              </p>
+              {% endif %}
+            </div>
+
+            <!-- Subject -->
+            <div>
+              <label class="by-eyebrow block mb-2" for="subject">Subject Line</label>
+              <input id="subject" type="text" class="by-input"
+                     placeholder="e.g. Rehearsal moved — read the room" required />
+            </div>
+
+            <!-- Body -->
+            <div>
+              <label class="by-eyebrow block mb-2" for="messageBody">Scene Directions</label>
+              <textarea id="messageBody" class="by-textarea"
+                        placeholder="Write your message here. No projecting — the mic is hot."></textarea>
+            </div>
+
+            <!-- Submit row -->
+            <div class="flex items-center gap-4 pt-1">
+              <button type="submit" id="blastBtn" class="by-btn-primary">
+                📣 Broadcast Scene Directions
+              </button>
+              <span id="blastSpinner" class="hidden by-eyebrow" style="color:var(--by-ink-3);">Dispatching…</span>
+            </div>
+
+          </form>
+        </section>
+
+
+        <!-- ════════════════════════════════════════════════════════
+             RIGHT — BACKSTAGE TRANSMISSION LOG
+        ════════════════════════════════════════════════════════ -->
+        <section id="logPanel" style="border:var(--by-bd-thick);background:var(--by-bg);">
+
+          <header class="px-5 py-4 flex items-center justify-between gap-3" style="border-bottom:var(--by-bd);">
+            <div class="flex items-center gap-3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   style="width:17px;height:17px;flex-shrink:0;">
+                <path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>
+              </svg>
+              <div>
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">Transmission Log</div>
+                <div class="by-eyebrow mt-0.5">Recent Dispatches</div>
+              </div>
+            </div>
+            <span class="by-eyebrow">{{ mail_logs | length }} entries</span>
+          </header>
+
+          <div id="logList" style="max-height:560px;overflow-y:auto;">
+            {% if mail_logs %}
+              {% for log in mail_logs %}
+              <div class="log-row" onclick="openLogDetail({{ log.id }})" data-log-id="{{ log.id }}">
+                <div class="min-w-0">
+                  <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">
+                    {% if log.recipient_name %}
+                      👤 {{ log.recipient_name }}
+                    {% elif log.recipient_group == 'all_members' %}
+                      📣 All Members
+                    {% elif log.recipient_group == 'all_students' %}
+                      🎭 All Students
+                    {% elif log.recipient_group and log.recipient_group.startswith('c') %}
+                      📚 Cohort {{ log.recipient_group | upper }}
+                    {% else %}
+                      {{ log.recipient_group or '—' }}
+                    {% endif %}
+                  </div>
+                  <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">{{ log.subject }}</div>
+                  <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">
+                    {{ log.sender_name }} · {{ log.created_at[:16] | replace('T',' ') }}
+                  </div>
+                </div>
+                <div class="flex-shrink-0 pt-0.5">
+                  {% if log.status == 'sent' %}
+                    <span class="badge badge-sent">Delivered</span>
+                  {% elif log.status == 'pending' %}
+                    <span class="badge badge-pending">On Stage</span>
+                  {% else %}
+                    <span class="badge badge-failed">Trainwreck</span>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="px-6 py-14 text-center">
+                <div class="font-display text-[20px] mb-2" style="color:var(--by-ink-4);">( silence )</div>
+                <div class="text-[13px]" style="color:var(--by-ink-4);">No transmissions yet. The booth awaits its first broadcast.</div>
+              </div>
+            {% endif %}
+          </div>
+
+        </section>
+
+      </div><!-- /grid -->
+    </main>
+
+    <footer class="px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3)">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span></div>
+      <div class="flex items-center gap-4">
+        <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+      </div>
+    </footer>
+
+  </div><!-- /main column -->
+</div><!-- /layout -->
+
+
+<!-- ── Toast ── -->
+<div id="toast"></div>
+
+<!-- ── Transmission detail panel ── -->
+<div id="tx-backdrop" onclick="closeTxPanel()"></div>
+
+<div id="tx-panel" aria-modal="true" role="dialog">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between shrink-0 px-5 py-3"
+       style="border-bottom:2px solid var(--by-ink);background:var(--by-ink);">
+    <div>
+      <p style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.14em;
+                text-transform:uppercase;color:var(--by-night-on);margin-bottom:3px;">
+        Transmission · Thread
+      </p>
+      <h3 id="tx-subject"
+          style="font-family:var(--by-f-display);font-size:17px;color:#fff;line-height:1.1;"></h3>
+    </div>
+    <button onclick="closeTxPanel()"
+            style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,.25);
+                   background:transparent;color:#fff;cursor:pointer;display:flex;
+                   align-items:center;justify-content:center;flex-shrink:0;"
+            onmouseover="this.style.background='rgba(255,255,255,.12)'"
+            onmouseout="this.style.background='transparent'">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Meta bar -->
+  <div id="tx-meta" class="shrink-0 px-5 py-3 flex items-center gap-3 flex-wrap"
+       style="border-bottom:1px solid var(--by-bg-3);font-family:var(--by-f-mono);
+              font-size:10.5px;color:var(--by-ink-4);letter-spacing:.06em;text-transform:uppercase;">
+  </div>
+
+  <!-- Original message -->
+  <div class="shrink-0 px-5 py-4" style="border-bottom:var(--by-bd-thick);">
+    <p class="by-eyebrow mb-2">Original message</p>
+    <p id="tx-body" style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);
+                           white-space:pre-wrap;line-height:1.65;"></p>
+  </div>
+
+  <!-- Thread list -->
+  <div class="flex-1 overflow-y-auto px-5 py-4">
+    <p class="by-eyebrow mb-3">Conversation threads</p>
+    <div id="tx-threads">
+      <p style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;">Loading…</p>
+    </div>
+  </div>
+
+  <!-- Reply input -->
+  <div id="tx-reply-wrap" class="shrink-0 px-5 pb-5 pt-3"
+       style="border-top:var(--by-bd-thick);">
+    <p class="by-eyebrow mb-2">Reply to selected thread</p>
+    <p id="tx-reply-target" style="font-family:var(--by-f-body);font-size:12px;
+                                   color:var(--by-ink-3);margin-bottom:8px;"></p>
+    <div class="flex gap-2">
+      <textarea id="tx-reply-input"
+                placeholder="Write a reply…"
+                rows="2"
+                style="flex:1;padding:8px 10px;border:var(--by-bd-thick);background:var(--by-bg);
+                       color:var(--by-ink-2);font-family:var(--by-f-body);font-size:13px;
+                       line-height:1.5;resize:none;outline:none;"
+                onfocus="this.style.boxShadow='0 0 0 2px var(--by-yes)'"
+                onblur="this.style.boxShadow=''"
+                onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){sendTxReply();}"></textarea>
+      <button onclick="sendTxReply()"
+              style="align-self:flex-end;padding:8px 16px;background:var(--by-yes);
+                     border:var(--by-bd-thick);color:var(--by-ink);font-family:var(--by-f-display);
+                     font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+                     box-shadow:3px 3px 0 0 var(--by-ink);transition:box-shadow 80ms,transform 80ms;"
+              onmouseover="this.style.boxShadow='1px 1px 0 0 var(--by-ink)';this.style.transform='translate(2px,2px)'"
+              onmouseout="this.style.boxShadow='3px 3px 0 0 var(--by-ink)';this.style.transform=''">
+        Send
+      </button>
+    </div>
+    <p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:4px;">
+      Ctrl+Enter to send · select a thread below to target a recipient
+    </p>
+  </div>
+</div>
+
+
+<script>
+  // ── Overlay select sync ──────────────────────────────────────────────
+  function bySoSync(sel) {
+    var label = sel.closest('.by-so-wrap').querySelector('.by-so-label');
+    if (label) label.textContent = sel.options[sel.selectedIndex].text;
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.by-so-wrap select').forEach(function (sel) { bySoSync(sel); });
+  });
+
+  function toggleMobDrawer() {
+    const d = document.getElementById('mob-drawer');
+    const o = document.getElementById('mob-overlay');
+    const open = d.classList.toggle('open');
+    o.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg, type) {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = `show ${type}`;
+    toastTimer = setTimeout(() => { toast.className = ''; }, 4200);
+  }
+
+  // ── Transmission detail panel ─────────────────────────────────────────────
+  let _txActiveLogId   = null;
+  let _txActiveNotifId = null;
+
+  function openLogDetail(logId) {
+    _txActiveLogId   = logId;
+    _txActiveNotifId = null;
+
+    // Highlight active row
+    document.querySelectorAll('.log-row').forEach(r => r.classList.remove('active'));
+    const activeRow = document.querySelector(`.log-row[data-log-id="${logId}"]`);
+    if (activeRow) activeRow.classList.add('active');
+
+    // Open panel
+    document.getElementById('tx-panel').classList.add('open');
+    document.getElementById('tx-backdrop').classList.add('open');
+    document.getElementById('tx-threads').innerHTML =
+      '<p style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;">Loading…</p>';
+    document.getElementById('tx-reply-target').textContent = '';
+    document.getElementById('tx-reply-input').value = '';
+
+    fetch(`/api/comms/log/${logId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok) { showToast('Could not load transmission.', 'err'); return; }
+        renderTxDetail(data.log);
+      })
+      .catch(() => showToast('Network error loading transmission.', 'err'));
+  }
+
+  function closeTxPanel() {
+    document.getElementById('tx-panel').classList.remove('open');
+    document.getElementById('tx-backdrop').classList.remove('open');
+    document.querySelectorAll('.log-row').forEach(r => r.classList.remove('active'));
+    _txActiveLogId   = null;
+    _txActiveNotifId = null;
+  }
+
+  function renderTxDetail(log) {
+    const fmtDate = iso => {
+      if (!iso) return '';
+      const d = new Date(iso.endsWith('Z') ? iso : iso + 'Z');
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
+             ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    };
+
+    document.getElementById('tx-subject').textContent = log.subject;
+    document.getElementById('tx-body').textContent    = log.body;
+
+    // Meta bar
+    let recipientLabel = log.recipient_name || log.recipient_group || '—';
+    if (recipientLabel === 'all_members')  recipientLabel = 'All Members';
+    else if (recipientLabel === 'all_students') recipientLabel = 'All Students';
+    else if (recipientLabel.startsWith && recipientLabel.startsWith('c')) recipientLabel = 'Cohort ' + recipientLabel.toUpperCase();
+    const statusCls = log.status === 'sent' ? '#2A8A4F' : (log.status === 'pending' ? 'var(--by-yes-deep)' : 'var(--by-tomato)');
+    const statusLbl = log.status === 'sent' ? 'Delivered' : (log.status === 'pending' ? 'On Stage' : 'Trainwreck');
+    document.getElementById('tx-meta').innerHTML =
+      `<span>📤 ${esc(log.sender_name)}</span>
+       <span style="color:var(--by-bg-3);">·</span>
+       <span>→ ${esc(recipientLabel)}</span>
+       <span style="color:var(--by-bg-3);">·</span>
+       <span>${fmtDate(log.created_at)}</span>
+       <span style="color:var(--by-bg-3);">·</span>
+       <span style="color:${statusCls};font-weight:700;">${statusLbl}</span>`;
+
+    // Threads
+    const threadsEl = document.getElementById('tx-threads');
+    if (!log.threads || !log.threads.length) {
+      threadsEl.innerHTML =
+        '<p style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;text-align:center;padding:24px 0;">No recipient threads yet.</p>';
+      return;
+    }
+
+    threadsEl.innerHTML = '';
+    log.threads.forEach(notif => {
+      const block = document.createElement('div');
+      block.style.cssText = 'margin-bottom:16px;border:var(--by-bd-thick);';
+      block.dataset.notifId = notif.id;
+
+      // Thread header (clickable — selects this thread for reply)
+      const hdr = document.createElement('button');
+      hdr.style.cssText =
+        'width:100%;text-align:left;padding:8px 12px;border:none;border-bottom:var(--by-bd-soft);' +
+        'background:var(--by-bg-2);cursor:pointer;display:flex;align-items:center;gap:8px;';
+      hdr.onclick = () => selectTxThread(notif.id, notif.recipient_name);
+      hdr.innerHTML =
+        `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="color:var(--by-ink-3);flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+         <span style="font-family:var(--by-f-sans);font-size:12.5px;font-weight:700;color:var(--by-ink);">${esc(notif.recipient_name)}</span>
+         ${!notif.is_read ? '<span style="margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--by-tomato);flex-shrink:0;"></span>' : ''}`;
+
+      // Replies
+      const repliesWrap = document.createElement('div');
+      repliesWrap.style.cssText = 'padding:10px 12px;display:flex;flex-direction:column;gap:8px;';
+
+      if (!notif.replies || !notif.replies.length) {
+        repliesWrap.innerHTML =
+          '<p style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-4);">No replies yet — select to reply.</p>';
+      } else {
+        notif.replies.forEach(r => {
+          const isMine = r.sender_name === '{{ current_user_name | default("") | e }}';
+          const msg = document.createElement('div');
+          msg.className = 'tx-thread-item ' + (isMine ? 'mine' : 'theirs');
+          msg.innerHTML =
+            `<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);
+                       text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">
+               ${esc(r.sender_name)} · ${fmtDate(r.created_at)}</p>
+             <p style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-2);
+                       white-space:pre-wrap;line-height:1.6;">${esc(r.body)}</p>`;
+          repliesWrap.appendChild(msg);
+        });
+      }
+
+      block.appendChild(hdr);
+      block.appendChild(repliesWrap);
+      threadsEl.appendChild(block);
+    });
+  }
+
+  function selectTxThread(notifId, recipientName) {
+    _txActiveNotifId = notifId;
+    document.getElementById('tx-reply-target').textContent = `→ Replying to ${recipientName}`;
+    document.getElementById('tx-reply-input').focus();
+    // Highlight selected thread
+    document.querySelectorAll('#tx-threads > div').forEach(b => {
+      b.style.borderColor = b.dataset.notifId == notifId ? 'var(--by-yes)' : 'var(--by-ink)';
+      b.style.boxShadow   = b.dataset.notifId == notifId ? 'var(--by-sh-yes)' : 'none';
+    });
+  }
+
+  function sendTxReply() {
+    if (!_txActiveNotifId) {
+      showToast('Select a recipient thread first.', 'err'); return;
+    }
+    const input = document.getElementById('tx-reply-input');
+    const body  = (input.value || '').trim();
+    if (!body) { input.focus(); return; }
+
+    input.disabled = true;
+    fetch('/api/inbox/reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notification_id: _txActiveNotifId, body }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        input.disabled = false;
+        if (!data.ok) { showToast(data.error || 'Send failed.', 'err'); return; }
+        input.value = '';
+        showToast('Reply dispatched.', 'ok');
+        // Reload the detail to show the new reply
+        if (_txActiveLogId) openLogDetail(_txActiveLogId);
+      })
+      .catch(() => { input.disabled = false; showToast('Network error.', 'err'); });
+  }
+
+  // ── Prepend a new row to the log panel ────────────────────────────────────
+  function prependLogRow(log) {
+    const logList = document.getElementById('logList');
+    const empty = logList.querySelector('.px-6.py-14');
+    if (empty) empty.remove();
+
+    const row = document.createElement('div');
+    row.className = 'log-row';
+    if (log.id) {
+      row.dataset.logId = log.id;
+      row.onclick = () => openLogDetail(log.id);
+    }
+
+    let audienceLabel = log.target;
+    if (audienceLabel === 'all_members') audienceLabel = '📣 All Members';
+    else if (audienceLabel === 'all_students') audienceLabel = '🎭 All Students';
+    else if (audienceLabel.startsWith('c'))    audienceLabel = '📚 Cohort ' + audienceLabel.toUpperCase();
+    else if (audienceLabel.startsWith('u'))    audienceLabel = '👤 ' + audienceLabel;
+
+    const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    row.innerHTML = `
+      <div class="min-w-0">
+        <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">${audienceLabel}</div>
+        <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(log.subject)}</div>
+        <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">You · ${now}</div>
+      </div>
+      <div class="flex-shrink-0 pt-0.5">
+        <span class="badge badge-pending">On Stage</span>
+      </div>`;
+    logList.insertAdjacentElement('afterbegin', row);
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Form submit ───────────────────────────────────────────────────────────
+  document.getElementById('blastForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const btn     = document.getElementById('blastBtn');
+    const spinner = document.getElementById('blastSpinner');
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+
+    const payload = {
+      target_group: document.getElementById('targetGroup').value,
+      subject:      document.getElementById('subject').value.trim(),
+      message_body: document.getElementById('messageBody').value.trim(),
+    };
+
+    try {
+      const res  = await fetch('/api/comms/send-blast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok && data.status === 'yes_and') {
+        showToast(`Yes, And… ${data.count} scroll(s) dispatched!`, 'ok');
+        prependLogRow({ id: data.log_id, target: payload.target_group, subject: payload.subject });
+        this.reset();
+      } else {
+        showToast(`Stage Fright: ${data.error || 'Unknown failure'}`, 'err');
+      }
+    } catch {
+      showToast('Total Trainwreck — network error. Check the wings.', 'err');
+    } finally {
+      btn.disabled = false;
+      spinner.classList.add('hidden');
+    }
+  });
+</script>
+
+  {% include 'partials/_inbox_modal.html' %}
+
+</body>
+</html>

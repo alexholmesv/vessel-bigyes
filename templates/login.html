@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes · Sign In</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ["'Archivo Black'", 'system-ui', 'sans-serif'],
+          sans:    ["'Archivo'",       'ui-sans-serif', 'system-ui'],
+          body:    ["'Manrope'",       'ui-sans-serif', 'system-ui'],
+          mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --by-bg:     #F4EEE2;
+    --by-bg-2:   #ECE3D0;
+    --by-bg-3:   #E2D6BB;
+    --by-ink:    #141210;
+    --by-ink-3:  #5C544A;
+    --by-ink-4:  #8A8073;
+    --by-yes:    #FFC629;
+    --by-yes-deep: #E5A800;
+    --by-tomato: #E5482A;
+    --by-sh-1:   4px 4px 0 0 #141210;
+    --by-sh-yes: 4px 4px 0 0 #FFC629;
+  }
+  html, body { background: var(--by-bg); min-height: 100vh; }
+  body { font-family: 'Manrope', system-ui, sans-serif; color: var(--by-ink); -webkit-font-smoothing: antialiased; }
+
+  .by-display  { font-family: 'Archivo Black', sans-serif; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; line-height: 0.9; }
+  .by-eyebrow  { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--by-ink-3); }
+  .by-yes-block { display: inline-block; background: var(--by-yes); color: var(--by-ink); padding: 0 14px 5px; transform: skew(-6deg); }
+
+  /* Field */
+  .field-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--by-ink-3); }
+  .field-input {
+    width: 100%;
+    border: 1.5px solid var(--by-ink);
+    background: var(--by-bg);
+    color: var(--by-ink);
+    padding: 12px 14px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: box-shadow 120ms;
+  }
+  .field-input:focus { box-shadow: 4px 4px 0 0 var(--by-yes); }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    background: var(--by-yes);
+    color: var(--by-ink);
+    border: 1.5px solid var(--by-ink);
+    box-shadow: var(--by-sh-1);
+    padding: 14px 24px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: box-shadow 80ms, transform 80ms;
+  }
+  .btn-submit:hover  { box-shadow: 2px 2px 0 0 var(--by-ink); transform: translate(2px, 2px); }
+  .btn-submit:active { box-shadow: none; transform: translate(4px, 4px); }
+
+  /* Error strip */
+  .error-strip {
+    border: 1.5px solid var(--by-tomato);
+    background: #FEF0ED;
+    color: var(--by-tomato);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* Decorative accent bar */
+  .accent-bar {
+    width: 48px; height: 6px;
+    background: var(--by-yes);
+    border: 1.5px solid var(--by-ink);
+    margin-bottom: 20px;
+  }
+
+  /* Card */
+  .login-card {
+    border: 1.5px solid var(--by-ink);
+    background: var(--by-bg);
+    box-shadow: 8px 8px 0 0 var(--by-ink);
+  }
+</style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+
+  <!-- Wordmark -->
+  <div class="mb-10 text-center">
+    <a href="/login" class="by-display inline-block" style="font-size: clamp(32px, 8vw, 52px); color: var(--by-ink); text-decoration: none;">
+      Big<span class="by-yes-block" style="font-size: clamp(29px, 7.5vw, 47px); padding: 0 14px 5px;">Yes</span>
+    </a>
+    <div class="by-eyebrow mt-3">Barcelona Improv Group · Studio CRM</div>
+  </div>
+
+  <!-- Login card -->
+  <div class="login-card w-full" style="max-width: 400px;">
+    <div class="px-6 pt-8 pb-2">
+      <div class="accent-bar"></div>
+      <h1 class="by-display" style="font-size: 26px; color: var(--by-ink);">Sign in</h1>
+      <p class="by-eyebrow mt-2">Members only · Barcelona Improv</p>
+    </div>
+
+    <form method="POST" action="/login" class="px-6 pb-8 pt-6 flex flex-col gap-5">
+
+      {% if error %}
+      <div class="error-strip">{{ error }}</div>
+      {% endif %}
+
+      <div class="field-wrap">
+        <label class="field-label" for="email">Email</label>
+        <input
+          class="field-input"
+          type="email"
+          id="email"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+          autofocus
+        />
+      </div>
+
+      <div class="field-wrap">
+        <label class="field-label" for="password">Password</label>
+        <input
+          class="field-input"
+          type="password"
+          id="password"
+          name="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn-submit mt-2">
+        Enter the stage →
+      </button>
+
+    </form>
+  </div>
+
+  <!-- Footer note -->
+  <p class="mt-8 text-center" style="font-size: 11.5px; color: var(--by-ink-4); font-family: 'DM Mono', monospace; letter-spacing: 0.06em;">
+    Forgot password? Ask your Stage Manager.
+  </p>
+
+</body>
+</html>

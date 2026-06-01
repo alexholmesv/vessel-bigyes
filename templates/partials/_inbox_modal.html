@@ -1,0 +1,298 @@
+<!-- ════════════════════════ INBOX MODAL ════════════════════════ -->
+<!-- Include this partial once, before </body>, in every standalone template -->
+
+<div id="inbox-backdrop"
+     class="hidden fixed inset-0 z-[300]"
+     style="background:rgba(20,18,16,0.55);"
+     onclick="inboxClose()"></div>
+
+<div id="inbox-panel"
+     class="fixed z-[301] flex flex-col"
+     style="bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+            width:min(760px,96vw);height:78vh;max-height:640px;
+            background:var(--by-bg);border:2px solid var(--by-ink);border-bottom:none;
+            box-shadow:0 -6px 0 0 var(--by-ink);
+            transition:transform 280ms cubic-bezier(.2,.8,.2,1);">
+
+  <!-- Header bar -->
+  <div class="flex items-center justify-between shrink-0 px-5 py-3"
+       style="border-bottom:2px solid var(--by-ink);background:var(--by-ink);">
+    <div class="flex items-center gap-3">
+      <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+           style="color:var(--by-yes);" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5
+                 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0
+                 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0
+                 1-1.07-1.916V6.75"/>
+      </svg>
+      <span style="font-family:var(--by-f-display);font-size:16px;color:#fff;letter-spacing:.04em;text-transform:uppercase;">
+        Inbox
+      </span>
+      <span id="inbox-unread-pill" class="px-2 py-0.5"
+            style="background:var(--by-tomato);font-family:var(--by-f-mono);font-size:10px;
+                   color:#fff;font-weight:700;display:none;"></span>
+    </div>
+    <button onclick="inboxClose()"
+            class="flex items-center justify-center focus:outline-none"
+            style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,0.25);
+                   color:#fff;background:transparent;transition:background 100ms;cursor:pointer;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='transparent'">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Body: list + thread panes -->
+  <div class="flex flex-1 min-h-0">
+
+    <!-- Left: message list -->
+    <div id="inbox-list"
+         class="shrink-0 overflow-y-auto"
+         style="width:240px;border-right:1.5px solid var(--by-ink);background:var(--by-bg-2);">
+      <div id="inbox-empty"
+           class="flex flex-col items-center justify-center h-full px-6 text-center"
+           style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;
+                  letter-spacing:.08em;text-transform:uppercase;">
+        <svg class="h-8 w-8 mb-3 opacity-30" fill="none" stroke="currentColor"
+             stroke-width="1.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5
+                   0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0
+                   1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0
+                   1-1.07-1.916V6.75"/>
+        </svg>
+        No messages yet
+      </div>
+      <div id="inbox-items"></div>
+    </div>
+
+    <!-- Right: thread view -->
+    <div class="flex flex-col flex-1 min-w-0">
+
+      <!-- Placeholder when no message selected -->
+      <div id="inbox-placeholder"
+           class="flex flex-1 items-center justify-center"
+           style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;
+                  letter-spacing:.08em;text-transform:uppercase;">
+        Select a message
+      </div>
+
+      <!-- Thread view (hidden until a message is selected) -->
+      <div id="inbox-thread" class="hidden flex-col flex-1 min-h-0">
+        <!-- Thread header -->
+        <div class="shrink-0 px-5 py-3" style="border-bottom:1.5px solid var(--by-bg-3);">
+          <p id="inbox-thread-subject"
+             style="font-family:var(--by-f-sans);font-weight:700;font-size:15px;color:var(--by-ink);"></p>
+          <p id="inbox-thread-meta"
+             style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:2px;"></p>
+        </div>
+        <!-- Message + reply bubbles -->
+        <div id="inbox-thread-body" class="flex-1 overflow-y-auto px-5 py-4 space-y-3"></div>
+        <!-- Reply input -->
+        <div class="shrink-0 px-5 pb-4 pt-3" style="border-top:1.5px solid var(--by-bg-3);">
+          <div class="flex gap-2">
+            <textarea id="inbox-reply-input"
+                      placeholder="Write a reply…"
+                      rows="2"
+                      class="flex-1 px-3 py-2 text-sm resize-none focus:outline-none"
+                      style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink-2);
+                             font-family:var(--by-f-body);line-height:1.5;"
+                      onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey))inboxSendReply();"></textarea>
+            <button onclick="inboxSendReply()"
+                    class="shrink-0 px-4 py-2 text-sm font-bold uppercase focus:outline-none"
+                    style="background:var(--by-yes);border:var(--by-bd-thick);color:var(--by-ink);
+                           font-family:var(--by-f-display);font-size:11px;letter-spacing:.06em;
+                           box-shadow:3px 3px 0 0 var(--by-ink);transition:box-shadow 80ms,transform 80ms;
+                           align-self:flex-end;cursor:pointer;"
+                    onmouseover="this.style.boxShadow='1px 1px 0 0 var(--by-ink)';this.style.transform='translate(2px,2px)'"
+                    onmouseout="this.style.boxShadow='3px 3px 0 0 var(--by-ink)';this.style.transform=''">
+              Send
+            </button>
+          </div>
+          <p class="mt-1" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">
+            Ctrl+Enter to send
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const _ME = {{ current_user_name | tojson }};
+  let _open  = false;
+  let _notifs = [];
+  let _activeId = null;
+
+  function _esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function _fmt(iso) {
+    if (!iso) return '';
+    const d = new Date(iso.endsWith('Z') ? iso : iso + 'Z');
+    return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ' ' +
+           d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  }
+
+  function _badge(n) {
+    const b = document.getElementById('inbox-badge');
+    const p = document.getElementById('inbox-unread-pill');
+    if (!b) return;
+    if (n > 0) {
+      b.textContent = n < 100 ? n : '99+';
+      b.style.display = 'flex';
+      if (p) { p.textContent = n + ' unread'; p.style.display = 'inline-block'; }
+    } else {
+      b.style.display = 'none';
+      if (p) p.style.display = 'none';
+    }
+  }
+
+  function _renderList() {
+    const wrap  = document.getElementById('inbox-items');
+    const empty = document.getElementById('inbox-empty');
+    wrap.innerHTML = '';
+    if (!_notifs.length) { empty.style.display = 'flex'; return; }
+    empty.style.display = 'none';
+    _notifs.forEach(function(n) {
+      const btn = document.createElement('button');
+      btn.className = 'w-full text-left focus:outline-none';
+      const isActive = n.id === _activeId;
+      btn.style.cssText =
+        'display:block;width:100%;padding:10px 14px;border:none;border-bottom:1px solid var(--by-bg-3);' +
+        'background:' + (isActive ? 'var(--by-yes-soft)' : 'transparent') + ';' +
+        'cursor:pointer;transition:background 100ms;';
+      btn.onmouseover = function() { if (n.id !== _activeId) this.style.background = 'var(--by-bg)'; };
+      btn.onmouseout  = function() { if (n.id !== _activeId) this.style.background = 'transparent'; };
+      btn.onclick = function() { _select(n.id); };
+
+      const dot = !n.is_read
+        ? '<span style="display:inline-block;width:6px;height:6px;background:var(--by-tomato);border-radius:50%;margin-right:5px;vertical-align:middle;flex-shrink:0;"></span>'
+        : '';
+      btn.innerHTML =
+        '<p style="font-family:var(--by-f-sans);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--by-ink);font-weight:' + (!n.is_read ? '700' : '500') + ';">' +
+        dot + _esc(n.subject) + '</p>' +
+        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:2px;">from ' + _esc(n.sender_name) + '</p>' +
+        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">' + _fmt(n.created_at) + '</p>';
+      wrap.appendChild(btn);
+    });
+  }
+
+  function _renderThread(n) {
+    document.getElementById('inbox-placeholder').style.display = 'none';
+    const thread = document.getElementById('inbox-thread');
+    thread.style.display = 'flex';
+
+    document.getElementById('inbox-thread-subject').textContent = n.subject;
+    document.getElementById('inbox-thread-meta').textContent =
+      'From ' + n.sender_name + ' · ' + _fmt(n.created_at);
+
+    const body = document.getElementById('inbox-thread-body');
+    body.innerHTML = '';
+
+    // Original message bubble
+    const orig = document.createElement('div');
+    orig.style.cssText = 'background:var(--by-bg-2);border:1px solid var(--by-bg-3);padding:12px 14px;';
+    orig.innerHTML =
+      '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;">' +
+      _esc(n.sender_name) + ' · ' + _fmt(n.created_at) + '</p>' +
+      '<p style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);white-space:pre-wrap;line-height:1.6;">' + _esc(n.body) + '</p>';
+    body.appendChild(orig);
+
+    // Reply bubbles
+    (n.replies || []).forEach(function(r) {
+      const mine = (r.sender_name === _ME);
+      const el = document.createElement('div');
+      el.style.cssText =
+        'padding:10px 14px;border:1px solid var(--by-bg-3);' +
+        (mine ? 'background:var(--by-yes-soft);margin-left:32px;' : 'background:var(--by-bg);margin-right:32px;');
+      el.innerHTML =
+        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;">' +
+        _esc(r.sender_name) + ' · ' + _fmt(r.created_at) + '</p>' +
+        '<p style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);white-space:pre-wrap;line-height:1.6;">' + _esc(r.body) + '</p>';
+      body.appendChild(el);
+    });
+
+    body.scrollTop = body.scrollHeight;
+    document.getElementById('inbox-reply-input').value = '';
+  }
+
+  function _select(id) {
+    _activeId = id;
+    const n = _notifs.find(function(x){ return x.id === id; });
+    if (!n) return;
+    _renderThread(n);
+    _renderList();
+    if (!n.is_read) {
+      fetch('/api/comms/mark-read', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({notification_id:id}),
+      }).then(function() {
+        n.is_read = true;
+        _badge(_notifs.filter(function(x){ return !x.is_read; }).length);
+        _renderList();
+      });
+    }
+  }
+
+  window.inboxOpen = function() {
+    if (_open) return;
+    _open = true;
+    document.getElementById('inbox-backdrop').classList.remove('hidden');
+    document.getElementById('inbox-panel').style.transform = 'translateX(-50%) translateY(0)';
+
+    fetch('/api/inbox/messages')
+      .then(function(r){ return r.json(); })
+      .then(function(d) {
+        if (!d.ok) return;
+        _notifs = d.notifications || [];
+        _renderList();
+        const unread = _notifs.filter(function(x){ return !x.is_read; }).length;
+        _badge(unread);
+        if (_notifs.length && !_activeId) _select(_notifs[0].id);
+      });
+  };
+
+  window.inboxClose = function() {
+    if (!_open) return;
+    _open = false;
+    document.getElementById('inbox-backdrop').classList.add('hidden');
+    document.getElementById('inbox-panel').style.transform = 'translateX(-50%) translateY(100%)';
+  };
+
+  window.inboxSendReply = function() {
+    const input = document.getElementById('inbox-reply-input');
+    const body  = (input.value || '').trim();
+    if (!body || !_activeId) return;
+    input.disabled = true;
+    fetch('/api/inbox/reply', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({notification_id:_activeId, body:body}),
+    })
+      .then(function(r){ return r.json(); })
+      .then(function(d) {
+        input.disabled = false;
+        if (!d.ok) { alert(d.error || 'Failed to send reply.'); return; }
+        const n = _notifs.find(function(x){ return x.id === _activeId; });
+        if (n) {
+          n.replies = n.replies || [];
+          n.replies.push({sender_name:_ME, body:body, created_at:new Date().toISOString()});
+          _renderThread(n);
+        }
+      })
+      .catch(function() { input.disabled = false; alert('Network error — please try again.'); });
+  };
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && _open) inboxClose();
+  });
+})();
+</script>
