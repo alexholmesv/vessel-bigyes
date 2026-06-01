@@ -927,10 +927,12 @@
                   <div class="text-[13.5px] truncate" style="color:var(--by-ink)">{{ show.title }}</div>
                   <div class="text-[11.5px]" style="color:var(--by-ink-3)">{{ show.day }}</div>
                 </div>
-                {% if open_cnt == 0 %}
+                {% if show_shifts and open_cnt == 0 %}
                 <span class="chip chip-active flex-shrink-0"><span class="dot"></span>Fully staffed</span>
-                {% else %}
+                {% elif show_shifts %}
                 <span class="chip chip-rehearsing flex-shrink-0"><span class="dot"></span>{{ open_cnt }} open</span>
+                {% else %}
+                <span class="chip chip-none flex-shrink-0"><span class="dot"></span>No shifts</span>
                 {% endif %}
               </div>
               <div class="space-y-1.5">
