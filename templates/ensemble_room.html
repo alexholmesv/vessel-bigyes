@@ -1220,12 +1220,24 @@
 
   window.openMsgPanel = function() { openMsgModal(); };
 
+  window.setMessageRecipients = function(recipients) {
+    _msgSelected.clear();
+    recipients.forEach(r => {
+      _msgSelected.set(r.id, { id: r.id, label: r.label, type: r.type || 'student' });
+    });
+    _renderChips();
+    _renderClassList();
+  };
+
   window.openMsgModal = function(preselect) {
     _renderClassList();
     _renderChips();
-    // Pre-select a class or individual student
-    if (preselect || STATE.selectedId) {
-      const pid = preselect || STATE.selectedId;
+    // Pre-select a class or individual student if no custom recipients are selected yet
+    let pid = preselect;
+    if (!pid && STATE.selectedId && !_msgSelected.size) {
+      pid = STATE.selectedId;
+    }
+    if (pid) {
       if (pid.startsWith('u')) {
         // Individual student
         let sName = pid;
@@ -2067,13 +2079,13 @@
               <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);">${esc(s.identity)} · ${s.pts} pts</div>
             </div>
             <div style="display:flex;gap:4px;flex-shrink:0;">
-              <button onclick="cmMsgOne(${JSON.stringify(s.id)},${JSON.stringify(s.name)})"
+              <button onclick="cmMsgOne('${esc(s.id)}','${esc(s.name)}')"
                       title="Message ${esc(s.name)}"
                       style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;
                              border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-ink-3);">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </button>
-              <button onclick="cmRemoveStudent(${JSON.stringify(s.id)},${JSON.stringify(s.name)})"
+              <button onclick="cmRemoveStudent('${esc(s.id)}','${esc(s.name)}')"
                       title="Remove from class"
                       style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;
                              border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-tomato);">
@@ -2107,7 +2119,7 @@
       : results.map(s => `
           <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--by-bg-3);cursor:pointer;background:var(--by-bg);"
                onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'"
-               onclick="cmAddStudent(${JSON.stringify(s.id)},${JSON.stringify(s.name)})">
+               onclick="cmAddStudent('${esc(s.id)}','${esc(s.name)}')">
             <div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);flex:1;">${esc(s.name)}</div>
             <div style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-3);">${esc(s.identity)}</div>
           </div>`).join('');
@@ -2160,12 +2172,16 @@
       alert('No students enrolled in this class.');
       return;
     }
-    const names = _cmClass.students.map(s => s.name).join(', ');
-    alert(`[Messaging stub]\nWould send to ${_cmClass.students.length} student(s):\n${names}`);
+    const recipients = _cmClass.students.map(s => ({ id: s.id, label: s.name, type: 'student' }));
+    window.setMessageRecipients(recipients);
+    closeClassModal();
+    openMsgModal();
   };
 
   window.cmMsgOne = function(studentId, studentName) {
-    alert(`[Messaging stub]\nWould open message thread with: ${studentName}`);
+    window.setMessageRecipients([{ id: studentId, label: studentName, type: 'student' }]);
+    closeClassModal();
+    openMsgModal();
   };
 
   /* ── Challenge ──────────────────────────────────────────────────── */
