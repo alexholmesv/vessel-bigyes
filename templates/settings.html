@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings — BigYes{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-xl px-4 py-14">
+
+  <a href="/"
+     class="mb-8 inline-flex items-center gap-1.5 text-xs text-slate-500
+            transition-colors hover:text-slate-300">
+    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+    </svg>
+    Back to dashboard
+  </a>
+
+  <h1 class="text-lg font-semibold mb-6" style="color:var(--by-ink);">Account Settings</h1>
+
+  <!-- ── Profile info ───────────────────────────────────────────── -->
+  <div class="rounded-xl border border-slate-700/60 bg-slate-900 p-6 mb-4">
+    <h2 class="text-sm font-semibold mb-4" style="color:var(--by-ink);">Profile</h2>
+
+    <div class="space-y-3">
+      <div>
+        <label class="by-eyebrow mb-1 block">Display name</label>
+        <input id="s-name" type="text" value="{{ current_user_name | e }}"
+               class="w-full px-3 py-2 text-sm rounded"
+               style="background:var(--by-bg-2); border:var(--by-bd-thick); color:var(--by-ink);"
+               placeholder="Your name" />
+      </div>
+      <div>
+        <label class="by-eyebrow mb-1 block">Bio</label>
+        <textarea id="s-bio" rows="3"
+                  class="w-full px-3 py-2 text-sm rounded resize-none"
+                  style="background:var(--by-bg-2); border:var(--by-bd-thick); color:var(--by-ink);"
+                  placeholder="A few words about you…">{{ current_user_bio | e }}</textarea>
+      </div>
+    </div>
+
+    <div id="s-profile-status" class="hidden mt-2 text-xs" style="color:var(--by-yes);"></div>
+
+    <button onclick="saveProfile()"
+            class="mt-4 px-4 py-2 text-sm font-semibold rounded"
+            style="background:var(--by-yes); color:var(--by-ink); border:none; cursor:pointer;">
+      Save profile
+    </button>
+  </div>
+
+  <!-- ── Change password ────────────────────────────────────────── -->
+  <div class="rounded-xl border border-slate-700/60 bg-slate-900 p-6">
+    <h2 class="text-sm font-semibold mb-4" style="color:var(--by-ink);">Change password</h2>
+
+    <div class="space-y-3">
+      <div>
+        <label class="by-eyebrow mb-1 block">Current password</label>
+        <input id="s-pw-current" type="password" autocomplete="current-password"
+               class="w-full px-3 py-2 text-sm rounded"
+               style="background:var(--by-bg-2); border:var(--by-bd-thick); color:var(--by-ink);" />
+      </div>
+      <div>
+        <label class="by-eyebrow mb-1 block">New password</label>
+        <input id="s-pw-new" type="password" autocomplete="new-password"
+               class="w-full px-3 py-2 text-sm rounded"
+               style="background:var(--by-bg-2); border:var(--by-bd-thick); color:var(--by-ink);" />
+      </div>
+      <div>
+        <label class="by-eyebrow mb-1 block">Confirm new password</label>
+        <input id="s-pw-confirm" type="password" autocomplete="new-password"
+               class="w-full px-3 py-2 text-sm rounded"
+               style="background:var(--by-bg-2); border:var(--by-bd-thick); color:var(--by-ink);" />
+      </div>
+    </div>
+
+    <div id="s-pw-status" class="hidden mt-2 text-xs"></div>
+
+    <button onclick="savePassword()"
+            class="mt-4 px-4 py-2 text-sm font-semibold rounded"
+            style="background:var(--by-yes); color:var(--by-ink); border:none; cursor:pointer;">
+      Update password
+    </button>
+  </div>
+
+</div>
+
+<script>
+async function saveProfile() {
+  const name = document.getElementById('s-name').value.trim();
+  const bio  = document.getElementById('s-bio').value.trim();
+  const st   = document.getElementById('s-profile-status');
+  try {
+    const res  = await fetch('/api/profile/update-self', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ full_name: name, bio }),
+    });
+    const data = await res.json();
+    st.textContent = data.ok ? 'Saved.' : (data.error || 'Error saving.');
+    st.style.color = data.ok ? 'var(--by-yes)' : 'var(--by-tomato)';
+    st.classList.remove('hidden');
+  } catch { st.textContent = 'Network error.'; st.style.color = 'var(--by-tomato)'; st.classList.remove('hidden'); }
+}
+
+async function savePassword() {
+  const cur  = document.getElementById('s-pw-current').value;
+  const nw   = document.getElementById('s-pw-new').value;
+  const conf = document.getElementById('s-pw-confirm').value;
+  const st   = document.getElementById('s-pw-status');
+  if (nw !== conf) {
+    st.textContent = 'New passwords do not match.';
+    st.style.color = 'var(--by-tomato)'; st.classList.remove('hidden'); return;
+  }
+  if (nw.length < 8) {
+    st.textContent = 'Password must be at least 8 characters.';
+    st.style.color = 'var(--by-tomato)'; st.classList.remove('hidden'); return;
+  }
+  try {
+    const res  = await fetch('/api/profile/change-password', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ current_password: cur, new_password: nw }),
+    });
+    const data = await res.json();
+    st.textContent = data.ok ? 'Password updated.' : (data.error || 'Could not update password.');
+    st.style.color = data.ok ? 'var(--by-yes)' : 'var(--by-tomato)';
+    st.classList.remove('hidden');
+    if (data.ok) { ['s-pw-current','s-pw-new','s-pw-confirm'].forEach(id => document.getElementById(id).value = ''); }
+  } catch { st.textContent = 'Network error.'; st.style.color = 'var(--by-tomato)'; st.classList.remove('hidden'); }
+}
+</script>
+{% endblock %}
