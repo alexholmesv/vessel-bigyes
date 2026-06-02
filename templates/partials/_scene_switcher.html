@@ -1,6 +1,6 @@
-{# Scene Switcher — shown only for Stage_Manager role_type users.
+{# Scene Switcher — shown only for Stage_Manager role_type users and owners.
    Dropdown button for the top navbar. Works in any layout.
-   Requires: is_sm_user, current_user_identity (injected by inject_nav_context). #}
+   Requires: is_sm_user, is_owner, current_user_identity (injected by inject_nav_context). #}
 {% if is_sm_user %}
 <div class="relative" id="by-scene-wrap">
   <button id="by-scene-btn"
@@ -46,14 +46,29 @@
       <span style="margin-left:auto;font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">NOW</span>
       {% endif %}
     </a>
+    {% if is_owner %}
+    <a href="/switch-view/student" id="by-scene-student"
+       style="display:flex;align-items:center;gap:10px;padding:8px 12px 8px 12px;
+              font-family:var(--by-f-body);font-size:13px;text-decoration:none;
+              color:var(--by-ink-2);
+              {% if current_user_identity == 'student' %}font-weight:700;background:var(--by-bg-2);{% endif %}">
+      <span style="width:6px;height:6px;flex-shrink:0;background:var(--by-yes);"></span>
+      Student View
+      {% if current_user_identity == 'student' %}
+      <span style="margin-left:auto;font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">NOW</span>
+      {% endif %}
+    </a>
+    {% endif %}
   </div>
 </div>
 <script>
 (function(){
   var studio   = document.getElementById('by-scene-studio');
   var ensemble = document.getElementById('by-scene-ensemble');
+  var student  = document.getElementById('by-scene-student');
   var studioBase   = studio   ? studio.style.background   : '';
   var ensembleBase = ensemble ? ensemble.style.background : '';
+  var studentBase  = student  ? student.style.background  : '';
   if (studio) {
     studio.onmouseover = function(){ this.style.background = 'var(--by-bg-2)'; };
     studio.onmouseout  = function(){ this.style.background = studioBase; };
@@ -61,6 +76,10 @@
   if (ensemble) {
     ensemble.onmouseover = function(){ this.style.background = 'var(--by-bg-2)'; };
     ensemble.onmouseout  = function(){ this.style.background = ensembleBase; };
+  }
+  if (student) {
+    student.onmouseover = function(){ this.style.background = 'var(--by-bg-2)'; };
+    student.onmouseout  = function(){ this.style.background = studentBase; };
   }
   document.addEventListener('click', function(e){
     var wrap = document.getElementById('by-scene-wrap');
