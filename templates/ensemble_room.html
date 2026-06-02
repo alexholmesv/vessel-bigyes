@@ -806,7 +806,8 @@
 
 <!-- ═══════════════════════════════════════════════════ DATA ═══ -->
 <script>
-  const CLASSES = {{ classes_json | safe }};
+  const CLASSES      = {{ classes_json | safe }};
+  const ALL_STUDENTS = {{ all_students_json | default('[]') | safe }};
 </script>
 
 
@@ -904,7 +905,8 @@
   $('#classStrip').addEventListener('click', e => {
     const card = e.target.closest('.class-card');
     if (!card) return;
-    selectClass(card.dataset.id);
+    selectClass(card.dataset.id);   // keep existing roster panel in sync
+    openClassModal(card.dataset.id); // open the slide-in detail modal
   });
 
   // ── Roster ─────────────────────────────────────────────────────────────
@@ -1778,6 +1780,490 @@
 {% include 'partials/_user_config_modal.html' %}
 {% include 'partials/_forced_pw_modal.html' %}
 {% include 'partials/_inbox_modal.html' %}
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CLASS DETAIL MODAL  — slides in from the right
+══════════════════════════════════════════════════════════════════ -->
+<div id="classModal" aria-modal="true" role="dialog"
+     style="display:none;position:fixed;inset:0;z-index:400;">
+  <!-- Overlay -->
+  <div id="classModalOverlay"
+       style="position:absolute;inset:0;background:rgba(20,18,16,.45);"
+       onclick="closeClassModal()"></div>
+
+  <!-- Panel -->
+  <div id="classModalPanel"
+       style="position:absolute;top:0;right:0;height:100%;width:100%;max-width:480px;
+              background:var(--by-bg);border-left:var(--by-bd-thick);
+              box-shadow:-6px 0 24px rgba(0,0,0,.18);
+              display:flex;flex-direction:column;overflow:hidden;
+              transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);">
+
+    <!-- Modal header -->
+    <header style="padding:18px 20px 14px;border-bottom:var(--by-bd-thick);background:var(--by-bg);flex-shrink:0;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div id="cmEyebrow" style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);margin-bottom:4px;">Class</div>
+          <h2 id="cmTitle" style="font-family:var(--by-f-display);font-size:22px;line-height:1.1;color:var(--by-ink);margin:0;"></h2>
+          <div id="cmMeta" style="margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-3);"></div>
+        </div>
+        <button onclick="closeClassModal()"
+                style="flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+                       border:var(--by-bd-thick);background:var(--by-bg);cursor:pointer;color:var(--by-ink-3);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Tab strip -->
+      <div style="display:flex;gap:2px;margin-top:14px;">
+        <button id="cmTabStudents" onclick="cmSetTab('students')"
+                style="flex:1;padding:7px 0;font-family:var(--by-f-body);font-size:12.5px;font-weight:600;
+                       border:var(--by-bd-thick);cursor:pointer;transition:background 120ms;">
+          Students (<span id="cmStudentCount">0</span>)
+        </button>
+        <button id="cmTabChallenge" onclick="cmSetTab('challenge')"
+                style="flex:1;padding:7px 0;font-family:var(--by-f-body);font-size:12.5px;font-weight:600;
+                       border:var(--by-bd-thick);cursor:pointer;transition:background 120ms;">
+          Challenge
+        </button>
+      </div>
+    </header>
+
+    <!-- Tab: Students -->
+    <div id="cmPanelStudents" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+
+      <!-- Action bar -->
+      <div style="padding:12px 16px;border-bottom:1px solid var(--by-bg-3);display:flex;align-items:center;gap:8px;flex-shrink:0;background:var(--by-bg-2);">
+        <button onclick="cmMsgAll()"
+                style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:var(--by-bd-thick);
+                       background:var(--by-bg);font-family:var(--by-f-body);font-size:12px;font-weight:600;
+                       cursor:pointer;color:var(--by-ink);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message All
+        </button>
+        <button onclick="cmToggleAddStudent()"
+                style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:var(--by-bd-thick);
+                       background:var(--by-yes);font-family:var(--by-f-body);font-size:12px;font-weight:600;
+                       cursor:pointer;color:var(--by-ink);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Add Student
+        </button>
+      </div>
+
+      <!-- Add-student search (hidden by default) -->
+      <div id="cmAddStudentBox" style="display:none;padding:12px 16px;border-bottom:1px solid var(--by-bg-3);background:var(--by-bg);flex-shrink:0;">
+        <input id="cmStudentSearch" type="text" placeholder="Search by name…"
+               oninput="cmFilterAddList(this.value)"
+               style="width:100%;padding:8px 12px;border:var(--by-bd-thick);background:var(--by-bg);
+                      font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);outline:none;box-sizing:border-box;"/>
+        <div id="cmAddList" style="margin-top:8px;max-height:180px;overflow-y:auto;border:1px solid var(--by-bg-3);"></div>
+      </div>
+
+      <!-- Student list -->
+      <div id="cmStudentList" style="flex:1;overflow-y:auto;"></div>
+    </div>
+
+    <!-- Tab: Challenge -->
+    <div id="cmPanelChallenge" style="flex:1;overflow-y:auto;display:none;flex-direction:column;padding:20px 16px;gap:16px;">
+
+      <div style="font-family:var(--by-f-display);font-size:16px;color:var(--by-ink);">Deploy Challenge</div>
+
+      <!-- Difficulty selector -->
+      <div>
+        <div style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);margin-bottom:8px;">Difficulty</div>
+        <div style="display:flex;gap:6px;">
+          <button data-diff="easy"   onclick="cmSelectDiff(this)"
+                  class="cm-diff-btn" style="flex:1;padding:9px 4px;border:var(--by-bd-thick);font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;background:var(--by-bg);color:var(--by-ink);">Easy</button>
+          <button data-diff="medium" onclick="cmSelectDiff(this)"
+                  class="cm-diff-btn cm-diff-active" style="flex:1;padding:9px 4px;border:var(--by-bd-thick);font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;background:var(--by-yes);color:var(--by-ink);">Medium</button>
+          <button data-diff="hard"   onclick="cmSelectDiff(this)"
+                  class="cm-diff-btn" style="flex:1;padding:9px 4px;border:var(--by-bd-thick);font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;background:var(--by-bg);color:var(--by-ink);">Hard</button>
+        </div>
+      </div>
+
+      <!-- Prompt -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);">Prompt</div>
+          <button onclick="cmShufflePrompt()"
+                  style="font-family:var(--by-f-body);font-size:11.5px;color:var(--by-ink-3);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;">
+            Shuffle
+          </button>
+        </div>
+        <textarea id="cmPromptText" rows="3"
+                  style="width:100%;padding:10px 12px;border:var(--by-bd-thick);background:var(--by-bg);
+                         font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);
+                         outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;"></textarea>
+      </div>
+
+      <!-- Deploy -->
+      <button id="cmDeployBtn" onclick="cmDeployChallenge()"
+              style="width:100%;padding:11px;border:var(--by-bd-thick);
+                     background:var(--by-ink);color:var(--by-bg);
+                     font-family:var(--by-f-body);font-size:13px;font-weight:700;
+                     cursor:pointer;letter-spacing:.04em;box-shadow:var(--by-sh-1);">
+        Deploy to Class
+      </button>
+
+      <!-- View responses -->
+      <button id="cmViewResponsesBtn" onclick="cmOpenResponses()"
+              style="width:100%;padding:10px;border:var(--by-bd-thick);
+                     background:var(--by-bg);color:var(--by-ink);
+                     font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;">
+        View Responses (<span id="cmRespCount">…</span>)
+      </button>
+
+      <div id="cmChallengeStatus" style="font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-3);min-height:18px;text-align:center;"></div>
+    </div>
+
+  </div><!-- /panel -->
+</div><!-- /classModal -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     RESPONSES SUBMODAL  — overlays the class modal without closing it
+══════════════════════════════════════════════════════════════════ -->
+<div id="responsesModal" aria-modal="true" role="dialog"
+     style="display:none;position:fixed;inset:0;z-index:500;">
+  <div style="position:absolute;inset:0;background:rgba(20,18,16,.3);"
+       onclick="cmCloseResponses()"></div>
+
+  <div style="position:absolute;top:0;right:0;height:100%;width:100%;max-width:380px;
+              background:var(--by-bg);border-left:var(--by-bd-thick);
+              box-shadow:-4px 0 16px rgba(0,0,0,.2);
+              display:flex;flex-direction:column;overflow:hidden;">
+
+    <header style="padding:16px 18px;border-bottom:var(--by-bd-thick);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);">Challenge</div>
+        <div id="respSubPrompt" style="font-family:var(--by-f-display);font-size:15px;color:var(--by-ink);margin-top:2px;line-height:1.3;"></div>
+      </div>
+      <button onclick="cmCloseResponses()"
+              style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+                     border:var(--by-bd-thick);background:var(--by-bg);cursor:pointer;flex-shrink:0;color:var(--by-ink-3);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+
+    <div id="respSubList" style="flex:1;overflow-y:auto;padding:4px 0;"></div>
+
+    <footer style="padding:12px 18px;border-top:1px solid var(--by-bg-3);flex-shrink:0;">
+      <div id="respSubEmpty" style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-3);text-align:center;display:none;">
+        No responses yet. Students haven't submitted yet.
+      </div>
+    </footer>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CLASS MODAL  JS
+══════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+  const $  = id => document.getElementById(id);
+  function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  /* ── State ──────────────────────────────────────────────────────── */
+  let _cmClass = null;   // current class object
+  let _cmTab   = 'students';
+  let _cmDiff  = 'medium';
+  let _addOpen = false;
+
+  const PROMPTS = [
+    'Perform a two-minute scene using only questions.',
+    'Create a scene set entirely in slow motion.',
+    'Two characters who can only speak in rhymes.',
+    'A scene where every line starts with the next letter of the alphabet.',
+    'Perform a dramatic scene about something mundane (e.g., losing a sock).',
+    'A scene where both characters are secretly in love but cannot admit it.',
+    'Play an entire scene backwards — start at the end and work to the beginning.',
+    'One character speaks only in clichés; the other must respond naturally.',
+    'Recreate a famous movie scene but set it in a laundromat.',
+    'A scene where every time a specific word is said, the action freezes.',
+    'Improvise a song about a random audience suggestion.',
+    'A scene told simultaneously from two different timelines.',
+    'One character can only communicate through movement, the other only through sound.',
+    'A scene where the stakes keep getting absurdly higher every 30 seconds.',
+  ];
+
+  /* ── Open / Close ───────────────────────────────────────────────── */
+  window.openClassModal = function(classId) {
+    const cls = CLASSES.find(c => c.id === classId);
+    if (!cls) return;
+    _cmClass = cls;
+    _addOpen = false;
+
+    // Header
+    $('cmTitle').textContent = cls.title;
+    $('cmEyebrow').textContent = cls.status === 'active' ? 'Active Class' : cls.status === 'past' ? 'Past Class' : 'Class';
+    $('cmMeta').innerHTML =
+      `<span>${esc(cls.sched || '—')}</span>` +
+      `<span style="color:var(--by-bg-3);">·</span>` +
+      `<span>${esc(cls.term || '')}</span>` +
+      `<span style="color:var(--by-bg-3);">·</span>` +
+      `<span><b>${cls.students.length}</b>/<span style="color:var(--by-ink-4);">${cls.cap}</span> enrolled</span>`;
+
+    cmSetTab('students');
+    cmRenderStudents();
+    cmLoadResponses(false); // quietly pre-fetch response count
+
+    // Animate in
+    const modal = $('classModal');
+    modal.style.display = 'block';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        $('classModalPanel').style.transform = 'translateX(0)';
+      });
+    });
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeClassModal = function() {
+    $('classModalPanel').style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      $('classModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }, 280);
+    cmCloseResponses();
+  };
+
+  /* ── Tabs ───────────────────────────────────────────────────────── */
+  window.cmSetTab = function(tab) {
+    _cmTab = tab;
+    const active = 'background:var(--by-yes);color:var(--by-ink);';
+    const idle   = 'background:var(--by-bg);color:var(--by-ink-2);';
+    $('cmTabStudents').style.cssText  += tab === 'students'  ? active : idle;
+    $('cmTabChallenge').style.cssText += tab === 'challenge' ? active : idle;
+    $('cmPanelStudents').style.display  = tab === 'students'  ? 'flex' : 'none';
+    $('cmPanelChallenge').style.display = tab === 'challenge' ? 'flex' : 'none';
+    if (tab === 'challenge') cmShufflePromptIfEmpty();
+  };
+
+  /* ── Student list ───────────────────────────────────────────────── */
+  function tintStr(t) {
+    if (!t) return '#FBBF24,#F472B6';
+    return Array.isArray(t) ? t.join(',') : t;
+  }
+
+  function cmRenderStudents() {
+    if (!_cmClass) return;
+    const list = _cmClass.students;
+    $('cmStudentCount').textContent = list.length;
+    $('cmStudentList').innerHTML = list.length === 0
+      ? `<div style="padding:32px 20px;text-align:center;font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-3);">No students enrolled. Use <b>Add Student</b> above.</div>`
+      : list.map(s => {
+          const t = tintStr(s.tint);
+          return `
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--by-bg-3);">
+            <div style="width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+                        background:linear-gradient(135deg,${t});border:1.5px solid var(--by-ink);
+                        font-family:var(--by-f-mono);font-size:11px;font-weight:700;color:var(--by-ink);">
+              ${esc(s.initials)}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:var(--by-f-body);font-size:13.5px;font-weight:600;color:var(--by-ink);truncate;">${esc(s.name)}</div>
+              <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);">${esc(s.identity)} · ${s.pts} pts</div>
+            </div>
+            <div style="display:flex;gap:4px;flex-shrink:0;">
+              <button onclick="cmMsgOne(${JSON.stringify(s.id)},${JSON.stringify(s.name)})"
+                      title="Message ${esc(s.name)}"
+                      style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+                             border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-ink-3);">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </button>
+              <button onclick="cmRemoveStudent(${JSON.stringify(s.id)},${JSON.stringify(s.name)})"
+                      title="Remove from class"
+                      style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+                             border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-tomato);">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>`;
+        }).join('');
+
+    // Rebuild add-list (non-enrolled members)
+    cmFilterAddList($('cmStudentSearch')?.value || '');
+  }
+
+  /* ── Add student ────────────────────────────────────────────────── */
+  window.cmToggleAddStudent = function() {
+    _addOpen = !_addOpen;
+    $('cmAddStudentBox').style.display = _addOpen ? 'block' : 'none';
+    if (_addOpen) { cmFilterAddList(''); $('cmStudentSearch').focus(); }
+  };
+
+  window.cmFilterAddList = function(q) {
+    if (!_cmClass) return;
+    const enrolled = new Set(_cmClass.students.map(s => s.id));
+    const results  = ALL_STUDENTS.filter(s =>
+      !enrolled.has(s.id) &&
+      (s.name.toLowerCase().includes(q.toLowerCase()) || !q)
+    ).slice(0, 12);
+
+    $('cmAddList').innerHTML = results.length === 0
+      ? `<div style="padding:10px 12px;font-family:var(--by-f-body);font-size:12.5px;color:var(--by-ink-3);">${q ? 'No matches.' : 'All members already enrolled.'}</div>`
+      : results.map(s => `
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--by-bg-3);cursor:pointer;background:var(--by-bg);"
+               onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'"
+               onclick="cmAddStudent(${JSON.stringify(s.id)},${JSON.stringify(s.name)})">
+            <div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);flex:1;">${esc(s.name)}</div>
+            <div style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-3);">${esc(s.identity)}</div>
+          </div>`).join('');
+  };
+
+  window.cmAddStudent = async function(studentId, studentName) {
+    if (!_cmClass) return;
+    try {
+      const res  = await fetch('/api/class/enroll', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ class_id: _cmClass.id, student_id: studentId }),
+      });
+      const data = await res.json();
+      if (!data.ok && !data.already_enrolled) { alert(`Could not add ${studentName}`); return; }
+
+      // Update local state
+      const s = ALL_STUDENTS.find(x => x.id === studentId);
+      if (s && !_cmClass.students.some(x => x.id === s.id)) {
+        _cmClass.students.push(s);
+        // Sync back to CLASSES array
+        const ci = CLASSES.findIndex(c => c.id === _cmClass.id);
+        if (ci >= 0) CLASSES[ci].students = _cmClass.students;
+      }
+      cmRenderStudents();
+      $('cmStudentSearch').value = '';
+    } catch { alert('Network error.'); }
+  };
+
+  window.cmRemoveStudent = async function(studentId, studentName) {
+    if (!_cmClass) return;
+    if (!confirm(`Remove ${studentName} from "${_cmClass.title}"?`)) return;
+    try {
+      const res  = await fetch('/api/class/unenroll', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ user_id: studentId, class_id: _cmClass.id }),
+      });
+      const data = await res.json();
+      if (!data.ok) { alert('Could not remove student.'); return; }
+
+      _cmClass.students = _cmClass.students.filter(s => s.id !== studentId);
+      const ci = CLASSES.findIndex(c => c.id === _cmClass.id);
+      if (ci >= 0) CLASSES[ci].students = _cmClass.students;
+      cmRenderStudents();
+    } catch { alert('Network error.'); }
+  };
+
+  /* ── Messaging ──────────────────────────────────────────────────── */
+  window.cmMsgAll = function() {
+    if (!_cmClass || !_cmClass.students.length) {
+      alert('No students enrolled in this class.');
+      return;
+    }
+    const names = _cmClass.students.map(s => s.name).join(', ');
+    alert(`[Messaging stub]\nWould send to ${_cmClass.students.length} student(s):\n${names}`);
+  };
+
+  window.cmMsgOne = function(studentId, studentName) {
+    alert(`[Messaging stub]\nWould open message thread with: ${studentName}`);
+  };
+
+  /* ── Challenge ──────────────────────────────────────────────────── */
+  window.cmSelectDiff = function(btn) {
+    _cmDiff = btn.dataset.diff;
+    document.querySelectorAll('.cm-diff-btn').forEach(b => {
+      b.style.background = b === btn ? 'var(--by-yes)' : 'var(--by-bg)';
+    });
+  };
+
+  function cmShufflePromptIfEmpty() {
+    const ta = $('cmPromptText');
+    if (!ta.value.trim()) cmShufflePrompt();
+  }
+
+  window.cmShufflePrompt = function() {
+    const ta = $('cmPromptText');
+    const current = ta.value;
+    let pick;
+    do { pick = PROMPTS[Math.floor(Math.random() * PROMPTS.length)]; } while (pick === current && PROMPTS.length > 1);
+    ta.value = pick;
+  };
+
+  window.cmDeployChallenge = async function() {
+    if (!_cmClass) return;
+    const prompt = $('cmPromptText').value.trim();
+    if (!prompt) { alert('Enter a prompt first.'); return; }
+    const btn = $('cmDeployBtn');
+    btn.textContent = 'Deploying…';
+    btn.disabled = true;
+    try {
+      const res  = await fetch('/api/challenge/deploy', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ class_id: _cmClass.id, difficulty: _cmDiff, prompt }),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Failed');
+      $('cmChallengeStatus').textContent = `✓ Deployed to ${_cmClass.students.length} students (${_cmDiff})`;
+      $('cmChallengeStatus').style.color = '#2A8A4F';
+    } catch (e) {
+      $('cmChallengeStatus').textContent = `Error: ${e.message}`;
+      $('cmChallengeStatus').style.color = 'var(--by-tomato)';
+    } finally {
+      btn.textContent = 'Deploy to Class';
+      btn.disabled = false;
+      cmLoadResponses(false);
+    }
+  };
+
+  /* ── Responses ──────────────────────────────────────────────────── */
+  async function cmLoadResponses(showSubmodal) {
+    if (!_cmClass) return;
+    try {
+      const res  = await fetch(`/api/class/${_cmClass.id}/responses`);
+      const data = await res.json();
+      const count = data.responses ? data.responses.length : 0;
+      $('cmRespCount').textContent = count;
+
+      if (showSubmodal) {
+        // Render submodal
+        const prompt = data.challenge ? data.challenge.prompt : '—';
+        $('respSubPrompt').textContent = prompt.length > 60 ? prompt.slice(0,57)+'…' : prompt;
+
+        if (!data.responses || !data.responses.length) {
+          $('respSubList').innerHTML = '';
+          $('respSubEmpty').style.display = 'block';
+        } else {
+          $('respSubEmpty').style.display = 'none';
+          $('respSubList').innerHTML = data.responses.map(r => `
+            <div style="padding:12px 18px;border-bottom:1px solid var(--by-bg-3);">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);">${esc(r.student_name)}</div>
+                <div style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">${esc(r.submitted_at ? r.submitted_at.slice(0,16).replace('T',' ') : '')}</div>
+              </div>
+              <div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-2);line-height:1.5;">${esc(r.response_text)}</div>
+            </div>`).join('');
+        }
+        $('responsesModal').style.display = 'block';
+      }
+    } catch { $('cmRespCount').textContent = '—'; }
+  }
+
+  window.cmOpenResponses = function() { cmLoadResponses(true); };
+
+  window.cmCloseResponses = function() {
+    $('responsesModal').style.display = 'none';
+    // classModal stays open — no changes needed
+  };
+
+  /* ── Keyboard: Escape closes submodal first, then main modal ── */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if ($('responsesModal').style.display !== 'none') { cmCloseResponses(); return; }
+    if ($('classModal').style.display !== 'none')     { closeClassModal();  return; }
+  });
+
+})();
+</script>
 
 </body>
 </html>
