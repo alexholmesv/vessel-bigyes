@@ -477,15 +477,16 @@
   </div>
   <div class="px-3 py-3">
     <a href="/" class="nav-item{% if not show_section and not show_roster %} active{% endif %}" onclick="toggleMobDrawer()">Dashboard</a>
-    <a href="/performers" class="nav-item{% if show_roster %} active{% endif %}" onclick="toggleMobDrawer()">Roster</a>
+    <a href="/performers" class="nav-item{% if show_roster %} active{% endif %}" onclick="toggleMobDrawer()">Performers</a>
     <a href="/backstage/shows" class="nav-item{% if show_section == 'shows_bookings' %} active{% endif %}" onclick="toggleMobDrawer()">Shows &amp; Bookings</a>
-    <a href="/classes" class="nav-item" onclick="toggleMobDrawer()">Classes &amp; Cohorts</a>
+    <a href="/classes" class="nav-item{% if '/classes' in request.path %} active{% endif %}" onclick="toggleMobDrawer()">Classes &amp; Cohorts</a>
     <div class="by-eyebrow px-2 pt-4 pb-1">Backstage</div>
     <a href="/backstage/scene-library" class="nav-item{% if show_section == 'scene_library' %} active{% endif %}" onclick="toggleMobDrawer()">Scene Library</a>
-    <a href="/backstage/reports" class="nav-item{% if show_section == 'reports' %} active{% endif %}" onclick="toggleMobDrawer()">Reports</a>
-    <a href="/backstage/activity-log" class="nav-item" onclick="toggleMobDrawer()">Activity Log</a>
     {% if can_view_finances %}
-    <a href="/backstage/finances" class="nav-item" style="color:var(--by-yes-deep); font-weight:700;">Finances ✦</a>
+    <a href="/backstage/activity-log" class="nav-item{% if show_section == 'activity_log' %} active{% endif %}" onclick="toggleMobDrawer()">Activity Log</a>
+    <a href="/backstage/callboard" class="nav-item{% if show_section == 'callboard' %} active{% endif %}" onclick="toggleMobDrawer()">Callboard</a>
+    <a href="/backstage/finances" class="nav-item{% if show_section == 'finances' %} active{% endif %}" style="color:var(--by-yes-deep); font-weight:700;" onclick="toggleMobDrawer()">Finances ✦</a>
+    <a href="/backstage/reports" class="nav-item{% if show_section == 'reports' %} active{% endif %}" onclick="toggleMobDrawer()">Reports</a>
     {% endif %}
     <div class="by-eyebrow px-2 pt-4 pb-1">Switch role</div>
     <a href="/switch-role/teacher" class="nav-item">Teacher</a>
@@ -516,19 +517,19 @@
           <!-- Add class -->
           <button onclick="openModal('modal-add-class')"
                   title="Add class"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
+                  class="btn-ghost flex h-9 px-3 text-[13px] items-center gap-2"
                   style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
-            Add class
+            <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
+            <span class="hidden sm:inline">Add class</span>
           </button>
 
           <!-- Add show -->
           <button onclick="openModal('modal-add-show')"
                   title="Add show"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
+                  class="btn-ghost flex h-9 px-3 text-[13px] items-center gap-2"
                   style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
-            Add show
+            <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
+            <span class="hidden sm:inline">Add show</span>
           </button>
 
           <!-- Add performer -->
@@ -536,8 +537,8 @@
                   title="Add performer"
                   class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2"
                   style="border:var(--by-bd-thick); background:var(--by-yes); color:var(--by-ink); font-family:var(--by-f-sans); font-weight:800; letter-spacing:0.02em; text-transform:uppercase;">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
-            <span class="hidden lg:inline">Add performer</span>
+            <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="hidden sm:inline">Add performer</span>
           </button>
 
           <!-- Scene switcher -->
@@ -559,12 +560,12 @@
                 {{ current_user_initials }}
               </span>
               <!-- Name + role -->
-              <div class="hidden lg:block leading-tight text-left">
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
+              <div class="hidden sm:block leading-tight text-left min-w-0 max-w-[120px]">
+                <div class="truncate" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
                 <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C544A;margin-top:1px;">Stage Manager</div>
               </div>
-              <!-- Solid red live-status badge -->
-              <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full"
+              <!-- Live-status badge — always visible -->
+              <span class="flex flex-shrink-0 items-center justify-center rounded-full"
                     style="width:8px;height:8px;background:#E5482A;box-shadow:0 0 0 2px #fff,0 0 0 3px #E5482A;"></span>
             </button>
             <!-- Dropdown -->
@@ -1228,6 +1229,13 @@
           <input type="email" id="new-person-email" placeholder="ana@bigyes.local"
             class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
         </div>
+      </div>
+
+      <!-- Initial Password -->
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Password</label>
+        <input type="password" id="new-person-password" name="password" placeholder="Initial passphrase" required
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
       </div>
 
       <!-- Role Type (primary identity — 4 cards) -->
@@ -2969,7 +2977,9 @@
     const init = document.getElementById('cfg-av-init');
     const lbl  = document.getElementById('cfg-av-label');
     if (_cfgAvatarMode === 'gradient') {
-      const t = NAV_TINTS[_cfgTintIndex];
+      /* guard: _cfgTintIndex may be stale/out-of-range on the shows view */
+      const t = NAV_TINTS[_cfgTintIndex] ?? NAV_TINTS[0];
+      if (!t) return;
       init.style.background = `linear-gradient(135deg,${t[0]},${t[1]})`;
       init.style.display = '';
       img.src = ''; img.style.display = 'none';
@@ -3454,6 +3464,9 @@
     const roleType = document.getElementById('new-person-role-type').value || 'Patron';
     const finEl    = document.getElementById('new-person-fin');
     const canViewFinances = finEl ? finEl.checked : false;
+    // Forward the initial passphrase so the backend can bcrypt-hash it and write
+    // it to persons.password_hash. Omitting it falls back to VESSEL_INIT_PASSPHRASE.
+    const password = (document.getElementById('new-person-password')?.value || '').trim() || undefined;
 
     if (!name || !email) {
       showFeedback('add-person-status', 'Name and email are both required.', 'error');
@@ -3464,7 +3477,7 @@
       const res  = await fetch('/api/person/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, identity, role_type: roleType }),
+        body: JSON.stringify({ name, email, identity, role_type: roleType, password }),
       });
       const data = await res.json();
 
@@ -3726,19 +3739,19 @@
 
 <!-- Bottom tab bar (hidden lg+) -->
 <nav class="by-mob-tabs">
-  <a href="/" class="active">
+  <a href="/" class="{% if not show_section and not show_roster %}active{% endif %}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
     Stage
   </a>
-  <a href="/performers">
+  <a href="/performers" class="{% if show_roster %}active{% endif %}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5"/></svg>
-    Roster
+    Performers
   </a>
-  <a href="#shows-section">
+  <a href="/backstage/shows" class="{% if show_section == 'shows_bookings' %}active{% endif %}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
     Shows
   </a>
-  <a href="/classes">
+  <a href="/classes" class="{% if '/classes' in request.path %}active{% endif %}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
     Classes
   </a>
