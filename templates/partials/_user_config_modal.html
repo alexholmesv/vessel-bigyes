@@ -265,7 +265,9 @@
     const init = document.getElementById('cfg-av-init');
     const lbl  = document.getElementById('cfg-av-label');
     if (_cfgAvatarMode === 'gradient') {
-      const t = NAV_TINTS[_cfgTintIndex];
+      /* guard: _cfgTintIndex may be stale/out-of-range on the shows view */
+      const t = NAV_TINTS[_cfgTintIndex] ?? NAV_TINTS[0];
+      if (!t) return;
       init.style.background = `linear-gradient(135deg,${t[0]},${t[1]})`;
       init.style.display = '';
       img.src = ''; img.style.display = 'none';
