@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="{{ vessel_current_locale | default('en') }}" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -229,6 +229,30 @@
         <nav class="hidden md:flex items-center gap-1">
           {% block nav_links %}{% endblock %}
         </nav>
+
+        {# ── Locale Switcher — hidden unless allow_multilang rune is active ── #}
+        {% if vessel_allow_multilang and vessel_supported_locales %}
+        <form action="/set-locale" method="get" style="display:inline-flex; align-items:center;">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <div style="position:relative; display:inline-flex; align-items:center;">
+            <svg style="position:absolute;left:8px;pointer-events:none;opacity:.55;width:13px;height:13px;"
+                 viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="8" cy="8" r="6.5"/>
+              <path d="M8 1.5C6.2 3.5 5.2 5.6 5.2 8s1 4.5 2.8 6.5M8 1.5C9.8 3.5 10.8 5.6 10.8 8s-1 4.5-2.8 6.5M1.5 8h13" fill="none"/>
+            </svg>
+            <select name="locale" onchange="this.form.submit()" title="Switch language"
+                    style="padding:5px 28px 5px 26px; border:var(--by-bd-thick);
+                           background:var(--by-bg); color:var(--by-ink);
+                           font-family:var(--by-f-mono); font-size:10px;
+                           letter-spacing:.1em; text-transform:uppercase;
+                           cursor:pointer; appearance:none; -webkit-appearance:none;">
+              {% for code in vessel_supported_locales %}
+              <option value="{{ code }}" {% if vessel_current_locale == code %}selected{% endif %}>{{ code | upper }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </form>
+        {% endif %}
 
         <!-- Inbox Icon -->
         {% include 'partials/_inbox_btn.html' %}
