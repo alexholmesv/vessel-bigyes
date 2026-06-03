@@ -231,7 +231,7 @@
         </nav>
 
         {# ── Locale Switcher — hidden unless allow_multilang rune is active ── #}
-        {% if vessel_allow_multilang and vessel_supported_locales %}
+        {% if vessel_allow_multilang %}
         <form action="/set-locale" method="get" style="display:inline-flex; align-items:center;">
           <input type="hidden" name="next" value="{{ request.path }}">
           <div style="position:relative; display:inline-flex; align-items:center;">
