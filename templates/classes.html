@@ -817,6 +817,7 @@
         </div>
 
         {# Vertical class card list #}
+        <div id="by-undo-classes"></div>
         <div id="classes-grid" class="flex flex-col gap-2">
 
           {# ── Group header: On Stage ── #}
@@ -2625,37 +2626,158 @@
 </div>
 
 <script>
-/* ── Bulk selection engine (classes.html) ───────────────────────────────── */
+/* ── Bulk selection + persistent undo engine (classes.html) ─────────────── */
 (function () {
-  // Tracks selected IDs per entity type: { class: Set, member: Set, show: Set }
+
+  const LS_KEY = 'by_pending_deletes_v2';
+
+  function _getBatches() {
+    try {
+      const all = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+      const now = new Date().toISOString();
+      return all.filter(b => b.restorable_until > now);
+    } catch { return []; }
+  }
+
+  function _saveBatches(batches) {
+    try {
+      const now = new Date().toISOString();
+      localStorage.setItem(LS_KEY, JSON.stringify(batches.filter(b => b.restorable_until > now)));
+    } catch {}
+  }
+
+  function _addBatch(entity_type, ids) {
+    const batches = _getBatches();
+    batches.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      entity_type, ids, count: ids.length,
+      restorable_until: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+    });
+    _saveBatches(batches);
+  }
+
+  function _removeBatch(batchId) {
+    _saveBatches(_getBatches().filter(b => b.id !== batchId));
+  }
+
+  const _COPY = {
+    class: (n) => ({
+      icon: '📋',
+      headline: `${n} class${n===1?'':'es'} frozen mid-warm-up`,
+      sub: n===1
+        ? "The instructor is standing there mid-stretch. Nobody said 'scene'."
+        : "Multiple cohorts are stuck in a silent status game — because you deleted them.",
+      btn: "Resume the Warm-Up!",
+    }),
+    member: (n) => ({
+      icon: '🎭', headline: `${n} performer${n===1?'':'s'} waiting in the wings`,
+      sub: "They're backstage in full costume with nowhere to go.",
+      btn: "Yes, And… Bring Them Back!",
+    }),
+    show: (n) => ({
+      icon: '🎟️', headline: `${n} show${n===1?'':'s'} playing to an empty house`,
+      sub: "The stage is set. The spotlight is on. Nobody is there.",
+      btn: "Uncancel the Show!",
+    }),
+  };
+
+  function _timeLeft(iso) {
+    const ms = new Date(iso) - Date.now();
+    if (ms <= 0) return 'expired';
+    const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
+    return h >= 1 ? `${h}h ${m}m left` : `${m}m left`;
+  }
+
+  function _renderContainer(containerId, entityType) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const batches = _getBatches().filter(b => b.entity_type === entityType);
+    if (!batches.length) { el.innerHTML = ''; return; }
+    el.innerHTML = batches.map(b => {
+      const copy = (_COPY[b.entity_type] || _COPY.class)(b.count);
+      return `
+      <div class="by-undo-batch" data-batch="${b.id}"
+        style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;margin-bottom:4px;
+               border:1.5px solid var(--by-ink);background:var(--by-yes-soft);
+               box-shadow:3px 3px 0 0 var(--by-ink);">
+        <span style="font-size:20px;flex-shrink:0;line-height:1.3">${copy.icon}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:var(--by-f-display);font-size:13.5px;font-weight:900;
+                      text-transform:uppercase;letter-spacing:-.01em;color:var(--by-ink);line-height:1.2;">
+            ${copy.headline}
+          </div>
+          <div style="font-size:11.5px;color:var(--by-ink-3);margin-top:2px;line-height:1.4;">${copy.sub}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          <button onclick="undoBatch('${b.id}')"
+            style="padding:5px 12px;border:1.5px solid var(--by-ink);background:var(--by-ink);
+                   color:var(--by-yes);font-family:var(--by-f-body);font-size:11.5px;font-weight:700;
+                   cursor:pointer;white-space:nowrap;">
+            ${copy.btn}
+          </button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="by-undo-timer" data-until="${b.restorable_until}"
+              style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-3);">
+              ${_timeLeft(b.restorable_until)}
+            </span>
+            <button onclick="dismissBatch('${b.id}')"
+              style="background:transparent;border:none;color:var(--by-ink-3);cursor:pointer;
+                     font-size:14px;line-height:1;padding:0;" title="Dismiss">✕</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function _renderAll() {
+    _renderContainer('by-undo-classes', 'class');
+    _renderContainer('by-undo-members', 'member');
+    _renderContainer('by-undo-shows',   'show');
+  }
+
+  setInterval(() => {
+    document.querySelectorAll('.by-undo-timer').forEach(el => {
+      el.textContent = _timeLeft(el.dataset.until);
+    });
+    _renderAll();
+  }, 60000);
+
+  window.undoBatch = async function (batchId) {
+    const batch = _getBatches().find(b => b.id === batchId);
+    if (!batch) { _renderAll(); return; }
+    try {
+      const res  = await fetch('/api/bulk-restore', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ ids: batch.ids, entity_type: batch.entity_type }),
+      });
+      const data = await res.json();
+      if (data.ok) { _removeBatch(batchId); window.location.reload(); }
+      else if (typeof flashToast === 'function') flashToast(data.error || 'Undo failed.', 'error');
+    } catch { if (typeof flashToast === 'function') flashToast('Network error — try again.', 'error'); }
+  };
+
+  window.dismissBatch = function (batchId) { _removeBatch(batchId); _renderAll(); };
+
   const _sel = { 'class': new Set(), 'member': new Set(), 'show': new Set() };
-  let _lastDeleteMeta = null; // { entity_type, ids } stored for undo
 
   function updateFAB() {
     const total = [...Object.values(_sel)].reduce((s, st) => s + st.size, 0);
     const fab   = document.getElementById('bulk-fab');
     const lbl   = document.getElementById('bulk-fab-count');
     if (!fab) return;
-    if (total > 0) {
-      fab.classList.remove('hidden');
-      lbl.textContent = total + (total === 1 ? ' selected' : ' selected');
-    } else {
-      fab.classList.add('hidden');
-    }
+    if (total > 0) { fab.classList.remove('hidden'); lbl.textContent = total + ' selected'; }
+    else fab.classList.add('hidden');
   }
 
-  // Delegate checkbox changes from any .bulk-row-check on the page
   document.addEventListener('change', function (e) {
     const cb = e.target.closest('.bulk-row-check');
     if (!cb) return;
-    const entity = cb.dataset.entity;
-    const id     = cb.dataset.id;
+    const entity = cb.dataset.entity, id = cb.dataset.id;
     if (!entity || !id || !_sel[entity]) return;
     cb.checked ? _sel[entity].add(id) : _sel[entity].delete(id);
     updateFAB();
   });
 
-  // Select-all wiring (roster table in admin.html; not present here but safe to wire)
   document.addEventListener('change', function (e) {
     const sa = e.target.closest('.bulk-select-all');
     if (!sa) return;
@@ -2687,116 +2809,45 @@
 
   window.executeBulkDelete = async function () {
     closeImprovModal();
-    // Collect all selected by entity type and fire per-type API calls
-    const tasks = [];
-    const allIds = {};
+    const tasks = [], allIds = {};
     for (const [entity, ids] of Object.entries(_sel)) {
       if (!ids.size) continue;
       allIds[entity] = [...ids];
-      const endpoint = entity === 'class'  ? '/api/classes/bulk-delete'
-                     : entity === 'show'   ? '/api/shows/bulk-delete'
+      const endpoint = entity === 'class' ? '/api/classes/bulk-delete'
+                     : entity === 'show'  ? '/api/shows/bulk-delete'
                      : '/api/members/bulk-delete';
-      tasks.push(
-        fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ids: [...ids] }),
-        }).then(r => r.json())
-      );
+      tasks.push(fetch(endpoint, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ ids: [...ids] }),
+      }).then(r => r.json()));
     }
     if (!tasks.length) return;
     try {
       const results = await Promise.all(tasks);
-      const ok = results.every(r => r.ok);
-      if (ok) {
-        _lastDeleteMeta = allIds;
-        // Visually remove the deleted items
+      if (results.every(r => r.ok)) {
         for (const [entity, ids] of Object.entries(allIds)) {
+          _addBatch(entity, ids);
           ids.forEach(id => {
-            // Roster rows
             const tr = document.querySelector(`tr.roster-row[data-id="${id}"]`);
-            if (tr) tr.remove();
-            // Class cards
+            if (tr) { tr.style.transition='opacity .3s'; tr.style.opacity='0'; setTimeout(()=>tr.remove(),300); }
             const card = document.getElementById(`class-card-${id}`);
-            if (card) { card.style.transition = 'opacity .3s'; card.style.opacity = '0'; setTimeout(() => card.remove(), 300); }
-            // Show cards (bookings view)
+            if (card) { card.style.transition='opacity .3s'; card.style.opacity='0'; setTimeout(()=>card.remove(),300); }
             const showCard = document.querySelector(`[data-show-id="${id}"]`);
-            if (showCard) { showCard.style.transition = 'opacity .3s'; showCard.style.opacity = '0'; setTimeout(() => showCard.remove(), 300); }
+            if (showCard) { showCard.style.transition='opacity .3s'; showCard.style.opacity='0'; setTimeout(()=>showCard.remove(),300); }
           });
         }
         clearBulkSelection();
-        showUndoBanner(allIds);
+        _renderAll();
       } else {
         const err = results.find(r => !r.ok);
-        flashClassesToast(err?.error || 'Bulk delete failed — check console.', 'error');
+        if (typeof flashToast === 'function') flashToast(err?.error || 'Bulk delete failed.', 'error');
       }
-    } catch { flashClassesToast('Network error during bulk delete.', 'error'); }
+    } catch { if (typeof flashToast === 'function') flashToast('Network error during bulk delete.', 'error'); }
   };
 
-  function showUndoBanner(meta) {
-    /* Renders a dismissible undo flash bar at top of page. */
-    const existing = document.getElementById('undo-banner');
-    if (existing) existing.remove();
+  document.addEventListener('DOMContentLoaded', _renderAll);
+  if (document.readyState !== 'loading') _renderAll();
 
-    const total = Object.values(meta).reduce((s, ids) => s + ids.length, 0);
-    const banner = document.createElement('div');
-    banner.id = 'undo-banner';
-    banner.style.cssText = [
-      'position:fixed', 'top:16px', 'left:50%', 'transform:translateX(-50%)',
-      'z-index:9999', 'display:flex', 'align-items:center', 'gap:12px',
-      'padding:10px 20px', 'border:1.5px solid var(--by-ink)',
-      'background:var(--by-ink)', 'color:var(--by-yes)',
-      'font-family:var(--by-f-body)', 'font-size:13px', 'font-weight:600',
-      'box-shadow:4px 4px 0 0 var(--by-yes)', 'min-width:320px', 'white-space:nowrap',
-    ].join(';');
-    banner.innerHTML = `
-      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:var(--by-yes)"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-      <span>${total} scene${total === 1 ? '' : 's'} sent backstage — undo within 24 hours</span>
-      <button onclick="triggerUndo()" style="margin-left:8px;padding:4px 12px;border:1.5px solid var(--by-yes);background:transparent;color:var(--by-yes);font-weight:700;cursor:pointer;font-size:12px;">
-        Undo
-      </button>
-      <button onclick="document.getElementById('undo-banner').remove()" style="margin-left:4px;background:transparent;border:none;color:var(--by-yes);cursor:pointer;font-size:16px;line-height:1;">✕</button>`;
-
-    document.body.appendChild(banner);
-
-    // Auto-dismiss after 12 seconds
-    setTimeout(() => { if (banner.parentNode) banner.remove(); }, 12000);
-  }
-
-  window.triggerUndo = async function () {
-    if (!_lastDeleteMeta) return;
-    const banner = document.getElementById('undo-banner');
-    if (banner) banner.remove();
-    try {
-      const tasks = Object.entries(_lastDeleteMeta).map(([entity_type, ids]) =>
-        fetch('/api/bulk-restore', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ids, entity_type }),
-        }).then(r => r.json())
-      );
-      const results = await Promise.all(tasks);
-      if (results.every(r => r.ok)) {
-        _lastDeleteMeta = null;
-        // Reload to re-render restored rows (simplest safe approach)
-        window.location.reload();
-      } else {
-        flashClassesToast('Undo failed — the 24-hour window may have closed.', 'error');
-      }
-    } catch { flashClassesToast('Network error during undo.', 'error'); }
-  };
-
-  /* Minimal toast helper scoped to classes.html context */
-  function flashClassesToast(msg, cat) {
-    const el = document.createElement('div');
-    el.style.cssText = 'position:fixed;top:16px;right:16px;z-index:9999;padding:10px 16px;border:1.5px solid;font-size:13px;font-family:var(--by-f-body);max-width:340px;';
-    el.style.background = 'var(--by-bg)';
-    el.style.borderColor = cat === 'error' ? 'var(--by-tomato)' : 'var(--by-ink)';
-    el.style.color       = cat === 'error' ? 'var(--by-tomato)' : 'var(--by-ink)';
-    el.textContent = msg;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 5000);
-  }
 })();
 </script>
 
