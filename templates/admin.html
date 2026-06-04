@@ -885,7 +885,7 @@
                 <th class="pl-3 pr-1 py-2.5 w-8">
                   <input type="checkbox" id="roster-select-all" class="bulk-select-all w-3.5 h-3.5 cursor-pointer"
                     data-entity="member" title="Select all performers"
-                    style="accent-color:var(--by-ink);" />
+                    style="background:var(--by-bg);" />
                 </th>
                 <th class="font-medium pl-2 pr-3 py-2.5">Name</th>
                 <th class="font-medium px-3 py-2.5">Level</th>
@@ -1125,7 +1125,6 @@
               Gone Dark <span id="sbtab-past-count" class="ml-1 font-mono text-[10px]"></span>
             </button>
           </div>
-          <div id="by-undo-shows"></div>
           <div id="sb-card-grid" class="flex flex-col gap-3">
             <div class="py-10 col-span-full text-center text-[12.5px]" style="color:var(--by-ink-4)">Loading shows…</div>
           </div>
@@ -2107,7 +2106,7 @@
         <td class="pl-3 pr-1 py-2.5 w-8">
           <input type="checkbox" class="bulk-row-check w-3.5 h-3.5 cursor-pointer"
             data-entity="member" data-id="${esc(p.id)}"
-            style="accent-color:var(--by-ink);" />
+            style="background:var(--by-bg);" />
         </td>
         <td class="pl-2 pr-3 py-2.5">
           <div class="flex items-center gap-3">
@@ -4788,22 +4787,6 @@
         : "They're huddled backstage in silence. Someone said 'No' and now nobody knows what to do.",
       btn: "Yes, And… Bring Them Back!",
     }),
-    show: (n) => ({
-      icon: '🎟️',
-      headline: `${n} show${n===1?'':'s'} playing to an empty house`,
-      sub: n===1
-        ? "One show, no audience, no cast — just a spotlight on an empty stage."
-        : "Multiple shows have been cancelled mid-run. The audience is confused and the bar is understaffed.",
-      btn: "Uncancel the Show!",
-    }),
-    class: (n) => ({
-      icon: '📋',
-      headline: `${n} class${n===1?'':'es'} frozen mid-warm-up`,
-      sub: n===1
-        ? "The instructor is standing there mid-stretch. Nobody said 'scene'."
-        : "Multiple cohorts are stuck in a circle doing a silent status game — because you deleted them.",
-      btn: "Resume the Warm-Up!",
-    }),
   };
 
   function _timeLeft(iso) {
@@ -4856,8 +4839,6 @@
 
   function _renderAll() {
     _renderContainer('by-undo-members', 'member');
-    _renderContainer('by-undo-shows',   'show');
-    _renderContainer('by-undo-classes', 'class');
   }
 
   setInterval(() => {
@@ -4885,7 +4866,8 @@
   window.dismissBatch = function (batchId) { _removeBatch(batchId); _renderAll(); };
 
   // ── Selection state ───────────────────────────────────────────────────────
-  const _sel = { 'class': new Set(), 'member': new Set(), 'show': new Set() };
+  // ── Selection state (members only) ───────────────────────────────────────
+  const _sel = { 'member': new Set() };
 
   function updateFAB() {
     const total = [...Object.values(_sel)].reduce((s, st) => s + st.size, 0);
@@ -4936,19 +4918,13 @@
 
   window.executeBulkDelete = async function () {
     closeImprovModal();
-    const tasks = [], allIds = {};
-    for (const [entity, ids] of Object.entries(_sel)) {
-      if (!ids.size) continue;
-      allIds[entity] = [...ids];
-      const endpoint = entity === 'class' ? '/api/classes/bulk-delete'
-                     : entity === 'show'  ? '/api/shows/bulk-delete'
-                     : '/api/members/bulk-delete';
-      tasks.push(fetch(endpoint, {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ ids: [...ids] }),
-      }).then(r => r.json()));
-    }
-    if (!tasks.length) return;
+    const ids = [..._sel.member];
+    if (!ids.length) return;
+    const tasks = [fetch('/api/members/bulk-delete', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ ids }),
+    }).then(r => r.json())];
+    const allIds = { member: ids };
     try {
       const results = await Promise.all(tasks);
       if (results.every(r => r.ok)) {
@@ -4957,8 +4933,6 @@
           ids.forEach(id => {
             const tr = document.querySelector(`tr.roster-row[data-id="${id}"]`);
             if (tr) { tr.style.transition='opacity .3s'; tr.style.opacity='0'; setTimeout(()=>tr.remove(),300); }
-            const showCard = document.querySelector(`[data-show-id="${id}"]`);
-            if (showCard) { showCard.style.transition='opacity .3s'; showCard.style.opacity='0'; setTimeout(()=>showCard.remove(),300); }
           });
         }
         clearBulkSelection();

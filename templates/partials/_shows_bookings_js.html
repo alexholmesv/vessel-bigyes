@@ -98,16 +98,8 @@
       const dayChip = { Friday:'FRI', Saturday:'SAT', Sunday:'SUN' }[s.day] || (s.day || '—').toUpperCase();
 
       return `
-        <div class="flex border overflow-hidden relative"
-          data-show-id="${sbEsc(s.id)}"
+        <div class="flex border overflow-hidden"
           style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:3px 3px 0 0 var(--by-ink);">
-
-          <!-- bulk select checkbox overlay -->
-          <label class="absolute top-2 right-2 z-10 cursor-pointer" title="Select show">
-            <input type="checkbox" class="bulk-row-check w-3.5 h-3.5"
-              data-entity="show" data-id="${sbEsc(s.id)}"
-              style="accent-color:var(--by-ink);" />
-          </label>
 
           <!-- status strip -->
           <div class="w-1.5 shrink-0" style="background:${stripCol}"></div>

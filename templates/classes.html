@@ -817,7 +817,6 @@
         </div>
 
         {# Vertical class card list #}
-        <div id="by-undo-classes"></div>
         <div id="classes-grid" class="flex flex-col gap-2">
 
           {# ── Group header: On Stage ── #}
@@ -834,14 +833,8 @@
 
           {# ── On Stage (Active) ── #}
           {% for cls in active_classes %}
-          <div class="class-card cursor-pointer relative" data-status="active" data-class-id="{{ cls.id }}" id="class-card-{{ cls.id }}"
+          <div class="class-card cursor-pointer" data-status="active" id="class-card-{{ cls.id }}"
                onclick="openClassPanel('{{ cls.id }}')">
-            <!-- bulk select checkbox overlay — stopPropagation prevents card open -->
-            <label class="absolute top-2 right-2 z-10 cursor-pointer" onclick="event.stopPropagation()" title="Select class">
-              <input type="checkbox" class="bulk-row-check w-3.5 h-3.5"
-                data-entity="class" data-id="{{ cls.id }}"
-                style="accent-color:var(--by-ink);" />
-            </label>
             <div class="flex items-stretch" style="transition:background 80ms;">
               <div class="flex-shrink-0" style="width:3px;background:#2A8A4F;"></div>
               <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
@@ -880,13 +873,8 @@
 
           {# ── Warming Up (Future) ── #}
           {% for cls in future_classes %}
-          <div class="class-card cursor-pointer relative" data-status="future" data-class-id="{{ cls.id }}" id="class-card-{{ cls.id }}" style="display:none;"
+          <div class="class-card cursor-pointer" data-status="future" id="class-card-{{ cls.id }}" style="display:none;"
                onclick="openClassPanel('{{ cls.id }}')">
-            <label class="absolute top-2 right-2 z-10 cursor-pointer" onclick="event.stopPropagation()" title="Select class">
-              <input type="checkbox" class="bulk-row-check w-3.5 h-3.5"
-                data-entity="class" data-id="{{ cls.id }}"
-                style="accent-color:var(--by-ink);" />
-            </label>
             <div class="flex items-stretch">
               <div class="flex-shrink-0" style="width:3px;background:#6B5CE7;"></div>
               <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
@@ -925,13 +913,8 @@
 
           {# ── Curtain Down (Past) ── #}
           {% for cls in past_classes %}
-          <div class="class-card cursor-pointer relative" data-status="past" data-class-id="{{ cls.id }}" id="class-card-{{ cls.id }}" style="display:none;opacity:.65;"
+          <div class="class-card cursor-pointer" data-status="past" id="class-card-{{ cls.id }}" style="display:none;opacity:.65;"
                onclick="openClassPanel('{{ cls.id }}')">
-            <label class="absolute top-2 right-2 z-10 cursor-pointer" onclick="event.stopPropagation()" title="Select class">
-              <input type="checkbox" class="bulk-row-check w-3.5 h-3.5"
-                data-entity="class" data-id="{{ cls.id }}"
-                style="accent-color:var(--by-ink);" />
-            </label>
             <div class="flex items-stretch">
               <div class="flex-shrink-0" style="width:3px;background:var(--by-ink-4);"></div>
               <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
@@ -2572,284 +2555,6 @@
 {% include 'partials/_forced_pw_modal.html' %}
 {% include 'partials/_inbox_modal.html' %}
 
-<!-- ══ Bulk Select: Global FAB ══════════════════════════════════════════════ -->
-<div id="bulk-fab" class="hidden fixed bottom-6 left-1/2 z-50 flex items-center gap-3 px-5 py-3 border"
-  style="transform:translateX(-50%);background:var(--by-ink);border-color:var(--by-ink);color:var(--by-yes);box-shadow:4px 4px 0 0 var(--by-yes);min-width:280px;white-space:nowrap;">
-  <span class="text-[13px] font-bold font-display" id="bulk-fab-count">0 selected</span>
-  <div class="flex-1"></div>
-  <button onclick="clearBulkSelection()"
-    class="text-[11px] font-semibold px-2.5 py-1.5 border"
-    style="border-color:var(--by-yes);color:var(--by-yes);background:transparent;">
-    Clear
-  </button>
-  <button onclick="openImprovModal()"
-    class="text-[11px] font-bold px-3 py-1.5 border flex items-center gap-1.5"
-    style="border-color:var(--by-tomato);color:var(--by-ink);background:var(--by-tomato);">
-    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-    Bulk Delete
-  </button>
-</div>
-
-<!-- ══ Improv Warning Modal ═════════════════════════════════════════════════ -->
-<div id="modal-improv-warn" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4" style="background:rgba(20,18,16,.6)">
-  <div class="w-full max-w-md border" style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:6px 6px 0 0 var(--by-ink);">
-    <div class="px-6 pt-6 pb-1">
-      <div class="by-eyebrow mb-2" style="color:var(--by-tomato);">⚠ Curtain Call — No Encore Available</div>
-      <div class="font-display text-[22px] leading-tight mb-4" style="color:var(--by-ink);">
-        "YES, AND…" doesn't apply here.
-      </div>
-      <p class="text-[13px] leading-relaxed mb-3" style="color:var(--by-ink-2);">
-        Are you sure you want to erase <strong id="improv-warn-count">these scenes</strong> from existence?
-      </p>
-      <div class="border px-4 py-3 mb-4 text-[12.5px] italic leading-relaxed"
-        style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink-2);">
-        "Remember: the first rule of improv is <strong>'Yes, And…'</strong> — not <em>'No, and vanish from existence!'</em>
-        These records will take a 24-hour backstage break before the final curtain falls. You can call them back before then."
-      </div>
-      <p class="text-[11.5px] mb-5" style="color:var(--by-ink-3);">
-        A 24-hour undo window opens immediately. After that — the stage goes dark. Permanently.
-      </p>
-    </div>
-    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t" style="border-color:var(--by-bg-3);">
-      <button onclick="closeImprovModal()"
-        class="px-4 py-2 text-[12.5px] font-semibold border"
-        style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2);">
-        Abort — Keep the Cast
-      </button>
-      <button onclick="executeBulkDelete()"
-        class="px-5 py-2 text-[12.5px] font-bold border"
-        style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-tomato);">
-        Drop the Curtain
-      </button>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ── Bulk selection + persistent undo engine (classes.html) ─────────────── */
-(function () {
-
-  const LS_KEY = 'by_pending_deletes_v2';
-
-  function _getBatches() {
-    try {
-      const all = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-      const now = new Date().toISOString();
-      return all.filter(b => b.restorable_until > now);
-    } catch { return []; }
-  }
-
-  function _saveBatches(batches) {
-    try {
-      const now = new Date().toISOString();
-      localStorage.setItem(LS_KEY, JSON.stringify(batches.filter(b => b.restorable_until > now)));
-    } catch {}
-  }
-
-  function _addBatch(entity_type, ids) {
-    const batches = _getBatches();
-    batches.push({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      entity_type, ids, count: ids.length,
-      restorable_until: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
-    });
-    _saveBatches(batches);
-  }
-
-  function _removeBatch(batchId) {
-    _saveBatches(_getBatches().filter(b => b.id !== batchId));
-  }
-
-  const _COPY = {
-    class: (n) => ({
-      icon: '📋',
-      headline: `${n} class${n===1?'':'es'} frozen mid-warm-up`,
-      sub: n===1
-        ? "The instructor is standing there mid-stretch. Nobody said 'scene'."
-        : "Multiple cohorts are stuck in a silent status game — because you deleted them.",
-      btn: "Resume the Warm-Up!",
-    }),
-    member: (n) => ({
-      icon: '🎭', headline: `${n} performer${n===1?'':'s'} waiting in the wings`,
-      sub: "They're backstage in full costume with nowhere to go.",
-      btn: "Yes, And… Bring Them Back!",
-    }),
-    show: (n) => ({
-      icon: '🎟️', headline: `${n} show${n===1?'':'s'} playing to an empty house`,
-      sub: "The stage is set. The spotlight is on. Nobody is there.",
-      btn: "Uncancel the Show!",
-    }),
-  };
-
-  function _timeLeft(iso) {
-    const ms = new Date(iso) - Date.now();
-    if (ms <= 0) return 'expired';
-    const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
-    return h >= 1 ? `${h}h ${m}m left` : `${m}m left`;
-  }
-
-  function _renderContainer(containerId, entityType) {
-    const el = document.getElementById(containerId);
-    if (!el) return;
-    const batches = _getBatches().filter(b => b.entity_type === entityType);
-    if (!batches.length) { el.innerHTML = ''; return; }
-    el.innerHTML = batches.map(b => {
-      const copy = (_COPY[b.entity_type] || _COPY.class)(b.count);
-      return `
-      <div class="by-undo-batch" data-batch="${b.id}"
-        style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;margin-bottom:4px;
-               border:1.5px solid var(--by-ink);background:var(--by-yes-soft);
-               box-shadow:3px 3px 0 0 var(--by-ink);">
-        <span style="font-size:20px;flex-shrink:0;line-height:1.3">${copy.icon}</span>
-        <div style="flex:1;min-width:0;">
-          <div style="font-family:var(--by-f-display);font-size:13.5px;font-weight:900;
-                      text-transform:uppercase;letter-spacing:-.01em;color:var(--by-ink);line-height:1.2;">
-            ${copy.headline}
-          </div>
-          <div style="font-size:11.5px;color:var(--by-ink-3);margin-top:2px;line-height:1.4;">${copy.sub}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
-          <button onclick="undoBatch('${b.id}')"
-            style="padding:5px 12px;border:1.5px solid var(--by-ink);background:var(--by-ink);
-                   color:var(--by-yes);font-family:var(--by-f-body);font-size:11.5px;font-weight:700;
-                   cursor:pointer;white-space:nowrap;">
-            ${copy.btn}
-          </button>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span class="by-undo-timer" data-until="${b.restorable_until}"
-              style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-3);">
-              ${_timeLeft(b.restorable_until)}
-            </span>
-            <button onclick="dismissBatch('${b.id}')"
-              style="background:transparent;border:none;color:var(--by-ink-3);cursor:pointer;
-                     font-size:14px;line-height:1;padding:0;" title="Dismiss">✕</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  function _renderAll() {
-    _renderContainer('by-undo-classes', 'class');
-    _renderContainer('by-undo-members', 'member');
-    _renderContainer('by-undo-shows',   'show');
-  }
-
-  setInterval(() => {
-    document.querySelectorAll('.by-undo-timer').forEach(el => {
-      el.textContent = _timeLeft(el.dataset.until);
-    });
-    _renderAll();
-  }, 60000);
-
-  window.undoBatch = async function (batchId) {
-    const batch = _getBatches().find(b => b.id === batchId);
-    if (!batch) { _renderAll(); return; }
-    try {
-      const res  = await fetch('/api/bulk-restore', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ ids: batch.ids, entity_type: batch.entity_type }),
-      });
-      const data = await res.json();
-      if (data.ok) { _removeBatch(batchId); window.location.reload(); }
-      else if (typeof flashToast === 'function') flashToast(data.error || 'Undo failed.', 'error');
-    } catch { if (typeof flashToast === 'function') flashToast('Network error — try again.', 'error'); }
-  };
-
-  window.dismissBatch = function (batchId) { _removeBatch(batchId); _renderAll(); };
-
-  const _sel = { 'class': new Set(), 'member': new Set(), 'show': new Set() };
-
-  function updateFAB() {
-    const total = [...Object.values(_sel)].reduce((s, st) => s + st.size, 0);
-    const fab   = document.getElementById('bulk-fab');
-    const lbl   = document.getElementById('bulk-fab-count');
-    if (!fab) return;
-    if (total > 0) { fab.classList.remove('hidden'); lbl.textContent = total + ' selected'; }
-    else fab.classList.add('hidden');
-  }
-
-  document.addEventListener('change', function (e) {
-    const cb = e.target.closest('.bulk-row-check');
-    if (!cb) return;
-    const entity = cb.dataset.entity, id = cb.dataset.id;
-    if (!entity || !id || !_sel[entity]) return;
-    cb.checked ? _sel[entity].add(id) : _sel[entity].delete(id);
-    updateFAB();
-  });
-
-  document.addEventListener('change', function (e) {
-    const sa = e.target.closest('.bulk-select-all');
-    if (!sa) return;
-    const entity = sa.dataset.entity;
-    document.querySelectorAll(`.bulk-row-check[data-entity="${entity}"]`).forEach(cb => {
-      cb.checked = sa.checked;
-      sa.checked ? _sel[entity].add(cb.dataset.id) : _sel[entity].delete(cb.dataset.id);
-    });
-    updateFAB();
-  });
-
-  window.clearBulkSelection = function () {
-    Object.values(_sel).forEach(s => s.clear());
-    document.querySelectorAll('.bulk-row-check,.bulk-select-all').forEach(cb => { cb.checked = false; });
-    updateFAB();
-  };
-
-  window.openImprovModal = function () {
-    const total = [...Object.values(_sel)].reduce((s, st) => s + st.size, 0);
-    if (total === 0) return;
-    const el = document.getElementById('improv-warn-count');
-    if (el) el.textContent = total + (total === 1 ? ' scene' : ' scenes');
-    document.getElementById('modal-improv-warn').classList.remove('hidden');
-  };
-
-  window.closeImprovModal = function () {
-    document.getElementById('modal-improv-warn').classList.add('hidden');
-  };
-
-  window.executeBulkDelete = async function () {
-    closeImprovModal();
-    const tasks = [], allIds = {};
-    for (const [entity, ids] of Object.entries(_sel)) {
-      if (!ids.size) continue;
-      allIds[entity] = [...ids];
-      const endpoint = entity === 'class' ? '/api/classes/bulk-delete'
-                     : entity === 'show'  ? '/api/shows/bulk-delete'
-                     : '/api/members/bulk-delete';
-      tasks.push(fetch(endpoint, {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ ids: [...ids] }),
-      }).then(r => r.json()));
-    }
-    if (!tasks.length) return;
-    try {
-      const results = await Promise.all(tasks);
-      if (results.every(r => r.ok)) {
-        for (const [entity, ids] of Object.entries(allIds)) {
-          _addBatch(entity, ids);
-          ids.forEach(id => {
-            const tr = document.querySelector(`tr.roster-row[data-id="${id}"]`);
-            if (tr) { tr.style.transition='opacity .3s'; tr.style.opacity='0'; setTimeout(()=>tr.remove(),300); }
-            const card = document.getElementById(`class-card-${id}`);
-            if (card) { card.style.transition='opacity .3s'; card.style.opacity='0'; setTimeout(()=>card.remove(),300); }
-            const showCard = document.querySelector(`[data-show-id="${id}"]`);
-            if (showCard) { showCard.style.transition='opacity .3s'; showCard.style.opacity='0'; setTimeout(()=>showCard.remove(),300); }
-          });
-        }
-        clearBulkSelection();
-        _renderAll();
-      } else {
-        const err = results.find(r => !r.ok);
-        if (typeof flashToast === 'function') flashToast(err?.error || 'Bulk delete failed.', 'error');
-      }
-    } catch { if (typeof flashToast === 'function') flashToast('Network error during bulk delete.', 'error'); }
-  };
-
-  document.addEventListener('DOMContentLoaded', _renderAll);
-  if (document.readyState !== 'loading') _renderAll();
-
-})();
-</script>
 
 </body>
 </html>
