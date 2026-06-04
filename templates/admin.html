@@ -2088,6 +2088,14 @@
     return `<span class="rt-badge ${cls} mt-0.5">${esc(lbl)}</span>`;
   }
 
+  /** Returns "With us since <Month YYYY>" from an ISO joined_at string, or a fallback label. */
+  function fmtJoinDate(joined_at) {
+    if (!joined_at) return 'With us since initialization';
+    const d = new Date(joined_at);
+    if (isNaN(d.getTime())) return 'With us since initialization';
+    return 'With us since ' + d.toLocaleDateString('en-GB', { year: 'numeric', month: 'long' });
+  }
+
   function rowHTML(p) {
     const chipCls = STATUS_CHIP[p.status] || 'chip chip-paused';
     const pct     = LEVEL_PCT[p.level] ?? 50;
@@ -2112,7 +2120,7 @@
             <div class="leading-tight">
               <div class="text-[13.5px] text-by-ink">${esc(p.name)}${p.is_active === false ? ' <span style="font-size:9px;font-family:var(--by-f-mono);color:var(--by-ink-4);border:1px solid var(--by-bg-3);border-radius:3px;padding:0 3px;vertical-align:middle">inactive</span>' : ''}</div>
               ${rtBadgeHTML(p)}
-              <div class="text-[11px] text-by-ink-3 font-mono">${esc(p.id)}</div>
+              <div class="text-[11px] text-by-ink-3 font-mono">${fmtJoinDate(p.joined_at)}</div>
             </div>
           </div>
         </td>
