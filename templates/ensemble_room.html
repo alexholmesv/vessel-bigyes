@@ -1160,7 +1160,7 @@
       row.className = 'flex items-center gap-2.5 px-3 py-2 cursor-pointer';
       row.style.cssText = `border:var(--by-bd);background:${checked ? 'var(--by-yes-soft)' : 'var(--by-bg)'};`;
       row.innerHTML = `
-        <input type="checkbox" ${checked ? 'checked' : ''} style="width:14px;height:14px;accent-color:var(--by-yes-deep);flex-shrink:0;" />
+        <input type="checkbox" ${checked ? 'checked' : ''} />
         <div class="flex-1 min-w-0">
           <div class="font-semibold text-[13px] truncate">${esc(c.title)}</div>
           <div class="by-eyebrow">${esc(c.sched)} · ${c.students.length} student${c.students.length!==1?'s':''}</div>

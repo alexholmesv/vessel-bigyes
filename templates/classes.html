@@ -2332,7 +2332,7 @@
     if (CAST_PERFORMERS.length) {
       castList.innerHTML = CAST_PERFORMERS.map(p => `
         <label class="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" style="background:var(--by-bg);" onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'">
-          <input type="checkbox" value="${_esc(p.id)}" class="cast-pick w-3.5 h-3.5" onchange="updateCastCount()" style="background:var(--by-bg);" />
+          <input type="checkbox" value="${_esc(p.id)}" class="cast-pick w-3.5 h-3.5" onchange="updateCastCount()" />
           <span class="text-[13px] font-medium" style="color:var(--by-ink)">${_esc(p.name)}</span>
           <span class="ml-auto text-[11px] font-mono" style="color:var(--by-ink-3)">${_esc(p.role_type || '')}</span>
         </label>`).join('');
@@ -2421,8 +2421,7 @@
       return `<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--by-bg-3);"
                      onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background=''">
         <input type="checkbox" value="${s.id}" ${checked}
-               onchange="toggleRosterStudent('${s.id}', this.checked)"
-               style="accent-color:var(--by-yes-deep);width:14px;height:14px;flex-shrink:0;" />
+               onchange="toggleRosterStudent('${s.id}', this.checked)" />
         <span style="font-size:13px;font-weight:600;color:var(--by-ink);">${label}</span>
         <span style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;margin-left:auto;">${s.role_type || 'Patron'}</span>
       </label>`;

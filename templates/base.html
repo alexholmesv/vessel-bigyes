@@ -185,6 +185,50 @@
       cursor: not-allowed;
     }
 
+    /* ── Checkbox — high-visibility roster checkboxes ─────────────────
+       Forces yellow fill (#FACC15) on :checked, hard black border at all
+       times, and an explicit dark focus ring so controls never vanish into
+       the parchment or zebra-stripe backgrounds.
+       sr-only checkboxes (toggle peers) are excluded. */
+    input[type="checkbox"]:not(.sr-only) {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      border: 2px solid #000;
+      border-radius: 3px;
+      background: var(--by-bg);
+      cursor: pointer;
+      position: relative;
+      transition: background var(--by-snap), box-shadow var(--by-snap);
+      vertical-align: middle;
+    }
+    input[type="checkbox"]:not(.sr-only):checked {
+      background: #FACC15;
+      border-color: #000;
+    }
+    /* checkmark drawn as a rotated L-shape */
+    input[type="checkbox"]:not(.sr-only):checked::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 0px;
+      width: 5px;
+      height: 9px;
+      border: 2.5px solid #000;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+    input[type="checkbox"]:not(.sr-only):focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+    }
+    input[type="checkbox"]:not(.sr-only):hover:not(:checked) {
+      background: var(--by-bg-3);
+    }
+
     /* ── Select reset + BigYes chevron wrapper (legacy — kept for compat) */
     .by-select-wrap { position: relative; }
     .by-select-wrap > select {
