@@ -1769,8 +1769,8 @@
       </div>
       <!-- File picker -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Select .xlsx file</label>
-        <input type="file" id="bulk-file-input" accept=".xlsx"
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Select .csv or .xlsx file</label>
+        <input type="file" id="bulk-file-input" accept=".csv,.xlsx"
           class="w-full border px-4 py-2.5 text-sm focus:outline-none"
           style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
       </div>
@@ -3418,7 +3418,7 @@
     const btn       = document.getElementById('bulk-upload-btn');
     if (!fileInput.files.length) {
       resultsEl.className = '';
-      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:#fff">Please select an .xlsx file first.</div>`;
+      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:#fff">Please select a .csv or .xlsx file first.</div>`;
       return;
     }
     btn.disabled = true;
