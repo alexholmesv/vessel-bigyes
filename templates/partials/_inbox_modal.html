@@ -322,6 +322,22 @@
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && _open) inboxClose();
   });
+
+  // ── Background badge polling ───────────────────────────────────────────────
+  // Poll /api/inbox/unread-count every 30 s so the badge updates without the
+  // user having to open the inbox.  Skips the fetch while the panel is open
+  // because inboxOpen() already calls _loadMessages() which updates the badge.
+  (function _startBadgePoller() {
+    function _poll() {
+      if (_open) return;  // panel open → inboxOpen already handles the badge
+      fetch('/api/inbox/unread-count')
+        .then(function(r) { return r.json(); })
+        .then(function(d) { if (d.ok) _badge(d.count); })
+        .catch(function() { /* silent — network blip, retry next tick */ });
+    }
+    _poll();                           // run immediately on page load
+    setInterval(_poll, 30 * 1000);    // then every 30 s
+  }());
 })();
 
 // Open compose pre-addressed to a specific recipient (called from class roster mail icons).
