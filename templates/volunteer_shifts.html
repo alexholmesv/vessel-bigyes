@@ -325,10 +325,13 @@
    * - 'accepted'  → Accepted chip + Message Stage Manager button
    */
   function actionsHTML(shift, si, fi){
+    // Use single-quoted string literals for shift.id (always a UUID — no escaping needed).
+    // JSON.stringify() would emit double quotes, terminating the onclick="..." attribute early.
+    const id = shift.id;
     if(shift.status === 'accepted'){
       return `
         <span class="chip chip-accepted"><span class="dot"></span>Accepted</span>
-        <button class="btn-msg-sm" onclick="openMsgModal(${JSON.stringify(shift.id)})"
+        <button class="btn-msg-sm" onclick="openMsgModal('${id}')"
                 title="You must speak to the Stage Manager to make changes">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Message Stage Manager
@@ -337,8 +340,8 @@
     /* 'requested' — pending student response */
     return `
       <span class="chip chip-pending"><span class="dot"></span>Pending your response</span>
-      <button class="btn-accept" onclick="respond(${JSON.stringify(shift.id)}, 'accepted', ${si}, ${fi})">Accept</button>
-      <button class="btn-decline" onclick="respond(${JSON.stringify(shift.id)}, 'declined', ${si}, ${fi})">Decline</button>`;
+      <button class="btn-accept" onclick="respond('${id}', 'accepted', ${si}, ${fi})">Accept</button>
+      <button class="btn-decline" onclick="respond('${id}', 'declined', ${si}, ${fi})">Decline</button>`;
   }
 
   /* ── Respond (accept / decline) ──────────────────────────────────────── */
