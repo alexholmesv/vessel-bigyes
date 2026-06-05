@@ -33,16 +33,29 @@
             style="background:var(--by-tomato);font-family:var(--by-f-mono);font-size:10px;
                    color:#fff;font-weight:700;display:none;"></span>
     </div>
-    <button onclick="inboxClose()"
-            class="flex items-center justify-center focus:outline-none"
-            style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,0.25);
-                   color:#fff;background:transparent;transition:background 100ms;cursor:pointer;"
-            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-            onmouseout="this.style.background='transparent'">
-      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
-      </svg>
-    </button>
+    <div class="flex items-center gap-2">
+      <button onclick="composeMsg()"
+              class="flex items-center justify-center focus:outline-none"
+              style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,0.25);
+                     color:#fff;background:transparent;transition:background 100ms;cursor:pointer;
+                     font-size:16px;line-height:1;"
+              onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+              onmouseout="this.style.background='transparent'" title="New message">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </button>
+      <button onclick="inboxClose()"
+              class="flex items-center justify-center focus:outline-none"
+              style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,0.25);
+                     color:#fff;background:transparent;transition:background 100ms;cursor:pointer;"
+              onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+              onmouseout="this.style.background='transparent'">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- Body: list + thread panes -->
@@ -171,13 +184,17 @@
       btn.onmouseout  = function() { if (n.id !== _activeId) this.style.background = 'transparent'; };
       btn.onclick = function() { _select(n.id); };
 
-      const dot = !n.is_read
+      const dot = (!n.is_read && !n.is_sent)
         ? '<span style="display:inline-block;width:6px;height:6px;background:var(--by-tomato);border-radius:50%;margin-right:5px;vertical-align:middle;flex-shrink:0;"></span>'
         : '';
+      // Sent items show "→ Recipient"; received items show "from Sender"
+      const meta = n.is_sent
+        ? '→ ' + _esc(n.recipient_email)
+        : 'from ' + _esc(n.sender_name);
       btn.innerHTML =
-        '<p style="font-family:var(--by-f-sans);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--by-ink);font-weight:' + (!n.is_read ? '700' : '500') + ';">' +
+        '<p style="font-family:var(--by-f-sans);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--by-ink);font-weight:' + (!n.is_read && !n.is_sent ? '700' : '500') + ';">' +
         dot + _esc(n.subject) + '</p>' +
-        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:2px;">from ' + _esc(n.sender_name) + '</p>' +
+        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:2px;">' + meta + '</p>' +
         '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">' + _fmt(n.created_at) + '</p>';
       wrap.appendChild(btn);
     });
@@ -189,8 +206,9 @@
     thread.style.display = 'flex';
 
     document.getElementById('inbox-thread-subject').textContent = n.subject;
-    document.getElementById('inbox-thread-meta').textContent =
-      'From ' + n.sender_name + ' · ' + _fmt(n.created_at);
+    document.getElementById('inbox-thread-meta').textContent = n.is_sent
+      ? 'To ' + n.recipient_email + ' · ' + _fmt(n.created_at)
+      : 'From ' + n.sender_name + ' · ' + _fmt(n.created_at);
 
     const body = document.getElementById('inbox-thread-body');
     body.innerHTML = '';
@@ -241,6 +259,7 @@
     }
   }
 
+  // Open panel + load messages (normal inbox open).
   window.inboxOpen = function() {
     if (_open) return;
     _open = true;
@@ -257,6 +276,15 @@
         _badge(unread);
         if (_notifs.length && !_activeId) _select(_notifs[0].id);
       });
+  };
+
+  // Open panel WITHOUT loading messages — used by composeMsgTo so the async
+  // message fetch cannot overwrite the compose form that loads immediately after.
+  window.inboxOpenBlank = function() {
+    if (_open) return;
+    _open = true;
+    document.getElementById('inbox-backdrop').classList.remove('hidden');
+    document.getElementById('inbox-panel').style.transform = 'translateX(-50%) translateY(0)';
   };
 
   window.inboxClose = function() {
@@ -295,4 +323,95 @@
     if (e.key === 'Escape' && _open) inboxClose();
   });
 })();
+
+// Open compose pre-addressed to a specific recipient (called from class roster mail icons).
+// Uses inboxOpenBlank so the async message-list fetch cannot overwrite the compose form.
+function composeMsgTo(email, name) {
+  inboxOpenBlank();   // show panel without triggering message-list fetch
+  composeMsg(email);  // render compose form; pass email so it pre-selects after contacts load
+}
+
+// New compose message — opens a mini compose overlay inside the inbox panel.
+// Pass preEmail to pre-select a recipient once the contact list has loaded.
+function composeMsg(preEmail) {
+  const thread = document.getElementById('inbox-thread');
+  const placeholder = document.getElementById('inbox-placeholder');
+  placeholder.style.display = 'none';
+  thread.classList.remove('hidden');
+  thread.style.display = 'flex';
+  thread.innerHTML = `
+    <div class="shrink-0 px-5 py-3" style="border-bottom:1.5px solid var(--by-bg-3);">
+      <p style="font-family:var(--by-f-sans);font-weight:700;font-size:15px;color:var(--by-ink);">New Message</p>
+    </div>
+    <div class="flex-1 overflow-y-auto px-5 py-4">
+      <div class="mb-3">
+        <label style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;letter-spacing:.08em;">To</label>
+        <select id="compose-recipient" class="w-full mt-1 px-3 py-2 text-sm"
+                style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink-2);font-family:var(--by-f-body);">
+          <option value="">Loading…</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;letter-spacing:.08em;">Subject</label>
+        <input id="compose-subject" type="text" placeholder="What's this about?"
+               class="w-full mt-1 px-3 py-2 text-sm"
+               style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink-2);font-family:var(--by-f-body);">
+      </div>
+      <div>
+        <label style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;letter-spacing:.08em;">Message</label>
+        <textarea id="compose-body" rows="4" placeholder="Write your message…"
+                  class="w-full mt-1 px-3 py-2 text-sm resize-none"
+                  style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink-2);font-family:var(--by-f-body);line-height:1.5;"></textarea>
+      </div>
+    </div>
+    <div class="shrink-0 px-5 pb-4 pt-3" style="border-top:1.5px solid var(--by-bg-3);">
+      <div class="flex gap-2 justify-end">
+        <button onclick="inboxOpen()" class="btn-ghost h-9 px-4 rounded-md text-[12px]">Cancel</button>
+        <button onclick="sendCompose()" class="btn-spot h-9 px-4 rounded-md text-[12px]">Send</button>
+      </div>
+    </div>`;
+
+  // Populate recipient dropdown, then pre-select if a target email was passed
+  fetch('/api/student/contacts')
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      if (!d.ok) return;
+      const sel = document.getElementById('compose-recipient');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">— Select —</option>';
+      (d.teachers || []).forEach(function(p) {
+        sel.innerHTML += '<option value="' + p.email + '">' + p.name + ' (Teacher)</option>';
+      });
+      (d.students || []).forEach(function(p) {
+        sel.innerHTML += '<option value="' + p.email + '">' + p.name + ' (Student)</option>';
+      });
+      // Pre-select recipient if provided
+      if (preEmail) {
+        for (var i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value === preEmail) { sel.selectedIndex = i; break; }
+        }
+      }
+    });
+}
+
+// Send composed message
+function sendCompose() {
+  const recipient = document.getElementById('compose-recipient').value;
+  const subject = document.getElementById('compose-subject').value.trim();
+  const body = document.getElementById('compose-body').value.trim();
+  if (!recipient || !subject || !body) {
+    alert('Please fill in all fields.');
+    return;
+  }
+  fetch('/api/student/message/send', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({recipient_email:recipient, subject:subject, body:body}),
+  })
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      if (d.ok) { inboxOpen(); } else { alert(d.error || 'Failed to send message.'); }
+    })
+    .catch(function(){ alert('Network error — please try again.'); });
+}
 </script>

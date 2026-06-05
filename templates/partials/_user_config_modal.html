@@ -301,30 +301,54 @@
     _updateCfgPreview();
   }
 
-  function cfgHandleUpload(input) {
+  async function cfgHandleUpload(input) {
     const file = input.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const tmpImg = new Image();
-      tmpImg.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200; canvas.height = 200;
-        const ctx = canvas.getContext('2d');
-        const s = Math.min(tmpImg.width, tmpImg.height);
-        const sx = (tmpImg.width - s) / 2, sy = (tmpImg.height - s) / 2;
-        ctx.drawImage(tmpImg, sx, sy, s, s, 0, 0, 200, 200);
-        _cfgUploadData = canvas.toDataURL('image/jpeg', 0.82);
-        _cfgAvatarMode = 'upload'; _cfgCharIndex = -1;
-        document.querySelectorAll('.cfg-char-btn').forEach(b => {
-          b.style.borderColor = 'var(--by-bg-3)'; b.style.background = 'var(--by-bg)';
-        });
-        document.querySelectorAll('.cfg-swatch').forEach(s => s.classList.remove('selected'));
-        _updateCfgPreview();
+
+    // Step 1: crop + resize to 200×200 locally (preview + base64 fallback)
+    const dataUrl = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const tmpImg = new Image();
+        tmpImg.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 200; canvas.height = 200;
+          const ctx = canvas.getContext('2d');
+          const s = Math.min(tmpImg.width, tmpImg.height);
+          const sx = (tmpImg.width - s) / 2, sy = (tmpImg.height - s) / 2;
+          ctx.drawImage(tmpImg, sx, sy, s, s, 0, 0, 200, 200);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        tmpImg.src = e.target.result;
       };
-      tmpImg.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    });
+
+    // Step 2: attempt Supabase upload; fall back to base64 if not configured
+    try {
+      const blob = await fetch(dataUrl).then(r => r.blob());
+      const fd   = new FormData();
+      fd.append('avatar', blob, 'avatar.jpg');
+      const res  = await fetch('/api/profile/upload-avatar', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.ok && data.url) {
+        _cfgUploadData = data.url;          // Supabase public URL
+      } else if (data.fallback === 'base64') {
+        _cfgUploadData = dataUrl;           // Supabase not configured — store base64
+      } else {
+        showCfgFeedback('cfg-status', data.error || 'Upload failed.', 'error');
+        return;
+      }
+    } catch (_) {
+      _cfgUploadData = dataUrl;             // Network error — fall back to base64
+    }
+
+    _cfgAvatarMode = 'upload'; _cfgCharIndex = -1;
+    document.querySelectorAll('.cfg-char-btn').forEach(b => {
+      b.style.borderColor = 'var(--by-bg-3)'; b.style.background = 'var(--by-bg)';
+    });
+    document.querySelectorAll('.cfg-swatch').forEach(s => s.classList.remove('selected'));
+    _updateCfgPreview();
   }
 
   function cfgPickTint(idx) {

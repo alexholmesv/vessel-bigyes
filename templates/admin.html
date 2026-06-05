@@ -934,7 +934,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="text-[13.5px] truncate" style="color:var(--by-ink)">{{ show.title }}</div>
-                  <div class="text-[11.5px]" style="color:var(--by-ink-3)">{{ show.day }}</div>
+                  <div class="text-[11.5px]" style="color:var(--by-ink-3)">{{ show.day }}{% if show.date and show.date != show.day %} · {{ show.date | date_long }}{% endif %}</div>
                 </div>
                 {% if show_shifts and open_cnt == 0 %}
                 <span class="chip chip-active flex-shrink-0"><span class="dot"></span>Fully staffed</span>

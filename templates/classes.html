@@ -2549,11 +2549,58 @@
       }
     } catch { showFeedback('add-person-status', 'Network error — please try again.', 'error'); }
   }
+
+  // ── Shared confirm modal ──────────────────────────────────────────────
+  let _byConfirmCb = null;
+  function byConfirm({ title, body, label = 'Confirm', danger = false, onConfirm }) {
+    document.getElementById('by-confirm-title').textContent = title;
+    document.getElementById('by-confirm-body').textContent  = body || '';
+    const ok = document.getElementById('by-confirm-ok');
+    ok.textContent = label;
+    const shadow = danger ? '4px 4px 0 0 var(--by-tomato-deep)' : '4px 4px 0 0 var(--by-ink)';
+    ok.style.background = danger ? 'var(--by-tomato)' : 'var(--by-ink)';
+    ok.style.color      = danger ? '#fff'             : 'var(--by-yes)';
+    ok.style.boxShadow  = shadow;
+    ok.onmouseover = () => { ok.style.boxShadow = 'none'; ok.style.transform = 'translate(2px,2px)'; };
+    ok.onmouseout  = () => { ok.style.boxShadow = shadow; ok.style.transform = 'translate(0,0)'; };
+    _byConfirmCb = onConfirm;
+    document.getElementById('by-confirm-modal').classList.remove('hidden');
+  }
+  function byConfirmClose() {
+    document.getElementById('by-confirm-modal').classList.add('hidden');
+    _byConfirmCb = null;
+  }
+  function byConfirmDo() {
+    const cb = _byConfirmCb;
+    byConfirmClose();
+    if (cb) cb();
+  }
 </script>
 
 {% include 'partials/_forced_pw_modal.html' %}
 {% include 'partials/_inbox_modal.html' %}
 
+{# ── Confirm modal ── #}
+<div id="by-confirm-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4" style="background:rgba(20,18,16,.6)">
+  <div class="w-full max-w-sm border" style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:6px 6px 0 0 var(--by-ink);">
+    <div class="p-5">
+      <div id="by-confirm-title" class="font-display text-[18px] mb-2" style="color:var(--by-ink);"></div>
+      <p id="by-confirm-body" class="text-[13px] leading-relaxed" style="color:var(--by-ink-2);"></p>
+    </div>
+    <div style="display:flex;gap:12px;padding:16px 20px 20px;">
+      <button onclick="byConfirmClose()"
+              style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);
+                     font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);padding:10px 0;cursor:pointer;">
+        Cancel
+      </button>
+      <button id="by-confirm-ok" onclick="byConfirmDo()"
+              style="flex:1;font-family:var(--by-f-display);font-size:13px;
+                     border:1.5px solid var(--by-ink);padding:10px 0;cursor:pointer;text-transform:uppercase;letter-spacing:.02em;">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

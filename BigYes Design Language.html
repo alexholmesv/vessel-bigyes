@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>BigYes — Design Language</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  /* =========================================================
+     BIGYES DESIGN LANGUAGE · v0.1
+     Yellow-forward, photo-led, oversized type.
+     Inspired (not copied) by the warm bold energy of indie
+     improv-theatre brands. Original tokens, layouts & marks.
+     ========================================================= */
+
+  :root {
+    /* Surface — warm paper, never pure white */
+    --bg:        #F4EEE2;   /* paper */
+    --bg-2:      #ECE3D0;   /* paper deep */
+    --bg-3:      #E2D6BB;   /* paper deeper, dividers */
+    --ink:       #141210;   /* near-black ink */
+    --ink-2:    #2A2723;
+    --ink-3:    #5C544A;    /* muted body */
+    --ink-4:    #8A8073;    /* hint */
+
+    /* Signature — saturated marigold yellow */
+    --yes:        #FFC629;
+    --yes-deep:   #E5A800;
+    --yes-soft:   #FFE7A0;
+
+    /* Secondary — single accent only. Tomato red. */
+    --tomato:     #E5482A;
+    --tomato-deep:#B83218;
+
+    /* Stage — only used on hero/inversion moments */
+    --night:      #141210;
+    --night-soft: #1E1B17;
+
+    /* Type ramp */
+    --f-display: 'Archivo Black', 'Archivo', system-ui, sans-serif;
+    --f-sans:    'Archivo', system-ui, sans-serif;
+    --f-body:    'Manrope', system-ui, sans-serif;
+    --f-mono:    'DM Mono', ui-monospace, monospace;
+
+    /* Radii — mostly square. Soft only on pills/photos. */
+    --r-1: 4px;
+    --r-2: 10px;
+    --r-pill: 999px;
+
+    /* Spacing scale (4 px base) */
+    --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+  }
+
+  *,*::before,*::after { box-sizing:border-box; }
+  html,body { background:var(--bg); color:var(--ink); }
+  body {
+    font-family:var(--f-body);
+    margin:0;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    font-size:15px;
+    line-height:1.5;
+  }
+
+  /* ---------- Type primitives ---------- */
+  .display { font-family:var(--f-display); font-weight:900; letter-spacing:-0.02em; line-height:0.88; text-transform:uppercase; }
+  .h-sans  { font-family:var(--f-sans); font-weight:800; letter-spacing:-0.01em; line-height:1.05; }
+  .mono    { font-family:var(--f-mono); font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3); }
+  .eyebrow { font-family:var(--f-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
+  .lede    { font-family:var(--f-body); font-size:18px; line-height:1.5; color:var(--ink-2); max-width:62ch; }
+  .body    { font-family:var(--f-body); font-size:15px; color:var(--ink-2); }
+
+  /* ---------- Page chrome ---------- */
+  .doc { max-width:1240px; margin:0 auto; padding:48px 56px 96px; }
+  .rule { height:1px; background:var(--ink); opacity:.85; margin:0; }
+  .rule.soft { background:var(--bg-3); }
+
+  .topbar {
+    display:flex; align-items:flex-end; justify-content:space-between;
+    padding-bottom:16px; border-bottom:1px solid var(--ink);
+  }
+  .topbar .mark {
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .wordmark {
+    font-family:var(--f-display); font-weight:900; font-size:28px; line-height:1; letter-spacing:-0.02em;
+    text-transform:uppercase;
+  }
+  .wordmark .yes-dot {
+    display:inline-block; background:var(--yes); color:var(--ink);
+    padding:2px 10px 4px; transform:skew(-6deg); margin-left:2px;
+  }
+  .crumbs { font-family:var(--f-mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3); }
+
+  /* Section header */
+  section { padding:64px 0 8px; }
+  section + section { border-top:1px solid var(--bg-3); }
+  .sec-head {
+    display:grid; grid-template-columns:120px 1fr; gap:24px; align-items:baseline;
+    margin-bottom:32px;
+  }
+  .sec-num { font-family:var(--f-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
+  .sec-title { font-family:var(--f-display); font-size:44px; line-height:0.92; text-transform:uppercase; letter-spacing:-0.02em; }
+  .sec-sub { grid-column:2; font-family:var(--f-body); font-size:15.5px; color:var(--ink-3); max-width:64ch; margin-top:10px; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--bg);
+    padding:56px 48px 44px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .eyebrow { color:#C9BFA8; }
+  .hero h1 {
+    font-family:var(--f-display); font-weight:900; text-transform:uppercase;
+    font-size:148px; line-height:0.82; letter-spacing:-0.035em;
+    margin:18px 0 0;
+  }
+  .hero h1 .swatch {
+    display:inline-block; background:var(--yes); color:var(--ink);
+    padding:0 18px 6px; transform:skew(-6deg); margin-left:6px;
+  }
+  .hero h1 .underline {
+    background-image:linear-gradient(transparent 70%, var(--tomato) 70%, var(--tomato) 92%, transparent 92%);
+    background-repeat:no-repeat;
+  }
+  .hero-meta {
+    display:flex; gap:48px; margin-top:36px; padding-top:24px;
+    border-top:1px solid rgba(244,238,226,.18);
+  }
+  .hero-meta div { color:#C9BFA8; }
+  .hero-meta b { color:var(--bg); font-family:var(--f-sans); font-weight:700; letter-spacing:-0.005em; display:block; font-size:15px; }
+  .hero .stamp {
+    position:absolute; top:24px; right:32px;
+    border:1.5px solid var(--yes); color:var(--yes);
+    border-radius:var(--r-pill);
+    padding:8px 14px;
+    font-family:var(--f-mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    transform:rotate(6deg);
+  }
+
+  /* ---------- COLOR ---------- */
+  .swatches { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+  .sw {
+    border:1px solid var(--ink);
+    aspect-ratio:1/1.08;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:12px;
+  }
+  .sw .name { font-family:var(--f-sans); font-weight:700; font-size:14px; line-height:1; letter-spacing:-0.005em; }
+  .sw .hex  { font-family:var(--f-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; }
+  .sw.light { color:var(--ink); }
+  .sw.dark  { color:var(--bg); }
+  .sw .role { font-family:var(--f-mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; opacity:.7; }
+
+  .pair {
+    margin-top:24px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;
+  }
+  .pair > div {
+    border:1px solid var(--ink); padding:16px 18px;
+  }
+  .pair h4 { font-family:var(--f-sans); font-size:13px; margin:0 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+  .pair p { margin:0; font-size:13px; color:var(--ink-3); }
+  .pair .bullets { font-family:var(--f-mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.06em; margin-top:8px; text-transform:uppercase; }
+
+  /* ---------- TYPE ---------- */
+  .type-grid { display:grid; grid-template-columns:160px 1fr 220px; gap:24px; align-items:baseline; padding:18px 0; border-top:1px dashed var(--bg-3); }
+  .type-grid:first-child { border-top:0; padding-top:0; }
+  .type-grid .label { font-family:var(--f-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
+  .type-grid .spec  { font-family:var(--f-mono); font-size:11px; letter-spacing:.06em; color:var(--ink-3); text-align:right; }
+  .type-display-1 { font-family:var(--f-display); font-weight:900; font-size:96px; line-height:0.84; text-transform:uppercase; letter-spacing:-0.03em; }
+  .type-display-2 { font-family:var(--f-display); font-weight:900; font-size:64px; line-height:0.9; text-transform:uppercase; letter-spacing:-0.025em; }
+  .type-h1 { font-family:var(--f-sans); font-weight:800; font-size:40px; line-height:1.05; letter-spacing:-0.015em; }
+  .type-h2 { font-family:var(--f-sans); font-weight:700; font-size:24px; line-height:1.15; letter-spacing:-0.01em; }
+  .type-body { font-family:var(--f-body); font-size:17px; line-height:1.55; color:var(--ink-2); max-width:60ch; }
+  .type-small { font-family:var(--f-body); font-size:13.5px; line-height:1.5; color:var(--ink-3); }
+  .type-mono  { font-family:var(--f-mono); font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+
+  /* ---------- LOGO LOCKUP ---------- */
+  .logo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .logo-tile {
+    border:1px solid var(--ink); padding:36px; aspect-ratio:1/0.7;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .logo-tile .tag { position:absolute; bottom:10px; left:12px; font-family:var(--f-mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
+  .logo-tile.dark { background:var(--ink); }
+  .logo-tile.dark .tag { color:#A89D85; }
+  .logo-tile.yellow { background:var(--yes); }
+  .logo-lockup {
+    font-family:var(--f-display); font-weight:900; text-transform:uppercase;
+    font-size:54px; line-height:0.85; letter-spacing:-0.02em; color:var(--ink);
+    display:inline-flex; align-items:baseline; gap:0;
+  }
+  .logo-lockup .y {
+    background:var(--yes); padding:0 12px 4px; transform:skew(-6deg);
+    color:var(--ink); margin-left:4px;
+  }
+  .logo-tile.dark .logo-lockup { color:var(--bg); }
+  .logo-tile.dark .logo-lockup .y { color:var(--ink); }
+  .logo-tile.yellow .logo-lockup .y { background:var(--ink); color:var(--yes); }
+
+  /* Stacked stamp mark */
+  .stamp-mark {
+    display:inline-flex; flex-direction:column; align-items:flex-start;
+    font-family:var(--f-display); font-weight:900; text-transform:uppercase;
+    line-height:0.82; letter-spacing:-0.02em;
+  }
+  .stamp-mark .row1 { font-size:36px; color:var(--ink); }
+  .stamp-mark .row2 { font-size:50px; color:var(--ink); background:var(--yes); padding:0 8px 3px; margin-top:2px; }
+
+  /* ---------- COMPONENTS ---------- */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .panel {
+    border:1px solid var(--ink); padding:24px; background:var(--bg);
+  }
+  .panel.dark { background:var(--ink); color:var(--bg); }
+  .panel.yellow { background:var(--yes); }
+
+  /* Button system */
+  .btn { font-family:var(--f-sans); font-weight:800; letter-spacing:.02em; text-transform:uppercase;
+    border:1.5px solid var(--ink); padding:12px 18px; font-size:13px; line-height:1;
+    display:inline-flex; align-items:center; gap:10px; cursor:pointer;
+    background:var(--bg); color:var(--ink);
+  }
+  .btn .arr { font-family:var(--f-display); font-size:14px; }
+  .btn:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 0 var(--ink); }
+  .btn.primary  { background:var(--yes); }
+  .btn.invert   { background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .btn.invert:hover { box-shadow:4px 4px 0 0 var(--yes); }
+  .btn.danger   { background:var(--tomato); color:#fff; border-color:var(--ink); }
+  .btn.ghost    { background:transparent; }
+  .btn-row { display:flex; gap:12px; flex-wrap:wrap; }
+
+  /* Tag / chip */
+  .tag {
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--f-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    border:1px solid var(--ink); padding:4px 10px; border-radius:var(--r-pill);
+    background:var(--bg);
+  }
+  .tag.yellow { background:var(--yes); }
+  .tag.tomato { background:var(--tomato); color:#fff; }
+  .tag.dark { background:var(--ink); color:var(--bg); }
+  .tag .dot { width:6px; height:6px; border-radius:50%; background:var(--ink); }
+  .tag.live .dot { background:var(--tomato); box-shadow:0 0 0 3px rgba(229,72,42,.18); animation:pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.4); opacity:.6; } }
+
+  /* Photo placeholder — striped, with monospace label */
+  .photo {
+    background-color:var(--bg-2);
+    background-image:repeating-linear-gradient(135deg, transparent 0 14px, rgba(20,18,16,.06) 14px 15px);
+    border:1px solid var(--ink);
+    aspect-ratio:4/3;
+    display:flex; align-items:flex-end; justify-content:flex-start;
+    padding:14px;
+    position:relative;
+  }
+  .photo .label {
+    font-family:var(--f-mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
+    background:var(--bg); padding:4px 8px; border:1px solid var(--ink);
+  }
+  .photo.tall { aspect-ratio:3/4; }
+  .photo.wide { aspect-ratio:16/7; }
+
+  /* Show card */
+  .show-card {
+    display:flex; flex-direction:column; gap:0; border:1px solid var(--ink); background:var(--bg);
+    overflow:hidden;
+  }
+  .show-card .photo { border:0; border-bottom:1px solid var(--ink); aspect-ratio:5/4; }
+  .show-card .body { padding:16px 18px 18px; }
+  .show-card .row1 { display:flex; justify-content:space-between; align-items:center; }
+  .show-card h3 { font-family:var(--f-display); font-size:28px; text-transform:uppercase; letter-spacing:-0.02em; line-height:0.95; margin:6px 0 8px; }
+  .show-card .meta { display:flex; gap:10px; align-items:center; font-family:var(--f-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); }
+  .show-card .meta b { color:var(--ink); font-weight:700; }
+  .show-card .cta { display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:14px; border-top:1px dashed var(--bg-3); }
+  .show-card .price { font-family:var(--f-display); font-size:26px; }
+
+  /* Form */
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field label { font-family:var(--f-mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
+  .field input, .field select, .field textarea {
+    border:1.5px solid var(--ink); background:var(--bg); padding:12px 14px;
+    font-family:var(--f-body); font-size:15px; color:var(--ink); border-radius:0;
+    outline:0;
+  }
+  .field input:focus { box-shadow:4px 4px 0 0 var(--yes); }
+
+  /* Voice / tone block */
+  .voice-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .voice-grid .card {
+    border:1px solid var(--ink); padding:18px 20px;
+  }
+  .voice-grid .yes b { color:var(--ink); }
+  .voice-grid .no  b { color:var(--tomato-deep); }
+  .voice-grid h5 { font-family:var(--f-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; margin:0 0 10px; }
+  .voice-grid p { margin:0 0 6px; font-size:14px; color:var(--ink-2); }
+  .voice-grid p::before { content:"›"; color:var(--ink-4); margin-right:8px; font-family:var(--f-mono); }
+  .voice-grid .no p::before { content:"✕"; color:var(--tomato); }
+
+  /* Quote pull (improv style: big quotation mark) */
+  .pull {
+    border:1px solid var(--ink); background:var(--yes);
+    padding:32px 32px 28px; position:relative; overflow:hidden;
+  }
+  .pull .qmark {
+    position:absolute; top:-32px; right:-8px;
+    font-family:var(--f-display); font-size:240px; color:var(--ink); opacity:.85;
+    line-height:1;
+  }
+  .pull blockquote {
+    margin:0; font-family:var(--f-display); font-weight:900; font-size:42px; line-height:0.96;
+    text-transform:uppercase; letter-spacing:-0.02em; max-width:24ch; position:relative;
+  }
+  .pull cite {
+    font-family:var(--f-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink); margin-top:18px; display:block; font-style:normal;
+  }
+
+  /* Mobile preview frames */
+  .mob-row { display:grid; grid-template-columns:repeat(3, 375px); gap:32px; justify-content:center; }
+  .mob { width:375px; min-height:720px; border:1.5px solid var(--ink); background:var(--bg); padding:16px; display:flex; flex-direction:column; gap:14px; position:relative; }
+  .mob .mob-tag { position:absolute; top:-1px; left:-1px; background:var(--ink); color:var(--bg); font-family:var(--f-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; padding:5px 10px; }
+  .mob-bar { display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--ink); }
+  .mob-bar .wm { font-family:var(--f-display); font-size:22px; letter-spacing:-0.02em; text-transform:uppercase; line-height:1; }
+  .mob-bar .wm .y { background:var(--yes); color:var(--ink); padding:0 6px 2px; transform:skew(-6deg); display:inline-block; margin-left:2px; }
+  .mob-bar .ham { width:36px; height:36px; border:1.5px solid var(--ink); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; background:var(--bg); }
+  .mob-bar .ham span { display:block; width:16px; height:1.5px; background:var(--ink); }
+  .mob-tabs { margin-top:auto; display:flex; gap:0; border-top:1.5px solid var(--ink); margin-left:-16px; margin-right:-16px; margin-bottom:-16px; background:var(--bg); }
+  .mob-tabs a { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px 12px; color:var(--ink-3); font-family:var(--f-mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; border-right:1px solid var(--bg-3); }
+  .mob-tabs a:last-child { border-right:0; }
+  .mob-tabs a .ic { width:18px; height:18px; border:1.5px solid currentColor; }
+  .mob-tabs a.active { color:var(--ink); background:var(--yes); }
+  .mob-tabs a.active .ic { background:var(--ink); border-color:var(--ink); }
+  .mob-kpi { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .mob-kpi .card { border:1px solid var(--ink); padding:10px 12px; background:var(--bg); }
+  .mob-kpi .card .lab { font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
+  .mob-kpi .card .num { font-family:var(--f-display); font-size:26px; line-height:1; margin-top:4px; color:var(--ink); }
+  .mob-kpi .card .sub { font-family:var(--f-mono); font-size:9.5px; color:var(--ink-3); margin-top:2px; }
+  .mob-roster { display:flex; flex-direction:column; gap:8px; }
+  .mob-roster .row { display:flex; align-items:center; gap:10px; border:1px solid var(--ink); padding:10px 12px; background:var(--bg); }
+  .mob-roster .av { width:34px; height:34px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-family:var(--f-sans); font-weight:800; font-size:11px; color:var(--ink); box-shadow:inset 0 0 0 1px rgba(20,18,16,.2); background:linear-gradient(135deg, #FFC629, #FFE7A0); }
+  .mob-roster .row .name { font-family:var(--f-sans); font-size:14px; font-weight:700; color:var(--ink); line-height:1.1; }
+  .mob-roster .row .meta { font-family:var(--f-mono); font-size:10px; color:var(--ink-3); letter-spacing:.04em; margin-top:2px; }
+  .mob-roster .row .end { margin-left:auto; }
+  .mob-roster .row .end .tag { font-family:var(--f-mono); font-size:9.5px; padding:3px 7px; border:1px solid var(--ink); border-radius:999px; background:var(--yes); letter-spacing:.08em; text-transform:uppercase; }
+  .mob-cta { position:sticky; bottom:0; border-top:1.5px solid var(--ink); margin-left:-16px; margin-right:-16px; padding:12px 16px; background:var(--bg); display:flex; gap:8px; }
+  .mob-cta .btn { flex:1; padding:14px; font-family:var(--f-sans); font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:.02em; border:1.5px solid var(--ink); background:var(--yes); color:var(--ink); display:flex; align-items:center; justify-content:center; gap:8px; }
+  .stack-explain { border:1px solid var(--ink); padding:20px 22px; background:var(--bg-2); display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-bottom:32px; }
+  .stack-explain .item h4 { font-family:var(--f-sans); font-size:14px; margin:0 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+  .stack-explain .item p { margin:0; font-size:13px; color:var(--ink-3); line-height:1.45; }
+  .stack-explain .item code { font-family:var(--f-mono); font-size:11px; background:var(--bg); border:1px solid var(--bg-3); padding:1px 5px; }
+  .bp-table { width:100%; border-collapse:collapse; margin-top:16px; }
+  .bp-table th, .bp-table td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--bg-3); font-size:13px; }
+  .bp-table th { font-family:var(--f-mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); font-weight:500; border-bottom:1px solid var(--ink); }
+  .bp-table td code { font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 6px; }
+
+  /* Footer / specimen */
+  .specimen {
+    background:var(--ink); color:var(--bg);
+    margin-top:64px; padding:48px 56px; border:1px solid var(--ink);
+  }
+  .specimen .big {
+    font-family:var(--f-display); font-size:148px; line-height:0.84; text-transform:uppercase; letter-spacing:-0.035em;
+  }
+  .specimen .big em {
+    font-style:normal; background:var(--yes); color:var(--ink); padding:0 14px 6px; transform:skew(-6deg); display:inline-block;
+  }
+  .specimen .meta {
+    margin-top:24px; display:flex; gap:36px; color:#A89D85;
+    font-family:var(--f-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  }
+  .specimen .meta b { color:var(--bg); }
+
+  /* Misc */
+  .stack > * + * { margin-top:16px; }
+  .grid-spec { display:grid; grid-template-columns:repeat(12,1fr); gap:8px; }
+  .grid-spec .col { aspect-ratio:1/4; background:var(--yes); opacity:.35; border:1px dashed var(--yes-deep); }
+  .grid-spec .col:nth-child(odd) { opacity:.18; }
+
+  .principle {
+    display:grid; grid-template-columns:48px 1fr; gap:18px;
+    padding:18px 0; border-top:1px dashed var(--bg-3);
+  }
+  .principle:first-of-type { border-top:0; padding-top:0; }
+  .principle .n { font-family:var(--f-display); font-size:38px; line-height:0.9; color:var(--yes-deep); }
+  .principle h4 { font-family:var(--f-sans); font-size:18px; margin:0 0 4px; font-weight:800; letter-spacing:-0.005em; }
+  .principle p { margin:0; color:var(--ink-3); font-size:14px; max-width:62ch; }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+  <!-- ============ TOPBAR ============ -->
+  <div class="topbar">
+    <div class="mark">
+      <span class="wordmark">Big<span class="yes-dot">Yes</span></span>
+    </div>
+    <div class="crumbs">Brand · Design Language · v0.1 · May 2026</div>
+  </div>
+
+  <!-- ============ HERO ============ -->
+  <section style="padding-top:32px;">
+    <div class="hero">
+      <div class="stamp">★ Say yes, and ★</div>
+      <div class="eyebrow" style="color:#C9BFA8;">001 — The big idea</div>
+      <h1>
+        Yes<span class="swatch">,</span><br/>
+        <span class="underline">and&nbsp;then&nbsp;some.</span>
+      </h1>
+      <div class="hero-meta">
+        <div><b>Audience</b>improvisers, students,<br/>theatre nerds, first-timers</div>
+        <div><b>Personality</b>warm · loud ·<br/>generous · a little messy</div>
+        <div><b>Promise</b>show up curious,<br/>leave a bit braver</div>
+        <div><b>Vibe</b>after-show poster,<br/>not a SaaS dashboard</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRINCIPLES ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">02 / Principles</div>
+      <div>
+        <div class="sec-title">Four rules<br/>we follow.</div>
+        <div class="sec-sub">Improv has rules. So does the brand. Everything else is improvisation.</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px 64px;">
+      <div class="principle">
+        <div class="n">01</div>
+        <div>
+          <h4>Loud type, quiet UI.</h4>
+          <p>Headlines do the heavy lifting. Forms, tables, and chrome stay almost invisible so the words and faces can shout.</p>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="n">02</div>
+        <div>
+          <h4>One yellow, used boldly.</h4>
+          <p>Marigold yellow is the brand. It's a highlighter, a stage light, a sticker. Use it as a block — never as a gradient, never as a tint behind body text.</p>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="n">03</div>
+        <div>
+          <h4>Photography over illustration.</h4>
+          <p>Real performers, real audiences, mid-laugh. If you don't have the photo yet, use a striped placeholder. Don't fake it with stock or AI art.</p>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="n">04</div>
+        <div>
+          <h4>Paper, not screens.</h4>
+          <p>The base is warm paper, not white or grey. Borders are hairline ink. The whole thing should read like a risograph poster before it reads like a website.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COLOR ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">03 / Color</div>
+      <div>
+        <div class="sec-title">Paper, ink,<br/>marigold, tomato.</div>
+        <div class="sec-sub">Four tones do almost everything. Yellow is the only accent that earns a name. Tomato red is reserved for warnings, live states, and the occasional underline.</div>
+      </div>
+    </div>
+
+    <div class="swatches">
+      <div class="sw light" style="background:var(--yes);">
+        <div><div class="role">Primary</div><div class="name">Marigold</div></div>
+        <div class="hex">#FFC629</div>
+      </div>
+      <div class="sw light" style="background:var(--yes-deep); color:var(--ink);">
+        <div><div class="role">Primary · deep</div><div class="name">Marigold 700</div></div>
+        <div class="hex">#E5A800</div>
+      </div>
+      <div class="sw light" style="background:var(--yes-soft);">
+        <div><div class="role">Primary · soft</div><div class="name">Honey</div></div>
+        <div class="hex">#FFE7A0</div>
+      </div>
+      <div class="sw dark" style="background:var(--ink);">
+        <div><div class="role">Ink</div><div class="name">Stage Black</div></div>
+        <div class="hex">#141210</div>
+      </div>
+      <div class="sw light" style="background:var(--bg);">
+        <div><div class="role">Surface</div><div class="name">Paper</div></div>
+        <div class="hex">#F4EEE2</div>
+      </div>
+      <div class="sw light" style="background:var(--bg-2);">
+        <div><div class="role">Surface · deep</div><div class="name">Paper 200</div></div>
+        <div class="hex">#ECE3D0</div>
+      </div>
+      <div class="sw dark" style="background:var(--tomato);">
+        <div><div class="role">Accent · alert</div><div class="name">Tomato</div></div>
+        <div class="hex">#E5482A</div>
+      </div>
+      <div class="sw light" style="background:var(--bg-3);">
+        <div><div class="role">Divider</div><div class="name">Paper 300</div></div>
+        <div class="hex">#E2D6BB</div>
+      </div>
+      <div class="sw light" style="background:#fff; border:1px solid var(--ink);">
+        <div><div class="role">Reserved</div><div class="name">White</div></div>
+        <div class="hex">#FFFFFF · print only</div>
+      </div>
+      <div class="sw light" style="background:#5C544A; color:#F4EEE2;">
+        <div><div class="role">Ink · muted</div><div class="name">Ink 600</div></div>
+        <div class="hex">#5C544A</div>
+      </div>
+      <div class="sw light" style="background:#8A8073; color:var(--ink);">
+        <div><div class="role">Ink · hint</div><div class="name">Ink 500</div></div>
+        <div class="hex">#8A8073</div>
+      </div>
+      <div class="sw dark" style="background:var(--tomato-deep);">
+        <div><div class="role">Alert · deep</div><div class="name">Tomato 800</div></div>
+        <div class="hex">#B83218</div>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div>
+        <h4>Hero pairings</h4>
+        <p>Ink + marigold, paper + ink, marigold + ink. Never marigold + tomato.</p>
+        <div class="bullets">— stage black / marigold · A++<br/>— paper / stage black · AAA<br/>— marigold / stage black · AAA</div>
+      </div>
+      <div>
+        <h4>Body pairings</h4>
+        <p>Body text only on paper, paper deep, or ink. Marigold is never a background for body text — it's for headlines and stickers only.</p>
+        <div class="bullets">— paper / ink 800 · 14.2:1<br/>— paper 200 / ink 800 · 12.1:1<br/>— ink / paper · 13.8:1</div>
+      </div>
+      <div>
+        <h4>Restricted pairings</h4>
+        <p>Tomato is reserved. It only appears on errors, "LIVE" states, and the highlight stripe under a key word in a headline.</p>
+        <div class="bullets">— ink / tomato · 4.6:1 ✓<br/>— paper / tomato · 3.6:1 ⚠ large only<br/>— marigold / tomato · ✕ NEVER</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TYPE ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">04 / Typography</div>
+      <div>
+        <div class="sec-title">Three voices,<br/>one of them shouts.</div>
+        <div class="sec-sub">Archivo Black does the shouting. Archivo handles structure. Manrope is the calm one that reads paragraphs. DM Mono labels things.</div>
+      </div>
+    </div>
+
+    <div class="type-grid">
+      <div class="label">Display · XL</div>
+      <div class="type-display-1">Say yes, and.</div>
+      <div class="spec">Archivo&nbsp;Black 900<br/>96 / 80 · -3% tracking</div>
+    </div>
+    <div class="type-grid">
+      <div class="label">Display · L</div>
+      <div class="type-display-2">Tonight: free show, no rules</div>
+      <div class="spec">Archivo&nbsp;Black 900<br/>64 / 58 · -2.5% tracking</div>
+    </div>
+    <div class="type-grid">
+      <div class="label">Heading H1</div>
+      <div class="type-h1">Curriculum & classes for every level</div>
+      <div class="spec">Archivo 800<br/>40 / 42 · -1.5% tracking</div>
+    </div>
+    <div class="type-grid">
+      <div class="label">Heading H2</div>
+      <div class="type-h2">Drop-in workshops every Sunday at 5pm</div>
+      <div class="spec">Archivo 700<br/>24 / 28 · -1% tracking</div>
+    </div>
+    <div class="type-grid">
+      <div class="label">Body · L</div>
+      <div class="type-body">BigYes is a community of improvisers, teachers, and people who came to one class and never quite left. Our studio is a soft place to try hard things — public speaking, scene work, characters that surprise you.</div>
+      <div class="spec">Manrope 400<br/>17 / 26</div>
+    </div>
+    <div class="type-grid">
+      <div class="label">Body · S</div>
+      <div class="type-small">Used for captions, secondary text in cards, and form helper text. Always at least 13.5px so it stays comfortable to read.</div>
+      <div class="spec">Manrope 400<br/>13.5 / 20</div>
+    </div>
+    <div class="type-grid">
+      <div class="label">Mono · label</div>
+      <div class="type-mono">Eyebrow · 11:30 Mon · ENS 201 · TEACHER · KIVA</div>
+      <div class="spec">DM Mono 500<br/>11.5 · +14% tracking · UPPER</div>
+    </div>
+  </section>
+
+  <!-- ============ LOGO / MARK ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">05 / Mark</div>
+      <div>
+        <div class="sec-title">The wordmark<br/>is the logo.</div>
+        <div class="sec-sub">"BigYes" set in Archivo Black, with the "Yes" boxed in marigold and skewed -6°. The skew is the brand's smirk — it should always lean forward, never sit upright, never sit reversed.</div>
+      </div>
+    </div>
+
+    <div class="logo-grid">
+      <div class="logo-tile">
+        <span class="logo-lockup">Big<span class="y">Yes</span></span>
+        <div class="tag">Primary · on paper</div>
+      </div>
+      <div class="logo-tile dark">
+        <span class="logo-lockup">Big<span class="y">Yes</span></span>
+        <div class="tag">Inverted · on ink</div>
+      </div>
+      <div class="logo-tile yellow">
+        <span class="logo-lockup">Big<span class="y">Yes</span></span>
+        <div class="tag">Mono · on marigold</div>
+      </div>
+      <div class="logo-tile">
+        <div class="stamp-mark">
+          <span class="row1">Big</span>
+          <span class="row2">Yes</span>
+        </div>
+        <div class="tag">Stacked · square format</div>
+      </div>
+      <div class="logo-tile" style="background:var(--ink);">
+        <div style="display:inline-flex; align-items:center; gap:0;">
+          <span style="font-family:var(--f-display); font-size:80px; color:var(--yes); line-height:1; transform:translateY(-4px);">B</span>
+          <span style="font-family:var(--f-display); font-size:80px; color:var(--bg); line-height:1;">Y</span>
+        </div>
+        <div class="tag">Monogram · favicon / app</div>
+      </div>
+      <div class="logo-tile" style="background:var(--bg-2);">
+        <span style="font-family:var(--f-display); font-size:120px; color:var(--yes); line-height:1; transform:rotate(-6deg);">★</span>
+        <div class="tag">Spot · "yes, and" stamp</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VOICE ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">06 / Voice</div>
+      <div>
+        <div class="sec-title">Loud, warm,<br/>self-aware.</div>
+        <div class="sec-sub">We sound like the friend who drags you to a show. Confident, never slick. Inviting, never desperate. We poke fun at ourselves first.</div>
+      </div>
+    </div>
+
+    <div class="voice-grid">
+      <div class="card yes">
+        <h5>★ Say it like this</h5>
+        <p><b>Come for the show. Stay for the pizza after.</b></p>
+        <p>Eight weeks. Twelve people. One brain.</p>
+        <p>You're not bad at this — you're new at this.</p>
+        <p>Doors at 8, weirdness at 8:30.</p>
+        <p>Booked out? Drop your email, we'll find you a seat.</p>
+      </div>
+      <div class="card no">
+        <h5>✕ Not like this</h5>
+        <p><b>Unlock your creative potential with our proprietary methodology.</b></p>
+        <p>Join the BigYes family today!</p>
+        <p>Anyone can do improv — even YOU.</p>
+        <p>Synergy. Pivot. Leverage. Activate.</p>
+        <p>An exclusive opportunity for serious performers only.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="pull">
+        <span class="qmark">"</span>
+        <blockquote>My monthly dose of laughter and good vibes — every time.</blockquote>
+        <cite>— a student, after their third class</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPONENTS ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">07 / Components</div>
+      <div>
+        <div class="sec-title">Buttons, cards,<br/>tags, fields.</div>
+        <div class="sec-sub">Every interactive element has a 1.5px ink border and a 4-px hard shadow. Nothing floats. Hover lifts the element up-and-left with a hard offset shadow — like a sticker peeling off a poster.</div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="eyebrow" style="margin-bottom:14px;">Buttons · hover to lift</div>
+      <div class="btn-row">
+        <button class="btn primary">Buy tickets <span class="arr">→</span></button>
+        <button class="btn invert">Book a class <span class="arr">→</span></button>
+        <button class="btn">See the show</button>
+        <button class="btn ghost">More info</button>
+        <button class="btn danger">Cancel booking</button>
+      </div>
+    </div>
+
+    <!-- Tags / chips -->
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="eyebrow" style="margin-bottom:14px;">Tags · status, level, format</div>
+      <div class="btn-row">
+        <span class="tag yellow"><span class="dot"></span> Sold out</span>
+        <span class="tag tomato live"><span class="dot"></span> Live now</span>
+        <span class="tag dark"><span class="dot" style="background:var(--yes);"></span> Featured</span>
+        <span class="tag">Level 1 · Foundations</span>
+        <span class="tag">Drop-in</span>
+        <span class="tag">Spanish · español</span>
+        <span class="tag">English</span>
+        <span class="tag">8 weeks</span>
+      </div>
+    </div>
+
+    <!-- Show cards -->
+    <div class="grid-3">
+      <div class="show-card">
+        <div class="photo" style="aspect-ratio:5/4;"><span class="label">photo · cast in scene</span></div>
+        <div class="body">
+          <div class="row1">
+            <span class="tag yellow"><span class="dot"></span> This Friday</span>
+            <span class="mono">21:30</span>
+          </div>
+          <h3>The Big Show</h3>
+          <div class="meta"><b>Comte Borrell 143</b> · 90 min · EN</div>
+          <div class="cta">
+            <div class="price">€12</div>
+            <button class="btn primary" style="padding:10px 14px; font-size:12px;">Get tickets →</button>
+          </div>
+        </div>
+      </div>
+      <div class="show-card">
+        <div class="photo" style="aspect-ratio:5/4;"><span class="label">photo · workshop circle</span></div>
+        <div class="body">
+          <div class="row1">
+            <span class="tag">Starts Sept 12</span>
+            <span class="mono">8 wks</span>
+          </div>
+          <h3>Level 1 · Foundations</h3>
+          <div class="meta"><b>Teacher · Kiva</b> · Mondays · EN</div>
+          <div class="cta">
+            <div class="price">€220</div>
+            <button class="btn invert" style="padding:10px 14px; font-size:12px;">Save my spot →</button>
+          </div>
+        </div>
+      </div>
+      <div class="show-card">
+        <div class="photo" style="aspect-ratio:5/4;"><span class="label">photo · Sunday jam, audience</span></div>
+        <div class="body">
+          <div class="row1">
+            <span class="tag tomato live"><span class="dot"></span> Drop-in</span>
+            <span class="mono">Sun · 17:00</span>
+          </div>
+          <h3>Sunday Jam</h3>
+          <div class="meta"><b>Pay-what-you-can</b> · 60 min · ES/EN</div>
+          <div class="cta">
+            <div class="price">€5</div>
+            <button class="btn" style="padding:10px 14px; font-size:12px;">Just turn up →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="grid-2" style="margin-top:20px;">
+      <div class="panel">
+        <div class="eyebrow" style="margin-bottom:14px;">Forms · plain ink borders, yellow focus</div>
+        <div class="stack">
+          <div class="field"><label>Your name</label><input value="Maria Bernardes" /></div>
+          <div class="field"><label>Email</label><input value="maria@bigyes.es" /></div>
+          <div class="field"><label>Pick a class</label>
+            <select><option>Level 1 · Foundations · Mondays</option></select>
+          </div>
+          <div class="field"><label>Anything we should know?</label><textarea rows="3">I've never done improv before — bit nervous!</textarea></div>
+          <button class="btn primary" style="align-self:flex-start;">Save my spot <span class="arr">→</span></button>
+        </div>
+      </div>
+
+      <!-- Panel inversions -->
+      <div class="stack">
+        <div class="panel dark">
+          <div class="eyebrow" style="color:#A89D85;">Inverted panel</div>
+          <h3 class="display" style="font-size:38px; margin:8px 0 6px;">Tonight at 21:30</h3>
+          <p style="color:#C9BFA8; margin:0 0 16px; max-width:36ch;">A free, unfiltered showcase of every student on the Level 4 track. Doors at nine.</p>
+          <button class="btn primary">Reserve a seat →</button>
+        </div>
+        <div class="panel yellow">
+          <div class="eyebrow" style="color:#5C440A;">Marigold callout</div>
+          <h3 class="display" style="font-size:38px; margin:8px 0 6px;">First class free.</h3>
+          <p style="margin:0 0 16px; max-width:36ch; color:#3A2A05;">Try a foundations class, no commitment. If you don't laugh once, we'll refund you in pizza.</p>
+          <button class="btn invert">Claim it →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LAYOUT ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">08 / Layout</div>
+      <div>
+        <div class="sec-title">12 columns,<br/>but use 2 or 3.</div>
+        <div class="sec-sub">A 12-col grid with 24-px gutters underpins everything. Real layouts almost never use all twelve — they break into 2- or 3-up bands with one column of breathing room. Headlines may bleed across the gutter into the next column on purpose.</div>
+      </div>
+    </div>
+
+    <div class="grid-spec" style="margin-bottom:24px;">
+      <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+      <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+      <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+    </div>
+
+    <!-- Sample homepage band -->
+    <div class="panel" style="padding:32px;">
+      <div class="eyebrow" style="margin-bottom:8px;">Sample band · homepage hero</div>
+      <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:32px; align-items:flex-end;">
+        <div>
+          <div class="mono" style="margin-bottom:8px;">★ Since 2019 · Barcelona</div>
+          <h2 class="display" style="font-size:96px; margin:0;">
+            We&nbsp;teach<br/>people to<br/>say <span style="background:var(--yes); padding:0 14px 6px; transform:skew(-6deg); display:inline-block;">yes,</span>
+          </h2>
+          <p class="lede" style="margin-top:20px;">…and then mean it. Improv classes, drop-in jams, and a Friday show that sells out faster than the bar can pour cañas.</p>
+          <div class="btn-row" style="margin-top:20px;">
+            <button class="btn primary">Browse classes →</button>
+            <button class="btn">This week's shows →</button>
+          </div>
+        </div>
+        <div class="photo tall"><span class="label">photo · hero · cast portrait</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MOTION ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">09 / Motion</div>
+      <div>
+        <div class="sec-title">Snap, don't<br/>fade.</div>
+        <div class="sec-sub">Movement should feel like a cue card slamming on a desk. 120 – 180 ms, hard easing. Nothing dissolves. Hover offsets are instant. Page transitions clip, not fade.</div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="panel">
+        <div class="eyebrow">Snap-in</div>
+        <h4 class="h-sans" style="font-size:18px; margin:6px 0;">120 ms · cubic-bezier(.2,.8,.2,1)</h4>
+        <p class="body" style="font-size:13.5px; color:var(--ink-3);">Buttons, hovers, drawers, modal entry. The default for almost everything.</p>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Stamp</div>
+        <h4 class="h-sans" style="font-size:18px; margin:6px 0;">180 ms · cubic-bezier(.7,0,.2,1.4)</h4>
+        <p class="body" style="font-size:13.5px; color:var(--ink-3);">For confirmations — the "yes" stamp on a checkout. Slight overshoot, then settle.</p>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Never</div>
+        <h4 class="h-sans" style="font-size:18px; margin:6px 0;">Fade · ease-in-out · 300 ms+</h4>
+        <p class="body" style="font-size:13.5px; color:var(--ink-3);">No long fades, no parallax scroll, no animated gradients. We're a theatre brand, not a screensaver.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MOBILE ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">10 / Mobile</div>
+      <div>
+        <div class="sec-title">Mobile-first,<br/>poster-loud.</div>
+        <div class="sec-sub">The whole system collapses to a single column on phones — but it never loses its voice. Type stays loud (only one step down from desktop). Hit targets are 44 px minimum. Rows become cards. The yellow keeps shouting.</div>
+      </div>
+    </div>
+
+    <div class="stack-explain">
+      <div class="item">
+        <h4>Breakpoints</h4>
+        <p>Default = mobile. Add columns only above <code>sm 640</code>, <code>md 768</code>, <code>lg 1024</code>, <code>xl 1280</code>.</p>
+      </div>
+      <div class="item">
+        <h4>Flex everywhere</h4>
+        <p>Every row uses <code>display:flex</code> with <code>flex-wrap:wrap</code>. No fixed widths below 1024.</p>
+      </div>
+      <div class="item">
+        <h4>Hit targets</h4>
+        <p>Min <code>44×44 px</code>. Buttons are <code>padding:14px 16px</code> on mobile, not 12×18.</p>
+      </div>
+      <div class="item">
+        <h4>Type ramp shrinks once</h4>
+        <p>Display-xl 96 → <code>56</code> on mobile. H1 40 → <code>28</code>. Body stays <code>15</code>.</p>
+      </div>
+    </div>
+
+    <table class="bp-table">
+      <thead>
+        <tr><th>Surface</th><th>Mobile (default)</th><th>≥ sm 640</th><th>≥ md 768</th><th>≥ lg 1024</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Page chrome</td><td>Top bar + bottom tab bar</td><td>Top bar + drawer</td><td>Top bar + drawer</td><td>Persistent left sidebar</td></tr>
+        <tr><td>KPI strip</td><td>2 × 2 grid</td><td>2 × 2 grid</td><td>4-up row</td><td>4-up row</td></tr>
+        <tr><td>Roster</td><td>Stacked cards (no table)</td><td>Stacked cards</td><td>2-col cards</td><td>Full table</td></tr>
+        <tr><td>Show / class cards</td><td>1-up, full width</td><td>2-up</td><td>2-up</td><td>3-up</td></tr>
+        <tr><td>Side panels (volunteer pool, spontaneity)</td><td>Below main, full width</td><td>Below main</td><td>Below main</td><td>Right rail</td></tr>
+        <tr><td>Primary CTA</td><td>Sticky bottom bar</td><td>Inline</td><td>Inline</td><td>Inline</td></tr>
+        <tr><td>Hero display type</td><td><code>56 / 48 px</code></td><td><code>72</code></td><td><code>96</code></td><td><code>96–148</code></td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:48px;">
+      <div class="eyebrow" style="margin-bottom:14px;">Phone previews · 375 px</div>
+      <div class="mob-row">
+
+        <!-- Phone 1: Dashboard -->
+        <div class="mob">
+          <div class="mob-tag">Stage manager · dashboard</div>
+          <div class="mob-bar">
+            <span class="wm">Big<span class="y">Yes</span></span>
+            <div class="ham"><span></span><span></span><span></span></div>
+          </div>
+          <div>
+            <div class="eyebrow">Tonight</div>
+            <div class="display" style="font-size:36px; margin-top:4px;">The big<br/>show.</div>
+          </div>
+          <div class="mob-kpi">
+            <div class="card"><div class="lab">Active roster</div><div class="num">42</div><div class="sub">students</div></div>
+            <div class="card"><div class="lab">Cohorts</div><div class="num">7</div><div class="sub">total</div></div>
+            <div class="card" style="background:var(--yes);"><div class="lab">Shows · wk</div><div class="num">3</div><div class="sub">Fri / Sat / Sun</div></div>
+            <div class="card"><div class="lab">Open slots</div><div class="num">2</div><div class="sub">house / bar</div></div>
+          </div>
+          <div>
+            <div class="eyebrow" style="margin-bottom:8px;">Roster</div>
+            <div class="mob-roster">
+              <div class="row">
+                <div class="av" style="background:linear-gradient(135deg,#FB7185,#FBBF24);">AB</div>
+                <div><div class="name">Avery Brennan</div><div class="meta">L4 · Switchback · Active</div></div>
+                <div class="end"><span class="tag">★ Pool</span></div>
+              </div>
+              <div class="row">
+                <div class="av" style="background:linear-gradient(135deg,#818CF8,#FBBF24);">CH</div>
+                <div><div class="name">Cyrus Han</div><div class="meta">L5 · Loring Loop</div></div>
+                <div class="end"><span class="tag" style="background:var(--bg-2);">Touring</span></div>
+              </div>
+              <div class="row">
+                <div class="av" style="background:linear-gradient(135deg,#34D399,#FBBF24);">DM</div>
+                <div><div class="name">Devi Marchetti</div><div class="meta">L3 · No team · Rehearsing</div></div>
+                <div class="end"><span class="tag">★ Pool</span></div>
+              </div>
+              <div class="row">
+                <div class="av" style="background:linear-gradient(135deg,#FB7185,#FBBF24);">EP</div>
+                <div><div class="name">Eo Park</div><div class="meta">L2 · No team · Active</div></div>
+                <div class="end"><span class="tag" style="background:var(--bg-2);">Add</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="mob-tabs">
+            <a class="active"><div class="ic"></div>Stage</a>
+            <a><div class="ic"></div>Cohorts</a>
+            <a><div class="ic"></div>Shows</a>
+            <a><div class="ic"></div>You</a>
+          </div>
+        </div>
+
+        <!-- Phone 2: Show page with sticky CTA -->
+        <div class="mob">
+          <div class="mob-tag">Audience · show page</div>
+          <div class="mob-bar">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-family:var(--f-mono); font-size:11px; letter-spacing:.14em;">‹ Shows</span>
+            </div>
+            <span class="wm" style="font-size:18px;">Big<span class="y">Yes</span></span>
+          </div>
+          <div class="photo" style="aspect-ratio:5/4; margin:0;"><span class="label">photo · cast in scene</span></div>
+          <div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+              <span class="tag yellow"><span class="dot"></span> This Friday</span>
+              <span class="tag tomato live"><span class="dot"></span> Almost full</span>
+            </div>
+            <div class="display" style="font-size:44px; line-height:0.9;">The Big<br/>Show.</div>
+            <div class="mono" style="margin-top:10px; font-size:11px; color:var(--ink-3);">Comte Borrell 143 · 90 min · EN · 21:30</div>
+          </div>
+          <p class="body" style="font-size:14.5px; color:var(--ink-2); margin:0;">
+            A full-length improv comedy with the BigYes house cast. One word from you, ninety minutes from us. Doors at 21:00, weirdness at 21:30.
+          </p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+            <span class="tag">House cast</span>
+            <span class="tag">English</span>
+            <span class="tag">18+</span>
+          </div>
+          <div class="mob-cta">
+            <button class="btn" style="flex:0 0 auto; background:transparent; padding:14px 16px;">€12</button>
+            <button class="btn">Get tickets →</button>
+          </div>
+        </div>
+
+        <!-- Phone 3: Class enroll with form -->
+        <div class="mob">
+          <div class="mob-tag">Student · book a class</div>
+          <div class="mob-bar">
+            <span class="wm">Big<span class="y">Yes</span></span>
+            <div class="ham"><span></span><span></span><span></span></div>
+          </div>
+          <div>
+            <div class="eyebrow">Level 1 · Foundations</div>
+            <div class="display" style="font-size:36px; margin-top:4px;">Save<br/>your spot.</div>
+            <div class="mono" style="margin-top:8px; font-size:11px; color:var(--ink-3);">8 weeks · Mondays 19:00 · €220</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="field"><label>Your name</label><input value="Maria Bernardes" /></div>
+            <div class="field"><label>Email</label><input value="maria@bigyes.es" /></div>
+            <div class="field"><label>First time at BIG?</label>
+              <div style="display:flex; gap:8px; margin-top:2px;">
+                <button class="btn" style="flex:1; padding:12px; font-size:11px; background:var(--yes);">Yes</button>
+                <button class="btn ghost" style="flex:1; padding:12px; font-size:11px;">Done a class</button>
+              </div>
+            </div>
+          </div>
+          <div style="border:1px solid var(--ink); padding:14px; background:var(--yes-soft);">
+            <div class="eyebrow" style="color:#5C440A;">★ Heads up</div>
+            <p style="margin:6px 0 0; font-size:13.5px; color:var(--ink-2); line-height:1.45;">
+              First class is free. If you don't laugh once, we'll refund you in pizza.
+            </p>
+          </div>
+          <div class="mob-cta">
+            <button class="btn">Save my spot →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Stack maps -->
+    <div style="margin-top:64px;">
+      <div class="eyebrow" style="margin-bottom:14px;">Stack maps · how each desktop layout collapses</div>
+      <div class="grid-3" style="grid-template-columns:repeat(3,1fr); gap:16px;">
+        <div class="panel" style="padding:18px;">
+          <div class="eyebrow">Roster table</div>
+          <h4 class="h-sans" style="font-size:16px; margin:8px 0;">Table → stacked cards</h4>
+          <p class="body" style="font-size:13.5px; color:var(--ink-3); margin:0;">
+            Below <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">md 768</code> the
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">&lt;table&gt;</code> becomes a
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">.mob-roster</code> flex column.
+            Each row collapses to: avatar, name + meta, end-tag. Tap row to expand (no separate "Open" button needed).
+          </p>
+        </div>
+        <div class="panel" style="padding:18px;">
+          <div class="eyebrow">KPI strip</div>
+          <h4 class="h-sans" style="font-size:16px; margin:8px 0;">4-up row → 2×2 grid</h4>
+          <p class="body" style="font-size:13.5px; color:var(--ink-3); margin:0;">
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">grid-cols-2 md:grid-cols-4</code>.
+            One card per breakpoint stays marigold to keep the system colour visible on a phone.
+          </p>
+        </div>
+        <div class="panel" style="padding:18px;">
+          <div class="eyebrow">Sidebar nav</div>
+          <h4 class="h-sans" style="font-size:16px; margin:8px 0;">Sidebar → bottom tab bar</h4>
+          <p class="body" style="font-size:13.5px; color:var(--ink-3); margin:0;">
+            Below <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">lg 1024</code>, the
+            left sidebar moves to a 4-tab bottom bar (Stage / Cohorts / Shows / You). Secondary nav goes inside the hamburger drawer.
+            The active tab fills with marigold — same gesture as the desktop active state.
+          </p>
+        </div>
+        <div class="panel" style="padding:18px;">
+          <div class="eyebrow">Show cards</div>
+          <h4 class="h-sans" style="font-size:16px; margin:8px 0;">3-up grid → 1-up stack</h4>
+          <p class="body" style="font-size:13.5px; color:var(--ink-3); margin:0;">
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">grid-cols-1 sm:grid-cols-2 lg:grid-cols-3</code>.
+            Photo stays at top, body unchanged. Price + CTA in the footer go full-width, side-by-side via flex.
+          </p>
+        </div>
+        <div class="panel" style="padding:18px;">
+          <div class="eyebrow">Primary CTA</div>
+          <h4 class="h-sans" style="font-size:16px; margin:8px 0;">Inline → sticky bottom</h4>
+          <p class="body" style="font-size:13.5px; color:var(--ink-3); margin:0;">
+            On detail pages (show, class, profile), the primary CTA detaches into a
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">position:sticky; bottom:0</code>
+            bar that sits above the tab bar. Marigold background, ink text, full width.
+          </p>
+        </div>
+        <div class="panel" style="padding:18px;">
+          <div class="eyebrow">Hero display</div>
+          <h4 class="h-sans" style="font-size:16px; margin:8px 0;">Two-step type ramp</h4>
+          <p class="body" style="font-size:13.5px; color:var(--ink-3); margin:0;">
+            Display-xl is <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">56 px</code> default,
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">72 px</code> at sm,
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">96 px</code> at md+. Use
+            <code style="font-family:var(--f-mono); font-size:11.5px; background:var(--bg-2); padding:1px 5px;">clamp(56px, 8vw, 148px)</code>
+            for fluid display headlines.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SPECIMEN ============ -->
+  <div class="specimen">
+    <div class="eyebrow" style="color:#A89D85;">Specimen · the brand at full volume</div>
+    <div class="big" style="margin-top:12px;">
+      Big<em>Yes</em><br/>
+      to&nbsp;Tuesday.
+    </div>
+    <div class="meta">
+      <div><b>Type</b> Archivo Black 900 · 148/124 · -3.5%</div>
+      <div><b>Ink</b> #141210 on #F4EEE2</div>
+      <div><b>Marigold</b> #FFC629 box · skew -6°</div>
+      <div><b>Set</b> Barcelona, sometime around 9pm</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

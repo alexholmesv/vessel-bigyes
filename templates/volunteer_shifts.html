@@ -257,7 +257,15 @@
   const ME       = { id: "{{ student_id }}", name: "{{ current_user_name | e }}" };
 
   /* ── Utilities ───────────────────────────────────────────────────────── */
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c]));
+
+  function fmtDateLong(iso) {
+    if (!iso) return '';
+    try {
+      const d = new Date(iso + 'T12:00:00');
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch { return iso; }
+  }
 
   let toastEl;
   function flashToast(msg, variant='ghost'){
@@ -304,7 +312,8 @@
           <div class="flex-1 min-w-0">
             <div class="font-display text-[15px] leading-tight" style="color:var(--by-ink)">${esc(show.title)}</div>
             <div class="flex items-center gap-2 mt-1 flex-wrap">
-              <span class="by-eyebrow">${esc(show.day || show.date)}</span>
+              <span class="by-eyebrow">${esc(show.day)}</span>
+              ${show.date && show.date !== show.day ? `<span class="by-eyebrow" style="color:var(--by-ink-4)">·</span><span class="by-eyebrow">${esc(fmtDateLong(show.date))}</span>` : ''}
               ${show.time ? `<span class="by-eyebrow" style="color:var(--by-ink-4)">·</span><span class="by-eyebrow">${esc(show.time)}</span>` : ''}
               <span class="by-eyebrow" style="color:var(--by-ink-4)">·</span>
               <span class="by-eyebrow" style="color:var(--by-ink-2)">${esc(shift.role)}</span>
