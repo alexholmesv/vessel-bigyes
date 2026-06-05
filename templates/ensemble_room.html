@@ -151,7 +151,7 @@
   /* Live challenge card */
   .live-card { border:1px solid var(--by-ink); }
   .live-card.armed { border-color:var(--by-yes); box-shadow:var(--by-sh-yes); }
-  .live-card-inner { background:var(--by-bg-2); padding:18px; }
+  .live-card-inner { background:var(--by-yes); padding:18px; }
 
   /* Week strip — paper with amber today highlight */
   .week-col { flex:1 1 0; min-width:0; padding:8px 7px 10px; border-left:1px solid var(--by-bg-3); transition:background var(--by-snap); }
@@ -241,7 +241,7 @@
 </style>
 </head>
 
-<body class="min-h-screen">
+<body class="min-h-screen w-full overflow-x-hidden">
 
 <!-- Toast -->
 <div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.25rem;font-size:.8rem;font-weight:600;background:var(--by-yes);color:var(--by-ink);border:1.5px solid var(--by-ink);box-shadow:var(--by-sh-1);opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
@@ -314,10 +314,10 @@
   </button>
 </header>
 
-<div class="min-h-screen flex flex-col">
+<div class="min-h-screen flex flex-col w-full max-w-full">
 
   <!-- ══════ MAIN (full width) ══════ -->
-  <div class="flex flex-col min-w-0 flex-1">
+  <div class="flex flex-col min-w-0 flex-1 w-full">
 
     <!-- Sticky header -->
     <header id="page-header" class="sticky top-0 z-30" style="background:var(--by-bg);border-bottom:3px solid var(--by-yes);">
@@ -436,7 +436,7 @@
     </div>
 
     <!-- ══ Week at a Glance ══ -->
-    <section id="week-strip" class="mx-4 lg:mx-7 mt-5 border" style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-yes);">
+    <section id="week-strip" class="px-4 lg:px-7 mt-5 border" style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-yes);">
       <div class="px-4 py-3 flex items-center justify-between" style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
         <div class="font-display text-[22px]" style="color:var(--by-ink);">This Week</div>
         <button onclick="openMonthView()" class="h-8 px-3 text-[11.5px] flex items-center gap-1.5" style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-body);cursor:pointer;font-weight:600;">
@@ -464,138 +464,141 @@
       </div>
     </section>
 
-    <!-- ══ Activity Box ══ -->
-    <section id="activity-box" class="mx-4 lg:mx-7 mt-3 mb-5 border" style="background:var(--by-bg);border-color:var(--by-ink);border-top:3px solid var(--by-yes);">
-      <div class="px-5 py-3 flex items-center justify-between border-b" style="border-color:var(--by-ink);">
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="font-display text-[18px]" style="color:var(--by-ink);">Activity Box</span>
-          <span id="actCategory" class="chip text-[10px]" style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);">Warm-Up</span>
-          <span id="actCounter" class="by-eyebrow">1 / 50</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <span id="actDuration" class="by-eyebrow hidden sm:block">5 – 10 min</span>
-          <span class="by-eyebrow hidden sm:block">·</span>
-          <span id="actPlayers" class="by-eyebrow hidden sm:block">Whole group</span>
-        </div>
-      </div>
-      <div class="px-5 py-4 lg:flex lg:gap-8 lg:items-start">
-        <div class="flex-1 min-w-0">
-          <h3 id="actTitle" class="font-display text-[24px] lg:text-[28px] leading-tight" style="color:var(--by-ink);">Yes-And Circle</h3>
-          <p id="actDesc" class="mt-2 text-[13px] leading-relaxed" style="color:var(--by-ink-2);max-width:65ch;">
-            Players stand in a circle and build a shared imaginary world one "Yes, and…" at a time.
-          </p>
-          <div id="actTip" class="mt-3 px-3 py-2.5 text-[12px]" style="background:var(--by-yes-soft);border-left:3px solid var(--by-yes-deep);color:var(--by-ink-2);">
-            <span class="by-eyebrow" style="color:var(--by-yes-deep);">Teaching note · </span>Watch for "yes, but" sneaking in.
+    <!-- ══ Activity Box + Live Challenge (side by side) ══ -->
+    <div class="px-4 lg:px-7 mt-3 mb-5 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 min-w-0">
+      <!-- Activity Box -->
+      <section id="activity-box" class="border flex flex-col" style="background:var(--by-bg);border-color:var(--by-ink);border-top:3px solid var(--by-yes);">
+        <div class="px-5 py-3 flex items-center justify-between border-b" style="border-color:var(--by-ink);">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-display text-[18px]" style="color:var(--by-ink);">Activity Box</span>
+            <span id="actCategory" class="chip text-[10px]" style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);">Warm-Up</span>
+            <span id="actCounter" class="by-eyebrow">1 / 50</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span id="actDuration" class="by-eyebrow hidden sm:block">5 – 10 min</span>
+            <span class="by-eyebrow hidden sm:block">·</span>
+            <span id="actPlayers" class="by-eyebrow hidden sm:block">Whole group</span>
           </div>
         </div>
-        <div class="mt-4 lg:mt-0 flex items-center gap-2 flex-shrink-0">
-          <button onclick="prevActivity()" class="h-9 w-9 flex items-center justify-center btn-ghost">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <button onclick="shuffleActivity()" class="h-9 w-9 flex items-center justify-center btn-ghost" title="Shuffle">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 3h5v5M4 20l16-16M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
-          </button>
-          <button onclick="nextActivity()" class="h-9 w-9 flex items-center justify-center"
-            style="background:var(--by-yes);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+        <div class="px-5 py-4 lg:flex lg:gap-8 lg:items-start flex-1">
+          <div class="flex-1 min-w-0">
+            <h3 id="actTitle" class="font-display text-[24px] lg:text-[28px] leading-tight" style="color:var(--by-ink);">Yes-And Circle</h3>
+            <p id="actDesc" class="mt-2 text-[13px] leading-relaxed" style="color:var(--by-ink-2);max-width:65ch;">
+              Players stand in a circle and build a shared imaginary world one "Yes, and…" at a time.
+            </p>
+            <div id="actTip" class="mt-3 px-3 py-2.5 text-[12px]" style="background:var(--by-yes-soft);border-left:3px solid var(--by-yes-deep);color:var(--by-ink-2);">
+              <span class="by-eyebrow" style="color:var(--by-yes-deep);">Teaching note · </span>Watch for "yes, but" sneaking in.
+            </div>
+          </div>
+          <div class="mt-4 lg:mt-0 flex items-center gap-2 flex-shrink-0">
+            <button onclick="prevActivity()" class="h-9 w-9 flex items-center justify-center btn-ghost">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button onclick="shuffleActivity()" class="h-9 w-9 flex items-center justify-center btn-ghost" title="Shuffle">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 3h5v5M4 20l16-16M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+            </button>
+            <button onclick="nextActivity()" class="h-9 w-9 flex items-center justify-center"
+              style="background:var(--by-yes);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Challenge card -->
+      <div id="liveCard" class="live-card" style="border:var(--by-bd-thick);">
+        <div class="live-card-inner">
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" style="background:rgba(229,72,42,.1);border:1px solid rgba(229,72,42,.3);">
+                <svg class="w-4 h-4 text-live-indicator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+              </div>
+              <div>
+                <div class="by-eyebrow text-live-indicator">Live Challenge</div>
+                <div id="liveTitle" class="font-display text-[22px] leading-tight" style="color:var(--by-ink);">Deploy a prompt</div>
+              </div>
+            </div>
+            <span id="liveStatus" class="chip chip-past"><span class="dot"></span>Idle</span>
+          </div>
+
+          <!-- Idle: prompt picker -->
+          <div id="idleState" class="mt-4">
+            <p class="text-[12.5px] leading-snug mb-3" style="color:var(--by-ink-3);">
+              Pick or write a prompt. Challenge stays open <b style="color:var(--by-ink-2);">48 hours</b> — students respond within <b style="color:var(--by-ink-2);">30 seconds</b> and the winner earns <b style="color:var(--by-yes-deep);">+20 pts</b>.
+            </p>
+            <textarea id="challengePromptInput" rows="3" maxlength="280"
+              placeholder="Write your own prompt, or shuffle for inspiration…"
+              class="w-full border hairline outline-none px-3 py-2.5 text-[13px] resize-none"
+              style="background:var(--by-bg);color:var(--by-ink);line-height:1.5;"></textarea>
+            <div class="mt-2 flex items-center gap-2">
+              <button id="shufflePromptBtn" onclick="shufflePrompt()"
+                class="flex items-center gap-1.5 px-3 h-8 text-[12px] border hairline"
+                style="color:var(--by-ink-2);background:var(--by-bg);">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+                  <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+                </svg>
+                Shuffle
+              </button>
+              <button id="deployPromptBtn" onclick="deployChallenge()"
+                class="btn-live flex-1 h-8 text-[13px]">
+                Deploy to class
+              </button>
+            </div>
+          </div>
+
+          <!-- Live: active challenge -->
+          <div id="liveState" class="mt-4 hidden">
+            <div class="by-eyebrow mb-1">Active prompt</div>
+            <div id="livePromptText" class="text-[13px] leading-snug mb-3 italic" style="color:var(--by-ink-2);">—</div>
+            <div class="border hairline p-4" style="background:var(--by-bg);">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-2 rounded-full" style="background:var(--by-tomato);animation:chip-pulse 1.6s infinite;"></div>
+                <div class="text-[11.5px] font-semibold text-live-indicator">Challenge active · 48h window</div>
+              </div>
+              <div class="text-[12px]" style="color:var(--by-ink-3);">
+                <span id="respCount" class="font-mono text-[15px]" style="color:var(--by-ink);">0</span>
+                of <span id="respTotal" class="font-mono">0</span> students responded
+              </div>
+            </div>
+            <!-- Live responses feed -->
+            <div id="liveResponsesFeed" class="mt-3 hidden">
+              <div class="by-eyebrow mb-2">Responses so far</div>
+              <ul id="liveResponsesList" class="flex flex-col gap-2 max-h-40 overflow-y-auto"></ul>
+            </div>
+            <button id="newChallenge" class="btn-live w-full h-10 mt-3 text-[13px]">Deploy another challenge</button>
+          </div>
+
+        </div>
+
+        <!-- Recent challenges list -->
+        <div class="border-t hairline">
+          <div class="px-5 py-4 flex items-center justify-between border-b hairline">
+            <div class="font-display text-[20px]" style="color:var(--by-ink);">Recent Challenges</div>
+            <span class="by-eyebrow">Last 7 days</span>
+          </div>
+          <ul id="recentChallenges" class="divide-y text-[12.5px]" style="border-color:var(--by-bg-3);">
+            <li class="px-5 py-3 text-center text-[12px]" style="color:var(--by-ink-3);">No challenges yet this week.</li>
+          </ul>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- ══ Main grid: Vertical class stack (left) + Live Challenge & Roster (right) ══ -->
-    <main class="px-4 lg:px-7 pt-5 pb-6 grid grid-cols-12 gap-4 lg:gap-5">
+    <!-- ══ Main grid: Vertical class stack (left) + Roster (right) ══ -->
+    <main class="px-4 lg:px-7 pt-5 pb-6 flex flex-col md:grid md:grid-cols-12 gap-4 lg:gap-5 min-w-0">
 
       <!-- Left column: Classes stacked vertically -->
-      <section class="col-span-12 md:col-span-4 xl:col-span-3 flex flex-col gap-3" id="classStackCol">
+      <section class="w-full md:col-span-6 flex flex-col gap-3 min-w-0" id="classStackCol">
         <div class="flex items-center justify-between">
           <div class="font-display text-[17px]" style="color:var(--by-ink);">Classes</div>
           <span id="classStackCount" class="by-eyebrow">{{ active_classes | length }} active</span>
         </div>
-        <div id="classStrip" class="flex flex-col gap-2 max-h-[calc(100vh-380px)] overflow-y-auto pr-0.5"></div>
+        <div id="classStrip" class="flex flex-col gap-2 max-h-[calc(100vh-420px)] md:max-h-[calc(100vh-380px)] overflow-y-auto pr-0.5"></div>
       </section>
 
-      <!-- Right column: Live Challenge + Roster -->
-      <section class="col-span-12 md:col-span-8 xl:col-span-9 flex flex-col gap-4 lg:gap-5">
-
-        <!-- Live Challenge card -->
-        <div id="liveCard" class="live-card" style="border:var(--by-bd-thick);">
-          <div class="live-card-inner">
-
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" style="background:rgba(229,72,42,.1);border:1px solid rgba(229,72,42,.3);">
-                  <svg class="w-4 h-4 text-live-indicator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
-                </div>
-                <div>
-                  <div class="by-eyebrow text-live-indicator">Live Challenge</div>
-                  <div id="liveTitle" class="font-display text-[22px] leading-tight" style="color:var(--by-ink);">Deploy a prompt</div>
-                </div>
-              </div>
-              <span id="liveStatus" class="chip chip-past"><span class="dot"></span>Idle</span>
-            </div>
-
-            <!-- Idle: prompt picker -->
-            <div id="idleState" class="mt-4">
-              <p class="text-[12.5px] leading-snug mb-3" style="color:var(--by-ink-3);">
-                Pick or write a prompt. Challenge stays open <b style="color:var(--by-ink-2);">48 hours</b> — students respond within <b style="color:var(--by-ink-2);">30 seconds</b> and the winner earns <b style="color:var(--by-yes-deep);">+20 pts</b>.
-              </p>
-              <textarea id="challengePromptInput" rows="3" maxlength="280"
-                placeholder="Write your own prompt, or shuffle for inspiration…"
-                class="w-full border hairline outline-none px-3 py-2.5 text-[13px] resize-none"
-                style="background:var(--by-bg);color:var(--by-ink);line-height:1.5;"></textarea>
-              <div class="mt-2 flex items-center gap-2">
-                <button id="shufflePromptBtn" onclick="shufflePrompt()"
-                  class="flex items-center gap-1.5 px-3 h-8 text-[12px] border hairline"
-                  style="color:var(--by-ink-2);background:var(--by-bg);">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
-                    <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
-                  </svg>
-                  Shuffle
-                </button>
-                <button id="deployPromptBtn" onclick="deployChallenge()"
-                  class="btn-live flex-1 h-8 text-[13px]">
-                  Deploy to class
-                </button>
-              </div>
-            </div>
-
-            <!-- Live: active challenge -->
-            <div id="liveState" class="mt-4 hidden">
-              <div class="by-eyebrow mb-1">Active prompt</div>
-              <div id="livePromptText" class="text-[13px] leading-snug mb-3 italic" style="color:var(--by-ink-2);">—</div>
-              <div class="border hairline p-4" style="background:var(--by-bg);">
-                <div class="flex items-center gap-2 mb-2">
-                  <div class="w-2 h-2 rounded-full" style="background:var(--by-tomato);animation:chip-pulse 1.6s infinite;"></div>
-                  <div class="text-[11.5px] font-semibold text-live-indicator">Challenge active · 48h window</div>
-                </div>
-                <div class="text-[12px]" style="color:var(--by-ink-3);">
-                  <span id="respCount" class="font-mono text-[15px]" style="color:var(--by-ink);">0</span>
-                  of <span id="respTotal" class="font-mono">0</span> students responded
-                </div>
-              </div>
-              <!-- Live responses feed -->
-              <div id="liveResponsesFeed" class="mt-3 hidden">
-                <div class="by-eyebrow mb-2">Responses so far</div>
-                <ul id="liveResponsesList" class="flex flex-col gap-2 max-h-40 overflow-y-auto"></ul>
-              </div>
-              <button id="newChallenge" class="btn-live w-full h-10 mt-3 text-[13px]">Deploy another challenge</button>
-            </div>
-
-          </div>
-
-          <!-- Recent challenges list -->
-          <div class="border-t hairline">
-            <div class="px-5 py-4 flex items-center justify-between border-b hairline">
-              <div class="font-display text-[20px]" style="color:var(--by-ink);">Recent Challenges</div>
-              <span class="by-eyebrow">Last 7 days</span>
-            </div>
-            <ul id="recentChallenges" class="divide-y text-[12.5px]" style="border-color:var(--by-bg-3);">
-              <li class="px-5 py-3 text-center text-[12px]" style="color:var(--by-ink-3);">No challenges yet this week.</li>
-            </ul>
-          </div>
-        </div>
+      <!-- Right column: Roster -->
+      <section class="w-full md:col-span-6 flex flex-col gap-4 lg:gap-5 min-w-0">
 
         <!-- Roster -->
         <section id="rosterPanel" class="border hairline" style="background:var(--by-bg);">
@@ -673,12 +676,17 @@
           </div>
 
           <!-- Roster footer -->
-          <footer class="px-5 py-3 border-t hairline flex items-center justify-between gap-2 text-[12px]" style="color:var(--by-ink-3);">
-            <div id="rosterFooterMsg" class="text-[12px]" style="color:var(--by-ink-3);">No class selected.</div>
-            <button id="msgClassBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="font-family:var(--by-f-body);" onclick="openMsgPanel()">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              Message this cohort
-            </button>
+          <footer class="px-5 py-3 border-t hairline flex flex-wrap items-center justify-between gap-2 text-[12px]" style="color:var(--by-ink-3);">
+            <div id="rosterFooterMsg" class="text-[12px] flex-shrink-0" style="color:var(--by-ink-3);">No class selected.</div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="msgClassBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="font-family:var(--by-f-body);" onclick="openMsgPanel()">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Message this cohort
+              </button>
+              <button id="detailsBtn" class="h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="background:var(--by-yes);border:var(--by-bd);cursor:pointer;color:var(--by-ink);font-family:var(--by-f-body);font-weight:600;" onclick="openSelectedClassModal()">
+                More details →
+              </button>
+            </div>
           </footer>
         </section>
 
@@ -825,7 +833,7 @@
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-  function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c])); }
   function tintFor(id){
     const p=[['#FBBF24','#F472B6'],['#22D3EE','#FBBF24'],['#A78BFA','#FBBF24'],['#34D399','#FBBF24'],['#60A5FA','#22D3EE'],['#FB7185','#FBBF24']];
     let h=0; for(const ch of String(id)) h=(h*31+ch.charCodeAt(0))|0;
@@ -853,6 +861,11 @@
     }
   }
   $$('.tab').forEach(t => t.addEventListener('click', () => setTab(t.dataset.tab)));
+
+  // ── Global helper for "More details" button (STATE is in closure) ──
+  window.openSelectedClassModal = function() {
+    if (STATE.selectedId) openClassModal(STATE.selectedId);
+  };
 
   // ── Select class (from card or week pill) ─────────────────────────────
   window.selectClass = function(id) {
@@ -911,10 +924,15 @@
   }
 
   $('#classStrip').addEventListener('click', e => {
+    // Only open modal if "More details" button was clicked
+    if (e.target.closest('.card-details-btn')) {
+      const card = e.target.closest('.class-card');
+      if (card) openClassModal(card.dataset.id);
+      return;
+    }
     const card = e.target.closest('.class-card');
     if (!card) return;
-    selectClass(card.dataset.id);   // keep existing roster panel in sync
-    openClassModal(card.dataset.id); // open the slide-in detail modal
+    selectClass(card.dataset.id);
   });
 
   // ── Roster ─────────────────────────────────────────────────────────────
@@ -962,6 +980,7 @@
       $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">Select a class on the left to open its roster.</td></tr>`;
       $('#rosterFooterMsg').textContent = 'No class selected.';
       $('#msgClassBtn').style.display = 'none';
+      $('#detailsBtn').style.display = 'none';
       updateAttendanceCounts();
       return;
     }
@@ -978,6 +997,7 @@
     $('#respTotal').textContent = c.students.length;
     $('#rosterFooterMsg').textContent = `${c.title} · ${c.students.length} student${c.students.length !== 1 ? 's' : ''}`;
     $('#msgClassBtn').style.display = 'flex';
+    $('#detailsBtn').style.display = 'flex';
 
     if (!c.students.length) {
       $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center text-[13px]" style="color:var(--by-ink-3);">Roster opens when this class becomes active.</td></tr>`;
@@ -1615,7 +1635,7 @@
     const firstName = '{{ current_user_name }}'.split(' ')[0];
     const greetings = [
       'Yes, and…', 'Welcome back,', 'Ready to play,', 'On your feet,',
-      'Make your partner look good,', 'Accept every offer,', 'Present &amp; listening,',
+      'Make your partner look good,', 'Accept every offer,', 'Present & listening,',
       'Trust your instincts,', 'Find the game,', 'Justify everything,',
     ];
     const g = greetings[Math.floor(Math.random() * greetings.length)];
@@ -2095,7 +2115,7 @@
 (function(){
   'use strict';
   const $  = id => document.getElementById(id);
-  function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c])); }
 
   /* ── State ──────────────────────────────────────────────────────── */
   let _cmClass = null;   // current class object
