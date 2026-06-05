@@ -2766,11 +2766,19 @@
     btn.disabled = true;
     btn.textContent = 'Dispatching…';
 
+    // Group keywords go through the blast stub; a UUID means a single person →
+    // use the dedicated admin-message route that actually writes to the inbox.
+    const isGroupTarget = target === 'all_members' || target === 'all_teachers';
+    const endpoint = isGroupTarget ? '/api/comms/send-blast' : '/api/admin/message/send';
+    const payload  = isGroupTarget
+      ? { target_group: target, subject, message_body: body }
+      : { recipient_id: target, subject, message_body: body };
+
     try {
-      const res  = await fetch('/api/comms/send-blast', {
+      const res  = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target_group: target, subject, message_body: body }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (res.ok && data.status === 'yes_and') {
