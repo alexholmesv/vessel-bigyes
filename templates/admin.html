@@ -90,6 +90,9 @@
   .chip-rehearsing .dot { background:var(--by-yes-deep); }
   .chip-paused     { background:var(--by-bg-2); color:var(--by-ink-3); border-color:var(--by-ink-3); }
   .chip-paused     .dot { background:var(--by-ink-3); }
+  /* Shift awaiting student acceptance */
+  .chip-waiting    { background:#FFFBEB; color:#92550A; border-color:#C17A20; }
+  .chip-waiting    .dot { background:#C17A20; }
   .chip-open       { background:var(--by-yes); }
   .chip-open       .dot { background:var(--by-ink); }
   .chip-mine       { background:var(--by-yes); }
@@ -943,17 +946,42 @@
               </div>
               <div class="space-y-1.5">
                 {% for shift in show_shifts %}
+                {# student_name is JOIN-resolved in get_shifts; vol fallback covers edge cases #}
                 {% set vol = (users | selectattr('id', 'equalto', shift.student_id) | first) if shift.student_id else none %}
-                <div class="flex items-center gap-2 px-2 py-1.5 border" style="{{ 'background:var(--by-yes-soft); border-color:var(--by-ink)' if shift.student_id else 'background:var(--by-bg); border-color:var(--by-bg-3)' }}">
+                {% set display_name = shift.student_name or (vol.name if vol else none) %}
+                {# Row background reflects assignment state: accepted=yes-soft, requested=warm amber, unassigned=default #}
+                <div class="flex items-center gap-2 px-2 py-1.5 border" style="{% if shift.student_id and shift.status == 'accepted' %}background:var(--by-yes-soft); border-color:var(--by-ink){% elif shift.student_id %}background:#FFFBEB; border-color:#C17A20{% else %}background:var(--by-bg); border-color:var(--by-bg-3){% endif %}">
                   <span class="text-[11.5px] font-semibold w-28 flex-shrink-0" style="color:var(--by-ink-3)">{{ shift.role }}</span>
-                  {% if shift.student_id %}
+
+                  {% if shift.student_id and shift.status == 'accepted' %}
+                  {# ── Accepted: student confirmed — show green dot + name ── #}
                   <div class="flex-1 flex items-center gap-1.5 min-w-0">
                     <span class="w-4 h-4 rounded-full bg-emerald-500/20 flex-shrink-0 grid place-items-center">
                       <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                     </span>
-                    <span class="text-[12px] truncate" style="color:var(--by-ink-2)">{{ vol.name if vol else shift.student_id }}</span>
+                    <span class="text-[12px] truncate" style="color:var(--by-ink-2)">{{ display_name or 'Unknown user' }}</span>
                   </div>
+                  <button onclick="confirmUnassign('{{ shift.id }}')"
+                    class="btn-ghost h-6 px-2 rounded-md text-[11px] flex-shrink-0"
+                    style="color:var(--by-ink-3);border-color:var(--by-bg-3);"
+                    title="Remove assignment">✕</button>
+
+                  {% elif shift.student_id %}
+                  {# ── Requested: assigned but awaiting student's accept/decline ── #}
+                  <div class="flex-1 flex items-center gap-1.5 min-w-0">
+                    <span class="w-4 h-4 rounded-full flex-shrink-0 grid place-items-center" style="background:rgba(193,122,32,.15)">
+                      <span class="w-1.5 h-1.5 rounded-full" style="background:#C17A20"></span>
+                    </span>
+                    <span class="text-[12px] truncate" style="color:var(--by-ink-3)">{{ display_name or 'Unknown user' }}</span>
+                    <span class="chip chip-waiting flex-shrink-0" style="font-size:9.5px;padding:.1rem .45rem"><span class="dot"></span>Waiting for reply</span>
+                  </div>
+                  <button onclick="confirmUnassign('{{ shift.id }}')"
+                    class="btn-ghost h-6 px-2 rounded-md text-[11px] flex-shrink-0"
+                    style="color:var(--by-ink-3);border-color:var(--by-bg-3);"
+                    title="Remove assignment">✕</button>
+
                   {% else %}
+                  {# ── Unassigned: open slot ── #}
                   <span class="flex-1 text-[11.5px] italic" style="color:var(--by-ink-4)">Unassigned</span>
                   <button onclick="openAssignModal(this, '{{ shift.id }}', '{{ shift.role }}')"
                     data-assigned-ids="{{ show_assigned_ids | tojson | string | e }}"
@@ -3629,6 +3657,24 @@
       if (data.ok) { closeModal('modal-assign-volunteer'); window.location.reload(); }
       else { _showAssignError(data.error || 'Failed to assign volunteer.'); }
     } catch { _showAssignError('Network error — please try again.'); }
+  }
+
+  async function confirmUnassign(shiftId) {
+    /**
+     * Clear the student assignment on a shift slot.
+     * Calls /api/shift/admin-assign with student_id: null which triggers
+     * assign_shift()'s clear branch (sets student_id = NULL, status = 'accepted').
+     */
+    try {
+      const res  = await fetch('/api/shift/admin-assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shift_id: shiftId, student_id: null }),
+      });
+      const data = await res.json();
+      if (data.ok) { window.location.reload(); }
+      else { flashToastAlert(data.error || 'Failed to unassign.'); }
+    } catch { flashToastAlert('Network error — please try again.'); }
   }
 
   // ═══════════════════════════════════════════════════════════════

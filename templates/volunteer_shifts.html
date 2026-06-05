@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes · My Volunteer Shifts</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Archivo Black"', 'system-ui', 'sans-serif'],
+          sans:    ['"Archivo"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          body:    ['"Manrope"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono:    ['"DM Mono"', 'ui-monospace', 'monospace'],
+        },
+        colors: {
+          'by-yes':         '#FFC629',
+          'by-yes-deep':    '#E5A800',
+          'by-yes-soft':    '#FFE7A0',
+          'by-ink':         '#141210',
+          'by-ink-2':       '#2A2723',
+          'by-ink-3':       '#5C544A',
+          'by-ink-4':       '#8A8073',
+          'by-bg':          '#F4EEE2',
+          'by-bg-2':        '#ECE3D0',
+          'by-bg-3':        '#E2D6BB',
+          'by-tomato':      '#E5482A',
+          'by-tomato-deep': '#B83218',
+          'by-night':       '#141210',
+          'by-night-on':    '#C9BFA8',
+        },
+        boxShadow: {
+          'by-hard':     '4px 4px 0 0 #141210',
+          'by-hard-yes': '4px 4px 0 0 #FFC629',
+        },
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-r-1:4px; --by-r-pill:999px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-bd-dash:1px dashed var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
+  }
+
+  html, body { background: var(--by-bg); }
+  body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing:antialiased; }
+  .font-display { font-family: var(--by-f-display); font-weight:900; letter-spacing:-0.02em; text-transform:uppercase; }
+  .font-mono { font-family: var(--by-f-mono); }
+
+  .by-display { font-family:var(--by-f-display); font-weight:900; line-height:0.88; letter-spacing:-0.02em; text-transform:uppercase; }
+  .by-eyebrow { font-family:var(--by-f-mono); font-size:var(--by-t-mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--by-ink-3); }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+
+  .hairline { border-color: var(--by-ink); }
+
+  /* Status chips */
+  .chip { display:inline-flex; align-items:center; gap:.375rem; padding:.15rem .55rem; border-radius:999px; font-family:var(--by-f-mono); font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--by-ink); line-height:1.2; background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
+  .chip .dot { width:6px; height:6px; border-radius:999px; flex-shrink:0; background:var(--by-ink); }
+  .chip-pending { background:var(--by-bg-2); }
+  .chip-pending .dot { background:#C17A20; }
+  .chip-accepted { background:var(--by-yes-soft); border-color:var(--by-yes-deep); }
+  .chip-accepted .dot { background:#2A8A4F; }
+
+  /* Nav */
+  .nav-item { display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:0; color:var(--by-ink-3); font-family:var(--by-f-body); font-size:13.5px; font-weight:500; border:none; border-left:4px solid transparent; text-decoration:none; transition:background var(--by-snap),color var(--by-snap); }
+  .nav-item:hover { color:var(--by-ink); background:var(--by-bg-2); }
+  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+
+  /* Buttons */
+  .btn-accept { background:var(--by-yes); color:var(--by-ink); font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); font-size:12px; padding:.3rem .85rem; cursor:pointer; transition:box-shadow var(--by-snap),transform var(--by-snap); font-family:var(--by-f-body); }
+  .btn-accept:hover { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
+  .btn-accept:active { transform:translate(4px,4px); box-shadow:none; }
+
+  .btn-decline { border:1px solid var(--by-ink); background:transparent; color:var(--by-ink); font-weight:500; font-size:12px; padding:.3rem .85rem; cursor:pointer; font-family:var(--by-f-body); transition:background var(--by-snap); }
+  .btn-decline:hover { background:var(--by-bg-2); }
+
+  /* "Message Stage Manager" link-button — secondary, subtle */
+  .btn-msg-sm { display:inline-flex; align-items:center; gap:.4rem; border:1px solid var(--by-ink); background:transparent; color:var(--by-ink-2); font-weight:500; font-size:12px; padding:.3rem .85rem; cursor:pointer; font-family:var(--by-f-body); text-decoration:none; transition:background var(--by-snap); }
+  .btn-msg-sm:hover { background:var(--by-bg-2); }
+
+  .btn-ghost { border:1px solid var(--by-ink); background:transparent; color:var(--by-ink); font-weight:500; }
+  .btn-ghost:hover { background:var(--by-bg-2); }
+
+  /* Shift card */
+  .shift-card { border:1px solid var(--by-ink); background:var(--by-bg); }
+  .shift-card.accepted { background:var(--by-yes-soft); border-color:var(--by-yes-deep); }
+
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background:rgba(20,18,16,.10); border-radius:999px; }
+  ::-webkit-scrollbar-thumb:hover { background:rgba(20,18,16,.18); }
+
+  /* ── Modal slide-in (slide up + fade) ──
+     .visible controls display so the parent stays flex during the exit transition.
+     .open drives the child's translateY so the animation can reverse cleanly. ── */
+  #msg-modal           { display:none; align-items:center; justify-content:center; }
+  #msg-modal.visible   { display:flex; }
+  #msg-modal-inner {
+    transform: translateY(28px);
+    opacity: 0;
+    transition: transform 280ms cubic-bezier(.2,.8,.2,1), opacity 240ms ease;
+  }
+  #msg-modal.open #msg-modal-inner {
+    transform: translateY(0);
+    opacity: 1;
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.5rem;font-size:.78125rem;font-weight:600;opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
+
+<!-- Message Stage Manager modal — opened only via openMsgModal(), never auto-shown -->
+<div id="msg-modal" style="position:fixed;inset:0;z-index:80;background:rgba(20,18,16,.45);">
+  <div id="msg-modal-inner" style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);width:100%;max-width:420px;margin:1rem;">
+    <div class="px-5 py-4 border-b hairline flex items-center justify-between">
+      <span class="font-display text-[15px]">Message Stage Manager</span>
+      <button onclick="closeMsgModal()" style="color:var(--by-ink-3);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;">✕</button>
+    </div>
+    <div class="px-5 py-4 flex flex-col gap-3">
+      <div>
+        <label class="by-eyebrow block mb-1" style="font-size:10px;">Subject</label>
+        <input id="msg-subject" type="text" class="w-full px-3 py-2 bg-white border hairline text-[13px]" placeholder="e.g. Question about my shift" style="outline:none;" />
+      </div>
+      <div>
+        <label class="by-eyebrow block mb-1" style="font-size:10px;">Message</label>
+        <textarea id="msg-body" rows="4" class="w-full px-3 py-2 bg-white border hairline text-[13px] resize-none" placeholder="Write your message here…" style="outline:none;"></textarea>
+      </div>
+      <p class="text-[11.5px]" style="color:var(--by-ink-3);">
+        Once a shift is accepted you must speak to your Stage Manager to make any changes.
+      </p>
+    </div>
+    <div class="px-5 py-3 border-t hairline flex justify-end gap-2">
+      <button onclick="closeMsgModal()" class="btn-decline" style="padding:.45rem 1rem;">Cancel</button>
+      <button id="msg-send-btn" onclick="sendMsgToSM()" class="btn-accept" style="padding:.45rem 1.25rem;">Send Message</button>
+    </div>
+  </div>
+</div>
+
+<div class="min-h-screen flex flex-col">
+
+  <!-- Sticky header -->
+  <header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+    <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-3">
+      <a href="/profile" class="flex items-center gap-2" style="text-decoration:none;">
+        <span class="by-display" style="font-size:18px;color:var(--by-ink);">Big<span class="by-yes-block" style="font-size:16px;padding:0 8px 3px;">Yes</span></span>
+      </a>
+      <div class="leading-tight">
+        <div class="by-eyebrow">Student</div>
+        <div class="font-display text-[20px]" style="color:var(--by-ink);">My Volunteer Shifts</div>
+      </div>
+
+      <div class="flex-1"></div>
+
+      <!-- Points indicator -->
+      <div class="flex items-center gap-1.5 px-3 py-1.5" style="border:var(--by-bd);background:var(--by-bg-2);">
+        <svg class="w-3.5 h-3.5" style="color:var(--by-yes-deep)" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
+        <span id="headerPoints" class="font-display text-[18px] leading-none" style="color:var(--by-ink);">{{ user.yes_and_points | default(0) }}</span>
+        <span class="by-eyebrow">pts</span>
+      </div>
+
+      <!-- User menu -->
+      <div class="relative flex-shrink-0" id="user-menu-wrap">
+        <button id="user-menu-btn"
+                class="flex items-center gap-2 cursor-pointer h-9 px-2"
+                style="border:var(--by-bd);background:var(--by-bg);">
+          <svg class="w-5 h-5" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="4"/><path d="M4 21c1-4 5-6 8-6s7 2 8 6"/></svg>
+          <div class="hidden md:block leading-tight text-left">
+            <div class="text-[12px]" style="font-family:var(--by-f-sans);font-weight:700;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
+          </div>
+        </button>
+        <div id="user-menu-drop" class="hidden" style="
+          position:absolute; top:calc(100% + 6px); right:0; z-index:60;
+          min-width:168px; background:var(--by-bg); border:var(--by-bd-thick);
+          box-shadow:var(--by-sh-1);">
+          <a href="/profile" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5" style="font-size:13px;color:var(--by-ink);background:var(--by-bg);text-decoration:none;">
+            ← Back to Profile
+          </a>
+          <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5" style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);text-decoration:none;">
+            Log out
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="px-4 lg:px-7 py-6">
+
+    <!-- Info strip -->
+    <div class="flex items-center gap-2 mb-6 flex-wrap">
+      <span class="chip chip-pending">
+        <span class="dot"></span>
+        Assigned by Stage Manager
+      </span>
+      <span class="text-[12.5px]" style="color:var(--by-ink-3);">
+        Review and respond to your assigned shifts below. Once accepted, contact your Stage Manager to make changes.
+      </span>
+    </div>
+
+    <!-- Shift list -->
+    <div class="border hairline" style="background:var(--by-bg);">
+      <header class="px-5 py-4 flex items-center justify-between border-b hairline">
+        <div class="font-display text-[17px]" style="color:var(--by-ink)">My Assigned Shifts</div>
+        <div class="text-[11.5px] font-mono" style="color:var(--by-ink-3)" id="shift-count-label"></div>
+      </header>
+      <ul id="shiftList" class="divide-y hairline"></ul>
+    </div>
+
+    <!-- Back link -->
+    <div class="mt-8">
+      <a href="/profile" class="btn-ghost h-9 px-3.5 rounded-lg text-[12.5px] inline-flex items-center gap-2 no-underline">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Profile
+      </a>
+    </div>
+
+  </main>
+
+  <footer class="px-4 lg:px-7 py-6 border-t hairline">
+    <div class="flex items-center justify-between text-[12px]" style="color:var(--by-ink-3)">
+      <span>© 2026 Barcelona Improv Group · Big Yes CRM</span>
+      <a href="/privacy" style="color:var(--by-ink-2);">Privacy Center</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  /* ── Data injected by the route ──────────────────────────────────────── */
+  const SHOWS    = {{ shows_json | safe }};
+  const SM_EMAIL = "{{ sm_email | e }}";
+  const ME       = { id: "{{ student_id }}", name: "{{ current_user_name | e }}" };
+
+  /* ── Utilities ───────────────────────────────────────────────────────── */
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  let toastEl;
+  function flashToast(msg, variant='ghost'){
+    if(!toastEl){ toastEl = document.createElement('div'); document.body.appendChild(toastEl); }
+    const styles = {
+      spot: 'background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#1a1208;box-shadow:0 0 0 1px rgba(245,158,11,.6),0 12px 28px -8px rgba(245,158,11,.5)',
+      ghost:'background:rgba(30,40,60,.9);color:#e2e8f0;border:1px solid rgba(255,255,255,.10)',
+      err:  'background:#B83218;color:#fff;',
+    };
+    toastEl.style.cssText = `position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:90;padding:.625rem 1rem;border-radius:.5rem;font-size:.78125rem;font-weight:600;opacity:1;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;${styles[variant]||styles.ghost}`;
+    toastEl.textContent = msg;
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(()=>{ toastEl.style.opacity='0'; }, 2200);
+  }
+
+  /* ── In-page state — mirrors server truth until next load ────────────── */
+  /* shifts[showIdx][shiftIdx].status is mutated on respond. */
+  const state = SHOWS.map(show => ({
+    ...show,
+    shifts: show.shifts.map(s => ({...s})),
+  }));
+
+  let totalShifts = state.reduce((n, show) => n + show.shifts.length, 0);
+
+  /* ── Rendering ───────────────────────────────────────────────────────── */
+  function renderAll(){
+    const list = document.getElementById('shiftList');
+    const label = document.getElementById('shift-count-label');
+    label.textContent = totalShifts === 1 ? '1 shift' : `${totalShifts} shifts`;
+
+    if(!state.length || totalShifts === 0){
+      list.innerHTML = `
+        <li class="px-5 py-10 text-center text-[13px]" style="color:var(--by-ink-3)">
+          No shifts assigned to you yet. Your Stage Manager will assign shifts when available.
+        </li>`;
+      return;
+    }
+
+    list.innerHTML = state.map((show, si) => show.shifts.map((shift, fi) => `
+      <li class="px-5 py-4" id="row-${esc(shift.id)}">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+
+          <!-- Show + role info -->
+          <div class="flex-1 min-w-0">
+            <div class="font-display text-[15px] leading-tight" style="color:var(--by-ink)">${esc(show.title)}</div>
+            <div class="flex items-center gap-2 mt-1 flex-wrap">
+              <span class="by-eyebrow">${esc(show.day || show.date)}</span>
+              ${show.time ? `<span class="by-eyebrow" style="color:var(--by-ink-4)">·</span><span class="by-eyebrow">${esc(show.time)}</span>` : ''}
+              <span class="by-eyebrow" style="color:var(--by-ink-4)">·</span>
+              <span class="by-eyebrow" style="color:var(--by-ink-2)">${esc(shift.role)}</span>
+            </div>
+          </div>
+
+          <!-- Actions depend on status -->
+          <div class="flex items-center gap-2 flex-wrap" id="actions-${esc(shift.id)}">
+            ${actionsHTML(shift, si, fi)}
+          </div>
+        </div>
+      </li>`).join('')).join('');
+  }
+
+  /**
+   * Returns the action HTML for a shift depending on its current status.
+   * - 'requested' → Accept + Decline buttons
+   * - 'accepted'  → Accepted chip + Message Stage Manager button
+   */
+  function actionsHTML(shift, si, fi){
+    if(shift.status === 'accepted'){
+      return `
+        <span class="chip chip-accepted"><span class="dot"></span>Accepted</span>
+        <button class="btn-msg-sm" onclick="openMsgModal(${JSON.stringify(shift.id)})"
+                title="You must speak to the Stage Manager to make changes">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message Stage Manager
+        </button>`;
+    }
+    /* 'requested' — pending student response */
+    return `
+      <span class="chip chip-pending"><span class="dot"></span>Pending your response</span>
+      <button class="btn-accept" onclick="respond(${JSON.stringify(shift.id)}, 'accepted', ${si}, ${fi})">Accept</button>
+      <button class="btn-decline" onclick="respond(${JSON.stringify(shift.id)}, 'declined', ${si}, ${fi})">Decline</button>`;
+  }
+
+  /* ── Respond (accept / decline) ──────────────────────────────────────── */
+  async function respond(shiftId, newStatus, si, fi){
+    const btn = event?.currentTarget;
+    if(btn){ btn.disabled = true; btn.style.opacity = '.5'; }
+
+    try {
+      const res  = await fetch('/api/shift/respond', {
+        method:  'POST',
+        headers: {'Content-Type':'application/json'},
+        body:    JSON.stringify({ shift_id: shiftId, status: newStatus }),
+      });
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || 'Server error');
+
+      if(newStatus === 'accepted'){
+        /* Mutate local state → re-render action zone only */
+        state[si].shifts[fi].status = 'accepted';
+        document.getElementById(`actions-${shiftId}`).innerHTML =
+          actionsHTML(state[si].shifts[fi], si, fi);
+        /* Update points badge */
+        const pts = document.getElementById('headerPoints');
+        if(pts && data.new_balance != null) pts.textContent = data.new_balance;
+        flashToast('✓ Shift accepted — +20 pts!', 'spot');
+      } else {
+        /* Declined: remove the row and decrement count */
+        const row = document.getElementById(`row-${shiftId}`);
+        if(row) row.remove();
+        state[si].shifts.splice(fi, 1);
+        totalShifts--;
+        /* If show now has no shifts, re-render entire list to show empty state if needed */
+        if(state[si].shifts.length === 0) renderAll();
+        else {
+          const label = document.getElementById('shift-count-label');
+          label.textContent = totalShifts === 1 ? '1 shift' : `${totalShifts} shifts`;
+        }
+        flashToast('Shift declined.', 'ghost');
+      }
+    } catch(err){
+      flashToast(err.message, 'err');
+      if(btn){ btn.disabled = false; btn.style.opacity = '1'; }
+    }
+  }
+
+  /* ── Message Stage Manager modal ─────────────────────────────────────── */
+  let _activeShiftId = null;
+
+  function openMsgModal(shiftId){
+    _activeShiftId = shiftId;
+    document.getElementById('msg-subject').value = 'Question about my volunteer shift';
+    document.getElementById('msg-body').value    = '';
+    const modal = document.getElementById('msg-modal');
+    // .visible → display:flex so the overlay is rendered;
+    // .open added on next paint so CSS transition fires (translateY → 0)
+    modal.classList.add('visible');
+    requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('open')));
+    document.body.style.overflow = 'hidden';
+    setTimeout(()=>{ document.getElementById('msg-subject').focus(); }, 120);
+  }
+
+  function closeMsgModal(){
+    const modal = document.getElementById('msg-modal');
+    const inner = document.getElementById('msg-modal-inner');
+    // Remove .open → child transition reverses (translateY back to 28px + fade out)
+    // Only after transitionend do we remove .visible (display:none) so animation is visible
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    const done = () => {
+      modal.classList.remove('visible');
+      inner.removeEventListener('transitionend', done);
+      _activeShiftId = null;
+    };
+    inner.addEventListener('transitionend', done);
+  }
+
+  async function sendMsgToSM(){
+    const subject = document.getElementById('msg-subject').value.trim();
+    const body    = document.getElementById('msg-body').value.trim();
+    if(!subject || !body){ flashToast('Please fill in subject and message.', 'err'); return; }
+    if(!SM_EMAIL){ flashToast('Stage Manager contact not available.', 'err'); return; }
+
+    const btn = document.getElementById('msg-send-btn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    try {
+      const res  = await fetch('/api/student/message/send', {
+        method:  'POST',
+        headers: {'Content-Type':'application/json'},
+        body:    JSON.stringify({ recipient_email: SM_EMAIL, subject, body }),
+      });
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || 'Could not send message');
+      closeMsgModal();
+      flashToast('Message sent to Stage Manager.', 'spot');
+    } catch(err){
+      flashToast(err.message, 'err');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send Message';
+    }
+  }
+
+  /* ── Close modal on backdrop click ──────────────────────────────────── */
+  document.getElementById('msg-modal').addEventListener('click', function(e){
+    if(e.target === this) closeMsgModal();
+  });
+
+  /* ── User menu ───────────────────────────────────────────────────────── */
+  document.addEventListener('click', function(e){
+    var wrap = document.getElementById('user-menu-wrap');
+    var menu = document.getElementById('user-menu-drop');
+    if(wrap && menu && !wrap.contains(e.target)) menu.classList.add('hidden');
+  });
+  document.getElementById('user-menu-btn')?.addEventListener('click', function(e){
+    e.stopPropagation();
+    document.getElementById('user-menu-drop')?.classList.toggle('hidden');
+  });
+
+  /* ── Boot ────────────────────────────────────────────────────────────── */
+  renderAll();
+</script>
+</body>
+</html>
