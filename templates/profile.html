@@ -743,6 +743,292 @@
   function _esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  // ── Live Challenge System ─────────────────────────────────────────────────
+  // State machine: idle → available → accepted (countdown) → responded (voting) → resolved
+  // Polls /api/challenge/pending every 5s scoped to the student's first enrolled class.
+  (function initChallengeSystem() {
+    // Collect the student's enrolled class IDs from the template context
+    var enrolledClassIds = {{ classes | map(attribute='id') | list | tojson }};
+    var _activeChallengeId = null;  // currently tracked challenge
+    var _countdownTimer   = null;   // interval for the 30s countdown
+    var _pollTimer        = null;   // interval for polling pending challenges
+    var _phase            = 'idle'; // idle | available | accepted | responded | resolved
+
+    /* ── DOM helpers ───────────────────────────────────────────────────── */
+    function _id(id) { return document.getElementById(id); }
+    function _show(id) { var el = _id(id); if (el) el.classList.remove('hidden'); }
+    function _hide(id) { var el = _id(id); if (el) el.classList.add('hidden'); }
+
+    /* ── Phase rendering ───────────────────────────────────────────────── */
+    function _setPhase(phase) {
+      _phase = phase;
+      _hide('idleState'); _hide('liveState'); _hide('lockedState');
+      var status = _id('liveStatus');
+      var title  = _id('liveTitle');
+      if (phase === 'idle') {
+        _show('idleState');
+        _id('idleMsg').textContent = 'When your teacher posts a challenge it appears here. Accept it and you\'ll have 30 seconds to respond and earn +20 pts.';
+        if (status) { status.className = 'chip chip-taken'; status.innerHTML = '<span class="dot"></span>Idle'; }
+        if (title)  title.textContent = 'No prompt right now';
+      } else if (phase === 'available') {
+        _show('idleState');
+        if (status) { status.className = 'chip chip-live'; status.innerHTML = '<span class="dot"></span>Live'; }
+        if (title)  title.textContent = 'Challenge available!';
+      } else if (phase === 'accepted') {
+        _show('liveState');
+        if (status) { status.className = 'chip chip-live'; status.innerHTML = '<span class="dot"></span>Live'; }
+        if (title)  title.textContent = 'Quick — respond!';
+      } else if (phase === 'responded') {
+        _show('liveState');
+        if (status) { status.className = 'chip chip-mine'; status.innerHTML = '<span class="dot"></span>Voting'; }
+        if (title)  title.textContent = 'Responses & Voting';
+      } else if (phase === 'resolved') {
+        _show('lockedState');
+        if (status) { status.className = 'chip chip-past'; status.innerHTML = '<span class="dot"></span>Closed'; }
+        if (title)  title.textContent = 'Challenge closed';
+      }
+    }
+
+    /* ── Render available challenge cards ─────────────────────────────── */
+    function _renderAvailable(challenges) {
+      var list = _id('availableList');
+      if (!list) return;
+      if (!challenges || !challenges.length) { list.classList.add('hidden'); return; }
+      list.classList.remove('hidden');
+      list.innerHTML = challenges.map(function(ch) {
+        return '<div style="border:1px solid var(--by-bg-3);padding:12px;background:var(--by-bg);">'
+          + '<div style="font-size:13px;color:var(--by-ink);line-height:1.5;margin-bottom:10px;">' + _esc(ch.title) + '</div>'
+          + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+          + '<span style="font-size:11px;color:var(--by-ink-3);">Posted by ' + _esc(ch.posted_by_name) + ' · ' + ch.total_responders + ' responded</span>'
+          + (ch.responded
+              ? '<span style="font-size:11px;font-weight:600;color:var(--by-ink-3);">✓ Submitted</span>'
+              : ch.accepted
+                ? '<span style="font-size:11px;font-weight:600;color:var(--by-yes-deep);">Accepted — respond now!</span>'
+                : '<button onclick="_acceptChallenge(\'' + _esc(ch.id) + '\')" '
+                  + 'style="padding:6px 14px;background:var(--by-ink);color:var(--by-bg);border:none;'
+                  + 'font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;">'
+                  + 'Accept (+20 pts if you win)</button>'
+            )
+          + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    /* ── Render voting phase ───────────────────────────────────────────── */
+    function _renderVoting(challengeId, userVotedResponseId) {
+      fetch('/api/challenge/responses/' + challengeId)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (!d.ok || !d.responses || !d.responses.length) return;
+          var livePrompt = _id('livePrompt');
+          var inputEl    = _id('responseInput');
+          var submitBtn  = _id('submitBtn');
+          // Hide the response input; show voting UI instead
+          if (inputEl) inputEl.parentElement.style.display = 'none';
+          if (submitBtn) submitBtn.style.display = 'none';
+          var container = _id('responseInput') ? _id('responseInput').parentElement.parentElement : _id('liveState');
+          // Build voting list
+          var votingHtml = '<div style="margin-top:12px;">'
+            + '<div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.18em;color:var(--by-ink-3);margin-bottom:8px;">Class Responses — vote for your favourite</div>'
+            + d.responses.map(function(resp) {
+                var isMine = resp.student_email === {{ current_user_email | tojson }};
+                var voted  = userVotedResponseId === resp.id;
+                return '<div id="vote-' + _esc(resp.id) + '" style="padding:10px 12px;border:1px solid var(--by-bg-3);margin-bottom:6px;background:' + (isMine ? 'var(--by-yes-soft)' : 'var(--by-bg)') + ';">'
+                  + '<div style="display:flex;align-items:flex-start;gap:8px;">'
+                  + '<div style="flex:1;">'
+                  + '<div style="font-size:11px;color:var(--by-ink-3);margin-bottom:2px;">' + _esc(resp.student_name) + (isMine ? ' (you)' : '') + '</div>'
+                  + '<div style="font-size:13px;color:var(--by-ink);line-height:1.5;">' + _esc(resp.response_text) + '</div>'
+                  + '</div>'
+                  + '<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;">'
+                  + '<span style="font-size:14px;font-weight:700;color:var(--by-ink);">' + resp.favorite_count + '</span>'
+                  + (!isMine
+                      ? '<button onclick="_voteFor(\'' + _esc(resp.id) + '\',\'' + _esc(challengeId) + '\')" '
+                        + 'style="font-size:10px;padding:3px 8px;border:1px solid var(--by-bg-3);background:' + (voted ? 'var(--by-yes)' : 'var(--by-bg)') + ';cursor:pointer;color:var(--by-ink);">'
+                        + (voted ? '♥ Voted' : '♡ Vote') + '</button>'
+                      : '')
+                  + '</div>'
+                  + '</div>'
+                  + '</div>';
+              }).join('')
+            + '</div>';
+          // Inject or replace the voting block
+          var existing = _id('votingBlock');
+          if (existing) existing.remove();
+          var block = document.createElement('div');
+          block.id = 'votingBlock';
+          block.innerHTML = votingHtml;
+          var liveStateEl = _id('liveState');
+          if (liveStateEl) liveStateEl.appendChild(block);
+        })
+        .catch(function() {});
+    }
+
+    /* ── Accept a challenge ────────────────────────────────────────────── */
+    window._acceptChallenge = function(challengeId) {
+      fetch('/api/challenge/accept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challenge_id: challengeId }),
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.ok) { alert(d.error || 'Could not accept challenge'); return; }
+        _activeChallengeId = challengeId;
+        _setPhase('accepted');
+        _startCountdown(d.seconds_left || 30, challengeId);
+      })
+      .catch(function() { alert('Network error — try again'); });
+    };
+
+    /* ── 30-second countdown ───────────────────────────────────────────── */
+    function _startCountdown(seconds, challengeId) {
+      if (_countdownTimer) clearInterval(_countdownTimer);
+      var remaining = seconds;
+      var cdEl  = _id('countdown');
+      var barEl = _id('progressBar');
+      var total = seconds;
+
+      function _tick() {
+        if (cdEl) cdEl.textContent = remaining;
+        if (barEl) {
+          var pct = (remaining / total) * 100;
+          barEl.style.width = pct + '%';
+          barEl.style.background = remaining > 15 ? '#22D3EE' : remaining > 7 ? '#FBBF24' : '#F87171';
+        }
+        if (cdEl) {
+          cdEl.className = 'countdown ' + (remaining > 15 ? 'calm' : remaining > 7 ? 'warm' : 'danger');
+        }
+        if (remaining <= 0) {
+          clearInterval(_countdownTimer);
+          _countdownTimer = null;
+          // Time's up — move to locked state without response
+          _setPhase('resolved');
+          var lockedTitle  = _id('lockedTitle');
+          var lockedDetail = _id('lockedDetail');
+          if (lockedTitle)  lockedTitle.textContent  = "Time's up";
+          if (lockedDetail) lockedDetail.textContent = 'You ran out of time. Watch for the winner when votes are tallied.';
+        }
+        remaining--;
+      }
+      _tick();
+      _countdownTimer = setInterval(_tick, 1000);
+
+      // Wire up the submit button for this challenge
+      var submitBtn = _id('submitBtn');
+      var responseInput = _id('responseInput');
+      if (submitBtn) {
+        submitBtn.onclick = function() { _submitResponse(challengeId); };
+      }
+      // ⌘↵ / Ctrl+↵ shortcut
+      if (responseInput) {
+        responseInput.onkeydown = function(e) {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') _submitResponse(challengeId);
+        };
+        // Update char count
+        responseInput.oninput = function() {
+          var cc = _id('charCount');
+          if (cc) cc.textContent = responseInput.value.length;
+        };
+        responseInput.value = '';
+        responseInput.focus();
+      }
+
+      // Show the active prompt text
+      var promptEl = _id('livePrompt');
+      // Fetch from pending to get title — we already have it from the poll; skip re-fetch.
+    }
+
+    /* ── Submit a response ─────────────────────────────────────────────── */
+    function _submitResponse(challengeId) {
+      var inputEl = _id('responseInput');
+      var text = inputEl ? inputEl.value.trim() : '';
+      if (!text) { alert('Write something first!'); return; }
+      if (_countdownTimer) { clearInterval(_countdownTimer); _countdownTimer = null; }
+
+      fetch('/api/challenge/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challenge_id: challengeId, response_text: text }),
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.ok) {
+          // Window expired server-side — show locked
+          _setPhase('resolved');
+          var lockedTitle  = _id('lockedTitle');
+          var lockedDetail = _id('lockedDetail');
+          if (lockedTitle)  lockedTitle.textContent  = "Time's up";
+          if (lockedDetail) lockedDetail.textContent = d.error || 'Response window closed.';
+          return;
+        }
+        // Success — show response confirmation then voting phase
+        var lockedSub  = _id('lockedSubmission');
+        var subText    = _id('submittedText');
+        if (lockedSub)  lockedSub.classList.remove('hidden');
+        if (subText)    subText.textContent = text;
+        _setPhase('responded');
+        _renderVoting(challengeId, null);
+      })
+      .catch(function() { alert('Network error — could not submit'); });
+    }
+
+    /* ── Vote for a response ───────────────────────────────────────────── */
+    window._voteFor = function(responseId, challengeId) {
+      fetch('/api/challenge/rate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challenge_id: challengeId, response_id: responseId, is_favorite: true }),
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.ok) {
+          // Re-render voting with updated vote
+          _renderVoting(challengeId, responseId);
+        }
+      })
+      .catch(function() {});
+    };
+
+    /* ── Poll for pending challenges ───────────────────────────────────── */
+    function _poll() {
+      // If we're mid-countdown don't interrupt
+      if (_phase === 'accepted') return;
+      // Poll the first enrolled class (students belong to one class at a time typically)
+      var classId = enrolledClassIds.length ? enrolledClassIds[0] : '';
+      var url = '/api/challenge/pending' + (classId ? '?class_id=' + encodeURIComponent(classId) : '');
+      fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (!d.ok) return;
+          var challenges = d.challenges || [];
+          if (!challenges.length) {
+            if (_phase !== 'accepted' && _phase !== 'responded') _setPhase('idle');
+            _id('availableList') && _id('availableList').classList.add('hidden');
+            return;
+          }
+          var ch = challenges[0]; // most recent
+          // Update the live prompt label if shown
+          var promptEl = _id('livePrompt');
+          if (promptEl) promptEl.textContent = ch.title;
+
+          if (_phase === 'responded') {
+            // Refresh voting panel if student already responded
+            _renderVoting(ch.id, null);
+            return;
+          }
+          if (_phase === 'idle' || _phase === 'available') {
+            _setPhase('available');
+            _renderAvailable(challenges);
+          }
+        })
+        .catch(function() {});
+    }
+
+    // Start polling immediately and every 5s
+    _poll();
+    _pollTimer = setInterval(_poll, 5000);
+  })();
 </script>
 
 {% include 'partials/_user_config_modal.html' %}

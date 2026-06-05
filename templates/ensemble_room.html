@@ -618,36 +618,37 @@
               <span id="liveStatus" class="chip chip-past"><span class="dot"></span>Idle</span>
             </div>
 
-            <!-- Idle: difficulty picker -->
+            <!-- Idle: prompt picker -->
             <div id="idleState" class="mt-4">
               <p class="text-[12.5px] leading-snug mb-3" style="color:var(--by-ink-3);">
-                Pick a difficulty. Challenge stays open <b style="color:var(--by-ink-2);">48 hours</b> — students respond within <b style="color:var(--by-ink-2);">30 seconds</b> and earn <b style="color:var(--by-yes-deep);">+15 pts</b>.
+                Pick or write a prompt. Challenge stays open <b style="color:var(--by-ink-2);">48 hours</b> — students respond within <b style="color:var(--by-ink-2);">30 seconds</b> and the winner earns <b style="color:var(--by-yes-deep);">+20 pts</b>.
               </p>
-              <div class="grid grid-cols-2 gap-2">
-                <button class="diff" data-diff="Beginner" data-api-diff="beginner">
-                  <div class="name">Beginner</div><div class="meta">Warm-up · 1 step</div>
-                  <div class="bar"><i class="on"></i><i></i><i></i><i></i></div>
+              <textarea id="challengePromptInput" rows="3" maxlength="280"
+                placeholder="Write your own prompt, or shuffle for inspiration…"
+                class="w-full border hairline outline-none px-3 py-2.5 text-[13px] resize-none"
+                style="background:var(--by-bg);color:var(--by-ink);line-height:1.5;"></textarea>
+              <div class="mt-2 flex items-center gap-2">
+                <button id="shufflePromptBtn" onclick="shufflePrompt()"
+                  class="flex items-center gap-1.5 px-3 h-8 text-[12px] border hairline"
+                  style="color:var(--by-ink-2);background:var(--by-bg);">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+                    <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+                  </svg>
+                  Shuffle
                 </button>
-                <button class="diff" data-diff="Intermediate" data-api-diff="intermediate">
-                  <div class="name">Intermediate</div><div class="meta">Game of scene</div>
-                  <div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i></div>
-                </button>
-                <button class="diff" data-diff="Upper-Int." data-api-diff="intermediate">
-                  <div class="name">Upper-Int.</div><div class="meta">2-step heighten</div>
-                  <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
-                </button>
-                <button class="diff" data-diff="Advanced" data-api-diff="advanced">
-                  <div class="name">Advanced</div><div class="meta">Status flip · Δ</div>
-                  <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                <button id="deployPromptBtn" onclick="deployChallenge()"
+                  class="btn-live flex-1 h-8 text-[13px]">
+                  Deploy to class
                 </button>
               </div>
             </div>
 
             <!-- Live: active challenge -->
             <div id="liveState" class="mt-4 hidden">
-              <div class="by-eyebrow">Difficulty</div>
-              <div id="liveDiff" class="font-display text-[15px]" style="color:var(--by-ink);">—</div>
-              <div class="mt-3 border hairline p-4" style="background:var(--by-bg);">
+              <div class="by-eyebrow mb-1">Active prompt</div>
+              <div id="livePromptText" class="text-[13px] leading-snug mb-3 italic" style="color:var(--by-ink-2);">—</div>
+              <div class="border hairline p-4" style="background:var(--by-bg);">
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-2 h-2 rounded-full" style="background:var(--by-tomato);animation:chip-pulse 1.6s infinite;"></div>
                   <div class="text-[11.5px] font-semibold text-live-indicator">Challenge active · 48h window</div>
@@ -656,6 +657,11 @@
                   <span id="respCount" class="font-mono text-[15px]" style="color:var(--by-ink);">0</span>
                   of <span id="respTotal" class="font-mono">0</span> students responded
                 </div>
+              </div>
+              <!-- Live responses feed -->
+              <div id="liveResponsesFeed" class="mt-3 hidden">
+                <div class="by-eyebrow mb-2">Responses so far</div>
+                <ul id="liveResponsesList" class="flex flex-col gap-2 max-h-40 overflow-y-auto"></ul>
               </div>
               <button id="newChallenge" class="btn-live w-full h-10 mt-3 text-[13px]">Deploy another challenge</button>
             </div>
@@ -1082,47 +1088,166 @@
     }
   }
 
-  async function deployChallenge(difficulty, apiDiff) {
+  // ── Challenge prompt pool (50 funny / creative prompts) ──────────────────
+  const CHALLENGE_PROMPTS = [
+    "You're a banana at a bus stop, surrounded by cats. What do you say to them?",
+    "You're a rogue shopping cart who gained sentience. Explain your philosophy of life.",
+    "You're a pigeon attending a black-tie gala. Deliver your acceptance speech.",
+    "You're a sock who has been separated from their partner for 3 years. Write the reunion speech.",
+    "You're a Monday morning. Defend yourself in court.",
+    "You're a fire alarm that went off during the most important moment of someone's life. Apologise.",
+    "You're a cloud who is deeply offended that no one looks up anymore. Make your case.",
+    "You're a forgotten leftover in the back of a fridge. Narrate your existential crisis.",
+    "You're a GPS that has absolutely no idea where it is. Keep talking anyway.",
+    "You're a snail who just discovered they can run. Describe the sensation.",
+    "You're a chair at a therapist's office. What have you heard?",
+    "You're a planet who just found out it's been downgraded to a dwarf. React.",
+    "You're a spoon who witnessed a fork commit a crime. Testify.",
+    "You're a parking ticket delivering itself to its own car. How do you feel?",
+    "You're an elevator who has heard every awkward silence. Give a TED Talk.",
+    "You're a rubber duck at a board meeting. Contribute.",
+    "You're the last slice of pizza at a party, narrating your final moments.",
+    "You're a ceiling fan who has been spinning for 14 years without thanks. Speak up.",
+    "You're a vending machine that keeps dispensing the wrong item. Give your side of the story.",
+    "You're a broom who has been replaced by a Roomba. Process your feelings.",
+    "You're a bubble wrap sheet that nobody has popped yet. Describe the suspense.",
+    "You're a weather forecast who has been wrong all week. Defend your career.",
+    "You're a dictionary definition for the word 'meh'. Perform yourself.",
+    "You're a disco ball in an empty room. What do you think about?",
+    "You're a plant who has overheard everything happening in this apartment for two years.",
+    "You're a 3AM thought that refuses to let someone sleep. Introduce yourself.",
+    "You're a 'Reply All' email. Justify your existence.",
+    "You're a traffic cone who has been in the same spot for six months. What have you learned?",
+    "You're a motivational poster that has started to doubt itself.",
+    "You're a Wi-Fi password that's impossible to type correctly. How do you feel about that?",
+    "You're a comet passing Earth for the first and only time. What's your impression?",
+    "You're a lint roller at a cat café. Describe your shift.",
+    "You're the last bus of the night. Describe your passengers.",
+    "You're a sunscreen bottle at a vampire convention. Give the orientation speech.",
+    "You're an autocorrect that has just wrecked someone's life. Apologise in character.",
+    "You're a library book that's been renewed 47 times and never actually read.",
+    "You're a thunderstorm who showed up uninvited to a picnic. Make your case.",
+    "You're a staircase in a house with only one floor. Reflect on your purpose.",
+    "You're a magician's rabbit who is done with the whole hat routine. Walk out.",
+    "You're a Monday-Wednesday-Friday person who was accidentally invited to a Tuesday.",
+    "You're a fortune cookie with genuinely terrible advice. Deliver it confidently.",
+    "You're a candle at a surprise birthday party. Describe your feelings about being set on fire.",
+    "You're an out-of-office reply that has been active for 3 years.",
+    "You're a sandcastle on the last day before the tide comes in. Make it count.",
+    "You're a tour guide at a museum where everything is ordinary household objects.",
+    "You're a mirror in a funhouse that's been moved to a regular house. Adjust.",
+    "You're a ship's captain who has never seen the ocean.",
+    "You're a spreadsheet who has developed feelings for a word document.",
+    "You're a crossword clue that doesn't know what it's the answer to.",
+    "You're a dramatic seagull who witnessed something completely mundane. Recount it.",
+  ];
+
+  // Pre-fill the prompt textarea with a random prompt on page load
+  (function initPrompt() {
+    const ta = $('#challengePromptInput');
+    if (ta) ta.value = CHALLENGE_PROMPTS[Math.floor(Math.random() * CHALLENGE_PROMPTS.length)];
+  })();
+
+  /** Replace the prompt textarea with a different random prompt. */
+  window.shufflePrompt = function shufflePrompt() {
+    const ta = $('#challengePromptInput');
+    if (!ta) return;
+    const current = ta.value;
+    let pick;
+    let tries = 0;
+    do {
+      pick = CHALLENGE_PROMPTS[Math.floor(Math.random() * CHALLENGE_PROMPTS.length)];
+      tries++;
+    } while (pick === current && tries < 10);
+    ta.value = pick;
+    ta.focus();
+  }
+
+  /** Deploy a challenge from the right-panel prompt picker. */
+  window.deployChallenge = async function deployChallenge() {
     const c = CLASSES.find(x => x.id === STATE.selectedId);
     if (!c) { flashToast('Select an active class first'); return; }
     if (!c.students.length) { flashToast('No students enrolled in this class'); return; }
 
+    const prompt = ($('#challengePromptInput').value || '').trim();
+    if (!prompt) { flashToast('Enter a prompt first'); return; }
+
+    const btn = $('#deployPromptBtn');
+    btn.textContent = 'Deploying…';
+    btn.disabled = true;
+
     try {
       const res  = await fetch('/api/challenge/deploy', {
         method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ class_id:c.id, difficulty:apiDiff }),
+        body: JSON.stringify({ class_id: c.id, prompt }),
       });
       const data = await res.json();
       if (!data.ok) { flashToast(`Error: ${data.error || 'Could not deploy challenge'}`); return; }
 
-      STATE.challenge = { phase:'live', startedAt:Date.now(), difficulty, responses:0 };
-      $('#liveDiff').textContent    = difficulty;
-      $('#respCount').textContent   = 0;
-      $('#respTotal').textContent   = c.students.length;
+      // Track in local state for the live panel
+      STATE.challenge = { phase:'live', startedAt:Date.now(), prompt, responses:0,
+                          challengeId: data.challenge_id };
+      $('#livePromptText').textContent = prompt;
+      $('#respCount').textContent      = 0;
+      $('#respTotal').textContent      = c.students.length;
       setLivePhase('live');
-      flashToast(`Challenge deployed · ${difficulty} · 48h window`);
+      flashToast(`Challenge deployed · 48h window`);
 
-      recentChallenges.unshift({ diff:difficulty, class:c.title, when:'just now', count:c.students.length });
+      recentChallenges.unshift({ prompt, class:c.title, when:'just now', count:c.students.length });
       if (recentChallenges.length > 5) recentChallenges.pop();
       renderRecentChallenges();
+      // Start polling for responses
+      _startResponsePoll(data.challenge_id, c.id);
     } catch { flashToast('Network error — challenge not deployed'); }
+    finally {
+      btn.textContent = 'Deploy to class';
+      btn.disabled = false;
+    }
+  }
+
+  /** Poll /api/challenge/pending for response count and live feed updates. */
+  let _respPollTimer = null;
+  function _startResponsePoll(challengeId, classId) {
+    if (_respPollTimer) clearInterval(_respPollTimer);
+    _respPollTimer = setInterval(async () => {
+      try {
+        const r = await fetch(`/api/challenge/responses/${challengeId}`);
+        const d = await r.json();
+        if (!d.ok) return;
+        const count = d.responses ? d.responses.length : 0;
+        $('#respCount').textContent = count;
+        if (count > 0) {
+          const feed = $('#liveResponsesFeed');
+          const list = $('#liveResponsesList');
+          feed.classList.remove('hidden');
+          list.innerHTML = d.responses.map(resp =>
+            `<li class="px-3 py-2 border hairline text-[12px]" style="background:var(--by-bg);">
+              <span class="font-semibold" style="color:var(--by-ink);">${esc(resp.student_name)}</span>
+              <span style="color:var(--by-ink-3);"> · </span>
+              <span style="color:var(--by-ink-2);">${esc(resp.response_text)}</span>
+            </li>`
+          ).join('');
+        }
+      } catch { /* silent */ }
+    }, 5000);
   }
 
   function renderRecentChallenges() {
     if (!recentChallenges.length) return;
     $('#recentChallenges').innerHTML = recentChallenges.map(r =>
-      `<li class="px-5 py-2.5 flex items-center justify-between">
-        <span style="color:var(--by-ink-2);">${esc(r.diff)} · ${esc(r.class.split('·')[0].trim())}</span>
-        <span class="font-mono" style="color:var(--by-ink-3);">${r.count} stu · ${esc(r.when)}</span>
+      `<li class="px-5 py-2.5 flex items-start gap-2">
+        <span class="flex-1 leading-snug" style="color:var(--by-ink-2);">${esc((r.prompt||'').slice(0,55))}${(r.prompt||'').length>55?'…':''}</span>
+        <span class="font-mono flex-shrink-0 text-[11px]" style="color:var(--by-ink-3);">${r.count} stu</span>
       </li>`
     ).join('');
   }
 
-  document.addEventListener('click', e => {
-    const diff = e.target.closest('.diff');
-    if (diff) deployChallenge(diff.dataset.diff, diff.dataset.apiDiff);
+  $('#newChallenge').addEventListener('click', () => {
+    if (_respPollTimer) { clearInterval(_respPollTimer); _respPollTimer = null; }
+    setLivePhase('idle');
+    // Shuffle to a fresh prompt for the next challenge
+    shufflePrompt();
   });
-  $('#newChallenge').addEventListener('click', () => setLivePhase('idle'));
 
   // ── Message Students (multi-recipient) ─────────────────────────────────
   const _msgSelected = new Map(); // id → {id, label, type}
@@ -1879,30 +2004,23 @@
     <div id="cmPanelChallenge" style="flex:1;overflow-y:auto;display:none;flex-direction:column;padding:20px 16px;gap:16px;">
 
       <div style="font-family:var(--by-f-display);font-size:16px;color:var(--by-ink);">Deploy Challenge</div>
+      <p style="font-family:var(--by-f-body);font-size:12.5px;color:var(--by-ink-3);margin:0;line-height:1.5;">
+        Students have <b style="color:var(--by-ink-2);">30 seconds</b> to respond after accepting.
+        Responses are shared with the class — everyone votes for their favourite.
+        Winner earns <b style="color:var(--by-ink-2);">+20 pts</b>. Challenge closes after <b style="color:var(--by-ink-2);">48 hours</b>.
+      </p>
 
-      <!-- Difficulty selector -->
-      <div>
-        <div style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);margin-bottom:8px;">Difficulty</div>
-        <div style="display:flex;gap:6px;">
-          <button data-diff="easy"   onclick="cmSelectDiff(this)"
-                  class="cm-diff-btn" style="flex:1;padding:9px 4px;border:var(--by-bd-thick);font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;background:var(--by-bg);color:var(--by-ink);">Easy</button>
-          <button data-diff="medium" onclick="cmSelectDiff(this)"
-                  class="cm-diff-btn cm-diff-active" style="flex:1;padding:9px 4px;border:var(--by-bd-thick);font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;background:var(--by-yes);color:var(--by-ink);">Medium</button>
-          <button data-diff="hard"   onclick="cmSelectDiff(this)"
-                  class="cm-diff-btn" style="flex:1;padding:9px 4px;border:var(--by-bd-thick);font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;background:var(--by-bg);color:var(--by-ink);">Hard</button>
-        </div>
-      </div>
-
-      <!-- Prompt -->
+      <!-- Prompt — editable textarea + shuffle -->
       <div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
           <div style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);">Prompt</div>
           <button onclick="cmShufflePrompt()"
                   style="font-family:var(--by-f-body);font-size:11.5px;color:var(--by-ink-3);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;">
-            Shuffle
+            ↺ Shuffle
           </button>
         </div>
-        <textarea id="cmPromptText" rows="3"
+        <textarea id="cmPromptText" rows="4" maxlength="280"
+                  placeholder="Write your own prompt, or shuffle for inspiration…"
                   style="width:100%;padding:10px 12px;border:var(--by-bd-thick);background:var(--by-bg);
                          font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);
                          outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;"></textarea>
@@ -1980,25 +2098,8 @@
   /* ── State ──────────────────────────────────────────────────────── */
   let _cmClass = null;   // current class object
   let _cmTab   = 'students';
-  let _cmDiff  = 'medium';
   let _addOpen = false;
-
-  const PROMPTS = [
-    'Perform a two-minute scene using only questions.',
-    'Create a scene set entirely in slow motion.',
-    'Two characters who can only speak in rhymes.',
-    'A scene where every line starts with the next letter of the alphabet.',
-    'Perform a dramatic scene about something mundane (e.g., losing a sock).',
-    'A scene where both characters are secretly in love but cannot admit it.',
-    'Play an entire scene backwards — start at the end and work to the beginning.',
-    'One character speaks only in clichés; the other must respond naturally.',
-    'Recreate a famous movie scene but set it in a laundromat.',
-    'A scene where every time a specific word is said, the action freezes.',
-    'Improvise a song about a random audience suggestion.',
-    'A scene told simultaneously from two different timelines.',
-    'One character can only communicate through movement, the other only through sound.',
-    'A scene where the stakes keep getting absurdly higher every 30 seconds.',
-  ];
+  // NOTE: CHALLENGE_PROMPTS is defined in the main challenge JS block above
 
   /* ── Open / Close ───────────────────────────────────────────────── */
   window.openClassModal = function(classId) {
@@ -2185,26 +2286,29 @@
   };
 
   /* ── Challenge ──────────────────────────────────────────────────── */
-  window.cmSelectDiff = function(btn) {
-    _cmDiff = btn.dataset.diff;
-    document.querySelectorAll('.cm-diff-btn').forEach(b => {
-      b.style.background = b === btn ? 'var(--by-yes)' : 'var(--by-bg)';
-    });
-  };
 
+  /** Pre-fill the modal prompt textarea with a random prompt if empty. */
   function cmShufflePromptIfEmpty() {
     const ta = $('cmPromptText');
-    if (!ta.value.trim()) cmShufflePrompt();
+    if (ta && !ta.value.trim()) cmShufflePrompt();
   }
 
+  /** Shuffle the modal prompt textarea to a new random prompt from the shared pool. */
   window.cmShufflePrompt = function() {
     const ta = $('cmPromptText');
+    if (!ta) return;
     const current = ta.value;
     let pick;
-    do { pick = PROMPTS[Math.floor(Math.random() * PROMPTS.length)]; } while (pick === current && PROMPTS.length > 1);
+    let tries = 0;
+    do {
+      pick = CHALLENGE_PROMPTS[Math.floor(Math.random() * CHALLENGE_PROMPTS.length)];
+      tries++;
+    } while (pick === current && tries < 10);
     ta.value = pick;
+    ta.focus();
   };
 
+  /** Deploy challenge from the class manager modal. Sends prompt + class_id; no difficulty. */
   window.cmDeployChallenge = async function() {
     if (!_cmClass) return;
     const prompt = $('cmPromptText').value.trim();
@@ -2215,11 +2319,11 @@
     try {
       const res  = await fetch('/api/challenge/deploy', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ class_id: _cmClass.id, difficulty: _cmDiff, prompt }),
+        body: JSON.stringify({ class_id: _cmClass.id, prompt }),
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || 'Failed');
-      $('cmChallengeStatus').textContent = `✓ Deployed to ${_cmClass.students.length} students (${_cmDiff})`;
+      $('cmChallengeStatus').textContent = `✓ Deployed to ${_cmClass.students.length} students · 48h window`;
       $('cmChallengeStatus').style.color = '#2A8A4F';
     } catch (e) {
       $('cmChallengeStatus').textContent = `Error: ${e.message}`;
