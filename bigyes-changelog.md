@@ -5,6 +5,15 @@ Only changes to files within `instances/bigyes/` are listed.
 
 ---
 
+## [1.1.0] — 2026-06-05
+
+### Fixed
+- **Ensemble Room teacher messaging delivers real inbox messages** — `sendTeacherMessage()` POSTed to `/api/teacher/message`, which was a backend stub returning `{"ok": True}` without persisting anything. Backend replaced with full multi-target inbox delivery (class UUID expansion, deduplication, `send_inbox_message()`). Messages now appear in recipient inboxes and unread badges light up.
+- **Scraper auto-generates volunteer shift slots** — `scripts/scrape_bigyes.py` now creates 4 default slots (Door, Bar×2, House Manager) per scraped show. Added `_backfill_shift_slots()` for pre-existing scraped shows on production.
+- **Scraper ensures soft-delete columns exist** — production DBs predate soft-delete; scraper now runs idempotent `ALTER TABLE` before touching `deleted_at`/`restorable_until` columns.
+
+---
+
 ## [1.0.0] — 2026-06-05
 
 ### Added
