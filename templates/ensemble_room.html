@@ -503,106 +503,23 @@
       </div>
     </section>
 
-    <!-- ══ Class strip ══ -->
-    <section class="px-4 lg:px-7 pt-5 pb-4">
-      <div id="classStrip" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
-    </section>
+    <!-- ══ Main grid: Vertical class stack (left) + Live Challenge & Roster (right) ══ -->
+    <main class="px-4 lg:px-7 pt-5 pb-6 grid grid-cols-12 gap-4 lg:gap-5">
 
-
-    <!-- ══ Main grid: Roster + Right panel ══ -->
-    <main class="px-4 lg:px-7 pb-6 grid grid-cols-12 gap-4 lg:gap-5">
-
-      <!-- Roster (8 cols) -->
-      <section class="col-span-12 xl:col-span-8 border hairline" style="background:var(--by-bg);">
-
-        <!-- Roster header -->
-        <header class="px-5 py-4 flex items-start gap-4 border-b hairline">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h2 id="selTitle" class="font-display text-[24px] leading-tight" style="color:var(--by-ink);">Select a class above</h2>
-              <span id="selChip" class="chip chip-active hidden"><span class="dot"></span>Active</span>
-            </div>
-            <div class="mt-1 flex items-center gap-3 flex-wrap text-[12.5px]" style="color:var(--by-ink-3);">
-              <span id="selSchedule" class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                —
-              </span>
-              <span id="selTerm" class="font-mono" style="color:var(--by-ink-3);">—</span>
-            </div>
-          </div>
-          <!-- Enrolled KPI -->
-          <div class="text-right flex-shrink-0">
-            <div class="by-eyebrow">Enrolled</div>
-            <div class="font-display text-[28px] leading-none mt-0.5" style="color:var(--by-ink);">
-              <span id="selEnrolled">—</span><span class="text-[14px]" style="color:var(--by-ink-4);">/<span id="selCap">—</span></span>
-            </div>
-          </div>
-        </header>
-
-        <!-- Attendance KPI bar -->
-        <div class="px-5 py-3 flex items-center gap-3 border-b hairline flex-wrap" style="background:var(--by-bg-2);">
-          <div class="stat-kpi flex items-center gap-2.5">
-            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#2A8A4F;"></span>
-            <div>
-              <div class="by-eyebrow">Present</div>
-              <div class="font-display text-[20px] leading-none" style="color:#2A8A4F;"><span id="presentCount">0</span></div>
-            </div>
-          </div>
-          <div class="stat-kpi flex items-center gap-2.5">
-            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-yes-deep);"></span>
-            <div>
-              <div class="by-eyebrow">Late</div>
-              <div class="font-display text-[20px] leading-none" style="color:var(--by-yes-deep);"><span id="lateCount">0</span></div>
-            </div>
-          </div>
-          <div class="stat-kpi flex items-center gap-2.5">
-            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-tomato);"></span>
-            <div>
-              <div class="by-eyebrow">Absent</div>
-              <div class="font-display text-[20px] leading-none" style="color:var(--by-tomato);"><span id="absentCount">0</span></div>
-            </div>
-          </div>
-          <div class="flex-1"></div>
-          <div class="flex items-center gap-1.5">
-            <button id="markAllPresent" class="btn-ghost h-7 px-2 text-[11.5px]" style="font-family:var(--by-f-body);">Mark all present (+10)</button>
-          </div>
+      <!-- Left column: Classes stacked vertically -->
+      <section class="col-span-12 md:col-span-4 xl:col-span-3 flex flex-col gap-3" id="classStackCol">
+        <div class="flex items-center justify-between">
+          <div class="font-display text-[17px]" style="color:var(--by-ink);">Classes</div>
+          <span id="classStackCount" class="by-eyebrow">{{ active_classes | length }} active</span>
         </div>
-
-        <!-- Roster table -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="by-eyebrow border-b hairline">
-                <th class="font-medium pl-5 pr-3 py-2.5">Student</th>
-                <th class="font-medium px-3 py-2.5">Points</th>
-                <th class="font-medium px-3 py-2.5 hidden sm:table-cell">Streak</th>
-                <th class="font-medium pl-3 pr-5 py-2.5 text-right">Attendance · today</th>
-              </tr>
-            </thead>
-            <tbody id="rosterBody">
-              <tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">
-                Select a class above to open its roster.
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Roster footer -->
-        <footer class="px-5 py-3 border-t hairline flex items-center justify-between gap-2 text-[12px]" style="color:var(--by-ink-3);">
-          <div id="rosterFooterMsg" class="text-[12px]" style="color:var(--by-ink-3);">No class selected.</div>
-          <button id="msgClassBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="font-family:var(--by-f-body);" onclick="openMsgPanel()">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Message this cohort
-          </button>
-        </footer>
+        <div id="classStrip" class="flex flex-col gap-2 max-h-[calc(100vh-380px)] overflow-y-auto pr-0.5"></div>
       </section>
 
-
-      <!-- Right panel (4 cols) -->
-      <aside class="col-span-12 xl:col-span-4 flex flex-col gap-4">
+      <!-- Right column: Live Challenge + Roster -->
+      <section class="col-span-12 md:col-span-8 xl:col-span-9 flex flex-col gap-4 lg:gap-5">
 
         <!-- Live Challenge card -->
-        <div id="liveCard" class="live-card">
+        <div id="liveCard" class="live-card" style="border:var(--by-bd-thick);">
           <div class="live-card-inner">
 
             <div class="flex items-center justify-between">
@@ -680,8 +597,93 @@
           </div>
         </div>
 
+        <!-- Roster -->
+        <section id="rosterPanel" class="border hairline" style="background:var(--by-bg);">
 
-      </aside>
+          <!-- Roster header -->
+          <header class="px-5 py-4 flex items-start gap-4 border-b hairline">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 id="selTitle" class="font-display text-[24px] leading-tight" style="color:var(--by-ink);">Select a class on the left</h2>
+                <span id="selChip" class="chip chip-active hidden"><span class="dot"></span>Active</span>
+              </div>
+              <div class="mt-1 flex items-center gap-3 flex-wrap text-[12.5px]" style="color:var(--by-ink-3);">
+                <span id="selSchedule" class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                  —
+                </span>
+                <span id="selTerm" class="font-mono" style="color:var(--by-ink-3);">—</span>
+              </div>
+            </div>
+            <!-- Enrolled KPI -->
+            <div class="text-right flex-shrink-0">
+              <div class="by-eyebrow">Enrolled</div>
+              <div class="font-display text-[28px] leading-none mt-0.5" style="color:var(--by-ink);">
+                <span id="selEnrolled">—</span><span class="text-[14px]" style="color:var(--by-ink-4);">/<span id="selCap">—</span></span>
+              </div>
+            </div>
+          </header>
+
+          <!-- Attendance KPI bar -->
+          <div class="px-5 py-3 flex items-center gap-3 border-b hairline flex-wrap" style="background:var(--by-bg-2);">
+            <div class="stat-kpi flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#2A8A4F;"></span>
+              <div>
+                <div class="by-eyebrow">Present</div>
+                <div class="font-display text-[20px] leading-none" style="color:#2A8A4F;"><span id="presentCount">0</span></div>
+              </div>
+            </div>
+            <div class="stat-kpi flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-yes-deep);"></span>
+              <div>
+                <div class="by-eyebrow">Late</div>
+                <div class="font-display text-[20px] leading-none" style="color:var(--by-yes-deep);"><span id="lateCount">0</span></div>
+              </div>
+            </div>
+            <div class="stat-kpi flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-tomato);"></span>
+              <div>
+                <div class="by-eyebrow">Absent</div>
+                <div class="font-display text-[20px] leading-none" style="color:var(--by-tomato);"><span id="absentCount">0</span></div>
+              </div>
+            </div>
+            <div class="flex-1"></div>
+            <div class="flex items-center gap-1.5">
+              <button id="markAllPresent" class="btn-ghost h-7 px-2 text-[11.5px]" style="font-family:var(--by-f-body);">Mark all present (+10)</button>
+            </div>
+          </div>
+
+          <!-- Roster table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="by-eyebrow border-b hairline">
+                  <th class="font-medium pl-5 pr-3 py-2.5">Student</th>
+                  <th class="font-medium px-3 py-2.5">Points</th>
+                  <th class="font-medium px-3 py-2.5 hidden sm:table-cell">Streak</th>
+                  <th class="font-medium pl-3 pr-5 py-2.5 text-right">Attendance · today</th>
+                </tr>
+              </thead>
+              <tbody id="rosterBody">
+                <tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">
+                  Select a class on the left to open its roster.
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Roster footer -->
+          <footer class="px-5 py-3 border-t hairline flex items-center justify-between gap-2 text-[12px]" style="color:var(--by-ink-3);">
+            <div id="rosterFooterMsg" class="text-[12px]" style="color:var(--by-ink-3);">No class selected.</div>
+            <button id="msgClassBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="font-family:var(--by-f-body);" onclick="openMsgPanel()">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Message this cohort
+            </button>
+          </footer>
+        </section>
+
+      </section>
+
     </main>
 
     <footer class="px-4 lg:px-7 py-4 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3);">
@@ -905,7 +907,7 @@
   function renderStrip() {
     const items = CLASSES.filter(c => c.status === STATE.tab);
     $('#classStrip').innerHTML = items.map(classCardHTML).join('') ||
-      `<div class="col-span-full text-center text-[12.5px] py-8 border hairline" style="background:var(--by-bg-2);color:var(--by-ink-3);">No classes in this bucket.</div>`;
+      `<div class="text-center text-[12.5px] py-8 border hairline" style="background:var(--by-bg-2);color:var(--by-ink-3);">No classes in this bucket.</div>`;
   }
 
   $('#classStrip').addEventListener('click', e => {
@@ -950,14 +952,14 @@
     const c = CLASSES.find(x => x.id === STATE.selectedId);
 
     if (!c) {
-      $('#selTitle').textContent = 'Select a class above';
+      $('#selTitle').textContent = 'Select a class on the left';
       $('#selChip').classList.add('hidden');
       $('#selSchedule').innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> —`;
       $('#selTerm').textContent = '—';
       $('#selEnrolled').textContent = '—';
       $('#selCap').textContent = '—';
       $('#respTotal').textContent = '0';
-      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">Select a class above to open its roster.</td></tr>`;
+      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">Select a class on the left to open its roster.</td></tr>`;
       $('#rosterFooterMsg').textContent = 'No class selected.';
       $('#msgClassBtn').style.display = 'none';
       updateAttendanceCounts();
