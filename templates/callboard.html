@@ -11,6 +11,7 @@
     </div>
     <div class="ml-auto flex items-center gap-3 flex-shrink-0">
       {% include 'partials/_scene_switcher.html' %}
+      {% include 'partials/_inbox_btn.html' %}
       {% include 'partials/_header_user_pill.html' %}
     </div>
   </div>
@@ -27,22 +28,7 @@
   }
   .by-input:focus, .by-select:focus, .by-textarea:focus { box-shadow:var(--by-sh-yes); }
   .by-textarea { resize:vertical; min-height:200px; line-height:1.6; }
-
-  /* ── Overlay select — BigYes-styled face + invisible native select on top ── */
-  .by-so-wrap { position:relative; }
-  .by-so-face {
-    display:flex; align-items:center; justify-content:space-between; gap:8px;
-    background:var(--by-bg); border:1.5px solid var(--by-ink);
-    color:var(--by-ink); font-family:var(--by-f-body); font-size:14px;
-    padding:10px 14px; pointer-events:none; line-height:1.4;
-  }
-  .by-so-label { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .by-so-chevron { color:var(--by-ink-3); font-size:11px; flex-shrink:0; }
-  .by-so-wrap:focus-within .by-so-face { box-shadow:4px 4px 0 0 var(--by-yes); }
-  .by-so-wrap select {
-    position:absolute; inset:0; width:100%; height:100%;
-    opacity:0; cursor:pointer; z-index:1;
-  }
+  .by-code { resize:vertical; min-height:320px; line-height:1.55; font-family:var(--by-f-mono); font-size:12.5px; }
 
   .by-btn-primary {
     display:inline-flex; align-items:center; gap:8px;
@@ -55,6 +41,16 @@
   .by-btn-primary:active:not(:disabled) { box-shadow:none; transform:translate(0,0); }
   .by-btn-primary:disabled { opacity:.5; cursor:not-allowed; }
 
+  .by-btn-ghost {
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--by-bg); border:var(--by-bd-thick); color:var(--by-ink);
+    font-family:var(--by-f-sans); font-size:12.5px; font-weight:600;
+    padding:7px 14px; cursor:pointer; letter-spacing:.01em;
+    transition:box-shadow 120ms, transform 100ms;
+  }
+  .by-btn-ghost:hover:not(:disabled) { box-shadow:var(--by-sh-1); transform:translate(-1px,-1px); }
+  .by-btn-ghost:active:not(:disabled) { box-shadow:none; transform:translate(0,0); }
+
   .cb-badge {
     display:inline-block; font-family:var(--by-f-mono); font-size:9px; font-weight:700;
     letter-spacing:.1em; text-transform:uppercase; padding:2px 8px; border:var(--by-bd); white-space:nowrap;
@@ -62,14 +58,18 @@
   .cb-badge-sent    { background:#2A8A4F; color:#fff; border-color:#1D6138; }
   .cb-badge-pending { background:var(--by-yes); color:var(--by-ink); }
   .cb-badge-failed  { background:var(--by-tomato); color:#fff; border-color:#B83218; }
+  .cb-badge-sm      { background:var(--by-yes); color:var(--by-ink); }
+  .cb-badge-teacher { background:#E0EEE8; color:#1D6138; border-color:#A8D4B8; }
+  .cb-badge-student { background:var(--by-bg-3); color:var(--by-ink-3); border-color:var(--by-bd-raw,#ccc); }
 
+  /* Log rows — shared between blast log and inbox activity */
   .log-row {
     display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start;
     padding:12px 16px; border-bottom:var(--by-bd-soft); transition:background 100ms;
-    cursor:pointer;
   }
+  .log-row.clickable { cursor:pointer; }
+  .log-row.clickable:hover { background:var(--by-yes-soft); }
   .log-row:last-child { border-bottom:none; }
-  .log-row:hover { background:var(--by-yes-soft); }
 
   /* Student search dropdown */
   .cb-search-drop {
@@ -92,6 +92,18 @@
     letter-spacing:.06em; color:var(--by-ink); margin-top:8px;
   }
 
+  /* Tab nav */
+  .cb-tabs { display:flex; border-bottom:var(--by-bd); }
+  .cb-tab {
+    padding:10px 16px; font-family:var(--by-f-mono); font-size:11px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; cursor:pointer; border:none;
+    background:none; color:var(--by-ink-3); border-bottom:2px solid transparent;
+    transition:color 120ms;
+  }
+  .cb-tab.active { color:var(--by-ink); border-bottom-color:var(--by-ink); }
+  .cb-tab-panel { display:none; }
+  .cb-tab-panel.active { display:block; }
+
   /* Right-slide detail drawer */
   .by-log-overlay {
     display:none; position:fixed; inset:0; z-index:49; background:rgba(20,18,16,.45);
@@ -99,22 +111,21 @@
   .by-log-overlay.open { display:block; }
   .by-log-drawer {
     position:fixed; top:0; right:0; bottom:0; z-index:50;
-    width:min(560px,100vw); display:flex; flex-direction:column;
+    width:min(580px,100vw); display:flex; flex-direction:column;
     background:var(--by-bg); border-left:var(--by-bd-thick);
     transform:translateX(100%);
     transition:transform 240ms cubic-bezier(.2,.8,.2,1);
     overflow-y:auto;
   }
   .by-log-drawer.open { transform:translateX(0); }
-
   .thread-row { padding:10px 0; border-bottom:1px solid var(--by-bg-3); }
   .thread-row:last-child { border-bottom:none; }
   .reply-item { margin-top:8px; padding:8px 12px; background:var(--by-bg-2); border-left:3px solid var(--by-yes); }
-
   .read-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
   .read-dot.read   { background:#2A8A4F; }
   .read-dot.unread { background:var(--by-bg-3); border:1px solid var(--by-ink-4); }
 
+  /* Toast */
   #cb-toast {
     position:fixed; bottom:28px; right:28px; z-index:999;
     min-width:260px; max-width:420px; border:var(--by-bd-thick);
@@ -125,6 +136,13 @@
   #cb-toast.show { opacity:1; transform:translateY(0); pointer-events:auto; }
   #cb-toast.ok  { background:var(--by-yes); color:var(--by-ink); }
   #cb-toast.err { background:var(--by-tomato); color:#fff; }
+
+  /* Email template editor */
+  .tpl-card {
+    padding:14px 16px; border:var(--by-bd); cursor:pointer; transition:background 80ms;
+  }
+  .tpl-card:hover  { background:var(--by-yes-soft); }
+  .tpl-card.active { background:var(--by-yes-soft); border-color:var(--by-ink); }
 </style>
 {% endblock %}
 
@@ -137,6 +155,9 @@
     </p>
   </div>
 
+  <!-- ════════════════════════════════════════════════════════════════════
+       ROW 1 — Composer + Transmission Log (blast log + inbox activity)
+  ════════════════════════════════════════════════════════════════════ -->
   <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
 
     <!-- ── Directives Composer ── -->
@@ -153,22 +174,22 @@
       </header>
 
       <form id="blastForm" class="px-5 py-5 flex flex-col gap-5">
-        <!-- Hidden field carries the actual target value for the API -->
-        <input type="hidden" id="targetGroup" value="{{ 'u' + preset_member.id if preset_member else 'all_members' }}" />
+        <!-- Carries the resolved target value for the API call -->
+        <input type="hidden" id="targetGroup" value="{{ 'u' + preset_member.id if preset_member else '' }}" />
 
         <div>
           <label class="by-eyebrow block mb-2">Audience</label>
 
-          <!-- Selected target chip -->
+          <!-- Active target chip -->
           <div id="cb-target-chip" class="cb-target-chip" style="display:{% if preset_member %}inline-flex{% else %}none{% endif %};">
             <span id="cb-target-label">{% if preset_member %}{{ preset_member.name }}{% else %}—{% endif %}</span>
             <button type="button" onclick="clearTarget()"
               style="background:none;border:none;cursor:pointer;color:var(--by-ink);font-size:14px;line-height:1;padding:0;">×</button>
           </div>
 
-          <!-- 1. Student search -->
+          <!-- 1. Individual member search -->
           <div class="mt-2 mb-3">
-            <div class="by-eyebrow mb-1.5">Find a student</div>
+            <div class="by-eyebrow mb-1.5">Find a member</div>
             <div class="relative">
               <input id="cb-student-search" type="text" class="by-input"
                      placeholder="Type name or email…"
@@ -182,31 +203,24 @@
           <!-- 2. Class selector -->
           <div>
             <div class="by-eyebrow mb-1.5">Or message a class</div>
-            <div class="by-select-wrap">
-              <select id="cb-class-select" onchange="cbSelectClass(this)"
-                      style="width:100%;">
-                <option value="">— Select a class —</option>
-                {% for cls in all_classes %}
-                <option value="{{ cls.id }}">{{ cls.title }} · {{ cls.schedule }}</option>
-                {% endfor %}
-              </select>
-            </div>
+            <select id="cb-class-select" class="by-input" onchange="cbSelectClass(this)">
+              <option value="">— Select a class —</option>
+              {% for cls in all_classes %}
+              <option value="{{ cls.id }}">{{ cls.title }}{% if cls.schedule %} · {{ cls.schedule }}{% endif %}</option>
+              {% endfor %}
+            </select>
           </div>
 
-          <!-- 3. Global broadcast -->
+          <!-- 3. Broadcast presets -->
           <div class="mt-3">
             <div class="by-eyebrow mb-1.5">Or broadcast to everyone</div>
             <div class="flex gap-2 flex-wrap">
               <button type="button" onclick="cbSelectTarget('all_members','📣 All Members')"
-                class="px-3 py-1.5 text-[12px] font-semibold"
-                style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);cursor:pointer;font-family:var(--by-f-body);">
-                📣 All Members
-              </button>
+                class="by-btn-ghost text-[12px]">📣 All Members</button>
               <button type="button" onclick="cbSelectTarget('all_students','🎭 All Students')"
-                class="px-3 py-1.5 text-[12px] font-semibold"
-                style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);cursor:pointer;font-family:var(--by-f-body);">
-                🎭 All Students
-              </button>
+                class="by-btn-ghost text-[12px]">🎭 All Students</button>
+              <button type="button" onclick="cbSelectTarget('all_teachers','🎓 All Instructors')"
+                class="by-btn-ghost text-[12px]">🎓 All Instructors</button>
             </div>
           </div>
         </div>
@@ -232,7 +246,7 @@
       </form>
     </section>
 
-    <!-- ── Transmission Log ── -->
+    <!-- ── Transmission Log (tabbed: Blast Log | Inbox Activity) ── -->
     <section id="logPanel" style="border:var(--by-bd-thick);background:var(--by-bg);">
       <header class="px-5 py-4 flex items-center justify-between gap-3" style="border-bottom:var(--by-bd);">
         <div class="flex items-center gap-3">
@@ -245,54 +259,168 @@
             <div class="by-eyebrow mt-0.5">What was said when everyone thought they were off mic</div>
           </div>
         </div>
-        <span class="by-eyebrow">{{ mail_logs | length }} entries</span>
+        <span class="by-eyebrow">{{ mail_logs | length }} blast{{ 's' if mail_logs | length != 1 else '' }}</span>
       </header>
 
-      <div id="logList" style="max-height:560px;overflow-y:auto;">
-        {% if mail_logs %}
-          {% for log in mail_logs %}
-          <div class="log-row" data-log-id="{{ log.id }}" onclick="openLogDetail({{ log.id }})">
-            <div class="min-w-0">
-              <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">
-                {% if log.recipient_name %}
-                  👤 {{ log.recipient_name }}
-                {% elif log.recipient_group == 'all_members' %}
-                  📣 All Members
-                {% elif log.recipient_group == 'all_students' %}
-                  🎭 All Students
-                {% elif log.recipient_group and log.recipient_group.startswith('c') %}
-                  📚 Cohort {{ log.recipient_group | upper }}
+      <!-- Tab switcher -->
+      <div class="cb-tabs">
+        <button class="cb-tab active" onclick="switchLogTab('blasts',this)">📣 Blasts</button>
+        <button class="cb-tab" onclick="switchLogTab('activity',this)">💬 Inbox Activity</button>
+      </div>
+
+      <!-- Tab: Blast Log -->
+      <div id="logTab-blasts" class="cb-tab-panel active">
+        <div id="logList" style="max-height:520px;overflow-y:auto;">
+          {% if mail_logs %}
+            {% for log in mail_logs %}
+            {# Stage manager blasts are always clickable — they own the body #}
+            <div class="log-row clickable"
+                 data-log-id="{{ log.id }}"
+                 onclick="openLogDetail('{{ log.id }}')">
+              <div class="min-w-0">
+                <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">
+                  {% set tg = log.target_group or '' %}
+                  {% if tg == 'all_members' %}📣 All Members
+                  {% elif tg == 'all_students' %}🎭 All Students
+                  {% elif tg == 'all_teachers' %}🎓 All Instructors
+                  {% elif tg.startswith('u') %}👤 Individual
+                  {% else %}📚 Class Cohort
+                  {% endif %}
+                  <span style="margin-left:6px;font-size:9px;color:var(--by-ink-4);">{{ log.recipient_count }} inbox{{ 'es' if log.recipient_count != 1 else '' }}</span>
+                </div>
+                <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">{{ log.subject }}</div>
+                <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">
+                  {{ log.sender_name }} · {{ log.created_at[:16] | replace('T',' ') if log.created_at else '—' }}
+                </div>
+              </div>
+              <div class="flex-shrink-0 pt-0.5 flex flex-col items-end gap-1.5">
+                {% if log.status == 'sent' %}
+                  <span class="cb-badge cb-badge-sent">Delivered</span>
+                {% elif log.status == 'failed' %}
+                  <span class="cb-badge cb-badge-failed">Trainwreck</span>
                 {% else %}
-                  {{ log.recipient_group or '—' }}
+                  <span class="cb-badge cb-badge-pending">On Stage</span>
                 {% endif %}
-              </div>
-              <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">{{ log.subject }}</div>
-              <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">
-                {{ log.sender_name }} · {{ log.created_at[:16] | replace('T',' ') }}
+                <span style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">View →</span>
               </div>
             </div>
-            <div class="flex-shrink-0 pt-0.5 flex flex-col items-end gap-1.5">
-              {% if log.status == 'sent' %}
-                <span class="cb-badge cb-badge-sent">Delivered</span>
-              {% elif log.status == 'pending' %}
-                <span class="cb-badge cb-badge-pending">On Stage</span>
-              {% else %}
-                <span class="cb-badge cb-badge-failed">Trainwreck</span>
-              {% endif %}
-              <span style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">View →</span>
+            {% endfor %}
+          {% else %}
+            <div class="px-6 py-14 text-center">
+              <div class="by-display text-[20px] mb-2" style="color:var(--by-ink-4);">( silence )</div>
+              <div class="text-[13px]" style="color:var(--by-ink-4);">No transmissions yet. The booth awaits its first broadcast.</div>
             </div>
-          </div>
-          {% endfor %}
-        {% else %}
-          <div class="px-6 py-14 text-center">
-            <div class="by-display text-[20px] mb-2" style="color:var(--by-ink-4);">( silence )</div>
-            <div class="text-[13px]" style="color:var(--by-ink-4);">No transmissions yet. The booth awaits its first broadcast.</div>
-          </div>
-        {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Tab: Inbox Activity (all system messages, loaded via JS) -->
+      <div id="logTab-activity" class="cb-tab-panel">
+        <div class="px-5 py-3 flex items-center justify-between" style="border-bottom:var(--by-bd-soft);">
+          <span class="by-eyebrow">All in-app messages across the system</span>
+          <button class="by-btn-ghost" onclick="loadInboxActivity()" style="padding:5px 10px;font-size:11px;">↻ Refresh</button>
+        </div>
+        <div id="activityList" style="max-height:480px;overflow-y:auto;">
+          <div class="px-6 py-10 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading activity…</div>
+        </div>
       </div>
     </section>
 
-  </div>
+  </div><!-- end row 1 -->
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       ROW 2 — Email Log + Email Template Editor
+  ════════════════════════════════════════════════════════════════════ -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start mt-5">
+
+    <!-- ── Email Send Log ── -->
+    <section style="border:var(--by-bd-thick);background:var(--by-bg);">
+      <header class="px-5 py-4 flex items-center justify-between gap-3" style="border-bottom:var(--by-bd);">
+        <div class="flex items-center gap-3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               style="width:17px;height:17px;flex-shrink:0;">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <div>
+            <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">Email Send Log</div>
+            <div class="by-eyebrow mt-0.5">External emails dispatched via Resend</div>
+          </div>
+        </div>
+        <button class="by-btn-ghost" onclick="loadEmailLog()" style="padding:5px 10px;font-size:11px;">↻ Refresh</button>
+      </header>
+      <div id="emailLogList" style="max-height:440px;overflow-y:auto;">
+        <div class="px-6 py-10 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading email log…</div>
+      </div>
+    </section>
+
+    <!-- ── Email Template Editor ── -->
+    <section style="border:var(--by-bd-thick);background:var(--by-bg);">
+      <header class="px-5 py-4 flex items-center justify-between gap-3" style="border-bottom:var(--by-bd);">
+        <div class="flex items-center gap-3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               style="width:17px;height:17px;flex-shrink:0;">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/>
+          </svg>
+          <div>
+            <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">Email Templates</div>
+            <div class="by-eyebrow mt-0.5">BigYes design language · Resend-ready HTML</div>
+          </div>
+        </div>
+        <button class="by-btn-ghost" onclick="newTemplate()" style="padding:5px 10px;font-size:11px;">+ New</button>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-[200px_1fr]" style="min-height:440px;">
+        <!-- Template list -->
+        <div id="tplList" style="border-right:var(--by-bd);overflow-y:auto;max-height:480px;">
+          <div class="px-4 py-3 by-eyebrow" style="color:var(--by-ink-4);border-bottom:var(--by-bd-soft);">Saved Templates</div>
+          <div id="tplListInner">
+            <div class="px-4 py-8 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>
+          </div>
+        </div>
+        <!-- Template editor -->
+        <div class="px-5 py-5 flex flex-col gap-4">
+          <input type="hidden" id="tplId" value="" />
+          <div>
+            <label class="by-eyebrow block mb-1.5">Template Name</label>
+            <input id="tplName" type="text" class="by-input" placeholder="e.g. Welcome Email" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="by-eyebrow block mb-1.5">Slug</label>
+              <input id="tplSlug" type="text" class="by-input" placeholder="welcome_email" />
+            </div>
+            <div>
+              <label class="by-eyebrow block mb-1.5">Active</label>
+              <select id="tplActive" class="by-input">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="by-eyebrow block mb-1.5">Subject Line</label>
+            <input id="tplSubject" type="text" class="by-input" placeholder="Welcome to {{studio_name}}!" />
+          </div>
+          <div>
+            <label class="by-eyebrow block mb-1.5">Preview Text</label>
+            <input id="tplPreview" type="text" class="by-input" placeholder="Short snippet shown in email client inbox" />
+          </div>
+          <div>
+            <label class="by-eyebrow block mb-1.5">HTML Body</label>
+            <textarea id="tplBody" class="by-textarea by-code" placeholder="<!-- BigYes inline HTML — use inline styles with brand tokens -->"></textarea>
+          </div>
+          <div class="flex items-center gap-3 pt-1">
+            <button class="by-btn-primary" onclick="saveTemplate()">💾 Save Template</button>
+            <button class="by-btn-ghost" onclick="clearTemplateForm()">Clear</button>
+            <span id="tplSpinner" class="hidden by-eyebrow" style="color:var(--by-ink-3);">Saving…</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- end row 2 -->
+
 </main>
 
 <div id="cb-toast"></div>
@@ -300,8 +428,6 @@
 <!-- ── Message Detail Drawer ── -->
 <div id="log-overlay" class="by-log-overlay" onclick="closeLogDetail()"></div>
 <div id="log-drawer" class="by-log-drawer">
-
-  <!-- Drawer header -->
   <div class="px-5 py-4 flex items-start justify-between gap-4 flex-shrink-0"
        style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
     <div class="min-w-0">
@@ -310,11 +436,11 @@
     </div>
     <button onclick="closeLogDetail()" class="flex-shrink-0 w-9 h-9 flex items-center justify-center mt-0.5"
             style="border:var(--by-bd-thick);background:var(--by-bg);">
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
     </button>
   </div>
-
-  <!-- Drawer body -->
   <div id="drawerBody" class="flex-1 px-5 py-5 flex flex-col gap-5">
     <div class="py-8 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>
   </div>
@@ -323,306 +449,464 @@
 
 {% block extra_js %}
 <script>
-  // ── Audience: member data ─────────────────────────────────────────────
-  const CB_MEMBERS = [
-    {% for m in all_members %}
-    {"id":{{ m.id | tojson }},"name":{{ m.name | tojson }},"email":{{ (m.email or '') | tojson }},"identity":{{ (m.identity or '') | tojson }}}{% if not loop.last %},{% endif %}
-    {% endfor %}
-  ];
+// ── Member data (for audience search) ─────────────────────────────────────
+const CB_MEMBERS = [
+  {% for m in all_members %}
+  {"id":{{ m.id | tojson }},"name":{{ m.name | tojson }},"email":{{ (m.email or '') | tojson }},"identity":{{ (m.identity or '') | tojson }}}{% if not loop.last %},{% endif %}
+  {% endfor %}
+];
 
-  function cbEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+// ── Utility ────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+const cbEsc = esc;
 
-  function cbSelectTarget(id, label) {
-    document.getElementById('targetGroup').value = id;
-    document.getElementById('cb-target-label').textContent = label;
-    document.getElementById('cb-target-chip').style.display = 'inline-flex';
-    // Reset class select
-    const cls = document.getElementById('cb-class-select');
-    if (cls) cls.value = '';
+const toastEl = document.getElementById('cb-toast');
+let toastTimer;
+function showToast(msg, type) {
+  clearTimeout(toastTimer);
+  toastEl.textContent = msg;
+  toastEl.className = `show ${type}`;
+  toastTimer = setTimeout(() => { toastEl.className = ''; }, 4200);
+}
+
+// ── Tab switcher ───────────────────────────────────────────────────────────
+function switchLogTab(name, btn) {
+  document.querySelectorAll('.cb-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cb-tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`logTab-${name}`).classList.add('active');
+  if (name === 'activity') loadInboxActivity();
+}
+
+// ── Audience targeting ─────────────────────────────────────────────────────
+function cbSelectTarget(id, label) {
+  document.getElementById('targetGroup').value = id;
+  document.getElementById('cb-target-label').textContent = label;
+  document.getElementById('cb-target-chip').style.display = 'inline-flex';
+  const cls = document.getElementById('cb-class-select');
+  if (cls) cls.value = '';
+}
+
+window.clearTarget = function() {
+  document.getElementById('targetGroup').value = '';
+  document.getElementById('cb-target-chip').style.display = 'none';
+  const cls = document.getElementById('cb-class-select');
+  if (cls) cls.value = '';
+};
+
+window.cbSelectClass = function(sel) {
+  if (!sel.value) return;
+  const label = sel.options[sel.selectedIndex].text;
+  cbSelectTarget(sel.value, '📚 ' + label);
+};
+
+function cbHideDrop() {
+  const d = document.getElementById('cb-student-drop');
+  if (d) d.classList.add('hidden');
+}
+
+window.cbSearchStudents = function(query) {
+  const drop = document.getElementById('cb-student-drop');
+  if (!drop) return;
+  const q = query.trim().toLowerCase();
+  if (!q) { drop.classList.add('hidden'); drop.innerHTML = ''; return; }
+
+  const results = CB_MEMBERS.filter(m =>
+    m.name.toLowerCase().includes(q) || (m.email||'').toLowerCase().includes(q)
+  ).slice(0, 12);
+
+  if (!results.length) {
+    drop.innerHTML = `<div class="cb-search-row by-eyebrow" style="color:var(--by-ink-4);">No members found.</div>`;
+    drop.classList.remove('hidden');
+    return;
   }
+  drop.innerHTML = results.map(m => {
+    const roleStyle = m.identity === 'stage_manager'
+      ? 'background:var(--by-yes);color:var(--by-ink);'
+      : m.identity === 'teacher'
+        ? 'background:#E0EEE8;color:#1D6138;'
+        : 'background:var(--by-bg-3);color:var(--by-ink-3);';
+    // individual target: prefix with 'u' so route resolves to single client
+    return `<div class="cb-search-row" onmousedown="cbPickMember('u${esc(m.id)}','${esc(m.name)}')">
+      <div class="flex items-center justify-between gap-2">
+        <div>
+          <div style="font-family:var(--by-f-sans);font-weight:600;font-size:13px;color:var(--by-ink);">${esc(m.name)}</div>
+          <div style="font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-4);">${esc(m.email)}</div>
+        </div>
+        <span style="font-family:var(--by-f-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;flex-shrink:0;${roleStyle}">${esc((m.identity||'').replace(/_/g,' '))}</span>
+      </div>
+    </div>`;
+  }).join('');
+  drop.classList.remove('hidden');
+};
 
-  window.clearTarget = function() {
-    document.getElementById('targetGroup').value = '';
-    document.getElementById('cb-target-chip').style.display = 'none';
-    const cls = document.getElementById('cb-class-select');
-    if (cls) cls.value = '';
-  };
+window.cbPickMember = function(targetId, name) {
+  cbSelectTarget(targetId, `👤 ${name}`);
+  const search = document.getElementById('cb-student-search');
+  const drop   = document.getElementById('cb-student-drop');
+  if (search) search.value = name;
+  if (drop)   drop.classList.add('hidden');
+};
 
-  window.cbSelectClass = function(sel) {
-    if (!sel.value) return;
-    const label = sel.options[sel.selectedIndex].text;
-    cbSelectTarget(sel.value, '📚 ' + label);
-  };
-
-  function cbHideDrop() {
-    const d = document.getElementById('cb-student-drop');
-    if (d) d.classList.add('hidden');
+// ── Blast form submit ──────────────────────────────────────────────────────
+document.getElementById('blastForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn     = document.getElementById('blastBtn');
+  const spinner = document.getElementById('blastSpinner');
+  const targetVal = document.getElementById('targetGroup').value.trim();
+  if (!targetVal) {
+    showToast('Select an audience first — who should receive this?', 'err');
+    return;
   }
+  const subject = document.getElementById('subject').value.trim();
+  const body    = document.getElementById('messageBody').value.trim();
+  if (!subject || !body) {
+    showToast('Subject and message body are required.', 'err');
+    return;
+  }
+  btn.disabled = true;
+  spinner.classList.remove('hidden');
+  try {
+    const res  = await fetch('/api/comms/send-blast', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ target_group:targetVal, subject, message_body:body }),
+    });
+    const data = await res.json();
+    if (res.ok && data.status === 'yes_and') {
+      showToast(`Yes, And… ${data.count} inbox${data.count !== 1 ? 'es' : ''} reached!`, 'ok');
+      prependBlastRow({ target:targetVal, subject, id:data.log_id, count:data.count });
+      this.reset();
+      clearTarget();
+      const search = document.getElementById('cb-student-search');
+      if (search) search.value = '';
+    } else {
+      showToast(`Stage Fright: ${data.error || 'Unknown failure'}`, 'err');
+    }
+  } catch {
+    showToast('Total Trainwreck — network error. Check the wings.', 'err');
+  } finally {
+    btn.disabled = false;
+    spinner.classList.add('hidden');
+  }
+});
 
-  window.cbSearchStudents = function(query) {
-    const drop = document.getElementById('cb-student-drop');
-    if (!drop) return;
-    const q = query.trim().toLowerCase();
-    if (!q) { drop.classList.add('hidden'); drop.innerHTML = ''; return; }
+// ── Prepend a new row to the blast log after sending ──────────────────────
+function targetLabel(tg) {
+  if (!tg) return '—';
+  if (tg === 'all_members')  return '📣 All Members';
+  if (tg === 'all_students') return '🎭 All Students';
+  if (tg === 'all_teachers') return '🎓 All Instructors';
+  if (tg.startsWith('u'))    return '👤 Individual';
+  return '📚 Class Cohort';
+}
 
-    const results = CB_MEMBERS.filter(m =>
-      m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q)
-    ).slice(0, 12);
+function prependBlastRow(log) {
+  const logList = document.getElementById('logList');
+  const empty = logList.querySelector('.px-6.py-14');
+  if (empty) empty.remove();
+  const row = document.createElement('div');
+  row.className = 'log-row clickable';
+  if (log.id) {
+    row.dataset.logId = log.id;
+    row.setAttribute('onclick', `openLogDetail('${log.id}')`);
+  }
+  const now = new Date().toISOString().slice(0,16).replace('T',' ');
+  row.innerHTML = `
+    <div class="min-w-0">
+      <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">
+        ${esc(targetLabel(log.target))}
+        <span style="margin-left:6px;font-size:9px;color:var(--by-ink-4);">${log.count ?? 0} inbox${(log.count ?? 0) !== 1 ? 'es' : ''}</span>
+      </div>
+      <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(log.subject)}</div>
+      <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">You · ${now}</div>
+    </div>
+    <div class="flex-shrink-0 pt-0.5 flex flex-col items-end gap-1.5">
+      <span class="cb-badge cb-badge-sent">Delivered</span>
+      <span style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">View →</span>
+    </div>`;
+  logList.insertAdjacentElement('afterbegin', row);
+}
 
-    if (!results.length) {
-      drop.innerHTML = `<div class="cb-search-row by-eyebrow" style="color:var(--by-ink-4);">No members found.</div>`;
-      drop.classList.remove('hidden');
+// ── Log detail drawer ──────────────────────────────────────────────────────
+function openLogDetail(logId) {
+  if (!logId) return;
+  const overlay = document.getElementById('log-overlay');
+  const drawer  = document.getElementById('log-drawer');
+  const body    = document.getElementById('drawerBody');
+  const subject = document.getElementById('drawerSubject');
+
+  subject.textContent = '—';
+  body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>';
+  overlay.classList.add('open');
+  drawer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  fetch(`/api/comms/log/${logId}`)
+    .then(r => r.json())
+    .then(data => {
+      if (!data.ok || !data.log) {
+        body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-tomato);">Could not load message.</div>';
+        return;
+      }
+      const log = data.log;
+      subject.textContent = log.subject || '(no subject)';
+
+      const threads    = log.threads || [];
+      const totalRecip = log.recipient_count ?? threads.length;
+      const readCount  = threads.filter(t => t.is_read).length;
+      const replyCount = threads.reduce((s, t) => s + (t.replies?.length || 0), 0);
+
+      const kpiHtml = `
+        <div class="grid grid-cols-3 gap-2">
+          <div style="border:var(--by-bd);background:var(--by-bg-2);padding:10px 14px;">
+            <div class="by-eyebrow">Recipients</div>
+            <div class="by-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">${totalRecip}</div>
+          </div>
+          <div style="border:var(--by-bd);background:${readCount>0?'var(--by-yes-soft)':'var(--by-bg-2)'};padding:10px 14px;">
+            <div class="by-eyebrow">Read</div>
+            <div class="by-display text-[26px] leading-none mt-1" style="color:${readCount>0?'#2A8A4F':'var(--by-ink-4)'};">${readCount}</div>
+          </div>
+          <div style="border:var(--by-bd);background:${replyCount>0?'var(--by-yes-soft)':'var(--by-bg-2)'};padding:10px 14px;">
+            <div class="by-eyebrow">Replies</div>
+            <div class="by-display text-[26px] leading-none mt-1" style="color:${replyCount>0?'var(--by-yes-deep)':'var(--by-ink-4)'};">${replyCount}</div>
+          </div>
+        </div>`;
+
+      const metaHtml = `
+        <div style="border:var(--by-bd);background:var(--by-bg-2);padding:12px 16px;">
+          <div class="flex items-center gap-3 flex-wrap">
+            <div><div class="by-eyebrow">From</div>
+              <div class="text-[14px] font-semibold mt-0.5" style="color:var(--by-ink);">${esc(log.sender_name||'—')}</div></div>
+            <div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;">
+              <div class="by-eyebrow">Sent</div>
+              <div class="text-[13px] font-mono mt-0.5" style="color:var(--by-ink-3);">${(log.created_at||'').slice(0,16).replace('T',' ')}</div>
+            </div>
+            <div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;">
+              <div class="by-eyebrow">Target</div>
+              <div class="text-[13px] font-mono mt-0.5" style="color:var(--by-ink-3);">${esc(targetLabel(log.target_group||''))}</div>
+            </div>
+          </div>
+        </div>`;
+
+      const msgHtml = `
+        <div>
+          <div class="by-eyebrow mb-2">Message Body</div>
+          <div style="border:var(--by-bd);background:var(--by-bg);padding:16px;font-size:14px;line-height:1.7;color:var(--by-ink-2);white-space:pre-wrap;">${esc(log.body||'')}</div>
+        </div>`;
+
+      let threadsHtml = '';
+      if (threads.length) {
+        const rows = threads.map(t => {
+          const replies = (t.replies||[]).map(r => `
+            <div class="reply-item mt-2">
+              <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">${esc(r.sender_name)} replied</div>
+              <div class="text-[13px]" style="color:var(--by-ink-2);">${esc(r.body)}</div>
+              <div class="by-eyebrow mt-1" style="font-size:9.5px;">${(r.created_at||'').slice(0,16).replace('T',' ')}</div>
+            </div>`).join('');
+          return `
+            <div class="thread-row">
+              <div class="flex items-center gap-2.5">
+                <span class="read-dot ${t.is_read?'read':'unread'}"></span>
+                <span class="text-[13.5px] font-semibold" style="color:var(--by-ink);">${esc(t.recipient_name||t.recipient_email||'—')}</span>
+                <span class="by-eyebrow ml-auto">${t.is_read?'Read':'Unread'}${t.replies?.length?` · ${t.replies.length} repl${t.replies.length===1?'y':'ies'}`:''}</span>
+              </div>
+              ${replies}
+            </div>`;
+        }).join('');
+        threadsHtml = `
+          <div>
+            <div class="by-eyebrow mb-2">Recipient Threads (${totalRecip} sent · ${readCount} read · ${replyCount} repl${replyCount===1?'y':'ies'})</div>
+            <div style="border:var(--by-bd);">${rows}</div>
+          </div>`;
+      }
+
+      body.innerHTML = kpiHtml + metaHtml + msgHtml + (threadsHtml || '');
+    })
+    .catch(() => {
+      body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-tomato);">Network error loading message details.</div>';
+    });
+}
+
+function closeLogDetail() {
+  document.getElementById('log-overlay').classList.remove('open');
+  document.getElementById('log-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── Inbox Activity tab ─────────────────────────────────────────────────────
+let activityLoaded = false;
+async function loadInboxActivity() {
+  const list = document.getElementById('activityList');
+  list.innerHTML = '<div class="px-6 py-10 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>';
+  try {
+    const res  = await fetch('/api/comms/inbox-activity');
+    const data = await res.json();
+    if (!data.ok) { list.innerHTML = `<div class="px-6 py-8 by-eyebrow" style="color:var(--by-tomato);">${esc(data.error||'Error loading activity.')}</div>`; return; }
+    const msgs = data.messages || [];
+    if (!msgs.length) {
+      list.innerHTML = '<div class="px-6 py-14 text-center by-eyebrow" style="color:var(--by-ink-4);">No messages in the system yet.</div>';
       return;
     }
-
-    drop.innerHTML = results.map(m => {
-      const roleColor = m.identity === 'stage_manager'
-        ? 'background:var(--by-yes);color:var(--by-ink);'
-        : m.identity === 'teacher'
-          ? 'background:#E0EEE8;color:#1D6138;'
-          : 'background:var(--by-bg-3);color:var(--by-ink-3);';
-      return `<div class="cb-search-row" onmousedown="cbPickStudent('${cbEsc(m.id)}','${cbEsc(m.name)}','${cbEsc(m.email)}')">
-        <div class="flex items-center justify-between gap-2">
-          <div>
-            <div style="font-family:var(--by-f-sans);font-weight:600;font-size:13px;color:var(--by-ink);">${cbEsc(m.name)}</div>
-            <div style="font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-4);">${cbEsc(m.email)}</div>
+    list.innerHTML = msgs.map(m => {
+      const isSM = m.sender_identity === 'stage_manager';
+      const badgeClass = isSM ? 'cb-badge-sm' : m.sender_identity === 'teacher' ? 'cb-badge-teacher' : 'cb-badge-student';
+      return `<div class="log-row" style="${isSM?'background:var(--by-yes-soft);':''}">
+        <div class="min-w-0">
+          <div class="by-eyebrow mb-1 flex items-center gap-2" style="color:var(--by-ink-3);">
+            <span>${esc(m.sender_name||m.sender_email||'—')}</span>
+            <span class="cb-badge ${badgeClass}">${esc((m.sender_identity||'student').replace(/_/g,' '))}</span>
+            <span style="color:var(--by-ink-4);">→ ${esc(m.recipient_name||m.recipient_email||'—')}</span>
           </div>
-          <span style="font-family:var(--by-f-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;flex-shrink:0;${roleColor}">${cbEsc(m.identity.replace(/_/g,' '))}</span>
+          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(m.subject)}</div>
+          <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">
+            ${(m.created_at||'').slice(0,16).replace('T',' ')}
+            ${m.is_read ? '· <span style="color:#2A8A4F;">Read</span>' : '· <span style="color:var(--by-ink-3);">Unread</span>'}
+          </div>
+        </div>
+        <div class="flex-shrink-0 pt-0.5">
+          ${m.is_read
+            ? '<span class="cb-badge cb-badge-sent" style="font-size:8px;">Read</span>'
+            : '<span class="cb-badge cb-badge-pending" style="font-size:8px;">Unread</span>'}
         </div>
       </div>`;
     }).join('');
-    drop.classList.remove('hidden');
-  };
-
-  window.cbPickStudent = function(id, name, email) {
-    cbSelectTarget(id, `👤 ${name}`);
-    const search = document.getElementById('cb-student-search');
-    const drop   = document.getElementById('cb-student-drop');
-    if (search) search.value = name;
-    if (drop)   drop.classList.add('hidden');
-  };
-
-  // Legacy compat (no longer used but kept for safety)
-  function bySoSync(sel) {}
-  document.addEventListener('DOMContentLoaded', function () {});
-
-  const toast = document.getElementById('cb-toast');
-  let toastTimer;
-  function showToast(msg, type) {
-    clearTimeout(toastTimer);
-    toast.textContent = msg;
-    toast.className = `show ${type}`;
-    toastTimer = setTimeout(() => { toast.className = ''; }, 4200);
+    activityLoaded = true;
+  } catch {
+    list.innerHTML = '<div class="px-6 py-8 by-eyebrow" style="color:var(--by-tomato);">Network error.</div>';
   }
+}
 
-  function prependLogRow(log) {
-    const logList = document.getElementById('logList');
-    const empty = logList.querySelector('.px-6.py-14');
-    if (empty) empty.remove();
-    const row = document.createElement('div');
-    row.className = 'log-row';
-    let lbl = log.target;
-    if (lbl === 'all_members') lbl = '📣 All Members';
-    else if (lbl === 'all_students') lbl = '🎭 All Students';
-    else if (lbl.startsWith('c')) lbl = '📚 Cohort ' + lbl.toUpperCase();
-    else if (lbl.startsWith('u')) lbl = '👤 ' + lbl;
-    const now = new Date().toISOString().slice(0,16).replace('T',' ');
-    row.innerHTML = `
-      <div class="min-w-0">
-        <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">${lbl}</div>
-        <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(log.subject)}</div>
-        <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">You · ${now}</div>
-      </div>
-      <div class="flex-shrink-0 pt-0.5 flex flex-col items-end gap-1.5">
-        <span class="cb-badge cb-badge-pending">On Stage</span>
-        <span style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-4);">View →</span>
-      </div>`;
-    if (log.id) row.dataset.logId = log.id;
-    logList.insertAdjacentElement('afterbegin', row);
-  }
-
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  async function refreshClassOptions() {
-    try {
-      const res  = await fetch('/api/classes');
-      const data = await res.json();
-      if (!data.ok) return;
-      const sel = document.getElementById('targetGroup');
-      const existing = sel.querySelector('optgroup[label="Class Cohorts"]');
-      if (existing) existing.remove();
-      if (data.classes && data.classes.length) {
-        const grp = document.createElement('optgroup');
-        grp.label = 'Class Cohorts';
-        data.classes.forEach(cls => {
-          const opt = document.createElement('option');
-          opt.value = cls.id;
-          opt.textContent = `${cls.title} — ${cls.schedule}`;
-          grp.appendChild(opt);
-        });
-        const individualGrp = sel.querySelector('optgroup[label="Individual"]');
-        sel.insertBefore(grp, individualGrp);
-      }
-    } catch { /* silently ignore — stale options are non-critical */ }
-  }
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') refreshClassOptions();
-  });
-
-  // ── Log Detail Drawer ────────────────────────────────────────────────
-  function openLogDetail(logId) {
-    const overlay = document.getElementById('log-overlay');
-    const drawer  = document.getElementById('log-drawer');
-    const body    = document.getElementById('drawerBody');
-    const subject = document.getElementById('drawerSubject');
-
-    subject.textContent = '—';
-    body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>';
-    overlay.classList.add('open');
-    drawer.classList.add('open');
-    document.body.style.overflow = 'hidden';
-
-    fetch(`/api/comms/log/${logId}`)
-      .then(r => r.json())
-      .then(data => {
-        if (!data.ok || !data.log) { body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-tomato);">Could not load message.</div>'; return; }
-        const log = data.log;
-        subject.textContent = log.subject || '(no subject)';
-
-        const threads = log.threads || [];
-        const totalRecip  = threads.length;
-        const readCount   = threads.filter(t => t.is_read).length;
-        const replyCount  = threads.reduce((sum, t) => sum + (t.replies?.length || 0), 0);
-        const unreadCount = totalRecip - readCount;
-
-        // KPI strip
-        const kpiHtml = `
-          <div class="grid grid-cols-3 gap-2">
-            <div style="border:var(--by-bd);background:var(--by-bg-2);padding:10px 14px;">
-              <div class="by-eyebrow">Recipients</div>
-              <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">${totalRecip}</div>
-            </div>
-            <div style="border:var(--by-bd);background:${readCount > 0 ? 'var(--by-yes-soft)' : 'var(--by-bg-2)'};padding:10px 14px;">
-              <div class="by-eyebrow">Read</div>
-              <div class="font-display text-[26px] leading-none mt-1" style="color:${readCount > 0 ? '#2A8A4F' : 'var(--by-ink-4)'};">${readCount}</div>
-            </div>
-            <div style="border:var(--by-bd);background:${replyCount > 0 ? 'var(--by-yes-soft)' : 'var(--by-bg-2)'};padding:10px 14px;">
-              <div class="by-eyebrow">Replies</div>
-              <div class="font-display text-[26px] leading-none mt-1" style="color:${replyCount > 0 ? 'var(--by-yes-deep)' : 'var(--by-ink-4)'};">${replyCount}</div>
-            </div>
-          </div>`;
-
-        // Meta
-        const metaHtml = `
-          <div style="border:var(--by-bd);background:var(--by-bg-2);padding:12px 16px;">
-            <div class="flex items-center gap-3 flex-wrap">
-              <div>
-                <div class="by-eyebrow">From</div>
-                <div class="text-[14px] font-semibold mt-0.5" style="color:var(--by-ink);">${esc(log.sender_name || '—')}</div>
-              </div>
-              <div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;">
-                <div class="by-eyebrow">Sent</div>
-                <div class="text-[13px] font-mono mt-0.5" style="color:var(--by-ink-3);">${(log.created_at||'').slice(0,16).replace('T',' ')}</div>
-              </div>
-              ${log.recipient_name ? `<div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;"><div class="by-eyebrow">To</div><div class="text-[14px] font-semibold mt-0.5" style="color:var(--by-ink);">${esc(log.recipient_name)}</div></div>` : ''}
-              ${log.recipient_group && !log.recipient_name ? `<div style="border-left:var(--by-bd-soft);padding-left:12px;margin-left:4px;"><div class="by-eyebrow">Audience</div><div class="text-[13px] font-mono mt-0.5" style="color:var(--by-ink-3);">${esc(log.recipient_group)}</div></div>` : ''}
-            </div>
-          </div>`;
-
-        // Message body
-        const msgHtml = `
-          <div>
-            <div class="by-eyebrow mb-2">Message</div>
-            <div style="border:var(--by-bd);background:var(--by-bg);padding:16px;font-size:14px;line-height:1.7;color:var(--by-ink-2);white-space:pre-wrap;">${esc(log.body || '')}</div>
-          </div>`;
-
-        // Recipient threads
-        let threadsHtml = '';
-        if (threads.length) {
-          const rows = threads.map(t => {
-            const replies = (t.replies || []).map(r => `
-              <div class="reply-item mt-2">
-                <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">${esc(r.sender_name)} replied</div>
-                <div class="text-[13px]" style="color:var(--by-ink-2);">${esc(r.body)}</div>
-                <div class="by-eyebrow mt-1" style="font-size:9.5px;">${(r.created_at||'').slice(0,16).replace('T',' ')}</div>
-              </div>`).join('');
-            return `
-              <div class="thread-row">
-                <div class="flex items-center gap-2.5">
-                  <span class="read-dot ${t.is_read ? 'read' : 'unread'}"></span>
-                  <span class="text-[13.5px] font-semibold" style="color:var(--by-ink);">${esc(t.recipient_name || t.member_id)}</span>
-                  <span class="by-eyebrow ml-auto">${t.is_read ? 'Read' : 'Unread'}${t.replies?.length ? ` · ${t.replies.length} repl${t.replies.length===1?'y':'ies'}` : ''}</span>
-                </div>
-                ${replies}
-              </div>`;
-          }).join('');
-          threadsHtml = `
-            <div>
-              <div class="by-eyebrow mb-2">Recipients (${totalRecip} · ${readCount} read · ${replyCount} repl${replyCount===1?'y':'ies'})</div>
-              <div style="border:var(--by-bd);">${rows}</div>
-            </div>`;
-        }
-
-        body.innerHTML = kpiHtml + metaHtml + msgHtml + (threadsHtml || '');
-      })
-      .catch(() => {
-        body.innerHTML = '<div class="py-8 text-center by-eyebrow" style="color:var(--by-tomato);">Network error loading message details.</div>';
-      });
-  }
-
-  function closeLogDetail() {
-    document.getElementById('log-overlay').classList.remove('open');
-    document.getElementById('log-drawer').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  // Also allow newly prepended rows to be clickable
-  document.getElementById('logList').addEventListener('click', function(e) {
-    const row = e.target.closest('.log-row[data-log-id]');
-    if (row && row.dataset.logId) openLogDetail(parseInt(row.dataset.logId));
-  });
-
-  document.getElementById('blastForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn     = document.getElementById('blastBtn');
-    const spinner = document.getElementById('blastSpinner');
-    btn.disabled = true;
-    spinner.classList.remove('hidden');
-    const targetVal = document.getElementById('targetGroup').value.trim();
-    if (!targetVal) {
-      showToast('Select an audience first — who should receive this?', 'err');
-      btn.disabled = false; spinner.classList.add('hidden');
+// ── Email Send Log ─────────────────────────────────────────────────────────
+async function loadEmailLog() {
+  const list = document.getElementById('emailLogList');
+  list.innerHTML = '<div class="px-6 py-10 text-center by-eyebrow" style="color:var(--by-ink-4);">Loading…</div>';
+  try {
+    const res  = await fetch('/api/comms/email-log');
+    const data = await res.json();
+    if (!data.ok) { list.innerHTML = `<div class="px-6 py-8 by-eyebrow" style="color:var(--by-tomato);">${esc(data.error||'Error.')}</div>`; return; }
+    const logs = data.logs || [];
+    if (!logs.length) {
+      list.innerHTML = '<div class="px-6 py-14 text-center by-eyebrow" style="color:var(--by-ink-4);">No emails sent yet. Email log will appear here once Resend is configured.</div>';
       return;
     }
-    const payload = {
-      target_group: targetVal,
-      subject:      document.getElementById('subject').value.trim(),
-      message_body: document.getElementById('messageBody').value.trim(),
-    };
-    try {
-      const res  = await fetch('/api/comms/send-blast', {
-        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (res.ok && data.status === 'yes_and') {
-        showToast(`Yes, And… ${data.count} scroll(s) dispatched!`, 'ok');
-        prependLogRow({ target:payload.target_group, subject:payload.subject, id:data.log_id });
-        this.reset();
-        clearTarget();
-        const search = document.getElementById('cb-student-search');
-        if (search) search.value = '';
-      } else {
-        showToast(`Stage Fright: ${data.error || 'Unknown failure'}`, 'err');
-      }
-    } catch {
-      showToast('Total Trainwreck — network error. Check the wings.', 'err');
-    } finally {
-      btn.disabled = false;
-      spinner.classList.add('hidden');
-    }
+    list.innerHTML = logs.map(l => `
+      <div class="log-row">
+        <div class="min-w-0">
+          <div class="by-eyebrow mb-1" style="color:var(--by-ink-3);">
+            To: ${esc(l.recipient_name ? l.recipient_name + ' <' + l.recipient_email + '>' : l.recipient_email)}
+            ${l.template_slug ? `<span class="cb-badge" style="margin-left:6px;font-size:8px;">${esc(l.template_slug)}</span>` : ''}
+          </div>
+          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(l.subject)}</div>
+          <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">
+            ${(l.created_at||'').slice(0,16).replace('T',' ')}
+            ${l.resend_message_id ? '· ID: ' + esc(l.resend_message_id) : ''}
+          </div>
+        </div>
+        <span class="cb-badge flex-shrink-0 pt-0.5 ${l.status==='sent'?'cb-badge-sent':l.status==='failed'?'cb-badge-failed':'cb-badge-pending'}">${esc(l.status)}</span>
+      </div>`).join('');
+  } catch {
+    list.innerHTML = '<div class="px-6 py-8 by-eyebrow" style="color:var(--by-tomato);">Network error.</div>';
+  }
+}
+
+// ── Email Template Editor ──────────────────────────────────────────────────
+let tplData = [];
+
+async function loadTemplates() {
+  const inner = document.getElementById('tplListInner');
+  try {
+    const res  = await fetch('/api/comms/email-templates');
+    const data = await res.json();
+    if (!data.ok) { inner.innerHTML = '<div class="px-4 py-6 by-eyebrow" style="color:var(--by-tomato);">Error loading templates.</div>'; return; }
+    tplData = data.templates || [];
+    renderTplList();
+  } catch {
+    inner.innerHTML = '<div class="px-4 py-6 by-eyebrow" style="color:var(--by-tomato);">Network error.</div>';
+  }
+}
+
+function renderTplList() {
+  const inner = document.getElementById('tplListInner');
+  if (!tplData.length) {
+    inner.innerHTML = '<div class="px-4 py-6 by-eyebrow" style="color:var(--by-ink-4);font-size:11px;">No templates yet. Click + New.</div>';
+    return;
+  }
+  inner.innerHTML = tplData.map(t => `
+    <div class="tpl-card" onclick="loadTemplateIntoEditor('${esc(t.id)}')">
+      <div class="text-[12.5px] font-semibold truncate" style="color:var(--by-ink);">${esc(t.name)}</div>
+      <div class="by-eyebrow mt-0.5" style="font-size:9px;">${esc(t.slug)}</div>
+    </div>`).join('');
+}
+
+function loadTemplateIntoEditor(id) {
+  const t = tplData.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('tplId').value      = t.id;
+  document.getElementById('tplName').value    = t.name;
+  document.getElementById('tplSlug').value    = t.slug;
+  document.getElementById('tplSubject').value = t.subject;
+  document.getElementById('tplPreview').value = t.preview_text || '';
+  document.getElementById('tplBody').value    = t.html_body || '';
+  document.getElementById('tplActive').value  = t.is_active ? 'true' : 'false';
+  // Highlight selected card
+  document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+window.newTemplate = function() {
+  clearTemplateForm();
+  document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('active'));
+};
+
+window.clearTemplateForm = function() {
+  ['tplId','tplName','tplSlug','tplSubject','tplPreview','tplBody'].forEach(id => {
+    document.getElementById(id).value = '';
   });
+  document.getElementById('tplActive').value = 'true';
+};
+
+window.saveTemplate = async function() {
+  const name    = document.getElementById('tplName').value.trim();
+  const slug    = document.getElementById('tplSlug').value.trim();
+  const subject = document.getElementById('tplSubject').value.trim();
+  if (!name || !slug || !subject) { showToast('Name, slug, and subject are required.', 'err'); return; }
+
+  const spinner = document.getElementById('tplSpinner');
+  spinner.classList.remove('hidden');
+  try {
+    const res  = await fetch('/api/comms/email-templates/save', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        template_id:  document.getElementById('tplId').value || null,
+        name, slug, subject,
+        html_body:    document.getElementById('tplBody').value,
+        preview_text: document.getElementById('tplPreview').value,
+        is_active:    document.getElementById('tplActive').value === 'true',
+      }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast('Template saved.', 'ok');
+      document.getElementById('tplId').value = data.template_id;
+      await loadTemplates();
+    } else {
+      showToast(data.error || 'Save failed.', 'err');
+    }
+  } catch {
+    showToast('Network error saving template.', 'err');
+  } finally {
+    spinner.classList.add('hidden');
+  }
+};
+
+// ── Init on load ───────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  loadEmailLog();
+  loadTemplates();
+});
 </script>
 {% endblock %}

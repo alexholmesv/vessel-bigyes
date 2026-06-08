@@ -332,6 +332,48 @@ created_at   TIMESTAMP
 ```
 Schema is lazy-created on first use by `_ensure_inbox_schema()`.
 
+#### `by_callboard_log` — Callboard Blast Transmission Log
+```
+id              TEXT  PK
+sender_email    TEXT  NOT NULL
+sender_name     TEXT  NOT NULL
+sender_identity TEXT  DEFAULT 'stage_manager'
+target_group    TEXT  NOT NULL   -- 'all_members' | 'all_students' | 'all_teachers' | class UUID | 'u<client_id>'
+recipient_count INT   DEFAULT 0
+subject         TEXT  NOT NULL
+body            TEXT  NOT NULL   -- full body stored for SM inspection via detail drawer
+status          TEXT  DEFAULT 'sent'
+created_at      DATETIME
+```
+Lazy-created by `_ensure_callboard_log_schema()`. One row per callboard blast. Stage managers can click any row to open the Transmission Detail drawer which joins `by_inbox` for per-recipient read/reply state.
+
+#### `by_email_log` — External Email Audit Trail (Resend)
+```
+id                TEXT  PK
+recipient_email   TEXT  NOT NULL
+recipient_name    TEXT
+subject           TEXT  NOT NULL
+template_slug     TEXT  NULL
+resend_message_id TEXT  NULL
+status            TEXT  DEFAULT 'sent'   -- 'sent' | 'failed' | 'bounced'
+created_at        DATETIME
+```
+Lazy-created by `_ensure_email_log_schema()`. Populated by `save_email_log()` on each Resend dispatch. Visible in Callboard → Email Send Log.
+
+#### `by_email_templates` — Resend Email Templates
+```
+id           TEXT  PK
+slug         TEXT  UNIQUE NOT NULL
+name         TEXT  NOT NULL
+subject      TEXT  NOT NULL
+preview_text TEXT
+html_body    TEXT  NOT NULL   -- BigYes inline-styled HTML for email clients
+is_active    INT   DEFAULT 1
+created_at   DATETIME
+updated_at   DATETIME
+```
+Lazy-created by `_ensure_email_templates_schema()`. Managed via Callboard → Email Templates editor. Passed to Resend API by slug.
+
 #### `by_belt_promotions` — Belt/Rank Log (legacy, inactive in school mode)
 ```
 id          TEXT  PK
@@ -532,7 +574,7 @@ _CAN_SWITCH  = {'owner', 'stage_manager'}
 #### BigYes Backstage Routes (Stage Manager / Director View)
 | Route | Template | Notes |
 |---|---|---|
-| `/backstage/callboard` | `callboard.html` | Student view: classes + roster + mail logs |
+| `/backstage/callboard` | `callboard.html` | Stage Manager: Directives Composer + Blast Log + Inbox Activity + Email Log + Template Editor |
 | `/backstage/shows` | `admin.html` | Show bookings panel; builds `shows_with_cast_json` from `by_show_cast` join |
 | `/backstage/scene-library` | `scene_library.html` | Scene/improv library (stub) |
 | `/backstage/reports` | `reports.html` | Reporting stub |
@@ -557,6 +599,23 @@ _CAN_SWITCH  = {'owner', 'stage_manager'}
 | `/financials/payment/<id>/mark` | `require_finance_access` | Toggle payment record status |
 | `/financials/member/<id>/mark` | `require_finance_access` | Quick-mark member payment_status |
 | `/api/financials/message-unpaid` | `require_finance_access` | Bulk email to overdue/pending members via Resend |
+
+#### API Endpoints — Callboard & Comms
+| Method | Route | Guard | Notes |
+|---|---|---|---|
+| POST | `/api/comms/send-blast` | `require_vessel_auth` | Resolves target group → recipient emails → `send_inbox_message` per recipient → saves `by_callboard_log` row. Returns `{ok, status, count, log_id}`. |
+| GET | `/api/comms/log/<log_id>` | `require_vessel_auth` | Returns single `by_callboard_log` row with per-recipient thread data joined from `by_inbox`. |
+| GET | `/api/comms/inbox-activity` | SM/owner only | Returns all `by_inbox` rows (metadata only, no body) across the vessel for oversight. |
+| GET | `/api/comms/email-log` | SM/owner only | Returns all `by_email_log` rows (Resend send history). |
+| GET | `/api/comms/email-templates` | `require_vessel_auth` | Returns all `by_email_templates` rows. |
+| POST | `/api/comms/email-templates/save` | `require_vessel_auth` | Upsert email template by slug. Expects `{slug, name, subject, html_body, preview_text?, is_active?, template_id?}`. |
+
+**Target group resolution in `send-blast`:**
+- `all_members` → all active clients
+- `all_students` → `identity = 'student'`
+- `all_teachers` → `identity = 'teacher'`
+- `u<client_id>` → single client (strip `u` prefix to get UUID)
+- `<class UUID>` → all enrolled active students via `by_enrollments` join
 
 #### API Endpoints — Roster
 | Method | Route | Guard | Notes |
