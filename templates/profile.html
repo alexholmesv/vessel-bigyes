@@ -817,7 +817,7 @@
               ? '<span style="font-size:11px;font-weight:600;color:var(--by-ink-3);">✓ Submitted</span>'
               : ch.accepted
                 ? '<span style="font-size:11px;font-weight:600;color:var(--by-yes-deep);">Accepted — respond now!</span>'
-                : '<button onclick="_acceptChallenge(\'' + _esc(ch.id) + '\', ' + JSON.stringify(_esc(ch.title)) + ')" '
+                : '<button onclick="_acceptChallenge(\'' + _esc(ch.id) + '\')" '
                   + 'style="padding:6px 14px;background:var(--by-ink);color:var(--by-bg);border:none;'
                   + 'font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;">'
                   + 'Accept (+10 pts if you win)</button>'
@@ -877,7 +877,7 @@
     }
 
     /* ── Accept a challenge ────────────────────────────────────────────── */
-    window._acceptChallenge = function(challengeId, title) {
+    window._acceptChallenge = function(challengeId) {
       fetch('/api/challenge/accept', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -887,11 +887,6 @@
       .then(function(d) {
         if (!d.ok) { alert(d.error || 'Could not accept challenge'); return; }
         _activeChallengeId = challengeId;
-        // Reveal the prompt now that they've accepted
-        if (title && title !== 'null') {
-          var promptEl = _id('livePrompt');
-          if (promptEl) promptEl.textContent = title;
-        }
         _setPhase('accepted');
         _startCountdown(d.seconds_left || 30, challengeId);
       })

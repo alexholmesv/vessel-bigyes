@@ -1090,7 +1090,27 @@
   window.flashToast = flashToast;
 
   // ── Live Challenge ──────────────────────────────────────────────────────
-  const recentChallenges = [];
+  const recentChallenges = {{ recent_challenges_json | safe }};
+
+  /** Render the Recent Challenges list and make each item clickable to
+      open the responses submodal showing votes + a delete button. */
+  function renderRecentChallenges() {
+    if (!recentChallenges.length) {
+      $('#recentChallenges').innerHTML =
+        '<li class="px-5 py-3 text-center text-[12px]" style="color:var(--by-ink-3);">No challenges yet this week.</li>';
+      return;
+    }
+    $('#recentChallenges').innerHTML = recentChallenges.map((r, idx) => {
+      var prompt = (r.prompt || r.title || '').slice(0, 55);
+      var title  = prompt.length > 50 ? prompt + '…' : prompt;
+      return '<li class="px-5 py-2.5 flex items-start gap-2 cursor-pointer"'
+        + ' onclick="cmOpenChallengeDetail(\'' + esc(r.id) + '\')"'
+        + ' onmouseover="this.style.background=\'var(--by-bg-2)\'" onmouseout="this.style.background=\'\'">'
+        + '<span class="flex-1 leading-snug" style="color:var(--by-ink-2);font-size:12.5px;">' + esc(title) + '</span>'
+        + '<span class="by-eyebrow flex-shrink-0" style="font-size:10px;">' + esc(r.posted_by_name || 'Teacher') + '</span>'
+        + '</li>';
+    }).join('');
+  }
 
   function setLivePhase(phase) {
     STATE.challenge.phase = phase;
@@ -1254,15 +1274,117 @@
     }, 5000);
   }
 
-  function renderRecentChallenges() {
-    if (!recentChallenges.length) return;
-    $('#recentChallenges').innerHTML = recentChallenges.map(r =>
-      `<li class="px-5 py-2.5 flex items-start gap-2">
-        <span class="flex-1 leading-snug" style="color:var(--by-ink-2);">${esc((r.prompt||'').slice(0,55))}${(r.prompt||'').length>55?'…':''}</span>
-        <span class="font-mono flex-shrink-0 text-[11px]" style="color:var(--by-ink-3);">${r.count} stu</span>
-      </li>`
-    ).join('');
-  }
+  /** Fetch responses for a challenge and open the responses submodal with
+      vote counts, each answer, and a delete button for the entire challenge. */
+  window.cmOpenChallengeDetail = async function(challengeId) {
+    /* All DOM access uses document.getElementById — the $() helper inside
+       the IIFE cannot resolve elements defined outside its lexical scope
+       (the responses modal sits in the main <body>, after the IIFE tag). */
+
+    // Find the challenge in recentChallenges for the prompt text
+    var ch = recentChallenges.find(function(r) { return r.id === challengeId; });
+    var prompt = (ch && (ch.prompt || ch.title)) || 'Challenge';
+
+    var subPrompt = document.getElementById('respSubPrompt');
+    var modal     = document.getElementById('responsesModal');
+    var subEmpty  = document.getElementById('respSubEmpty');
+    var subList   = document.getElementById('respSubList');
+
+    if (subPrompt) subPrompt.textContent = (prompt.length > 60 ? prompt.slice(0,57) + '…' : prompt);
+    if (!modal) { console.error('responsesModal not in DOM'); return; }
+    modal.style.display = 'block';
+    if (subEmpty) subEmpty.style.display = 'none';
+    if (subList) subList.innerHTML = '<div style="padding:20px;text-align:center;font-family:var(--by-f-body);font-size:12.5px;color:var(--by-ink-3);">Loading…</div>';
+
+    // Add delete button to the footer
+    var foot = modal.querySelector('footer');
+    if (foot) {
+      foot.innerHTML = '<button onclick="cmDeleteChallenge(\'' + esc(challengeId) + '\')" '
+        + 'style="width:100%;padding:10px;border:var(--by-bd-thick);background:var(--by-tomato);color:#fff;'
+        + 'font-family:var(--by-f-body);font-size:12.5px;font-weight:700;cursor:pointer;">'
+        + '🗑 Delete this challenge</button>';
+    }
+
+    try {
+      var res  = await fetch('/api/challenge/responses/' + challengeId);
+      var data = await res.json();
+      if (!data.ok) { throw new Error('Could not fetch responses'); }
+
+      var responses = data.responses || [];
+      if (!responses.length) {
+        if (subList) subList.innerHTML = '';
+        if (subEmpty) subEmpty.style.display = 'block';
+        return;
+      }
+      if (subEmpty) subEmpty.style.display = 'none';
+      if (subList) {
+        subList.innerHTML = responses.map(function(r, idx) {
+          var voted = r.voter_rated || r.user_rated || false;
+          return '<div style="padding:12px 18px;border-bottom:1px solid var(--by-bg-3);">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
+            + '<div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);">' + esc('Anonymous #' + (idx + 1)) + '</div>'
+            + '<div style="display:flex;align-items:center;gap:6px;">'
+            + '<span style="font-family:var(--by-f-mono);font-size:13px;font-weight:700;color:var(--by-tomato);">♥ ' + (r.favorite_count || 0) + '</span>'
+            + (voted
+                ? '<span style="font-size:11px;color:var(--by-yes-deep);">voted</span>'
+                : '<button onclick="cmVoteOnResponse(\'' + esc(challengeId) + '\',\'' + esc(r.id) + '\')" '
+                +   'style="font-size:10.5px;padding:2px 8px;border:1px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-ink);font-family:var(--by-f-mono);">'
+                +   '♡ Vote</button>')
+            + '</div>'
+            + '</div>'
+            + '<div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-2);line-height:1.5;">' + esc(r.response_text) + '</div>'
+            + '</div>';
+        }).join('');
+      }
+    } catch (e) {
+      if (subList) subList.innerHTML = '';
+      if (subEmpty) {
+        subEmpty.style.display = 'block';
+        subEmpty.textContent = 'Could not load responses.';
+      }
+      console.error(e);
+    }
+  };
+
+  /** Teacher (or student) votes on a specific response from the submodal. */
+  window.cmVoteOnResponse = async function(challengeId, responseId) {
+    try {
+      var res  = await fetch('/api/challenge/rate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ challenge_id: challengeId, response_id: responseId, is_favorite: true }),
+      });
+      var data = await res.json();
+      if (data.ok) {
+        // Re-fetch and re-render the submodal so the vote count updates
+        cmOpenChallengeDetail(challengeId);
+      } else {
+        flashToast('Could not cast vote');
+      }
+    } catch (e) {
+      flashToast('Network error');
+    }
+  };
+
+  window.cmDeleteChallenge = async function(challengeId) {
+    if (!confirm('Delete this challenge and all responses? This cannot be undone.')) return;
+    try {
+      var res  = await fetch('/api/challenge/delete/' + challengeId, { method:'POST' });
+      var data = await res.json();
+      if (data.ok) {
+        // Remove from local state
+        var idx = recentChallenges.findIndex(function(r) { return r.id === challengeId; });
+        if (idx >= 0) recentChallenges.splice(idx, 1);
+        renderRecentChallenges();
+        cmCloseResponses();
+        flashToast('Challenge deleted');
+      } else {
+        flashToast('Could not delete challenge');
+      }
+    } catch (e) {
+      flashToast('Network error');
+    }
+  };
 
   $('#newChallenge').addEventListener('click', () => {
     if (_respPollTimer) { clearInterval(_respPollTimer); _respPollTimer = null; }
@@ -1619,6 +1741,7 @@
   });
 
   // ── Boot ────────────────────────────────────────────────────────────────
+  renderRecentChallenges();
   renderStrip();
   const firstActive = CLASSES.find(c => c.status === 'active');
   if (firstActive) {
