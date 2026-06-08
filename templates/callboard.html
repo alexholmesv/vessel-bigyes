@@ -3,18 +3,15 @@
 {% block page_title %}Callboard{% endblock %}
 
 {% block page_header %}
-<header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
-  <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
+<header class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+  <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
     <div class="min-w-0">
-      <div class="by-eyebrow mb-1">Backstage</div>
-      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
-        The <span class="by-yes-block">Callboard</span>
-      </h1>
+      <div class="by-eyebrow">Backstage · Callboard</div>
+      <h1 class="by-display text-[20px] leading-tight mt-0.5" style="color:var(--by-ink);">The Callboard</h1>
     </div>
-    <div class="ml-auto flex items-center gap-3 flex-shrink-0 pt-1">
-      <span style="font-family:var(--by-f-mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-                   display:inline-block;padding:2px 8px;
-                   background:var(--by-yes);color:var(--by-ink);" class="hidden lg:inline-block">Restricted</span>
+    <div class="ml-auto flex items-center gap-3 flex-shrink-0">
+      {% include 'partials/_scene_switcher.html' %}
+      {% include 'partials/_inbox_btn.html' %}
       {% include 'partials/_header_user_pill.html' %}
     </div>
   </div>
