@@ -800,18 +800,27 @@
       if (!challenges || !challenges.length) { list.classList.add('hidden'); return; }
       list.classList.remove('hidden');
       list.innerHTML = challenges.map(function(ch) {
+        // Don't show the prompt text until the student accepts — build suspense.
         return '<div style="border:1px solid var(--by-bg-3);padding:12px;background:var(--by-bg);">'
-          + '<div style="font-size:13px;color:var(--by-ink);line-height:1.5;margin-bottom:10px;">' + _esc(ch.title) + '</div>'
+          + '<div style="font-size:13px;color:var(--by-ink);line-height:1.5;margin-bottom:10px;">'
+          +   '<span style="color:var(--by-tomato);font-weight:700;">🎭 New improv dare</span>'
+          +   '<span style="color:var(--by-ink-3);"> from ' + _esc(ch.posted_by_name) + '</span>'
+          +   (ch.responded
+              ? ' <span style="color:var(--by-yes-deep);font-weight:600;">— you already nailed it</span>'
+              : ch.accepted
+                ? ' <span style="color:var(--by-yes-deep);font-weight:600;">— accepted, go!</span>'
+                : ' — accept to reveal the prompt')
+          + '</div>'
           + '<div style="display:flex;align-items:center;justify-content:space-between;">'
-          + '<span style="font-size:11px;color:var(--by-ink-3);">Posted by ' + _esc(ch.posted_by_name) + ' · ' + ch.total_responders + ' responded</span>'
+          + '<span style="font-size:11px;color:var(--by-ink-3);">' + ch.total_responders + ' responded</span>'
           + (ch.responded
               ? '<span style="font-size:11px;font-weight:600;color:var(--by-ink-3);">✓ Submitted</span>'
               : ch.accepted
                 ? '<span style="font-size:11px;font-weight:600;color:var(--by-yes-deep);">Accepted — respond now!</span>'
-                : '<button onclick="_acceptChallenge(\'' + _esc(ch.id) + '\')" '
+                : '<button onclick="_acceptChallenge(\'' + _esc(ch.id) + '\', ' + JSON.stringify(_esc(ch.title)) + ')" '
                   + 'style="padding:6px 14px;background:var(--by-ink);color:var(--by-bg);border:none;'
                   + 'font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;">'
-                  + 'Accept (+20 pts if you win)</button>'
+                  + 'Accept (+10 pts if you win)</button>'
             )
           + '</div>'
           + '</div>';
@@ -868,7 +877,7 @@
     }
 
     /* ── Accept a challenge ────────────────────────────────────────────── */
-    window._acceptChallenge = function(challengeId) {
+    window._acceptChallenge = function(challengeId, title) {
       fetch('/api/challenge/accept', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -878,6 +887,11 @@
       .then(function(d) {
         if (!d.ok) { alert(d.error || 'Could not accept challenge'); return; }
         _activeChallengeId = challengeId;
+        // Reveal the prompt now that they've accepted
+        if (title && title !== 'null') {
+          var promptEl = _id('livePrompt');
+          if (promptEl) promptEl.textContent = title;
+        }
         _setPhase('accepted');
         _startCountdown(d.seconds_left || 30, challengeId);
       })
