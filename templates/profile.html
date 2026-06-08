@@ -526,10 +526,13 @@
           <div id="trophyGrid" class="p-4 grid grid-cols-3 gap-2.5">
             {% if trophies %}
             {% for t in trophies[:6] %}
-            <div class="ach">
+            <div class="ach relative group">
               <div class="icon" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);font-size:18px;line-height:1;display:grid;place-items:center;">{{ t.icon }}</div>
               <div class="text-[12px] font-semibold" style="color:var(--by-ink)">{{ t.name }}</div>
-              <div class="text-[10.5px]" style="color:var(--by-ink-3)">{{ t.description }}</div>
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-[#1A120E] text-[#F4EEE2] text-[11.5px] leading-snug rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 shadow-lg max-w-[200px]">
+                {{ t.description }}
+                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-[#1A120E] rotate-45"></div>
+              </div>
             </div>
             {% endfor %}
             {% else %}
@@ -768,7 +771,7 @@
       var title  = _id('liveTitle');
       if (phase === 'idle') {
         _show('idleState');
-        _id('idleMsg').textContent = 'When your teacher posts a challenge it appears here. Accept it and you\'ll have 30 seconds to respond and earn +20 pts.';
+        _id('idleMsg').textContent = 'When your teacher throws down an improv dare it\'ll pop up right here. Grab it quick — you\'ve got exactly 30 seconds to fire back with your best bit. Nail it? 1pt. Make the crowd roar? 10pts.';
         if (status) { status.className = 'chip chip-taken'; status.innerHTML = '<span class="dot"></span>Idle'; }
         if (title)  title.textContent = 'No prompt right now';
       } else if (phase === 'available') {
@@ -994,9 +997,9 @@
     function _poll() {
       // If we're mid-countdown don't interrupt
       if (_phase === 'accepted') return;
-      // Poll the first enrolled class (students belong to one class at a time typically)
-      var classId = enrolledClassIds.length ? enrolledClassIds[0] : '';
-      var url = '/api/challenge/pending' + (classId ? '?class_id=' + encodeURIComponent(classId) : '');
+      // Poll across all enrolled classes — don't restrict to a single class_id
+      // so challenges deployed to any enrolled class show up immediately.
+      var url = '/api/challenge/pending';
       fetch(url)
         .then(function(r) { return r.json(); })
         .then(function(d) {

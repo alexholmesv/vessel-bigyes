@@ -5,6 +5,47 @@ Only changes to files within `instances/bigyes/` are listed.
 
 ---
 
+## [1.2.0] — 2026-06-07
+
+### Fixed
+- **Challenge system: student dashboard permanently showed "No prompt right now" despite deployed challenges**
+
+  **Root cause (5 interdependent bugs):**
+
+  1. **`by_challenges` missing `expires_at` + `created_at` columns** — The `_ensure_challenge_schema()` migration in `vessel_engine/db_helpers.py` used ALTER TABLE to add missing columns, but SQLite rejects `DEFAULT CURRENT_TIMESTAMP` in ALTER TABLE ADD COLUMN. The `except Exception: pass` block silently swallowed the error, leaving the table without these columns. The `get_pending_challenges()` query filtered via `WHERE expires_at > ?` which threw `OperationalError: no such column: expires_at` — caught by the JS `.catch()` handler which silently showed the idle state.
+
+  2. **`by_challenge_responses` missing `created_at` column** — Same SQLite ALTER TABLE limitation. The `get_challenge_responses()` function queries `ORDER BY created_at`, causing a 500 Internal Server Error on every poll. This was the most recent blocker (visible in Flask logs).
+
+  3. **`class_id` polling mismatch** — The student JS polled `/api/challenge/pending?class_id=<first_alphabetical_class>`, but challenges were deployed to other classes the student was enrolled in. Removed the `class_id` query param so all enrolled-class challenges appear.
+
+  4. **Jinja2 overlay bytecode cache isolation** — `render_vessel_template()` in `vessel_engine/renderer.py` creates a Jinja2 `.overlay()` environment at line 68. This overlay has its **own isolated bytecode cache** completely separate from `app.jinja_env.cache`. Even after all backend fixes and template changes, the browser received a stale compiled version of `profile.html` that didn't include the fixed JS code. Fixed by adding `env.cache = {}`, `env.cache_size = 0`, and `env.auto_reload = True` directly on the overlay environment.
+
+  5. **Flask/Jinja caching not fully disabled for development** — `app.py` needed `TEMPLATES_AUTO_RELOAD=True`, `SEND_FILE_MAX_AGE_DEFAULT=0`, and `jinja_env.cache={}` to ensure hot-reload of template changes.
+
+  **DB migrations applied to `bigyes.db`:**
+  - `ALTER TABLE by_challenges ADD COLUMN created_at TIMESTAMP` + backfill from `deployed_at`
+  - `ALTER TABLE by_challenges ADD COLUMN expires_at TIMESTAMP` + set to `deployed_at + 48h`
+  - `ALTER TABLE by_challenge_responses ADD COLUMN created_at TIMESTAMP` + backfill from `submitted_at`
+
+### Added
+- **18 trophies / achievements** in profile.html — `First Scene` (accept first challenge), `Scene Veteran` / `Stage Regular` / `Daredevil` / `Unstoppable` (accept 5/10/15/20), `Crowd Pleaser` through `Grand Champion` (win 1/5/10/15/20), `Rising Star` / `Improv Adept` / `Improv Master` (50/150/300 pts), `Crowd Favorite`, `Social Butterfly`, `Iron Will`, `Perfect Attendance`
+- **Trophy hover tooltip** — description appears on hover in achievements card
+- **Improv-flavored idle message** — "When your teacher throws down an improv dare it'll pop up right here..."
+- **Teacher challenge close/delete** — `POST /api/challenge/close/<id>` and `POST /api/challenge/delete/<id>`
+- **Diagnostic endpoints** — `/debug-env` (process identity) and `/api/challenge/debug` (raw DB state)
+
+### Changed
+- `templates/profile.html` — poll now calls `/api/challenge/pending` without `class_id` filter; idle message rewritten; trophy cards added with hover tooltip
+- `vessel_engine/renderer.py` — overlay environment bytecode cache zeroed + auto_reload enabled
+- `vessel_engine/db_helpers.py` — migration default changed from `CURRENT_TIMESTAMP` to `NULL` for ALTER TABLE compatibility; `post_challenge()` now inserts `created_at`; added `close_challenge()`, `delete_challenge()`, `_check_perfect_attendance()`; added `challenges_accepted` tracking; 18 trophy definitions
+- `vessel_engine/routes.py` — added `close_challenge`/`delete_challenge` imports; added close/delete/debug routes
+- `app.py` — `TEMPLATES_AUTO_RELOAD=True`, `SEND_FILE_MAX_AGE_DEFAULT=0`, `jinja_env` cache disabled; added `/debug-env` endpoint
+
+### New scripts
+- `scripts/clear_cache.sh` — purges all `__pycache__/` and `.pyc` across repo + `instances/` submodules
+
+---
+
 ## [1.1.0] — 2026-06-05
 
 ### Fixed
