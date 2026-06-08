@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes — Volunteer Shifts</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ["'Archivo Black'", 'system-ui', 'sans-serif'],
+          sans:    ["'Archivo'",       'ui-sans-serif', 'system-ui'],
+          body:    ["'Manrope'",       'ui-sans-serif', 'system-ui'],
+          mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
+        },
+        colors: {
+          'by-yes':      '#FFC629', 'by-yes-deep': '#E5A800', 'by-yes-soft': '#FFE7A0',
+          'by-ink':      '#141210', 'by-ink-2':    '#2A2723', 'by-ink-3':    '#5C544A', 'by-ink-4': '#8A8073',
+          'by-bg':       '#F4EEE2', 'by-bg-2':     '#ECE3D0', 'by-bg-3':     '#E2D6BB',
+          'by-tomato':   '#E5482A', 'by-tomato-deep': '#B83218',
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-bd-dash:1px dashed var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
+  }
+  html, body { background: var(--by-bg); }
+  body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing: antialiased; padding-bottom: 64px; }
+  @media (min-width: 1024px) { body { padding-bottom: 0; } }
+
+  .by-display { font-family:var(--by-f-display); font-weight:900; line-height:.88; letter-spacing:-.02em; text-transform:uppercase; }
+  .by-eyebrow { font-family:var(--by-f-mono); font-size:var(--by-t-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--by-ink-3); }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+  .hairline { border-color: var(--by-ink); }
+
+  /* ── Mobile chrome ────────────────────────────────────────────── */
+  .by-mob-bar {
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 16px; background:var(--by-bg); border-bottom:var(--by-bd-thick);
+  }
+  .by-ham { width:44px; height:44px; border:var(--by-bd-thick); background:var(--by-bg);
+    display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; }
+  .by-ham span { display:block; width:16px; height:1.5px; background:var(--by-ink); }
+  @media (min-width: 1024px) { .by-ham { display:none; } }
+
+  .by-mob-overlay { display:none; position:fixed; inset:0; z-index:40; background:rgba(20,18,16,.45); }
+  .by-mob-overlay.open { display:block; }
+  .by-mob-drawer {
+    position:fixed; top:0; left:0; bottom:0; z-index:50; width:272px;
+    background:var(--by-bg); border-right:var(--by-bd-thick);
+    transform:translateX(-100%); transition:transform 240ms cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;
+  }
+  .by-mob-drawer.open { transform:translateX(0); }
+  @media (min-width: 1024px) { .by-mob-bar,.by-mob-overlay,.by-mob-drawer { display:none !important; } }
+
+  /* ── Sidebar nav (mirrored from backstage_layout.html) ────────── */
+  .nav-item {
+    display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:0;
+    font-family:var(--by-f-body); font-size:13.5px; font-weight:500; color:var(--by-ink-3);
+    text-decoration:none; transition:background var(--by-snap),color var(--by-snap);
+    border:none; border-left:4px solid transparent;
+  }
+  .nav-item:hover { background:var(--by-bg-2); color:var(--by-ink); }
+  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+  .nav-item .ico { width:18px; height:18px; flex:0 0 18px; color:var(--by-ink-3); }
+  .nav-item.active .ico { color:var(--by-ink); }
+
+  /* ── Buttons ──────────────────────────────────────────────────── */
+  .btn-ghost {
+    display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .75rem;
+    border:var(--by-bd); background:var(--by-bg); color:var(--by-ink);
+    font-family:var(--by-f-body); font-size:13px; font-weight:500; cursor:pointer;
+    transition:background var(--by-snap);
+  }
+  .btn-ghost:hover { background:var(--by-bg-2); }
+  .btn-spot {
+    display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .85rem;
+    border:var(--by-bd-thick); background:var(--by-yes); color:var(--by-ink);
+    font-family:var(--by-f-sans); font-size:12px; font-weight:800; letter-spacing:.03em;
+    text-transform:uppercase; cursor:pointer; transition:background var(--by-snap);
+  }
+  .btn-spot:hover { background:var(--by-yes-deep); }
+
+  /* ── Shift row states (same chips as admin.html) ──────────────── */
+  .chip {
+    display:inline-flex; align-items:center; gap:.3rem;
+    font-family:var(--by-f-mono); font-size:10px; letter-spacing:.10em; text-transform:uppercase;
+    padding:.15rem .5rem; border:1px solid; line-height:1.4;
+  }
+  .chip .dot { width:6px; height:6px; border-radius:9999px; flex-shrink:0; }
+  .chip-active  { background:var(--by-yes-soft); border-color:var(--by-ink); color:var(--by-ink); }
+  .chip-active .dot { background:#10b981; }
+  .chip-rehearsing { background:#FFFBEB; border-color:#C17A20; color:#92400e; }
+  .chip-rehearsing .dot { background:#C17A20; }
+  .chip-none { background:var(--by-bg-2); border-color:var(--by-bg-3); color:var(--by-ink-4); }
+  .chip-none .dot { background:var(--by-ink-4); }
+  .chip-waiting { background:#FFFBEB; border-color:#C17A20; color:#92400e; }
+  .chip-waiting .dot { background:#C17A20; }
+
+  /* ── Slide-in panel modal ─────────────────────────────────────── */
+  .by-panel { transition:opacity .18s; opacity:0; pointer-events:none; }
+  .by-panel.open { opacity:1; pointer-events:auto; }
+  .by-panel:not(.hidden) { opacity:1; pointer-events:auto; }
+  .by-panel-inner { transition:transform .22s cubic-bezier(.25,.85,.25,1); transform:translateX(100%); }
+  .by-panel.open .by-panel-inner { transform:translateX(0); }
+
+  /* ── Toast ────────────────────────────────────────────────────── */
+  #toast {
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--by-ink); color:var(--by-bg);
+    font-family:var(--by-f-mono); font-size:12px; padding:10px 20px;
+    box-shadow:var(--by-sh-1); z-index:9999; opacity:0;
+    transition:opacity .25s; pointer-events:none; white-space:nowrap;
+  }
+</style>
+</head>
+<body>
+
+{# ── Mobile bar ─────────────────────────────────────────────────────────── #}
+<header class="by-mob-bar lg:hidden">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  </a>
+  <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+<div id="mob-overlay" class="by-mob-overlay" onclick="toggleMobDrawer()"></div>
+<nav id="mob-drawer" class="by-mob-drawer">
+  <div class="px-4 py-4 border-b hairline">
+    <div class="by-eyebrow">Stage Manager</div>
+    <div class="by-display text-[18px]" style="color:var(--by-ink)">Studio · BCN</div>
+  </div>
+  <div class="px-3 py-3">
+    <a href="/"                           class="nav-item" onclick="toggleMobDrawer()">Dashboard</a>
+    <a href="/performers"                 class="nav-item" onclick="toggleMobDrawer()">Performers</a>
+    <a href="/classes"                    class="nav-item" onclick="toggleMobDrawer()">Classes &amp; Cohorts</a>
+    <a href="/backstage/shows"            class="nav-item" onclick="toggleMobDrawer()">Shows &amp; Bookings</a>
+    <a href="/backstage/volunteer-shifts" class="nav-item active" onclick="toggleMobDrawer()">Volunteer Shifts</a>
+    <div class="by-eyebrow px-2 pt-4 pb-1">Backstage</div>
+    <a href="/backstage/scene-library"    class="nav-item" onclick="toggleMobDrawer()">Scene Library</a>
+    <a href="/backstage/reports"          class="nav-item" onclick="toggleMobDrawer()">Reports</a>
+    <a href="/backstage/activity-log"     class="nav-item" onclick="toggleMobDrawer()">Activity Log</a>
+  </div>
+</nav>
+
+{# ── Full-viewport shell ─────────────────────────────────────────────────── #}
+<div class="min-h-screen flex flex-col lg:grid lg:grid-cols-[248px_1fr]">
+
+  {# ════ SIDEBAR ════ #}
+  {% include 'partials/_sidebar.html' %}
+
+  {# ════ MAIN COLUMN ════ #}
+  <main class="flex-1 min-w-0 overflow-x-hidden">
+
+    {# ── Sticky top navbar (shared design — matches dashboard, classes, shows) ── #}
+    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+      <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
+
+        {# Right-pinned action cluster #}
+        <div class="flex items-center gap-4 ml-auto flex-shrink-0">
+
+          {# Scene switcher (SM / owner only) #}
+          {% include 'partials/_scene_switcher.html' %}
+
+          {# Inbox icon button #}
+          {% include 'partials/_inbox_btn.html' %}
+
+          {# User profile pill #}
+          <div class="relative flex-shrink-0" id="user-menu-wrap">
+            <button id="user-menu-btn" onclick="toggleUserMenu()"
+                    class="flex items-center gap-2 cursor-pointer h-9 px-2"
+                    style="border:var(--by-bd); background:var(--by-bg);">
+              <img id="header-av-img" class="object-cover flex-shrink-0"
+                   src="{{ current_user_avatar or '' }}"
+                   style="width:28px;height:28px;border:2px solid #000;border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                   alt="{{ current_user_initials }}">
+              <span id="header-av-init" class="flex items-center justify-center flex-shrink-0"
+                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                {{ current_user_initials }}
+              </span>
+              <div class="hidden lg:block leading-tight text-left">
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
+                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C544A;margin-top:1px;">Stage Manager</div>
+              </div>
+              <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full"
+                    style="width:8px;height:8px;background:#E5482A;box-shadow:0 0 0 2px #fff,0 0 0 3px #E5482A;"></span>
+            </button>
+            {# Dropdown #}
+            <div id="user-menu-drop" class="hidden" style="
+              position:absolute; top:calc(100% + 6px); right:0; z-index:60;
+              min-width:160px; background:var(--by-bg); border:var(--by-bd-thick);
+              box-shadow:var(--by-sh-1);">
+              <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);line-height:1.2">{{ current_user_name }}</div>
+                <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Stage Manager</div>
+              </div>
+              <a href="/logout"
+                 class="w-full text-left px-3 py-2.5 flex items-center gap-2.5"
+                 style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);display:flex;text-decoration:none;">
+                <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Exit the Stage
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+    {# ── Page header ─────────────────────────────────────────────────────── #}
+    <div class="px-4 lg:px-7 pt-6 pb-4 border-b hairline">
+      <div class="flex items-start gap-4 flex-wrap">
+        <div>
+          <div class="by-eyebrow mb-1">Stage Manager · Fill the House</div>
+          <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+            Volunteer <span class="by-yes-block">Shifts</span>
+          </h1>
+        </div>
+        <div class="ml-auto flex items-center gap-3 self-start pt-1">
+          <a href="/dashboard" class="btn-ghost text-[12px]" style="text-decoration:none;">
+            ← Back to Callboard
+          </a>
+        </div>
+      </div>
+
+      {# KPI strip — computed from shows + shifts in JS after page load #}
+      <div class="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-yes);">
+          <div class="by-eyebrow">Total shows</div>
+          <div id="kpi-total-shows" class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ shows | length }}</div>
+        </div>
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+          <div class="by-eyebrow">Fully staffed</div>
+          <div id="kpi-staffed" class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">—</div>
+        </div>
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+          <div class="by-eyebrow">Open slots</div>
+          <div id="kpi-open" class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">—</div>
+        </div>
+        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+          <div class="by-eyebrow">Awaiting reply</div>
+          <div id="kpi-waiting" class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">—</div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Main content: all shows, grouped, chronological ───────────────── #}
+    <div class="px-4 lg:px-7 py-6">
+
+      {% if shows %}
+
+      {# Eyebrow above the roster #}
+      <div class="by-eyebrow mb-4">Yes, And… the full roster — {{ shows | length }} show{{ 's' if shows | length != 1 else '' }} on the board</div>
+
+      <div class="space-y-4">
+        {% for show in shows %}
+
+        {# ── Per-show card ────────────────────────────────────────────── #}
+        {% set show_shifts = shifts | selectattr('show_id', 'equalto', show.id) | list %}
+        {% set open_cnt    = show_shifts | selectattr('student_id', 'none') | list | length %}
+        {% set waiting_cnt = show_shifts | selectattr('status', 'equalto', 'requested') | list | length %}
+        {% set show_assigned_ids = show_shifts | rejectattr('student_id', 'none') | map(attribute='student_id') | list %}
+
+        <div class="border hairline show-section" style="background:var(--by-bg);">
+
+          {# Show header row #}
+          <div class="px-5 py-4 flex items-center gap-4 border-b hairline flex-wrap">
+            {# Date badge #}
+            <div class="w-14 text-center flex-shrink-0 border hairline" style="background:var(--by-bg-2); padding:6px 4px;">
+              <div class="by-eyebrow" style="font-size:9.5px;">{{ show.day[:3] if show.day else '—' }}</div>
+              <div class="by-display text-[17px] leading-none mt-0.5" style="color:var(--by-ink);">{{ show.time if show.time else '—' }}</div>
+              {% if show.date %}
+              <div style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-3);margin-top:2px;">{{ show.date | date_long }}</div>
+              {% endif %}
+            </div>
+
+            {# Show title + metadata #}
+            <div class="flex-1 min-w-0">
+              <div class="text-[14px] font-bold truncate" style="color:var(--by-ink);">{{ show.title or 'Untitled Show' }}</div>
+              <div class="text-[12px] mt-0.5" style="color:var(--by-ink-3);">
+                {{ show.day or '—' }}
+                {% if show.date and show.date != show.day %} · {{ show.date | date_long }}{% endif %}
+                {% if show.cost %} · €{{ show.cost }}{% endif %}
+              </div>
+            </div>
+
+            {# Staffing chip #}
+            {% if show_shifts and open_cnt == 0 and waiting_cnt == 0 %}
+            <span class="chip chip-active flex-shrink-0"><span class="dot"></span>Fully staffed</span>
+            {% elif show_shifts and open_cnt == 0 %}
+            <span class="chip chip-waiting flex-shrink-0"><span class="dot"></span>{{ waiting_cnt }} awaiting reply</span>
+            {% elif show_shifts %}
+            <span class="chip chip-rehearsing flex-shrink-0"><span class="dot"></span>{{ open_cnt }} open slot{{ 's' if open_cnt != 1 else '' }}</span>
+            {% else %}
+            <span class="chip chip-none flex-shrink-0"><span class="dot"></span>No shifts set up</span>
+            {% endif %}
+          </div>
+
+          {# Shift slots #}
+          {% if show_shifts %}
+          <div class="px-5 py-3 space-y-2">
+            {% for shift in show_shifts %}
+            {% set vol = (users | selectattr('id', 'equalto', shift.student_id) | first) if shift.student_id else none %}
+            {% set display_name = shift.student_name or (vol.name if vol else none) %}
+
+            {# data-slot used by KPI counter JS: accepted|waiting|open #}
+            <div class="flex items-center gap-2 px-3 py-2 border"
+                 data-slot="{% if shift.student_id and shift.status == 'accepted' %}accepted{% elif shift.student_id %}waiting{% else %}open{% endif %}"
+                 style="{% if shift.student_id and shift.status == 'accepted' %}background:var(--by-yes-soft); border-color:var(--by-ink){% elif shift.student_id %}background:#FFFBEB; border-color:#C17A20{% else %}background:var(--by-bg); border-color:var(--by-bg-3){% endif %}">
+
+              {# Role label #}
+              <span class="text-[11.5px] font-semibold w-28 flex-shrink-0" style="color:var(--by-ink-3);">{{ shift.role }}</span>
+
+              {% if shift.student_id and shift.status == 'accepted' %}
+              {# ── Accepted: volunteer confirmed ── #}
+              <div class="flex-1 flex items-center gap-1.5 min-w-0">
+                <span class="w-4 h-4 rounded-full bg-emerald-500/20 flex-shrink-0 grid place-items-center">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                </span>
+                <span class="text-[12px] truncate" style="color:var(--by-ink-2);">{{ display_name or 'Unknown volunteer' }}</span>
+              </div>
+              <button onclick="confirmUnassign('{{ shift.id }}')"
+                      class="btn-ghost h-6 px-2 text-[11px] flex-shrink-0"
+                      style="color:var(--by-ink-3);border-color:var(--by-bg-3);"
+                      title="Drop from the stage">✕</button>
+
+              {% elif shift.student_id %}
+              {# ── Requested: waiting for volunteer to accept ── #}
+              <div class="flex-1 flex items-center gap-1.5 min-w-0">
+                <span class="w-4 h-4 rounded-full flex-shrink-0 grid place-items-center" style="background:rgba(193,122,32,.15)">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background:#C17A20"></span>
+                </span>
+                <span class="text-[12px] truncate" style="color:var(--by-ink-3);">{{ display_name or 'Unknown volunteer' }}</span>
+                <span class="chip chip-waiting flex-shrink-0" style="font-size:9.5px;padding:.1rem .45rem"><span class="dot"></span>Waiting for their Yes, And</span>
+              </div>
+              <button onclick="confirmUnassign('{{ shift.id }}')"
+                      class="btn-ghost h-6 px-2 text-[11px] flex-shrink-0"
+                      style="color:var(--by-ink-3);border-color:var(--by-bg-3);"
+                      title="Pull the offer">✕</button>
+
+              {% else %}
+              {# ── Unassigned: open slot ── #}
+              <span class="flex-1 text-[11.5px] italic" style="color:var(--by-ink-4);">Needs a player</span>
+              <button onclick="openAssignModal(this, '{{ shift.id }}', '{{ shift.role }}')"
+                      data-assigned-ids="{{ show_assigned_ids | tojson | string | e }}"
+                      class="btn-spot h-6 px-2.5 text-[11px] flex-shrink-0">
+                Cast →
+              </button>
+              {% endif %}
+
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          {# No shifts configured for this show #}
+          <div class="px-5 py-5 text-[12.5px] italic" style="color:var(--by-ink-4);">
+            No slots in the call sheet for this show yet.
+          </div>
+          {% endif %}
+
+        </div>{# end show card #}
+        {% endfor %}
+      </div>{# end space-y-4 #}
+
+      {% else %}
+      {# Empty state #}
+      <div class="py-20 text-center">
+        <div class="by-eyebrow mb-3">Nothing on the board</div>
+        <div class="by-display text-[32px]" style="color:var(--by-ink);">No shows <span class="by-yes-block">scheduled</span></div>
+        <p class="mt-4 text-[13px]" style="color:var(--by-ink-3);">
+          The stage is empty — add a show from the dashboard to start building your call sheet.
+        </p>
+        <a href="/dashboard" class="btn-spot mt-6 inline-flex" style="text-decoration:none;">← Back to the Callboard</a>
+      </div>
+      {% endif %}
+
+    </div>{# end main content #}
+
+  </main>
+</div>{# end grid shell #}
+
+{# ── Toast notification ──────────────────────────────────────────────────── #}
+<div id="toast"></div>
+
+{# ── Assign Volunteer modal ──────────────────────────────────────────────── #}
+<div id="modal-assign-volunteer" class="by-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-assign-volunteer')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+      <div>
+        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Cast a Volunteer</h3>
+        <div class="text-[11.5px] font-mono mt-0.5" style="color:var(--by-yes-deep)">
+          Role: <span id="assign-role-label">—</span>
+        </div>
+      </div>
+      <button onclick="closeModal('modal-assign-volunteer')"
+              style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3);">
+          Select Volunteer
+          <span class="ml-1 normal-case font-normal" style="color:var(--by-ink-3);">(designated volunteers only)</span>
+        </label>
+        <select id="volunteer-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none"
+                style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg); appearance:none;">
+          <option value="" disabled>Loading…</option>
+        </select>
+        <p class="mt-2 text-[11.5px]" style="color:var(--by-ink-3);">
+          Only cast members in the volunteer pool appear here.
+        </p>
+      </div>
+      <div id="assign-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
+      <button onclick="closeModal('modal-assign-volunteer')"
+              class="flex-1 border py-2.5 text-sm font-semibold"
+              style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg);">
+        Hold the Offer
+      </button>
+      <button onclick="confirmAssign()"
+              class="flex-1 btn-spot py-2.5 text-sm">
+        Yes, And — Confirm!
+      </button>
+    </div>
+
+  </div>
+</div>
+
+{# ────────────────────────────────────────────────────────────────────────── #}
+{# SCRIPTS                                                                     #}
+{# ────────────────────────────────────────────────────────────────────────── #}
+<script>
+(function () {
+  'use strict';
+
+  // ── Roster data (volunteer pool filter source) ─────────────────────────
+  const ROSTER = {{ roster_json | safe }};
+
+  // ── KPI computation from server-rendered data-slot attributes ──────────
+  // Each shift row carries data-slot="accepted|waiting|open" set by Jinja.
+  // Show sections carry class="show-section".
+  (function computeKPIs() {
+    let staffed = 0, openTotal = 0, waitingTotal = 0;
+    document.querySelectorAll('.show-section').forEach(section => {
+      const all     = section.querySelectorAll('[data-slot]').length;
+      const open    = section.querySelectorAll('[data-slot="open"]').length;
+      const waiting = section.querySelectorAll('[data-slot="waiting"]').length;
+      // A show is "fully staffed" when it has at least one slot and none are open or waiting
+      if (all > 0 && open === 0 && waiting === 0) staffed++;
+      openTotal    += open;
+      waitingTotal += waiting;
+    });
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('kpi-staffed', staffed);
+    set('kpi-open',    openTotal);
+    set('kpi-waiting', waitingTotal);
+  })();
+
+  // ── Mobile drawer ─────────────────────────────────────────────────────
+  function toggleMobDrawer() {
+    document.getElementById('mob-overlay').classList.toggle('open');
+    document.getElementById('mob-drawer').classList.toggle('open');
+  }
+  window.toggleMobDrawer = toggleMobDrawer;
+
+  // ── User menu ─────────────────────────────────────────────────────────
+  function toggleUserMenu(force_close) {
+    const drop = document.getElementById('user-menu-drop');
+    if (!drop) return;
+    if (force_close) { drop.classList.add('hidden'); return; }
+    drop.classList.toggle('hidden');
+  }
+  window.toggleUserMenu = toggleUserMenu;
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('user-menu-wrap');
+    if (wrap && !wrap.contains(e.target)) toggleUserMenu(true);
+  });
+
+  // ── Scene switcher close-on-outside ───────────────────────────────────
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('by-scene-wrap');
+    const menu = document.getElementById('by-scene-menu');
+    if (wrap && menu && !wrap.contains(e.target)) menu.classList.add('hidden');
+  });
+
+  // ── Modal helpers ──────────────────────────────────────────────────────
+  function openModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('open');
+    const inner = el.querySelector('.by-panel-inner');
+    if (inner) {
+      const done = () => { el.classList.add('hidden'); inner.removeEventListener('transitionend', done); };
+      inner.addEventListener('transitionend', done);
+    } else {
+      el.classList.add('hidden');
+    }
+    document.body.style.overflow = '';
+  }
+  window.openModal  = openModal;
+  window.closeModal = closeModal;
+
+  // ── Toast ─────────────────────────────────────────────────────────────
+  let _toastTimer;
+  function flashToast(msg, alert) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    if (alert) {
+      el.style.background = '#E5482A';
+      el.style.color = '#fff';
+      el.style.boxShadow = '0 0 0 1px rgba(229,72,42,.6),0 12px 28px -8px rgba(229,72,42,.5)';
+    } else {
+      el.style.background = '';
+      el.style.color = '';
+      el.style.boxShadow = '';
+    }
+    el.style.opacity = '1';
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 2400);
+  }
+  function flashToastAlert(msg) { flashToast(msg, true); }
+  window.flashToastAlert = flashToastAlert;
+
+  // ── Volunteer select population ────────────────────────────────────────
+  var _pendingShiftId = null;
+  var _pendingShowAssigned = [];
+
+  function esc(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function rebuildVolunteerSelect() {
+    const sel = document.getElementById('volunteer-select');
+    if (!sel) return;
+    const volunteers = ROSTER.filter(p => p.level !== 'INST' && p.is_volunteer);
+    if (volunteers.length === 0) {
+      sel.innerHTML = '<option value="" disabled>No volunteers in the pool yet</option>';
+    } else {
+      sel.innerHTML = volunteers.map(p => {
+        const conflict = _pendingShowAssigned.includes(p.id);
+        const label = conflict ? `${esc(p.name)} — already on this show` : esc(p.name);
+        return `<option value="${esc(p.id)}"${conflict ? ' disabled' : ''}>${label}</option>`;
+      }).join('');
+    }
+  }
+  window.rebuildVolunteerSelect = rebuildVolunteerSelect;
+
+  // ── Assign modal open ──────────────────────────────────────────────────
+  function openAssignModal(btn, shiftId, role) {
+    _pendingShiftId = shiftId;
+    try { _pendingShowAssigned = JSON.parse(btn.dataset.assignedIds || '[]'); }
+    catch { _pendingShowAssigned = []; }
+    document.getElementById('assign-role-label').textContent = role || '—';
+    const st = document.getElementById('assign-status');
+    if (st) st.classList.add('hidden');
+    rebuildVolunteerSelect();
+    openModal('modal-assign-volunteer');
+  }
+  window.openAssignModal = openAssignModal;
+
+  // ── Assign confirm ─────────────────────────────────────────────────────
+  async function confirmAssign() {
+    if (!_pendingShiftId) return;
+    const studentId = document.getElementById('volunteer-select').value;
+    const st = document.getElementById('assign-status');
+    if (!studentId) {
+      if (st) {
+        st.textContent = 'Pick a volunteer before confirming — no improv without a player!';
+        st.style.cssText = 'display:block;margin-top:1rem;padding:.7rem 1rem;font-size:.85rem;font-weight:600;text-align:center;background:#3b0a0a;color:#fca5a5;border:1px solid #7f1d1d;';
+      }
+      return;
+    }
+    try {
+      const res  = await fetch('/api/shift/admin-assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shift_id: _pendingShiftId, student_id: studentId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        closeModal('modal-assign-volunteer');
+        window.location.reload();
+      } else {
+        const msg = data.error || 'Failed to cast volunteer.';
+        if (st) {
+          st.textContent = msg;
+          st.style.cssText = 'display:block;margin-top:1rem;padding:.7rem 1rem;font-size:.85rem;font-weight:600;text-align:center;background:#3b0a0a;color:#fca5a5;border:1px solid #7f1d1d;';
+        }
+        flashToastAlert(msg);
+      }
+    } catch {
+      flashToastAlert('Total blackout — network error. Try again.');
+    }
+  }
+  window.confirmAssign = confirmAssign;
+
+  // ── Unassign confirm ───────────────────────────────────────────────────
+  async function confirmUnassign(shiftId) {
+    /**
+     * Clear the volunteer assignment on a shift slot.
+     * POSTs to /api/shift/admin-assign with student_id: null — triggers
+     * assign_shift()'s clear branch (student_id = NULL, status = 'accepted').
+     */
+    try {
+      const res  = await fetch('/api/shift/admin-assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shift_id: shiftId, student_id: null }),
+      });
+      const data = await res.json();
+      if (data.ok) { window.location.reload(); }
+      else { flashToastAlert(data.error || 'Could not drop that player.'); }
+    } catch {
+      flashToastAlert('Network dropout — please try again.');
+    }
+  }
+  window.confirmUnassign = confirmUnassign;
+
+})();
+</script>
+
+{# Inbox modal — required for _inbox_btn.html badge + inboxOpen() #}
+{% include 'partials/_inbox_modal.html' %}
+
+</body>
+</html>

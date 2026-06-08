@@ -912,7 +912,8 @@
         <header class="px-5 py-4 border-b hairline flex items-center justify-between">
           <div>
             <div class="font-display text-[16.5px]" style="color:var(--by-ink)">Shows &amp; Volunteer Slots</div>
-            <div class="text-[12px]" style="color:var(--by-ink-3)">Fri / Sat / Sun bookings</div>
+            {# Dashboard card: scoped to the current Mon–Sun calendar week #}
+            <div class="text-[12px]" style="color:var(--by-ink-3)">This week · <a href="/backstage/volunteer-shifts" class="font-semibold" style="color:var(--by-yes-deep)">Full roster →</a></div>
           </div>
           <div class="flex items-center gap-3">
             <button class="card-toggle font-mono text-[11.5px]" data-target="body-shows" style="color:var(--by-ink-3)">[-]</button>
@@ -920,9 +921,9 @@
           </div>
         </header>
         <div id="body-shows">
-          {% if shows %}
+          {% if this_week_shows %}
           <ul class="divide-y divide-white/5">
-            {% for show in shows %}
+            {% for show in this_week_shows %}
             {% set show_shifts = shifts | selectattr('show_id', 'equalto', show.id) | list %}
             {% set open_cnt = show_shifts | selectattr('student_id', 'none') | list | length %}
             {% set show_assigned_ids = show_shifts | rejectattr('student_id', 'none') | map(attribute='student_id') | list %}
@@ -997,8 +998,9 @@
           </ul>
           {% else %}
           <div class="px-5 py-10 text-center text-[12.5px]" style="color:var(--by-ink-3)">
-            No shows yet.
+            No shows on the bill this week.
             <button onclick="openModal('modal-add-show')" class="font-semibold" style="color:var(--by-yes-deep)">Schedule one →</button>
+            <div class="mt-2"><a href="/backstage/volunteer-shifts" class="font-semibold" style="color:var(--by-ink-3)">View full roster →</a></div>
           </div>
           {% endif %}
         </div>
