@@ -1764,7 +1764,15 @@
 
     <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
       <button onclick="closeModal('modal-student-info')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Close</button>
+      {% if can_view_finances or is_sm_user %}
+      <button id="sp-delete-btn" onclick="spDeletePerson()"
+              class="border py-2.5 px-4 text-sm font-semibold flex-shrink-0"
+              style="border-color:var(--by-tomato);color:var(--by-tomato);background:var(--by-bg)">
+        Delete
+      </button>
+      {% endif %}
     </div>
+    <div id="sp-delete-status" class="hidden px-5 py-3 text-sm font-medium text-center" style="border-top:var(--by-bd)"></div>
 
   </div>
 </div>
@@ -2680,6 +2688,38 @@
       }
     } catch {
       showFeedback('sp-edit-status', 'Network error — try again.', 'error');
+    }
+  }
+
+  // ── Delete person from edit panel ────────────────────────
+  async function spDeletePerson() {
+    if (!_spPersonId) return;
+    const p = ROSTER.find(x => x.id === _spPersonId);
+    const name = p ? p.name : 'this user';
+    if (!confirm(`Remove ${name} from the roster? This can be undone within 24 hours from the Restore panel.`)) return;
+    const btn = document.getElementById('sp-delete-btn');
+    if (btn) btn.disabled = true;
+    try {
+      const res  = await fetch('/api/person/delete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ person_id: _spPersonId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        // Remove from in-memory roster and close panel
+        const idx = ROSTER.findIndex(x => x.id === _spPersonId);
+        if (idx !== -1) ROSTER.splice(idx, 1);
+        applyFilters();
+        closeModal('modal-student-info');
+        flashToast(`${name} removed from the roster.`);
+      } else {
+        showFeedback('sp-delete-status', data.error || 'Could not delete.', 'error');
+        if (btn) btn.disabled = false;
+      }
+    } catch {
+      showFeedback('sp-delete-status', 'Network error — try again.', 'error');
+      if (btn) btn.disabled = false;
     }
   }
 
