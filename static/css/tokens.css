@@ -1,0 +1,71 @@
+/* ═════════════════════════════════════════════════════════════
+   BIGYES DESIGN TOKENS
+   ═════════════════════════════════════════════════════════════
+   CSS custom properties extracted from BigYes Design Language.
+   This file defines all design tokens: colors, typography, radii, spacing.
+   No component rules — only :root variables.
+   ═════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────
+     Surface — warm paper, never pure white
+     ───────────────────────────────────────────────────────── */
+  --bg:        #F4EEE2;   /* paper */
+  --bg-2:      #ECE3D0;   /* paper deep */
+  --bg-3:      #E2D6BB;   /* paper deeper, dividers */
+
+  /* ─────────────────────────────────────────────────────────
+     Ink — text and borders
+     ───────────────────────────────────────────────────────── */
+  --ink:       #141210;   /* near-black ink */
+  --ink-2:     #2A2723;   /* darker body text */
+  --ink-3:     #5C544A;   /* muted body */
+  --ink-4:     #8A8073;   /* hint, subtle */
+
+  /* ─────────────────────────────────────────────────────────
+     Signature — saturated marigold yellow
+     ───────────────────────────────────────────────────────── */
+  --yes:       #FFC629;   /* primary accent */
+  --yes-deep:  #E5A800;   /* pressed/deeper state */
+  --yes-soft:  #FFE7A0;   /* soft, secondary use */
+
+  /* ─────────────────────────────────────────────────────────
+     Secondary — single accent only. Tomato red.
+     ───────────────────────────────────────────────────────── */
+  --tomato:     #E5482A;  /* alert, danger, warning */
+  --tomato-deep:#B83218;  /* pressed/darker tomato */
+
+  /* ─────────────────────────────────────────────────────────
+     Stage — only used on hero/inversion moments
+     ───────────────────────────────────────────────────────── */
+  --night:      #141210;  /* dark background (same as ink) */
+  --night-soft: #1E1B17;  /* dark background, slightly lighter */
+
+  /* ─────────────────────────────────────────────────────────
+     Type ramp — font families
+     ───────────────────────────────────────────────────────── */
+  --f-display: 'Archivo Black', 'Archivo', system-ui, sans-serif;
+  --f-sans:    'Archivo', system-ui, sans-serif;
+  --f-body:    'Manrope', system-ui, sans-serif;
+  --f-mono:    'DM Mono', ui-monospace, monospace;
+
+  /* ─────────────────────────────────────────────────────────
+     Radii — mostly square. Soft only on pills/photos.
+     ───────────────────────────────────────────────────────── */
+  --r-1:       4px;       /* tight corners */
+  --r-2:       10px;      /* standard card radius */
+  --r-pill:    999px;     /* pill/circle radius */
+
+  /* ─────────────────────────────────────────────────────────
+     Spacing scale (4 px base)
+     ───────────────────────────────────────────────────────── */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  24px;
+  --s-6:  32px;
+  --s-7:  48px;
+  --s-8:  64px;
+  --s-9:  96px;
+}
