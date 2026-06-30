@@ -68,4 +68,39 @@
   --s-7:  48px;
   --s-8:  64px;
   --s-9:  96px;
+
+  /* ─────────────────────────────────────────────────────────
+     Component-specific colors (business logic, not design system)
+     ───────────────────────────────────────────────────────── */
+  --success-green:    #2A8A4F;   /* active/approved states */
+  --future-purple:    #6B5CE7;   /* future/scheduled indicator */
+  --warning-bg:       #FFFBEB;   /* warning container background */
+  --warning-text:     #92550A;   /* warning container text */
+  --warning-accent:   #C17A20;   /* warning indicator color */
+
+  /* ─────────────────────────────────────────────────────────
+     Backstage pop-art design (BigYes-specific, high-contrast)
+     ───────────────────────────────────────────────────────── */
+  --bs-yellow:        #FFC600;   /* backstage container highlight */
+  --bs-teal:          #06B6D4;   /* teal pill/tag */
+  --bs-coral:         #FF6B6B;   /* coral/red pill/tag */
+  --bs-indigo:        #6366F1;   /* indigo/loring location tag */
+  --bs-gray-light:    #E5E7EB;   /* progress bar background */
+  --bs-green:         #22C55E;   /* green progress indicator */
+  --bs-amber:         #F59E0B;   /* amber progress indicator */
+  --bs-red:           #EF4444;   /* red progress indicator */
+
+  /* ─────────────────────────────────────────────────────────
+     Badge/status indicators (reporting page)
+     ───────────────────────────────────────────────────────── */
+  --badge-green-text:     #166534;   /* status badge text */
+  --badge-green-bg:       #dcfce7;   /* status badge background */
+  --badge-yellow-text:    #854d0e;   /* warning badge text */
+  --badge-red-bg:         #fef2f2;   /* error badge background */
+  --msg-success-bg:       #F0FFF8;   /* success message background */
+  --msg-error-bg:         #FFF0EE;   /* error message background */
+  --chart-text:           #5C544A;   /* Chart.js default text color */
+  --chart-border:         #E2D6BB;   /* Chart.js default border color */
+  --chart-tooltip-bg:     #141210;   /* Chart.js tooltip background */
+  --chart-tooltip-text:   #FFC629;   /* Chart.js tooltip text */
 }

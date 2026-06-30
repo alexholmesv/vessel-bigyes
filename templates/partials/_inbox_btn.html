@@ -20,7 +20,7 @@
         class="absolute flex items-center justify-center"
         style="top:-6px;right:-6px;min-width:16px;height:16px;padding:0 3px;
                background:var(--by-tomato);border:1.5px solid var(--by-bg);
-               font-family:var(--by-f-mono);font-size:9px;font-weight:700;color:#fff;
+               font-family:var(--by-f-mono);font-size:9px;font-weight:700;color:white;
                line-height:1;{{ 'display:none;' if not inbox_unread_count else '' }}">
     {{ inbox_unread_count if inbox_unread_count and inbox_unread_count < 100 else ('99+' if inbox_unread_count else '') }}
   </span>
