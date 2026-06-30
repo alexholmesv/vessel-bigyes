@@ -1,0 +1,85 @@
+/* ═════════════════════════════════════════════════════════════
+   BIGYES OVERRIDES
+   ═════════════════════════════════════════════════════════════
+   Component-specific rules that deviate from the design system.
+   Every rule must include a `/* WHY: ... */` comment explaining
+   the override reason (visual polish, accessibility, layout exception,
+   browser compatibility, etc.).
+
+   CSS file chain (load order):
+   1. tokens.css       — design tokens (colors, fonts, spacing)
+   2. components.css   — reusable component classes
+   3. layout.css       — page layout & grids
+   4. nd-mode.css      — neurodivergent mode (scoped to [data-mode="nd"])
+   5. overrides.css    — exceptions & patches (this file)
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────
+   Form & Input Tweaks
+   ───────────────────────────────────────────────────────────── */
+
+/* WHY: Prevent iOS Safari from zooming on input focus (font-size >= 16px inhibits zoom). */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  font-size: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Print Styles
+   ───────────────────────────────────────────────────────────── */
+
+@media print {
+  /* WHY: Hide navigation, buttons, and interactive elements when printing. */
+  [id*="nav"],
+  [class*="navbar"],
+  [class*="sidebar"],
+  button,
+  [role="button"] {
+    display: none;
+  }
+
+  /* WHY: Ensure text is readable on printed pages with adequate contrast. */
+  body {
+    color: var(--ink);
+    background: white;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Focus & Keyboard Navigation (A11y)
+   ───────────────────────────────────────────────────────────── */
+
+/* WHY: Ensure keyboard-focused elements have visible focus ring for accessibility. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--yes);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Scrollbar & UI Customization (Webkit browsers)
+   ───────────────────────────────────────────────────────────── */
+
+/* WHY: Style scrollbars to match BigYes design language in Chrome/Safari. */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink);
+}
