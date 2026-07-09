@@ -56,6 +56,13 @@
     }
   </script>
 
+  <!-- CSS file chain (load order matters) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
+
   <style>
     /* ── BigYes Design Tokens v0.1 ─────────────────────────────────── */
     :root {
