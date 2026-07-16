@@ -17,24 +17,24 @@
           mono:    ['"DM Mono"', 'ui-monospace', 'monospace'],
         },
         colors: {
-          'by-yes':         '#FFC629',
-          'by-yes-deep':    '#E5A800',
-          'by-yes-soft':    '#FFE7A0',
-          'by-ink':         '#141210',
-          'by-ink-2':       '#2A2723',
-          'by-ink-3':       '#5C544A',
-          'by-ink-4':       '#8A8073',
-          'by-bg':          '#F4EEE2',
-          'by-bg-2':        '#ECE3D0',
-          'by-bg-3':        '#E2D6BB',
-          'by-tomato':      '#E5482A',
-          'by-tomato-deep': '#B83218',
-          'by-night':       '#141210',
-          'by-night-on':    '#C9BFA8',
+          'by-yes':         'var(--yes)',
+          'by-yes-deep':    'var(--yes-deep)',
+          'by-yes-soft':    'var(--yes-soft)',
+          'by-ink':         'var(--ink)',
+          'by-ink-2':       'var(--ink-2)',
+          'by-ink-3':       'var(--ink-3)',
+          'by-ink-4':       'var(--ink-4)',
+          'by-bg':          'var(--bg)',
+          'by-bg-2':        'var(--bg-2)',
+          'by-bg-3':        'var(--bg-3)',
+          'by-tomato':      'var(--tomato)',
+          'by-tomato-deep': 'var(--tomato-deep)',
+          'by-night':       'var(--night)',
+          'by-night-on':    'var(--night-soft)',
         },
         boxShadow: {
-          'by-hard':     '4px 4px 0 0 #141210',
-          'by-hard-yes': '4px 4px 0 0 #FFC629',
+          'by-hard':     '4px 4px 0 0 var(--ink)',
+          'by-hard-yes': '4px 4px 0 0 var(--yes)',
         },
       }
     }
@@ -58,77 +58,77 @@
     --by-f-mono:'DM Mono',ui-monospace,monospace;
     --by-t-mono:11.5px;
     --by-r-1:4px; --by-r-pill:999px;
-    --by-bd:1px solid var(--by-ink);
-    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd:1px solid var(--ink);
+    --by-bd-thick:1.5px solid var(--ink);
     --by-bd-soft:1px solid var(--by-bg-3);
     --by-bd-dash:1px dashed var(--by-bg-3);
-    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-1:4px 4px 0 0 var(--ink);
     --by-sh-yes:4px 4px 0 0 var(--by-yes);
     --by-snap:120ms cubic-bezier(.2,.8,.2,1);
     --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
   }
 
   html, body { background: var(--by-bg); }
-  body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing:antialiased; padding-bottom: 64px; }
+  body { font-family: var(--by-f-body); color: var(--ink); -webkit-font-smoothing:antialiased; padding-bottom: 64px; }
   @media (min-width: 1024px) { body { padding-bottom: 0; } }
   .font-display { font-family: var(--by-f-display); font-weight:900; letter-spacing:-0.02em; text-transform:uppercase; }
   .font-mono { font-family: var(--by-f-mono); }
 
   .by-display { font-family:var(--by-f-display); font-weight:900; line-height:0.88; letter-spacing:-0.02em; text-transform:uppercase; }
   .by-eyebrow { font-family:var(--by-f-mono); font-size:var(--by-t-mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--by-ink-3); }
-  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--ink); padding:0 12px 4px; transform:skew(-6deg); }
 
-  .hairline { border-color: var(--by-ink); }
+  .hairline { border-color: var(--ink); }
 
   /* Chips */
-  .chip { display:inline-flex; align-items:center; gap:.375rem; padding:.15rem .55rem; border-radius:999px; font-family:var(--by-f-mono); font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--by-ink); line-height:1.2; background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
-  .chip .dot { width:6px; height:6px; border-radius:999px; flex-shrink:0; background:var(--by-ink); }
-  .chip-active .dot   { background:#2A8A4F; }
-  .chip-upcoming .dot { background:var(--by-ink); }
+  .chip { display:inline-flex; align-items:center; gap:.375rem; padding:.15rem .55rem; border-radius:999px; font-family:var(--by-f-mono); font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--ink); line-height:1.2; background:var(--by-bg); color:var(--ink); white-space:nowrap; }
+  .chip .dot { width:6px; height:6px; border-radius:999px; flex-shrink:0; background:var(--ink); }
+  .chip-active .dot   { background:var(--success-green); }
+  .chip-upcoming .dot { background:var(--ink); }
   .chip-past          { background:var(--by-bg-2); color:var(--by-ink-3); border-color:var(--by-ink-3); }
   .chip-past .dot     { background:var(--by-ink-3); }
-  .chip-live          { background:var(--by-tomato); color:#fff; border-color:var(--by-ink); }
-  .chip-live .dot     { background:#fff; box-shadow:0 0 0 3px rgba(229,72,42,.25); animation:chip-pulse 1.6s infinite; }
+  .chip-live          { background:var(--tomato); color:white; border-color:var(--ink); }
+  .chip-live .dot     { background:white; box-shadow:0 0 0 3px rgba(229,72,42,.25); animation:chip-pulse 1.6s infinite; }
   @keyframes chip-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.6} }
-  .text-live-indicator { color: var(--by-tomato); }
+  .text-live-indicator { color: var(--tomato); }
 
   /* Sidebar nav */
   .nav-item { display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; color:var(--by-ink-3); font-family:var(--by-f-body); font-size:13.5px; font-weight:500; border:none; border-left:4px solid transparent; text-decoration:none; transition:background var(--by-snap),color var(--by-snap); }
-  .nav-item:hover { color:var(--by-ink); background:var(--by-bg-2); }
-  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+  .nav-item:hover { color:var(--ink); background:var(--by-bg-2); }
+  .nav-item.active { color:var(--ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
   .nav-item .ico { width:18px; height:18px; flex:0 0 18px; }
 
   /* Buttons */
-  .btn-spot  { background:var(--by-yes); color:var(--by-ink); font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
-  .btn-spot:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
+  .btn-spot  { background:var(--by-yes); color:var(--ink); font-weight:700; border:1px solid var(--ink); box-shadow:var(--by-sh-1); }
+  .btn-spot:hover  { box-shadow:2px 2px 0 0 var(--ink); transform:translate(2px,2px); }
   .btn-spot:active { transform:translate(4px,4px); box-shadow:none; }
-  .btn-live  { background:var(--by-tomato); color:#fff; font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
-  .btn-live:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
-  .btn-ghost { border:1px solid var(--by-ink); background:transparent; color:var(--by-ink); font-weight:500; }
+  .btn-live  { background:var(--tomato); color:white; font-weight:700; border:1px solid var(--ink); box-shadow:var(--by-sh-1); }
+  .btn-live:hover  { box-shadow:2px 2px 0 0 var(--ink); transform:translate(2px,2px); }
+  .btn-ghost { border:1px solid var(--ink); background:transparent; color:var(--ink); font-weight:500; }
   .btn-ghost:hover { background:var(--by-bg-2); }
 
   /* Avatar */
-  .av { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:999px; font-weight:800; font-size:12px; color:var(--by-ink); box-shadow:inset 0 0 0 1px rgba(20,18,16,.2); flex-shrink:0; }
+  .av { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:999px; font-weight:800; font-size:12px; color:var(--ink); box-shadow:inset 0 0 0 1px rgba(20,18,16,.2); flex-shrink:0; }
 
   /* Tabs */
   .tab { padding:.5rem .85rem; border-radius:var(--by-r-1); font-size:13px; color:var(--by-ink-3); font-weight:500; display:inline-flex; gap:.45rem; align-items:center; border:1px solid transparent; cursor:pointer; }
-  .tab:hover { color:var(--by-ink); background:var(--by-bg-2); }
-  .tab.active { color:var(--by-ink); background:var(--by-bg-2); border-color:var(--by-ink); }
+  .tab:hover { color:var(--ink); background:var(--by-bg-2); }
+  .tab.active { color:var(--ink); background:var(--by-bg-2); border-color:var(--ink); }
   .tab .count { font-family:var(--by-f-mono); font-size:10.5px; color:var(--by-ink-3); background:var(--by-bg-3); padding:1px 6px; border-radius:999px; }
-  .tab.active .count { color:var(--by-ink); background:var(--by-yes); }
+  .tab.active .count { color:var(--ink); background:var(--by-yes); }
 
   /* Class card */
-  .class-card { border:1px solid var(--by-ink); background:var(--by-bg); padding:14px; cursor:pointer; transition:background-color 120ms, box-shadow 120ms; }
+  .class-card { border:1px solid var(--ink); background:var(--by-bg); padding:14px; cursor:pointer; transition:background-color 120ms, box-shadow 120ms; }
   .class-card:hover   { background:var(--by-bg-2); box-shadow:var(--by-sh-1); }
   .class-card.selected { background:var(--by-yes-soft); box-shadow:var(--by-sh-yes); }
 
   /* Attendance pills */
-  .att { display:inline-flex; gap:2px; padding:2px; background:var(--by-bg-3); border:1px solid var(--by-ink); border-radius:var(--by-r-1); }
+  .att { display:inline-flex; gap:2px; padding:2px; background:var(--by-bg-3); border:1px solid var(--ink); border-radius:var(--by-r-1); }
   .att button { padding:3px 8px; border-radius:2px; font-size:11px; color:var(--by-ink-3); font-weight:600; cursor:pointer; }
-  .att button:hover { color:var(--by-ink); background:var(--by-bg-2); }
-  .att button.on[data-v="P"] { color:#fff; background:#2A8A4F; }
-  .att button.on[data-v="L"] { color:var(--by-ink); background:var(--by-yes); }
-  .att button.on[data-v="A"] { color:#fff; background:var(--by-tomato); }
+  .att button:hover { color:var(--ink); background:var(--by-bg-2); }
+  .att button.on[data-v="P"] { color:white; background:var(--success-green); }
+  .att button.on[data-v="L"] { color:var(--ink); background:var(--by-yes); }
+  .att button.on[data-v="A"] { color:white; background:var(--tomato); }
 
   /* Roster row */
   .roster-row:hover td { background:var(--by-bg-2); }
@@ -137,19 +137,19 @@
   /* Points pill */
   .pts { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:999px; background:rgba(255,198,41,.12); border:1px solid rgba(255,198,41,.35); color:var(--by-yes-deep); font-family:var(--by-f-mono); font-size:11.5px; font-weight:600; }
   .pts.flash { animation:ptsFlash 1.2s ease-out 1; }
-  @keyframes ptsFlash { 0%{background:rgba(255,198,41,.5);color:var(--by-ink);transform:scale(1.18)} 100%{background:rgba(255,198,41,.12);color:var(--by-yes-deep);transform:scale(1)} }
+  @keyframes ptsFlash { 0%{background:rgba(255,198,41,.5);color:var(--ink);transform:scale(1.18)} 100%{background:rgba(255,198,41,.12);color:var(--by-yes-deep);transform:scale(1)} }
 
   /* Difficulty picker */
   .diff { padding:10px 12px; border:1px solid var(--by-bd-soft); background:var(--by-bg-2); text-align:left; transition:all 120ms; cursor:pointer; }
-  .diff:hover { border-color:var(--by-ink); box-shadow:var(--by-sh-1); transform:translate(-1px,-1px); }
-  .diff .name { color:var(--by-ink); font-weight:700; font-size:13px; font-family:var(--by-f-sans); }
+  .diff:hover { border-color:var(--ink); box-shadow:var(--by-sh-1); transform:translate(-1px,-1px); }
+  .diff .name { color:var(--ink); font-weight:700; font-size:13px; font-family:var(--by-f-sans); }
   .diff .meta { color:var(--by-ink-3); font-size:11px; margin-top:2px; font-family:var(--by-f-mono); }
   .diff .bar  { display:flex; gap:2px; margin-top:8px; }
   .diff .bar i { display:block; height:3px; width:14px; border-radius:2px; background:var(--by-bg-3); }
   .diff .bar i.on { background:var(--by-yes); }
 
   /* Live challenge card */
-  .live-card { border:1px solid var(--by-ink); }
+  .live-card { border:1px solid var(--ink); }
   .live-card.armed { border-color:var(--by-yes); box-shadow:var(--by-sh-yes); }
   .live-card-inner { background:var(--by-yes); padding:18px; }
 
@@ -159,22 +159,22 @@
   .week-col.is-today { background:var(--by-yes-soft); border-left:2px solid var(--by-yes); }
   .week-pill { display:block; width:100%; text-align:left; padding:4px 6px; margin-top:5px;
     border:var(--by-bd-thick); background:var(--by-yes); font-family:var(--by-f-mono);
-    font-size:10px; line-height:1.4; cursor:pointer; transition:all 120ms; color:var(--by-ink); font-weight:600; }
-  .week-pill:hover { background:var(--by-yes-soft); box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(-1px,-1px); }
-  .week-pill.selected { background:var(--by-ink); color:var(--by-yes); border-color:var(--by-ink); }
+    font-size:10px; line-height:1.4; cursor:pointer; transition:all 120ms; color:var(--ink); font-weight:600; }
+  .week-pill:hover { background:var(--by-yes-soft); box-shadow:2px 2px 0 0 var(--ink); transform:translate(-1px,-1px); }
+  .week-pill.selected { background:var(--ink); color:var(--by-yes); border-color:var(--ink); }
 
   /* KPI stat bar */
-  .stat-kpi { flex:1; padding:10px 14px; border:1px solid var(--by-ink); background:var(--by-bg-2); }
+  .stat-kpi { flex:1; padding:10px 14px; border:1px solid var(--ink); background:var(--by-bg-2); }
 
   /* Panel tabs */
   .panel-tab { padding:.4rem .75rem; font-size:12.5px; font-weight:600; font-family:var(--by-f-sans); color:var(--by-ink-3); border-bottom:2px solid transparent; cursor:pointer; transition:color 120ms, border-color 120ms; }
-  .panel-tab:hover { color:var(--by-ink); }
-  .panel-tab.active { color:var(--by-ink); border-bottom-color:var(--by-yes); }
+  .panel-tab:hover { color:var(--ink); }
+  .panel-tab.active { color:var(--ink); border-bottom-color:var(--by-yes); }
 
   /* Message form */
   .msg-select, .msg-input, .msg-textarea {
     width:100%; padding:8px 10px; border:var(--by-bd); background:var(--by-bg);
-    font-family:var(--by-f-body); font-size:13px; color:var(--by-ink); outline:none;
+    font-family:var(--by-f-body); font-size:13px; color:var(--ink); outline:none;
   }
   .msg-select:focus, .msg-input:focus, .msg-textarea:focus { box-shadow:var(--by-sh-yes); }
   .msg-textarea { resize:vertical; min-height:72px; }
@@ -185,7 +185,7 @@
 
   /* ── Page header: amber-accent on paper ────────────────────────────── */
   #page-header { background:var(--by-bg) !important; border-bottom:3px solid var(--by-yes) !important; }
-  #page-header #headerGreeting { color:var(--by-ink) !important; }
+  #page-header #headerGreeting { color:var(--ink) !important; }
 
   /* Unified sidebar slide-over (hidden by default, all screen sizes) */
   .app-sidebar {
@@ -220,7 +220,7 @@
   }
   @media (min-width:1024px) { .by-mob-bar { display:none; } }
   .by-ham { width:44px; height:44px; flex-shrink:0; border:var(--by-bd-thick); background:var(--by-bg); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px; cursor:pointer; }
-  .by-ham span { display:block; width:18px; height:1.5px; background:var(--by-ink); }
+  .by-ham span { display:block; width:18px; height:1.5px; background:var(--ink); }
   .by-mob-drawer { position:fixed; top:56px; bottom:64px; left:0; z-index:35; width:280px; background:var(--by-bg); border-right:var(--by-bd-thick); transform:translateX(-100%); transition:transform 240ms cubic-bezier(.2,.8,.2,1); overflow-y:auto; }
   .by-mob-drawer.open { transform:translateX(0); }
   @media (min-width:1024px) { .by-mob-drawer { display:none; } }
@@ -229,14 +229,14 @@
   .by-mob-tabs { position:fixed; bottom:0; left:0; right:0; z-index:40; height:64px; display:flex; background:var(--by-bg); border-top:var(--by-bd-thick); }
   .by-mob-tabs a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 4px 10px; font-family:var(--by-f-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--by-ink-3); border-right:1px solid var(--by-bg-3); text-decoration:none; min-height:44px; }
   .by-mob-tabs a:last-child { border-right:0; }
-  .by-mob-tabs a.active { color:var(--by-ink); background:var(--by-yes); }
+  .by-mob-tabs a.active { color:var(--ink); background:var(--by-yes); }
   .by-mob-tabs svg { width:20px; height:20px; }
   @media (min-width:1024px) { .by-mob-tabs { display:none; } }
 
   .by-cta-bar { position:sticky; bottom:64px; z-index:20; display:flex; gap:8px; padding:12px 16px; background:var(--by-bg); border-top:var(--by-bd-thick); margin:16px -28px -28px; }
   .by-cta-bar .by-cta-btn { flex:1; min-height:48px; padding:14px 16px; font-family:var(--by-f-sans); font-size:14px; font-weight:700; border:var(--by-bd-thick); cursor:pointer; }
-  .by-cta-btn-primary { background:var(--by-yes); color:var(--by-ink); box-shadow:var(--by-sh-1); }
-  .by-cta-btn-ghost   { background:transparent; color:var(--by-ink); }
+  .by-cta-btn-primary { background:var(--by-yes); color:var(--ink); box-shadow:var(--by-sh-1); }
+  .by-cta-btn-ghost   { background:transparent; color:var(--ink); }
   @media (min-width:1024px) { .by-cta-bar { position:static; border-top:0; padding:0; margin:0; display:flex; gap:8px; } .by-cta-bar .by-cta-btn { flex:0 0 auto; } }
 </style>
 </head>
@@ -244,14 +244,14 @@
 <body class="min-h-screen w-full overflow-x-hidden">
 
 <!-- Toast -->
-<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.25rem;font-size:.8rem;font-weight:600;background:var(--by-yes);color:var(--by-ink);border:1.5px solid var(--by-ink);box-shadow:var(--by-sh-1);opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
+<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.25rem;font-size:.8rem;font-weight:600;background:var(--by-yes);color:var(--ink);border:1.5px solid var(--ink);box-shadow:var(--by-sh-1);opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
 
 <!-- Unified sidebar slide-over (all screen sizes) -->
 <div id="sidebar-overlay" class="app-sidebar-overlay" onclick="toggleSidebar()"></div>
 <aside id="app-sidebar" class="app-sidebar">
   <div class="px-5 pt-6 pb-4 flex items-start justify-between">
     <div>
-      <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+      <a href="/" class="by-display" style="font-size:20px;color:var(--ink);text-decoration:none;line-height:1;">
         Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
       </a>
       <div class="by-eyebrow mt-1.5">Barcelona Improv</div>
@@ -262,9 +262,9 @@
   </div>
 
   <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2" style="border:var(--by-bd);background:var(--by-bg-2);">
-    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="background:var(--by-yes);border:var(--by-bd);font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-ink);">T</span>
+    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="background:var(--by-yes);border:var(--by-bd);font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--ink);">T</span>
     <div class="flex-1 min-w-0">
-      <div class="text-[12.5px] truncate" style="font-family:var(--by-f-sans);font-weight:700;color:var(--by-ink);">Teacher view</div>
+      <div class="text-[12.5px] truncate" style="font-family:var(--by-f-sans);font-weight:700;color:var(--ink);">Teacher view</div>
       <div class="by-eyebrow truncate">{{ current_user_name }}</div>
     </div>
   </div>
@@ -296,7 +296,7 @@
       Next class
     </div>
     {% if next_cls %}
-    <div class="mt-1.5 font-display text-[15px] leading-snug" style="color:var(--by-ink);">{{ next_cls.title }}</div>
+    <div class="mt-1.5 font-display text-[15px] leading-snug" style="color:var(--ink);">{{ next_cls.title }}</div>
     <div class="by-eyebrow mt-0.5">{{ next_cls.schedule }} · {{ next_cls.students | length }} enrolled</div>
     {% else %}
     <div class="mt-1.5 text-[13px]" style="color:var(--by-ink-3);">No active classes</div>
@@ -306,7 +306,7 @@
 
 <!-- Mobile top bar -->
 <header class="by-mob-bar">
-  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--ink);text-decoration:none;line-height:1;">
     Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleSidebar()">
@@ -328,14 +328,14 @@
         </button>
         <div class="leading-tight min-w-0">
           <div class="by-eyebrow">Barcelona Improv · Teacher</div>
-          <div id="headerGreeting" class="font-display text-[22px] lg:text-[26px] leading-tight" style="color:var(--by-ink);"></div>
+          <div id="headerGreeting" class="font-display text-[22px] lg:text-[26px] leading-tight" style="color:var(--ink);"></div>
         </div>
 
         <div class="relative flex-1 max-w-xs ml-4 hidden md:block" id="search-wrap">
           <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--by-ink-4);pointer-events:none;z-index:1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <input id="searchInput" type="text" placeholder="Search classes or students…"
             class="w-full outline-none pl-9 pr-3 py-2 text-[13px]"
-            style="background:var(--by-bg-2);border:var(--by-bd);font-family:var(--by-f-body);color:var(--by-ink);"
+            style="background:var(--by-bg-2);border:var(--by-bd);font-family:var(--by-f-body);color:var(--ink);"
             autocomplete="off"
             oninput="searchEnsemble(this.value)"
             onfocus="searchEnsemble(this.value); this.style.boxShadow='var(--by-sh-yes)'"
@@ -363,28 +363,28 @@
                   style="border:var(--by-bd);background:var(--by-bg);">
             <img class="by-um-av-img av object-cover flex-shrink-0"
                  src="{{ current_user_avatar or '' }}"
-                 style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                 style="width:28px;height:28px;border:2px solid var(--ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
             <span class="by-um-av-init av flex items-center justify-center flex-shrink-0"
-                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:white;{{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
             </span>
             <div class="hidden md:block leading-tight text-left">
-              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
+              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--ink);line-height:1.2;">{{ current_user_name }}</div>
               <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Faculty</div>
             </div>
             <svg class="h-3 w-3 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--by-ink-4);" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
           </button>
           <div id="user-menu-drop" class="hidden" style="position:absolute;top:calc(100% + 6px);right:0;z-index:60;min-width:168px;background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
             <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
-              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);">{{ current_user_name }}</div>
+              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--ink);">{{ current_user_name }}</div>
               <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Teacher</div>
             </div>
-            <button onclick="openMyConfig(); toggleUserMenu(true)" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b" style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
+            <button onclick="openMyConfig(); toggleUserMenu(true)" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b" style="border-color:var(--by-bg-3);font-size:13px;color:var(--ink);background:var(--by-bg);">
               <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               Config
             </button>
-            <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5" style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);text-decoration:none;">
+            <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5" style="font-size:13px;color:var(--tomato);background:var(--by-bg);text-decoration:none;">
               <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               Log out
             </a>
@@ -404,7 +404,7 @@
           Past <span class="count" id="cntPast">{{ past_classes | length }}</span>
         </button>
         <div class="flex-1"></div>
-        <div class="by-eyebrow hidden sm:block">Term · <span style="color:var(--by-ink);">Spring 2026</span></div>
+        <div class="by-eyebrow hidden sm:block">Term · <span style="color:var(--ink);">Spring 2026</span></div>
       </div>
     </header>
 
@@ -414,23 +414,23 @@
     {% for c in active_classes %}{% set total_stu.n = total_stu.n + (c.students | length) %}{% endfor %}
     {% set wk_sessions = namespace(n=0) %}
     {% for d in week_days %}{% set wk_sessions.n = wk_sessions.n + (d.classes | length) %}{% endfor %}
-    <div class="px-4 lg:px-7 pt-5 pb-4 border-b" style="background:var(--by-bg);border-color:var(--by-ink);">
+    <div class="px-4 lg:px-7 pt-5 pb-4 border-b" style="background:var(--by-bg);border-color:var(--ink);">
       <div class="by-eyebrow mb-1">Faculty · {{ today_label }}</div>
-      <h1 class="by-display text-[32px] lg:text-[40px] mb-4" style="color:var(--by-ink);line-height:1.0;">
+      <h1 class="by-display text-[32px] lg:text-[40px] mb-4" style="color:var(--ink);line-height:1.0;">
         Ensemble <span class="by-yes-block" style="font-size:inherit;padding:0 14px 5px;">Room</span>
       </h1>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <div class="border px-3.5 py-2.5" style="background:var(--by-yes);border-color:var(--by-ink);box-shadow:var(--by-sh-1);">
+        <div class="border px-3.5 py-2.5" style="background:var(--by-yes);border-color:var(--ink);box-shadow:var(--by-sh-1);">
           <div class="by-eyebrow">Active Classes</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ active_classes | length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--ink);">{{ active_classes | length }}</div>
         </div>
-        <div class="border px-3.5 py-2.5" style="background:var(--by-bg-2);border-color:var(--by-ink);">
+        <div class="border px-3.5 py-2.5" style="background:var(--by-bg-2);border-color:var(--ink);">
           <div class="by-eyebrow">Total Students</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ total_stu.n }}</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--ink);">{{ total_stu.n }}</div>
         </div>
-        <div class="border px-3.5 py-2.5 col-span-2 sm:col-span-1" style="background:var(--by-bg-2);border-color:var(--by-ink);">
+        <div class="border px-3.5 py-2.5 col-span-2 sm:col-span-1" style="background:var(--by-bg-2);border-color:var(--ink);">
           <div class="by-eyebrow">Sessions This Week</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ wk_sessions.n }}</div>
+          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--ink);">{{ wk_sessions.n }}</div>
         </div>
       </div>
     </div>
@@ -438,8 +438,8 @@
     <!-- ══ Week at a Glance ══ -->
     <section id="week-strip" class="px-4 lg:px-7 mt-5 border" style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-yes);">
       <div class="px-4 py-3 flex items-center justify-between" style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
-        <div class="font-display text-[22px]" style="color:var(--by-ink);">This Week</div>
-        <button onclick="openMonthView()" class="h-8 px-3 text-[11.5px] flex items-center gap-1.5" style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-body);cursor:pointer;font-weight:600;">
+        <div class="font-display text-[22px]" style="color:var(--ink);">This Week</div>
+        <button onclick="openMonthView()" class="h-8 px-3 text-[11.5px] flex items-center gap-1.5" style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--ink);font-family:var(--by-f-body);cursor:pointer;font-weight:600;">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
           View month
         </button>
@@ -448,7 +448,7 @@
         {% for day in week_days %}
         <div class="week-col {% if day.is_today %}is-today{% endif %}">
           <div class="by-eyebrow" style="color:{% if day.is_today %}var(--by-yes-deep){% else %}var(--by-ink-3){% endif %};">{{ day.short }}</div>
-          <div class="font-display text-[15px] leading-none mt-0.5" style="color:{% if day.is_today %}var(--by-ink){% else %}var(--by-ink){% endif %};">{{ day.date_num }}</div>
+          <div class="font-display text-[15px] leading-none mt-0.5" style="color:{% if day.is_today %}var(--ink){% else %}var(--ink){% endif %};">{{ day.date_num }}</div>
           {% if day.classes %}
             {% for cls in day.classes %}
             <button class="week-pill" data-class-id="{{ cls.id }}" onclick="selectClass('{{ cls.id }}')">
@@ -467,11 +467,11 @@
     <!-- ══ Activity Box + Live Challenge (side by side) ══ -->
     <div class="px-4 lg:px-7 mt-3 mb-5 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 min-w-0">
       <!-- Activity Box -->
-      <section id="activity-box" class="border flex flex-col" style="background:var(--by-bg);border-color:var(--by-ink);border-top:3px solid var(--by-yes);">
-        <div class="px-5 py-3 flex items-center justify-between border-b" style="border-color:var(--by-ink);">
+      <section id="activity-box" class="border flex flex-col" style="background:var(--by-bg);border-color:var(--ink);border-top:3px solid var(--by-yes);">
+        <div class="px-5 py-3 flex items-center justify-between border-b" style="border-color:var(--ink);">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-display text-[18px]" style="color:var(--by-ink);">Activity Box</span>
-            <span id="actCategory" class="chip text-[10px]" style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);">Warm-Up</span>
+            <span class="font-display text-[18px]" style="color:var(--ink);">Activity Box</span>
+            <span id="actCategory" class="chip text-[10px]" style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--ink);">Warm-Up</span>
             <span id="actCounter" class="by-eyebrow">1 / 50</span>
           </div>
           <div class="flex items-center gap-1.5">
@@ -482,7 +482,7 @@
         </div>
         <div class="px-5 py-4 lg:flex lg:gap-8 lg:items-start flex-1">
           <div class="flex-1 min-w-0">
-            <h3 id="actTitle" class="font-display text-[24px] lg:text-[28px] leading-tight" style="color:var(--by-ink);">Yes-And Circle</h3>
+            <h3 id="actTitle" class="font-display text-[24px] lg:text-[28px] leading-tight" style="color:var(--ink);">Yes-And Circle</h3>
             <p id="actDesc" class="mt-2 text-[13px] leading-relaxed" style="color:var(--by-ink-2);max-width:65ch;">
               Players stand in a circle and build a shared imaginary world one "Yes, and…" at a time.
             </p>
@@ -516,7 +516,7 @@
               </div>
               <div>
                 <div class="by-eyebrow text-live-indicator">Live Challenge</div>
-                <div id="liveTitle" class="font-display text-[22px] leading-tight" style="color:var(--by-ink);">Deploy a prompt</div>
+                <div id="liveTitle" class="font-display text-[22px] leading-tight" style="color:var(--ink);">Deploy a prompt</div>
               </div>
             </div>
             <span id="liveStatus" class="chip chip-past"><span class="dot"></span>Idle</span>
@@ -530,7 +530,7 @@
             <textarea id="challengePromptInput" rows="3" maxlength="280"
               placeholder="Write your own prompt, or shuffle for inspiration…"
               class="w-full border hairline outline-none px-3 py-2.5 text-[13px] resize-none"
-              style="background:var(--by-bg);color:var(--by-ink);line-height:1.5;"></textarea>
+              style="background:var(--by-bg);color:var(--ink);line-height:1.5;"></textarea>
             <div class="mt-2 flex items-center gap-2">
               <button id="shufflePromptBtn" onclick="shufflePrompt()"
                 class="flex items-center gap-1.5 px-3 h-8 text-[12px] border hairline"
@@ -554,11 +554,11 @@
             <div id="livePromptText" class="text-[13px] leading-snug mb-3 italic" style="color:var(--by-ink-2);">—</div>
             <div class="border hairline p-4" style="background:var(--by-bg);">
               <div class="flex items-center gap-2 mb-2">
-                <div class="w-2 h-2 rounded-full" style="background:var(--by-tomato);animation:chip-pulse 1.6s infinite;"></div>
+                <div class="w-2 h-2 rounded-full" style="background:var(--tomato);animation:chip-pulse 1.6s infinite;"></div>
                 <div class="text-[11.5px] font-semibold text-live-indicator">Challenge active · 48h window</div>
               </div>
               <div class="text-[12px]" style="color:var(--by-ink-3);">
-                <span id="respCount" class="font-mono text-[15px]" style="color:var(--by-ink);">0</span>
+                <span id="respCount" class="font-mono text-[15px]" style="color:var(--ink);">0</span>
                 of <span id="respTotal" class="font-mono">0</span> students responded
               </div>
             </div>
@@ -575,7 +575,7 @@
         <!-- Recent challenges list -->
         <div class="border-t hairline">
           <div class="px-5 py-4 flex items-center justify-between border-b hairline">
-            <div class="font-display text-[20px]" style="color:var(--by-ink);">Recent Challenges</div>
+            <div class="font-display text-[20px]" style="color:var(--ink);">Recent Challenges</div>
             <span class="by-eyebrow">Last 7 days</span>
           </div>
           <ul id="recentChallenges" class="divide-y text-[12.5px]" style="border-color:var(--by-bg-3);">
@@ -591,7 +591,7 @@
       <!-- Left column: Classes stacked vertically -->
       <section class="w-full md:col-span-6 flex flex-col gap-3 min-w-0" id="classStackCol">
         <div class="flex items-center justify-between">
-          <div class="font-display text-[17px]" style="color:var(--by-ink);">Classes</div>
+          <div class="font-display text-[17px]" style="color:var(--ink);">Classes</div>
           <span id="classStackCount" class="by-eyebrow">{{ active_classes | length }} active</span>
         </div>
         <div id="classStrip" class="flex flex-col gap-2 max-h-[calc(100vh-420px)] md:max-h-[calc(100vh-380px)] overflow-y-auto pr-0.5"></div>
@@ -607,7 +607,7 @@
           <header class="px-5 py-4 flex items-start gap-4 border-b hairline">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
-                <h2 id="selTitle" class="font-display text-[24px] leading-tight" style="color:var(--by-ink);">Select a class on the left</h2>
+                <h2 id="selTitle" class="font-display text-[24px] leading-tight" style="color:var(--ink);">Select a class on the left</h2>
                 <span id="selChip" class="chip chip-active hidden"><span class="dot"></span>Active</span>
               </div>
               <div class="mt-1 flex items-center gap-3 flex-wrap text-[12.5px]" style="color:var(--by-ink-3);">
@@ -621,7 +621,7 @@
             <!-- Enrolled KPI -->
             <div class="text-right flex-shrink-0">
               <div class="by-eyebrow">Enrolled</div>
-              <div class="font-display text-[28px] leading-none mt-0.5" style="color:var(--by-ink);">
+              <div class="font-display text-[28px] leading-none mt-0.5" style="color:var(--ink);">
                 <span id="selEnrolled">—</span><span class="text-[14px]" style="color:var(--by-ink-4);">/<span id="selCap">—</span></span>
               </div>
             </div>
@@ -630,10 +630,10 @@
           <!-- Attendance KPI bar -->
           <div class="px-5 py-3 flex items-center gap-3 border-b hairline flex-wrap" style="background:var(--by-bg-2);">
             <div class="stat-kpi flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#2A8A4F;"></span>
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--success-green);"></span>
               <div>
                 <div class="by-eyebrow">Present</div>
-                <div class="font-display text-[20px] leading-none" style="color:#2A8A4F;"><span id="presentCount">0</span></div>
+                <div class="font-display text-[20px] leading-none" style="color:var(--success-green);"><span id="presentCount">0</span></div>
               </div>
             </div>
             <div class="stat-kpi flex items-center gap-2.5">
@@ -644,10 +644,10 @@
               </div>
             </div>
             <div class="stat-kpi flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-tomato);"></span>
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--tomato);"></span>
               <div>
                 <div class="by-eyebrow">Absent</div>
-                <div class="font-display text-[20px] leading-none" style="color:var(--by-tomato);"><span id="absentCount">0</span></div>
+                <div class="font-display text-[20px] leading-none" style="color:var(--tomato);"><span id="absentCount">0</span></div>
               </div>
             </div>
             <div class="flex-1"></div>
@@ -683,7 +683,7 @@
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Message this cohort
               </button>
-              <button id="detailsBtn" class="h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="background:var(--by-yes);border:var(--by-bd);cursor:pointer;color:var(--by-ink);font-family:var(--by-f-body);font-weight:600;" onclick="openSelectedClassModal()">
+              <button id="detailsBtn" class="h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="background:var(--by-yes);border:var(--by-bd);cursor:pointer;color:var(--ink);font-family:var(--by-f-body);font-weight:600;" onclick="openSelectedClassModal()">
                 More details →
               </button>
             </div>
@@ -727,10 +727,10 @@
        style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
     <div class="flex items-center gap-3 min-w-0">
       <span id="sd-av" class="flex-shrink-0 w-12 h-12 flex items-center justify-center font-display text-[18px]"
-            style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);">?</span>
+            style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--ink);">?</span>
       <div class="min-w-0">
         <div class="by-eyebrow mb-0.5">Student Profile</div>
-        <div id="sd-name" class="font-display text-[22px] leading-tight truncate" style="color:var(--by-ink);">—</div>
+        <div id="sd-name" class="font-display text-[22px] leading-tight truncate" style="color:var(--ink);">—</div>
       </div>
     </div>
     <button onclick="closeStudentDrawer()" class="flex-shrink-0 w-9 h-9 flex items-center justify-center mt-0.5 btn-ghost">
@@ -743,8 +743,8 @@
 <!-- ══ Message Students drawer ══ -->
 <div id="msg-drawer-overlay" class="by-drawer-overlay" onclick="closeMsgModal()"></div>
 <div id="msg-drawer" class="by-drawer">
-  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--by-ink);">
-    <div class="font-display text-[22px]" style="color:var(--by-ink);">Message Students</div>
+  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--ink);">
+    <div class="font-display text-[22px]" style="color:var(--ink);">Message Students</div>
     <button onclick="closeMsgModal()" class="w-9 h-9 flex items-center justify-center btn-ghost">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
@@ -768,7 +768,7 @@
             autocomplete="off" oninput="filterStudents(this.value)" onfocus="filterStudents(this.value)" />
           <div id="msgStudentDrop"
             class="hidden absolute left-0 right-0 z-20 border-x border-b"
-            style="background:var(--by-bg);border-color:var(--by-ink);max-height:200px;overflow-y:auto;top:100%;">
+            style="background:var(--by-bg);border-color:var(--ink);max-height:200px;overflow-y:auto;top:100%;">
           </div>
         </div>
       </div>
@@ -796,12 +796,12 @@
     <div class="flex gap-3 pt-1">
       <button id="msgSendBtn" onclick="sendTeacherMessage()"
         class="flex-1 h-11 font-display text-[14px] flex items-center justify-center gap-2"
-        style="background:var(--by-yes);color:var(--by-ink);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);cursor:pointer;">
+        style="background:var(--by-yes);color:var(--ink);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);cursor:pointer;">
         Send →
       </button>
       <button onclick="closeMsgModal()" class="h-11 px-4 btn-ghost text-[13px]" style="font-family:var(--by-f-body);">Cancel</button>
     </div>
-    <div id="msgConfirm" class="hidden text-center text-[12px] py-2" style="color:#2A8A4F;font-family:var(--by-f-mono);">
+    <div id="msgConfirm" class="hidden text-center text-[12px] py-2" style="color:var(--success-green);font-family:var(--by-f-mono);">
       ✓ Message sent
     </div>
   </div>
@@ -810,8 +810,8 @@
 <!-- ══ Month View drawer ══ -->
 <div id="month-drawer-overlay" class="by-drawer-overlay" onclick="closeMonthView()"></div>
 <div id="month-drawer" class="by-drawer by-drawer-wide">
-  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--by-ink);">
-    <div class="font-display text-[22px]" style="color:var(--by-ink);">Monthly View</div>
+  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--ink);">
+    <div class="font-display text-[22px]" style="color:var(--ink);">Monthly View</div>
     <button onclick="closeMonthView()" class="w-9 h-9 flex items-center justify-center btn-ghost">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
@@ -902,7 +902,7 @@
     return `
       <div class="class-card ${isSel ? 'selected' : ''}" data-id="${esc(c.id)}">
         <div class="flex items-start justify-between gap-2">
-          <div class="font-display text-[15.5px] leading-tight" style="color:var(--by-ink);">${esc(c.title)}</div>
+          <div class="font-display text-[15.5px] leading-tight" style="color:var(--ink);">${esc(c.title)}</div>
           ${chip}
         </div>
         <div class="mt-2 text-[12px] flex items-center gap-1.5" style="color:var(--by-ink-3);">
@@ -912,7 +912,7 @@
         <div class="mt-1 text-[11.5px] font-mono" style="color:var(--by-ink-3);">${esc(c.term)}</div>
         <div class="mt-3 pt-3 flex items-center justify-between" style="border-top:1px solid var(--by-bg-3);">
           <span class="text-[11.5px]" style="color:var(--by-ink-3);">${esc(c.room)}</span>
-          <span class="text-[13px] font-mono" style="color:var(--by-ink);"><b>${enrolled}</b><span style="color:var(--by-ink-4);">/${c.cap}</span></span>
+          <span class="text-[13px] font-mono" style="color:var(--ink);"><b>${enrolled}</b><span style="color:var(--by-ink-4);">/${c.cap}</span></span>
         </div>
       </div>`;
   }
@@ -943,9 +943,9 @@
       <tr class="roster-row" data-id="${esc(s.id)}">
         <td class="pl-5 pr-3 py-2.5">
           <div class="flex items-center gap-3">
-            <span class="av" style="background:linear-gradient(135deg,${t[0]},${t[1]});border:1.5px solid var(--by-ink);">${esc(s.initials)}</span>
+            <span class="av" style="background:linear-gradient(135deg,${t[0]},${t[1]});border:1.5px solid var(--ink);">${esc(s.initials)}</span>
             <div class="leading-tight">
-              <div class="text-[13.5px] font-semibold" style="color:var(--by-ink);">${esc(s.name)}</div>
+              <div class="text-[13.5px] font-semibold" style="color:var(--ink);">${esc(s.name)}</div>
               <div class="text-[11px] font-mono" style="color:var(--by-ink-3);">${esc(s.id)}</div>
             </div>
           </div>
@@ -1264,7 +1264,7 @@
           feed.classList.remove('hidden');
           list.innerHTML = d.responses.map(resp =>
             `<li class="px-3 py-2 border hairline text-[12px]" style="background:var(--by-bg);">
-              <span class="font-semibold" style="color:var(--by-ink);">${esc(resp.student_name)}</span>
+              <span class="font-semibold" style="color:var(--ink);">${esc(resp.student_name)}</span>
               <span style="color:var(--by-ink-3);"> · </span>
               <span style="color:var(--by-ink-2);">${esc(resp.response_text)}</span>
             </li>`
@@ -1300,7 +1300,7 @@
     var foot = modal.querySelector('footer');
     if (foot) {
       foot.innerHTML = '<button onclick="cmDeleteChallenge(\'' + esc(challengeId) + '\')" '
-        + 'style="width:100%;padding:10px;border:var(--by-bd-thick);background:var(--by-tomato);color:#fff;'
+        + 'style="width:100%;padding:10px;border:var(--by-bd-thick);background:var(--tomato);color:white;'
         + 'font-family:var(--by-f-body);font-size:12.5px;font-weight:700;cursor:pointer;">'
         + '🗑 Delete this challenge</button>';
     }
@@ -1322,13 +1322,13 @@
           var voted = r.voter_rated || r.user_rated || false;
           return '<div style="padding:12px 18px;border-bottom:1px solid var(--by-bg-3);">'
             + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
-            + '<div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);">' + esc('Anonymous #' + (idx + 1)) + '</div>'
+            + '<div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--ink);">' + esc('Anonymous #' + (idx + 1)) + '</div>'
             + '<div style="display:flex;align-items:center;gap:6px;">'
-            + '<span style="font-family:var(--by-f-mono);font-size:13px;font-weight:700;color:var(--by-tomato);">♥ ' + (r.favorite_count || 0) + '</span>'
+            + '<span style="font-family:var(--by-f-mono);font-size:13px;font-weight:700;color:var(--tomato);">♥ ' + (r.favorite_count || 0) + '</span>'
             + (voted
                 ? '<span style="font-size:11px;color:var(--by-yes-deep);">voted</span>'
                 : '<button onclick="cmVoteOnResponse(\'' + esc(challengeId) + '\',\'' + esc(r.id) + '\')" '
-                +   'style="font-size:10.5px;padding:2px 8px;border:1px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-ink);font-family:var(--by-f-mono);">'
+                +   'style="font-size:10.5px;padding:2px 8px;border:1px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--ink);font-family:var(--by-f-mono);">'
                 +   '♡ Vote</button>')
             + '</div>'
             + '</div>'
@@ -1578,7 +1578,7 @@
              onmouseout="this.style.background=''">
           <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
           <div class="min-w-0">
-            <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(c.title)}</div>
+            <div class="text-[13px] font-semibold truncate" style="color:var(--ink);">${esc(c.title)}</div>
             <div class="by-eyebrow">${esc(c.sched)} · ${c.students.length} student${c.students.length!==1?'s':''}</div>
           </div>
         </div>`).join('');
@@ -1592,11 +1592,11 @@
              onmouseover="this.style.background='var(--by-yes-soft)'"
              onmouseout="this.style.background=''">
           <span class="w-8 h-8 flex-shrink-0 flex items-center justify-center text-[11px] font-bold"
-                style="background:linear-gradient(135deg,${s.tint[0]},${s.tint[1]});border:var(--by-bd);color:#fff;">
+                style="background:linear-gradient(135deg,${s.tint[0]},${s.tint[1]});border:var(--by-bd);color:white;">
             ${esc(s.initials)}
           </span>
           <div class="min-w-0">
-            <div class="text-[13px] font-semibold" style="color:var(--by-ink);">${esc(s.name)}</div>
+            <div class="text-[13px] font-semibold" style="color:var(--ink);">${esc(s.name)}</div>
             <div class="by-eyebrow">${esc(s.cls)} · ${s.pts} pts</div>
           </div>
         </div>`).join('');
@@ -1627,14 +1627,14 @@
     if (av) {
       av.textContent = student.initials;
       av.style.background = `linear-gradient(135deg,${student.tint[0]},${student.tint[1]})`;
-      av.style.color = '#fff';
+      av.style.color = 'white';
     }
     $('#sd-name').textContent = student.name;
 
     const classRows = enrolledClasses.map(c => `
       <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--by-bg-3);">
         <div class="min-w-0">
-          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(c.title)}</div>
+          <div class="text-[13px] font-semibold truncate" style="color:var(--ink);">${esc(c.title)}</div>
           <div class="by-eyebrow">${esc(c.sched)}</div>
         </div>
         <button onclick="selectClass('${esc(c.id)}');closeStudentDrawer();"
@@ -1647,11 +1647,11 @@
       <div class="grid grid-cols-2 gap-2">
         <div style="border:var(--by-bd);background:var(--by-yes);padding:12px 14px;">
           <div class="by-eyebrow">Yes-And Points</div>
-          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--by-ink);">${student.pts}</div>
+          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--ink);">${student.pts}</div>
         </div>
         <div style="border:var(--by-bd);background:var(--by-bg-2);padding:12px 14px;">
           <div class="by-eyebrow">Attendance Streak</div>
-          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--by-ink);">${student.streak}<span class="text-[14px]" style="color:var(--by-ink-3);"> wk</span></div>
+          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--ink);">${student.streak}<span class="text-[14px]" style="color:var(--by-ink-3);"> wk</span></div>
         </div>
       </div>
       <div>
@@ -1816,8 +1816,8 @@
       const isToday = (day === today);
       const hasClass = classByDay[col] && classByDay[col].length > 0;
       html += `<div class="p-1 text-center" style="border:1px solid var(--by-bg-3);${isToday ? 'background:var(--by-yes-soft);' : ''}">
-        <div class="text-[12px] font-semibold" style="color:${isToday ? 'var(--by-ink)' : 'var(--by-ink-3)'};">${day}</div>
-        ${hasClass ? classByDay[col].map(c => `<div class="mt-0.5 px-1 text-[9px] truncate" style="background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-mono);">${c.title.split(' ').slice(0,2).join(' ')}</div>`).join('') : ''}
+        <div class="text-[12px] font-semibold" style="color:${isToday ? 'var(--ink)' : 'var(--by-ink-3)'};">${day}</div>
+        ${hasClass ? classByDay[col].map(c => `<div class="mt-0.5 px-1 text-[9px] truncate" style="background:var(--by-yes);color:var(--ink);font-family:var(--by-f-mono);">${c.title.split(' ').slice(0,2).join(' ')}</div>`).join('') : ''}
       </div>`;
     }
     html += '</div>';
@@ -2012,14 +2012,14 @@
 
     // Category colour
     const catColors = {
-      'Warm-Up':    'background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);',
-      'Status':     'background:#fce7f3;border-color:#ec4899;color:var(--by-ink);',
-      'Scene Work': 'background:#dbeafe;border-color:#3b82f6;color:var(--by-ink);',
-      'Character':  'background:#dcfce7;border-color:#22c55e;color:var(--by-ink);',
-      'Group':      'background:#ede9fe;border-color:#8b5cf6;color:var(--by-ink);',
+      'Warm-Up':    'background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--ink);',
+      'Status':     'background:#fce7f3;border-color:#ec4899;color:var(--ink);',
+      'Scene Work': 'background:#dbeafe;border-color:#3b82f6;color:var(--ink);',
+      'Character':  'background:#dcfce7;border-color:#22c55e;color:var(--ink);',
+      'Group':      'background:#ede9fe;border-color:#8b5cf6;color:var(--ink);',
     };
     document.getElementById('actCategory').style.cssText = catColors[g.cat] ||
-      'background:var(--by-bg-2);border-color:var(--by-ink);color:var(--by-ink);';
+      'background:var(--by-bg-2);border-color:var(--ink);color:var(--ink);';
   }
 
   window.nextActivity = function() {
@@ -2086,7 +2086,7 @@
       <div style="display:flex;align-items:flex-start;gap:12px;">
         <div style="flex:1;min-width:0;">
           <div id="cmEyebrow" style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);margin-bottom:4px;">Class</div>
-          <h2 id="cmTitle" style="font-family:var(--by-f-display);font-size:22px;line-height:1.1;color:var(--by-ink);margin:0;"></h2>
+          <h2 id="cmTitle" style="font-family:var(--by-f-display);font-size:22px;line-height:1.1;color:var(--ink);margin:0;"></h2>
           <div id="cmMeta" style="margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-3);"></div>
         </div>
         <button onclick="closeClassModal()"
@@ -2119,14 +2119,14 @@
         <button onclick="cmMsgAll()"
                 style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:var(--by-bd-thick);
                        background:var(--by-bg);font-family:var(--by-f-body);font-size:12px;font-weight:600;
-                       cursor:pointer;color:var(--by-ink);">
+                       cursor:pointer;color:var(--ink);">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Message All
         </button>
         <button onclick="cmToggleAddStudent()"
                 style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:var(--by-bd-thick);
                        background:var(--by-yes);font-family:var(--by-f-body);font-size:12px;font-weight:600;
-                       cursor:pointer;color:var(--by-ink);">
+                       cursor:pointer;color:var(--ink);">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Add Student
         </button>
@@ -2137,7 +2137,7 @@
         <input id="cmStudentSearch" type="text" placeholder="Search by name…"
                oninput="cmFilterAddList(this.value)"
                style="width:100%;padding:8px 12px;border:var(--by-bd-thick);background:var(--by-bg);
-                      font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);outline:none;box-sizing:border-box;"/>
+                      font-family:var(--by-f-body);font-size:13px;color:var(--ink);outline:none;box-sizing:border-box;"/>
         <div id="cmAddList" style="margin-top:8px;max-height:180px;overflow-y:auto;border:1px solid var(--by-bg-3);"></div>
       </div>
 
@@ -2148,7 +2148,7 @@
     <!-- Tab: Challenge -->
     <div id="cmPanelChallenge" style="flex:1;overflow-y:auto;display:none;flex-direction:column;padding:20px 16px;gap:16px;">
 
-      <div style="font-family:var(--by-f-display);font-size:16px;color:var(--by-ink);">Deploy Challenge</div>
+      <div style="font-family:var(--by-f-display);font-size:16px;color:var(--ink);">Deploy Challenge</div>
       <p style="font-family:var(--by-f-body);font-size:12.5px;color:var(--by-ink-3);margin:0;line-height:1.5;">
         Students have <b style="color:var(--by-ink-2);">30 seconds</b> to respond after accepting.
         Responses are shared with the class — everyone votes for their favourite.
@@ -2167,14 +2167,14 @@
         <textarea id="cmPromptText" rows="4" maxlength="280"
                   placeholder="Write your own prompt, or shuffle for inspiration…"
                   style="width:100%;padding:10px 12px;border:var(--by-bd-thick);background:var(--by-bg);
-                         font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);
+                         font-family:var(--by-f-body);font-size:13px;color:var(--ink);
                          outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;"></textarea>
       </div>
 
       <!-- Deploy -->
       <button id="cmDeployBtn" onclick="cmDeployChallenge()"
               style="width:100%;padding:11px;border:var(--by-bd-thick);
-                     background:var(--by-ink);color:var(--by-bg);
+                     background:var(--ink);color:var(--by-bg);
                      font-family:var(--by-f-body);font-size:13px;font-weight:700;
                      cursor:pointer;letter-spacing:.04em;box-shadow:var(--by-sh-1);">
         Deploy to Class
@@ -2183,7 +2183,7 @@
       <!-- View responses -->
       <button id="cmViewResponsesBtn" onclick="cmOpenResponses()"
               style="width:100%;padding:10px;border:var(--by-bd-thick);
-                     background:var(--by-bg);color:var(--by-ink);
+                     background:var(--by-bg);color:var(--ink);
                      font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;">
         View Responses (<span id="cmRespCount">…</span>)
       </button>
@@ -2211,7 +2211,7 @@
     <header style="padding:16px 18px;border-bottom:var(--by-bd-thick);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;">
       <div>
         <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);">Challenge</div>
-        <div id="respSubPrompt" style="font-family:var(--by-f-display);font-size:15px;color:var(--by-ink);margin-top:2px;line-height:1.3;"></div>
+        <div id="respSubPrompt" style="font-family:var(--by-f-display);font-size:15px;color:var(--ink);margin-top:2px;line-height:1.3;"></div>
       </div>
       <button onclick="cmCloseResponses()"
               style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;
@@ -2290,7 +2290,7 @@
   /* ── Tabs ───────────────────────────────────────────────────────── */
   window.cmSetTab = function(tab) {
     _cmTab = tab;
-    const active = 'background:var(--by-yes);color:var(--by-ink);';
+    const active = 'background:var(--by-yes);color:var(--ink);';
     const idle   = 'background:var(--by-bg);color:var(--by-ink-2);';
     $('cmTabStudents').style.cssText  += tab === 'students'  ? active : idle;
     $('cmTabChallenge').style.cssText += tab === 'challenge' ? active : idle;
@@ -2316,12 +2316,12 @@
           return `
           <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--by-bg-3);">
             <div style="width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-                        background:linear-gradient(135deg,${t});border:1.5px solid var(--by-ink);
-                        font-family:var(--by-f-mono);font-size:11px;font-weight:700;color:var(--by-ink);">
+                        background:linear-gradient(135deg,${t});border:1.5px solid var(--ink);
+                        font-family:var(--by-f-mono);font-size:11px;font-weight:700;color:var(--ink);">
               ${esc(s.initials)}
             </div>
             <div style="flex:1;min-width:0;">
-              <div style="font-family:var(--by-f-body);font-size:13.5px;font-weight:600;color:var(--by-ink);truncate;">${esc(s.name)}</div>
+              <div style="font-family:var(--by-f-body);font-size:13.5px;font-weight:600;color:var(--ink);truncate;">${esc(s.name)}</div>
               <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);">${esc(s.identity)} · ${s.pts} pts</div>
             </div>
             <div style="display:flex;gap:4px;flex-shrink:0;">
@@ -2334,7 +2334,7 @@
               <button onclick="cmRemoveStudent('${esc(s.id)}','${esc(s.name)}')"
                       title="Remove from class"
                       style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;
-                             border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-tomato);">
+                             border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--tomato);">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
               </button>
             </div>
@@ -2366,7 +2366,7 @@
           <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--by-bg-3);cursor:pointer;background:var(--by-bg);"
                onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'"
                onclick="cmAddStudent('${esc(s.id)}','${esc(s.name)}')">
-            <div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);flex:1;">${esc(s.name)}</div>
+            <div style="font-family:var(--by-f-body);font-size:13px;color:var(--ink);flex:1;">${esc(s.name)}</div>
             <div style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-3);">${esc(s.identity)}</div>
           </div>`).join('');
   };
@@ -2469,10 +2469,10 @@
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || 'Failed');
       $('cmChallengeStatus').textContent = `✓ Deployed to ${_cmClass.students.length} students · 48h window`;
-      $('cmChallengeStatus').style.color = '#2A8A4F';
+      $('cmChallengeStatus').style.color = 'var(--success-green)';
     } catch (e) {
       $('cmChallengeStatus').textContent = `Error: ${e.message}`;
-      $('cmChallengeStatus').style.color = 'var(--by-tomato)';
+      $('cmChallengeStatus').style.color = 'var(--tomato)';
     } finally {
       btn.textContent = 'Deploy to Class';
       btn.disabled = false;
@@ -2502,7 +2502,7 @@
           $('respSubList').innerHTML = data.responses.map(r => `
             <div style="padding:12px 18px;border-bottom:1px solid var(--by-bg-3);">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                <div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);">${esc(r.student_name)}</div>
+                <div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--ink);">${esc(r.student_name)}</div>
                 <div style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">${esc(r.submitted_at ? r.submitted_at.slice(0,16).replace('T',' ') : '')}</div>
               </div>
               <div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-2);line-height:1.5;">${esc(r.response_text)}</div>
