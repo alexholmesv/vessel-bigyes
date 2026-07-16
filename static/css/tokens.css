@@ -104,3 +104,67 @@
   --chart-tooltip-bg:     #141210;   /* Chart.js tooltip background */
   --chart-tooltip-text:   #FFC629;   /* Chart.js tooltip text */
 }
+
+/* ═════════════════════════════════════════════════════════════
+   ACTIVE VESSEL TOKENS — --by-* prefix
+   ═════════════════════════════════════════════════════════════
+   Moved from templates/base.html's inline <style> block (2026-07-16, phase 6.9).
+   These are the tokens every template actually references today (1966+ style=
+   attributes use --by-bg, --by-ink, etc.) — this is the live design system.
+
+   The --by- prefix is a deliberate vessel marker: it identifies this token set
+   as belonging to BigYes specifically. The goal is that an entire vessel's look
+   can be reskinned by regenerating just this block (produced in Claude design)
+   without touching template markup — keep that swappability in mind whenever
+   editing this section.
+
+   NOTE: the unprefixed tokens above (--bg, --ink, --yes, --tomato, --night, and
+   the business-logic colors like --success-green, --bs-*, --badge-*, --chart-*)
+   are still referenced by some already-converted templates (activity_log.html,
+   parts of admin.html, etc.) and were NOT renamed to --by-* in this pass — doing
+   so requires updating every template reference too, tracked as a follow-up
+   microstep rather than expanding this one.
+   ═════════════════════════════════════════════════════════════ */
+
+:root {
+  --by-bg:        #F4EEE2;
+  --by-bg-2:      #ECE3D0;
+  --by-bg-3:      #E2D6BB;
+  --by-ink:       #141210;
+  --by-ink-2:     #2A2723;
+  --by-ink-3:     #5C544A;
+  --by-ink-4:     #8A8073;
+  --by-yes:       #FFC629;
+  --by-yes-deep:  #E5A800;
+  --by-yes-soft:  #FFE7A0;
+  --by-tomato:      #E5482A;
+  --by-tomato-deep: #B83218;
+  --by-night:      #141210;
+  --by-night-soft: #1E1B17;
+  --by-night-on:   #C9BFA8;
+  --by-f-display: 'Archivo Black', 'Archivo', system-ui, sans-serif;
+  --by-f-sans:    'Archivo', system-ui, sans-serif;
+  --by-f-body:    'Manrope', system-ui, sans-serif;
+  --by-f-mono:    'DM Mono', ui-monospace, monospace;
+  --by-t-display-xl: 96px;
+  --by-t-display-l:  64px;
+  --by-t-h1:         40px;
+  --by-t-h2:         24px;
+  --by-t-body-l:     17px;
+  --by-t-body:       15px;
+  --by-t-small:      13.5px;
+  --by-t-mono:       11.5px;
+  --by-r-1:    4px;
+  --by-r-2:    10px;
+  --by-r-pill: 999px;
+  --by-bd:       1px solid var(--by-ink);
+  --by-bd-thick: 1.5px solid var(--by-ink);
+  --by-bd-soft:  1px solid var(--by-bg-3);
+  --by-bd-dash:  1px dashed var(--by-bg-3);
+  --by-sh-1:   4px 4px 0 0 var(--by-ink);
+  --by-sh-yes: 4px 4px 0 0 var(--by-yes);
+  --by-s-1: 4px;  --by-s-2: 8px;  --by-s-3: 12px; --by-s-4: 16px;
+  --by-s-5: 24px; --by-s-6: 32px; --by-s-7: 48px; --by-s-8: 64px; --by-s-9: 96px;
+  --by-snap:  120ms cubic-bezier(.2,.8,.2,1);
+  --by-stamp: 180ms cubic-bezier(.7,0,.2,1.4);
+}
