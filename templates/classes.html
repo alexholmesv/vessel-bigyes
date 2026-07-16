@@ -17,10 +17,10 @@
           mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
         },
         colors: {
-          'by-yes':      'var(--yes)', 'by-yes-deep': 'var(--yes-deep)', 'by-yes-soft': 'var(--yes-soft)',
-          'by-ink':      'var(--ink)', 'by-ink-2':    'var(--ink-2)', 'by-ink-3':    'var(--ink-3)', 'by-ink-4': 'var(--ink-4)',
-          'by-bg':       'var(--bg)', 'by-bg-2':     'var(--bg-2)', 'by-bg-3':     'var(--bg-3)',
-          'by-tomato':   'var(--tomato)', 'by-tomato-deep': 'var(--tomato-deep)',
+          'by-yes':      'var(--by-yes)', 'by-yes-deep': 'var(--by-yes-deep)', 'by-yes-soft': 'var(--by-yes-soft)',
+          'by-ink':      'var(--by-ink)', 'by-ink-2':    'var(--by-ink-2)', 'by-ink-3':    'var(--by-ink-3)', 'by-ink-4': 'var(--by-ink-4)',
+          'by-bg':       'var(--by-bg)', 'by-bg-2':     'var(--by-bg-2)', 'by-bg-3':     'var(--by-bg-3)',
+          'by-tomato':   'var(--by-tomato)', 'by-tomato-deep': 'var(--by-tomato-deep)',
         },
       },
     },
@@ -143,8 +143,8 @@
     font-family:var(--by-f-mono); font-size:10.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase;
     background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
   .chip .dot { width:5px; height:5px; border-radius:999px; flex-shrink:0; }
-  .chip-active .dot { background:var(--success-green); }
-  .chip-future .dot { background:var(--future-purple); }
+  .chip-active .dot { background:var(--by-success-green); }
+  .chip-future .dot { background:var(--by-future-purple); }
   .chip-past   .dot { background:var(--by-ink-4); }
 
   /* ── Filter pills ─── */
@@ -210,7 +210,7 @@
     font-family:var(--by-f-mono); font-size:10px; font-weight:500; letter-spacing:.06em; text-transform:uppercase;
     cursor:pointer; transition:background 80ms, color 80ms; white-space:nowrap;
   }
-  .btn-danger:hover { background:var(--tomato); color:white; }
+  .btn-danger:hover { background:var(--by-tomato); color:white; }
   .btn-enroll {
     display:inline-flex; align-items:center; gap:5px;
     padding:7px 14px; border-radius:999px; border:var(--by-bd-thick);
@@ -393,7 +393,7 @@
 <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
   {% for cat, msg in messages %}
   <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm"
-       style="background:var(--by-bg); {% if cat=='error' %}border-color:var(--tomato);color:var(--tomato);{% elif cat=='success' %}border-color:var(--success-green);color:var(--success-green);{% else %}border-color:var(--ink);color:var(--ink-2);{% endif %}">
+       style="background:var(--by-bg); {% if cat=='error' %}border-color:var(--by-tomato);color:var(--by-tomato);{% elif cat=='success' %}border-color:var(--by-success-green);color:var(--by-success-green);{% else %}border-color:var(--by-ink);color:var(--by-ink-2);{% endif %}">
     <span>{{ msg }}</span>
     <button onclick="this.parentElement.remove()" class="ml-1 text-xs" style="color:var(--by-ink-3)">✕</button>
   </div>
@@ -501,12 +501,12 @@
               </span>
               <!-- Name + role -->
               <div class="hidden lg:block leading-tight text-left">
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--ink);line-height:1.2;">{{ current_user_name }}</div>
-                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:1px;">Stage Manager</div>
+                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
+                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Stage Manager</div>
               </div>
               <!-- Live-status dot -->
               <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full"
-                    style="width:8px;height:8px;background:var(--tomato);box-shadow:0 0 0 2px white,0 0 0 3px var(--tomato);"></span>
+                    style="width:8px;height:8px;background:var(--by-tomato);box-shadow:0 0 0 2px white,0 0 0 3px var(--by-tomato);"></span>
             </button>
             <!-- Dropdown -->
             <div id="user-menu-drop" class="hidden" style="
@@ -761,10 +761,10 @@
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">
                   <span class="term-status-dot"
-                    style="background:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}var(--future-purple){% endif %}"></span>
+                    style="background:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}var(--by-future-purple){% endif %}"></span>
                   <span class="font-display text-[15px]" style="color:var(--by-ink);">{{ term.name }}</span>
                 </div>
-                <span class="by-eyebrow" style="color:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}var(--future-purple){% endif %}">
+                <span class="by-eyebrow" style="color:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}var(--by-future-purple){% endif %}">
                   {{ 'Active' if is_active else ('Past' if is_past else 'Upcoming') }}
                 </span>
               </div>
@@ -816,12 +816,12 @@
           </button>
           <div class="flex items-center gap-2 flex-wrap">
             <button class="filter-pill active" data-filter="active" onclick="applyClassFilter('active')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--success-green);flex-shrink:0;"></span>
+              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--by-success-green);flex-shrink:0;"></span>
               On Stage
               <span class="pill-count">{{ active_classes|length }}</span>
             </button>
             <button class="filter-pill" data-filter="future" onclick="applyClassFilter('future')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--future-purple);flex-shrink:0;"></span>
+              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--by-future-purple);flex-shrink:0;"></span>
               Warming Up
               <span class="pill-count">{{ future_classes|length }}</span>
             </button>
@@ -860,7 +860,7 @@
           <div class="class-card cursor-pointer" data-status="active" id="class-card-{{ cls.id }}"
                onclick="openClassPanel('{{ cls.id }}')">
             <div class="flex items-stretch" style="transition:background 80ms;">
-              <div class="flex-shrink-0" style="width:3px;background:var(--success-green);"></div>
+              <div class="flex-shrink-0" style="width:3px;background:var(--by-success-green);"></div>
               <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
                 <div class="flex-1 min-w-0">
                   <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
@@ -895,12 +895,12 @@
           {# ── Group header: Warming Up ── #}
           <div class="class-group-hdr mt-4" data-group="future">
             <div class="flex items-center justify-between px-4 py-2.5"
-                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid var(--future-purple);box-shadow:var(--by-sh-1);margin-bottom:2px;">
+                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid var(--by-future-purple);box-shadow:var(--by-sh-1);margin-bottom:2px;">
               <div>
                 <div class="font-display text-[16px]" style="color:var(--by-ink);">Warming Up</div>
                 <div class="by-eyebrow mt-0.5">Upcoming · vocals not yet loosened · anticipation building</div>
               </div>
-              <span class="font-display text-[24px]" style="color:var(--future-purple);">{{ future_classes|length }}</span>
+              <span class="font-display text-[24px]" style="color:var(--by-future-purple);">{{ future_classes|length }}</span>
             </div>
           </div>
 
@@ -912,12 +912,12 @@
           <div class="class-card cursor-pointer" data-status="future" id="class-card-{{ cls.id }}" style="display:none;"
                onclick="openClassPanel('{{ cls.id }}')">
             <div class="flex items-stretch">
-              <div class="flex-shrink-0" style="width:3px;background:var(--future-purple);"></div>
+              <div class="flex-shrink-0" style="width:3px;background:var(--by-future-purple);"></div>
               <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
                 <div class="flex-1 min-w-0">
                   <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="chip chip-future" style="font-size:9px;padding:.06rem .38rem;border-color:var(--future-purple);color:var(--future-purple);"><span class="dot"></span>Warming Up</span>
+                    <span class="chip chip-future" style="font-size:9px;padding:.06rem .38rem;border-color:var(--by-future-purple);color:var(--by-future-purple);"><span class="dot"></span>Warming Up</span>
                     {% if cls.get('fee') %}<span class="by-eyebrow" style="background:var(--by-yes);color:var(--by-ink);padding:1px 5px;font-size:8.5px;">{{ cls.fee }}</span>{% endif %}
                     {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
                     {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
@@ -1154,7 +1154,7 @@
             </div>
             <div>
               <div class="by-eyebrow" style="font-size:9px;">Net</div>
-              <div id="cfin-net" class="font-display text-[17px]" style="color:var(--success-green);">€0.00</div>
+              <div id="cfin-net" class="font-display text-[17px]" style="color:var(--by-success-green);">€0.00</div>
             </div>
           </div>
         </div>
@@ -1463,7 +1463,7 @@
         _updateClassCardEnrollment(classId);
         if (status) {
           status.textContent = 'Saved.';
-          status.style.color = 'var(--success-green)';
+          status.style.color = 'var(--by-success-green)';
           status.classList.remove('hidden');
           setTimeout(() => status.classList.add('hidden'), 2200);
         }
@@ -1577,7 +1577,7 @@
       statusEl.classList.remove('hidden');
       if (data.ok) {
         statusEl.textContent = '✓ Saved';
-        statusEl.style.color = 'var(--success-green)';
+        statusEl.style.color = 'var(--by-success-green)';
         flashToast(`${termId} boundaries saved`);
         setTimeout(() => statusEl.classList.add('hidden'), 3000);
       } else {
@@ -1649,10 +1649,10 @@
     const expenses = _cfinFees.reduce((s, f) => s + parseFloat(f.fee_amount || 0), 0);
     const net      = revenue - expenses;
     document.getElementById('cfin-gross').textContent      = `€${revenue.toFixed(2)}`;
-    document.getElementById('cfin-gross').style.color      = revenue > 0 ? 'var(--success-green)' : 'var(--by-ink)';
+    document.getElementById('cfin-gross').style.color      = revenue > 0 ? 'var(--by-success-green)' : 'var(--by-ink)';
     document.getElementById('cfin-fees-total').textContent = `€${expenses.toFixed(2)}`;
     document.getElementById('cfin-net').textContent        = `€${net.toFixed(2)}`;
-    document.getElementById('cfin-net').style.color        = net >= 0 ? 'var(--success-green)' : 'var(--by-tomato)';
+    document.getElementById('cfin-net').style.color        = net >= 0 ? 'var(--by-success-green)' : 'var(--by-tomato)';
   }
 
   function renderCfinFees() {

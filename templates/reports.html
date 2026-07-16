@@ -71,20 +71,20 @@
 .badge { display:inline-flex; align-items:center; padding:1px 6px;
          font-family:var(--by-f-mono); font-size:9px; font-weight:700;
          letter-spacing:.08em; border:1px solid currentColor; white-space:nowrap; }
-.badge-green  { color:var(--badge-green-text); background:var(--badge-green-bg); border-color:var(--badge-green-text); }
-.badge-yellow { color:var(--badge-yellow-text); background:var(--yes-soft); border-color:var(--yes-deep); }
-.badge-red    { color:var(--tomato-deep); background:var(--badge-red-bg); border-color:var(--tomato); }
-.badge-gray   { color:var(--ink-3); background:var(--bg-2); border-color:var(--bg-3); }
-.badge-night  { color:var(--night-soft); background:var(--ink); border-color:var(--ink); }
+.badge-green  { color:var(--by-badge-green-text); background:var(--by-badge-green-bg); border-color:var(--by-badge-green-text); }
+.badge-yellow { color:var(--by-badge-yellow-text); background:var(--by-yes-soft); border-color:var(--by-yes-deep); }
+.badge-red    { color:var(--by-tomato-deep); background:var(--by-badge-red-bg); border-color:var(--by-tomato); }
+.badge-gray   { color:var(--by-ink-3); background:var(--by-bg-2); border-color:var(--by-bg-3); }
+.badge-night  { color:var(--by-night-soft); background:var(--by-ink); border-color:var(--by-ink); }
 
 /* ── loading / error ── */
 .skeleton { background:linear-gradient(90deg,var(--by-bg-2) 25%,var(--by-bg-3) 50%,var(--by-bg-2) 75%);
             background-size:200% 100%; animation:ske 1.4s infinite; }
 @keyframes ske { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-.rpt-error { font-family:var(--by-f-mono); font-size:11px; color:var(--tomato);
-             padding:10px 12px; border:1px solid var(--tomato); background:var(--badge-red-bg); }
-.status-ok  { color:var(--badge-green-text); }
-.status-err { color:var(--tomato); }
+.rpt-error { font-family:var(--by-f-mono); font-size:11px; color:var(--by-tomato);
+             padding:10px 12px; border:1px solid var(--by-tomato); background:var(--by-badge-red-bg); }
+.status-ok  { color:var(--by-badge-green-text); }
+.status-err { color:var(--by-tomato); }
 </style>
 {% endblock %}
 
@@ -242,7 +242,7 @@
 
   </div>
 
-  <div class="mt-10 pt-5" style="border-top:1px solid var(--bg-3);">
+  <div class="mt-10 pt-5" style="border-top:1px solid var(--by-bg-3);">
     <p class="by-eyebrow" style="color:var(--by-ink-4);">BigYes Analytics · Live DB · Chart anchors ready for expansion</p>
   </div>
 </main>
@@ -254,25 +254,25 @@ const TERMS = {{ terms | tojson }};
 
 Chart.defaults.font.family    = '"DM Mono", ui-monospace, monospace';
 Chart.defaults.font.size      = 10;
-Chart.defaults.color          = 'var(--chart-text)';
-Chart.defaults.borderColor    = 'var(--chart-border)';
+Chart.defaults.color          = 'var(--by-chart-text)';
+Chart.defaults.borderColor    = 'var(--by-chart-border)';
 Chart.defaults.elements.bar.borderRadius = 0;
 Chart.defaults.elements.bar.borderSkipped = false;
 Chart.defaults.plugins.legend.labels.boxWidth  = 10;
 Chart.defaults.plugins.legend.labels.padding   = 14;
-Chart.defaults.plugins.tooltip.backgroundColor = 'var(--chart-tooltip-bg)';
-Chart.defaults.plugins.tooltip.titleColor      = 'var(--chart-tooltip-text)';
-Chart.defaults.plugins.tooltip.bodyColor       = 'var(--night-soft)';
+Chart.defaults.plugins.tooltip.backgroundColor = 'var(--by-chart-tooltip-bg)';
+Chart.defaults.plugins.tooltip.titleColor      = 'var(--by-chart-tooltip-text)';
+Chart.defaults.plugins.tooltip.bodyColor       = 'var(--by-night-soft)';
 Chart.defaults.plugins.tooltip.cornerRadius    = 0;
 Chart.defaults.plugins.tooltip.padding         = 8;
 Chart.defaults.animation.duration              = 300;
 
 const C = {
-  yes:'var(--yes)', yesSoft:'rgba(255,198,41,0.18)',
-  ink:'var(--ink)', inkSoft:'rgba(20,18,16,0.12)',
-  tomato:'var(--tomato)', tomatoSoft:'rgba(229,72,42,0.15)',
-  green:'var(--badge-green-text)', greenSoft:'rgba(22,101,52,0.12)',
-  muted:'var(--ink-4)', bg2:'var(--bg-2)', bg3:'var(--bg-3)',
+  yes:'var(--by-yes)', yesSoft:'rgba(255,198,41,0.18)',
+  ink:'var(--by-ink)', inkSoft:'rgba(20,18,16,0.12)',
+  tomato:'var(--by-tomato)', tomatoSoft:'rgba(229,72,42,0.15)',
+  green:'var(--by-badge-green-text)', greenSoft:'rgba(22,101,52,0.12)',
+  muted:'var(--by-ink-4)', bg2:'var(--by-bg-2)', bg3:'var(--by-bg-3)',
 };
 
 const CHARTS = {};
@@ -559,7 +559,7 @@ async function loadBeta() {
     body.innerHTML = `
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
         <div class="stat-tile"><div class="val">${euro(totalGross)}</div><div class="lbl">Total Gross</div></div>
-        <div class="stat-tile"><div class="val" style="color:${totalNet>=0?'var(--badge-green-text)':'var(--by-tomato)'};">${euro(totalNet)}</div><div class="lbl">Net Profit</div></div>
+        <div class="stat-tile"><div class="val" style="color:${totalNet>=0?'var(--by-badge-green-text)':'var(--by-tomato)'};">${euro(totalNet)}</div><div class="lbl">Net Profit</div></div>
         <div class="stat-tile"><div class="val" style="color:#166534;">${gems}</div><div class="lbl">Hidden Gems</div></div>
         <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${pits}</div><div class="lbl">Money Pits</div></div>
       </div>
@@ -615,7 +615,7 @@ async function loadBeta() {
                   <span style="font-size:10px;color:var(--by-ink-4);">${s.date} · ${s.show_type}</span></td>
               <td class="text-right" style="font-family:var(--by-f-mono);">${euro(s.gross)}</td>
               <td class="text-right" style="font-family:var(--by-f-mono);color:var(--by-tomato);">${euro(s.total_expenses)}</td>
-              <td class="text-right" style="font-family:var(--by-f-mono);color:${s.net_profit>=0?'var(--badge-green-text)':'var(--by-tomato)'};">${euro(s.net_profit)}</td>
+              <td class="text-right" style="font-family:var(--by-f-mono);color:${s.net_profit>=0?'var(--by-badge-green-text)':'var(--by-tomato)'};">${euro(s.net_profit)}</td>
               <td style="font-family:var(--by-f-mono);">${pct(s.roi_pct)}</td>
               <td>${classifyBadge(s.classification)}</td>
               <td style="font-family:var(--by-f-mono);font-size:11px;">${breakdown}</td>
@@ -680,7 +680,7 @@ async function loadGamma() {
             <td style="min-width:140px;">
               <div style="display:flex;align-items:center;gap:8px;">
                 <div style="flex:1;height:7px;background:var(--by-bg-3);border:1px solid var(--by-bg-3);">
-                  <div style="height:100%;width:${m.slow_probability_pct}%;background:${m.slow_probability_pct>60?'var(--by-tomato)':m.slow_probability_pct>30?'var(--by-yes)':'var(--badge-green-text)'};"></div>
+                  <div style="height:100%;width:${m.slow_probability_pct}%;background:${m.slow_probability_pct>60?'var(--by-tomato)':m.slow_probability_pct>30?'var(--by-yes)':'var(--by-badge-green-text)'};"></div>
                 </div>
                 <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(m.slow_probability_pct)}</span>
               </div>
@@ -742,7 +742,7 @@ async function loadDelta() {
             <td style="min-width:120px;">
               <div style="display:flex;align-items:center;gap:6px;">
                 <div style="flex:1;height:6px;background:var(--by-bg-3);">
-                  <div style="height:100%;width:${v.reliability_pct}%;background:${v.reliability_pct<60?'var(--by-tomato)':v.reliability_pct<85?'var(--by-yes)':'var(--badge-green-text)'};"></div>
+                  <div style="height:100%;width:${v.reliability_pct}%;background:${v.reliability_pct<60?'var(--by-tomato)':v.reliability_pct<85?'var(--by-yes)':'var(--by-badge-green-text)'};"></div>
                 </div>
                 <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(v.reliability_pct)}</span>
               </div>

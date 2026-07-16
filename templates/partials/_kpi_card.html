@@ -7,7 +7,7 @@
     • Card shadow ................ var(--by-sh-1)       → 4px hard ink shadow
     • Label color ................ var(--by-ink-3)      → muted ink
     • Value color ................ var(--by-ink)        → primary ink
-    • Delta positive ............. color: var(--success-green)  → success state
+    • Delta positive ............. color: var(--by-success-green)  → success state
     • Delta negative ............. color: var(--by-tomato)
 
   DOM IDs (each card gets a unique id passed via `card_id`):
@@ -45,7 +45,7 @@
 
   {% if delta %}
   <p class="text-[11.5px] font-semibold" id="{{ card_id }}-delta"
-     style="color:{% if delta_pos %}var(--success-green){% else %}var(--by-tomato){% endif %};">
+     style="color:{% if delta_pos %}var(--by-success-green){% else %}var(--by-tomato){% endif %};">
     {{ delta }}
   </p>
   {% endif %}

@@ -42,7 +42,7 @@ textarea {
 
   /* WHY: Ensure text is readable on printed pages with adequate contrast. */
   body {
-    color: var(--ink);
+    color: var(--by-ink);
     background: white;
   }
 }
@@ -57,7 +57,7 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid var(--yes);
+  outline: 3px solid var(--by-yes);
   outline-offset: 2px;
 }
 
@@ -72,14 +72,14 @@ select:focus-visible {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-2);
+  background: var(--by-bg-2);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--ink-3);
+  background: var(--by-ink-3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--ink);
+  background: var(--by-ink);
 }

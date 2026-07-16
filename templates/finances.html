@@ -73,7 +73,7 @@
     letter-spacing:.1em; text-transform:uppercase; padding:2px 7px;
   }
   .fin-badge-green {
-    background:var(--success-green); color:white;
+    background:var(--by-success-green); color:white;
     font-family:var(--by-f-mono); font-size:9px; font-weight:700;
     letter-spacing:.1em; text-transform:uppercase; padding:2px 7px;
   }
@@ -83,7 +83,7 @@
 {% block content %}
 
 <!-- ── Filter bar ── -->
-<div class="px-4 lg:px-7 py-4 border-b" style="border-color:var(--bg-3);background:var(--by-bg-2);">
+<div class="px-4 lg:px-7 py-4 border-b" style="border-color:var(--by-bg-3);background:var(--by-bg-2);">
   <form id="fin-filter-form" method="GET" action="/backstage/finances">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <!-- Preset pills -->
@@ -140,7 +140,7 @@
     <div class="border hairline px-3.5 py-2.5" style="background:{{ 'var(--by-yes)' if net_balance >= 0 else 'var(--by-bg)' }};">
       <div class="by-eyebrow">Net Balance</div>
       <div class="font-display text-[26px] leading-none mt-1"
-           style="color:{{ 'var(--success-green)' if net_balance >= 0 else 'var(--by-tomato)' }};">
+           style="color:{{ 'var(--by-success-green)' if net_balance >= 0 else 'var(--by-tomato)' }};">
         {{ '+' if net_balance > 0 else '' }}€{{ "%.2f"|format(net_balance) }}
       </div>
       <div class="mt-1 text-[12px]" style="color:var(--by-ink-4);">Organisational bottom line</div>
@@ -165,7 +165,7 @@
         </thead>
         <tbody>
           {% for b in class_balances %}
-          <tr class="border-t" style="border-color:var(--bg-3);background:var(--by-bg);">
+          <tr class="border-t" style="border-color:var(--by-bg-3);background:var(--by-bg);">
             <td class="px-5 py-3 font-semibold" style="color:var(--by-ink);">{{ b.title }}</td>
             <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">{{ b.enrolled }}</td>
             <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">
@@ -178,7 +178,7 @@
               {% if b.fees > 0 %}−€{{ "%.2f"|format(b.fees) }}{% else %}—{% endif %}
             </td>
             <td class="px-5 py-3 text-right font-semibold"
-                style="color:{{ 'var(--success-green)' if b.net >= 0 else 'var(--by-tomato)' }};">
+                style="color:{{ 'var(--by-success-green)' if b.net >= 0 else 'var(--by-tomato)' }};">
               {{ '+' if b.net > 0 else '' }}€{{ "%.2f"|format(b.net) }}
             </td>
           </tr>
@@ -198,7 +198,7 @@
               {% if tf > 0 %}−€{{ "%.2f"|format(tf) }}{% else %}—{% endif %}
             </td>
             <td class="px-5 py-2.5 text-right font-bold text-[12px]"
-                style="color:{{ 'var(--success-green)' if class_balances|sum(attribute='net') >= 0 else 'var(--by-tomato)' }};">
+                style="color:{{ 'var(--by-success-green)' if class_balances|sum(attribute='net') >= 0 else 'var(--by-tomato)' }};">
               €{{ "%.2f"|format(class_balances|sum(attribute='net')) }}
             </td>
           </tr>
@@ -226,7 +226,7 @@
         </thead>
         <tbody>
           {% for b in show_balances %}
-          <tr class="border-t" style="border-color:var(--bg-3);background:var(--by-bg);">
+          <tr class="border-t" style="border-color:var(--by-bg-3);background:var(--by-bg);">
             <td class="px-5 py-3 font-semibold" style="color:var(--by-ink);">{{ b.title }}</td>
             <td class="px-4 py-3 font-mono text-[12px]" style="color:var(--by-ink-3);">{{ b.date or '—' }}</td>
             <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">
@@ -236,7 +236,7 @@
               {% if b.fees > 0 %}−€{{ "%.2f"|format(b.fees) }}{% else %}—{% endif %}
             </td>
             <td class="px-5 py-3 text-right font-semibold"
-                style="color:{{ 'var(--success-green)' if b.net >= 0 else 'var(--by-tomato)' }};">
+                style="color:{{ 'var(--by-success-green)' if b.net >= 0 else 'var(--by-tomato)' }};">
               {{ '+' if b.net > 0 else '' }}€{{ "%.2f"|format(b.net) }}
             </td>
           </tr>

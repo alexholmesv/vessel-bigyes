@@ -390,9 +390,9 @@
     const el = document.getElementById(elId);
     el.className = 'px-4 py-3 text-sm font-medium text-center border';
     if (type === 'success') {
-      Object.assign(el.style, { background: 'var(--msg-success-bg)', color: 'var(--badge-green-text)', borderColor: 'var(--badge-green-bg)' });
+      Object.assign(el.style, { background: 'var(--by-msg-success-bg)', color: 'var(--by-badge-green-text)', borderColor: 'var(--by-badge-green-bg)' });
     } else {
-      Object.assign(el.style, { background: 'var(--msg-error-bg)', color: 'var(--by-tomato)', borderColor: 'var(--by-tomato)' });
+      Object.assign(el.style, { background: 'var(--by-msg-error-bg)', color: 'var(--by-tomato)', borderColor: 'var(--by-tomato)' });
     }
     el.textContent = msg;
     el.classList.remove('hidden');

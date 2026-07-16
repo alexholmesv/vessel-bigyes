@@ -43,8 +43,8 @@
       const pct      = hasCap ? Math.min(100, Math.round(sold / cap * 100)) : 0;
       const soldOut  = (hasCap && sold >= cap) || syncSold;
       const stripCol = soldOut          ? 'var(--by-tomato)'
-                     : pct >= 75        ? 'var(--yes-deep)'
-                     : hasCap && pct > 0 ? 'var(--success-green)'
+                     : pct >= 75        ? 'var(--by-yes-deep)'
+                     : hasCap && pct > 0 ? 'var(--by-success-green)'
                      : 'var(--by-ink-3)';
 
       // ── booking badge (top-right of card)
@@ -230,7 +230,7 @@
         if (unmatched > 0) msg += ` (${unmatched} title${unmatched===1?'':'s'} not matched — try Sync Shows first)`;
         msg += '.';
         bar.textContent = msg;
-        bar.style.color = so > 0 ? 'var(--by-tomato)' : 'var(--success-green)';
+        bar.style.color = so > 0 ? 'var(--by-tomato)' : 'var(--by-success-green)';
         flashToast(so > 0 ? `${so} show${so===1?'':'s'} marked sold out.` : 'All matched shows available.');
         sbLoad(true);
       } else {
@@ -262,7 +262,7 @@
         bar.textContent = added > 0
           ? `✓ ${added} new show${added===1?'':'s'} added (${scraped} found on site).`
           : `✓ ${scraped} show${scraped===1?'':'s'} found — all already up to date.`;
-        bar.style.color = 'var(--success-green)';
+        bar.style.color = 'var(--by-success-green)';
         flashToast(added > 0 ? `${added} new shows added.` : 'Shows up to date.');
         sbLoad(true);
       } else {
