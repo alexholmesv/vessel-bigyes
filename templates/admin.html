@@ -822,10 +822,11 @@
               <!-- Column content -->
               <div class="p-2 flex flex-col gap-1.5 flex-1" style="min-height:110px;">
                 {% for s in day_classes %}
-                <div class="px-2 py-1.5 border" style="border-color:var(--by-bg-3); background:var(--by-bg);">
+                <a href="{% if s.id %}/classes?open={{ s.id }}{% else %}/classes{% endif %}"
+                   class="block px-2 py-1.5 border" style="border-color:var(--by-bg-3); background:var(--by-bg); text-decoration:none; cursor:pointer;">
                   <div class="text-[11px] font-semibold leading-tight truncate" style="color:var(--by-ink);">{{ s.title }}</div>
                   <div class="by-eyebrow mt-0.5" style="font-size:9px; color:var(--by-ink-3);">{{ s.time }} · {{ s.count }} enrolled</div>
-                </div>
+                </a>
                 {% endfor %}
                 {% for show in day_shows %}
                 <div class="px-2 py-1.5 border" style="border-color:var(--by-ink); background:#2A5C3A; color:#D4F0DE;">

@@ -1744,6 +1744,17 @@
     {% endfor %}
   })();
 
+  // Auto-open a class panel when arriving via ?open=<class_id> — used by the
+  // dashboard's weekly-schedule widget, which links here instead of duplicating
+  // this panel's markup/data on the dashboard page.
+  document.addEventListener('DOMContentLoaded', function () {
+    var openId = new URLSearchParams(window.location.search).get('open');
+    if (openId && _CP_DATA[openId]) {
+      openClassPanel(openId);
+      history.replaceState(null, '', window.location.pathname);
+    }
+  });
+
   function openClassPanel(classId) {
     _cpClassId  = classId;
     const d     = _CP_DATA[classId] || {};
