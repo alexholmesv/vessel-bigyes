@@ -102,6 +102,9 @@
   --by-warning-bg:       #FFFBEB;   /* warning container background */
   --by-warning-text:     #92550A;   /* warning container text */
   --by-warning-accent:   #C17A20;   /* warning indicator color */
+  --by-alert-bg:         #FFF5F3;   /* pale tomato-tinted alert container background
+                                        (paired with border-color:var(--by-tomato)) —
+                                        distinct from --by-warning-bg, do not merge them */
   --by-on-accent:        #fff;      /* text on saturated/dark surfaces (tomato buttons,
                                         badges, dark banners) — matches the raw #fff used
                                         throughout BigYes Design Language.html's own

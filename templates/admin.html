@@ -56,14 +56,43 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
 
 <style>
-  /* phase(6.3a), 2026-07-21: removed a duplicate local :root token block that
-     redeclared every --by-* var with raw hex, out of sync with tokens.css
-     (it was missing --by-success-green, --by-warning-*, and every other
-     business-logic token this file's own .chip-active/.chip-waiting rules
-     reference below — those were silently resolving to nothing before this
-     fix). admin.html did not link the CSS chain at all; base.html-extending
-     templates already did (phase 6.9). tokens.css is now this file's single
-     source of truth too, matching the rest of the vessel. */
+  /* phase(6.3a) REVERT, 2026-07-21, same day: the CSS <link> chain above
+     turned out to 404/503 in every environment — there is no Flask route
+     serving instances/<vessel>/static/*, only the repo-root /static/
+     folder (which has just kotodama.css, the engine UI's stylesheet).
+     This is a pre-existing gap in the whole Phase 6 CSS-chain design, not
+     something new. Restoring this local :root block so the page renders
+     correctly again regardless of whether that route ever gets fixed.
+     Kept complete this time — includes every token this file's var() calls
+     reference, not just the original (incomplete) set. Values sourced from
+     tokens.css; see that file for authoritative definitions/comments. */
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-r-1:4px; --by-r-pill:999px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-bd-dash:1px dashed var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
+    --by-success-green:#2A8A4F;
+    --by-warning-bg:#FFFBEB; --by-warning-text:#92550A; --by-warning-accent:#C17A20;
+    --by-on-accent:#fff;
+    --by-tier-discount:#7B5EA7;
+    --by-success-dark-bg:#2A5C3A; --by-success-dark-text:#D4F0DE;
+    --by-error-dark-bg:#3b0a0a; --by-error-dark-text:#fca5a5; --by-error-dark-border:#7f1d1d;
+  }
 
   /* ── Base ─────────────────────────────────────────────── */
   html, body { background: var(--by-bg); }

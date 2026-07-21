@@ -53,10 +53,37 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
 
 <style>
-  /* phase(6.3a), 2026-07-21: removed a duplicate local :root token block,
-     same issue and fix as admin.html — see that file for the full note.
-     ensemble_room.html did not link the CSS chain at all; tokens.css is now
-     the single source of truth here too. */
+  /* phase(6.3a) REVERT, 2026-07-21, same day — see admin.html for the full
+     note: the CSS <link> chain 404/503s everywhere, no route serves
+     instances/<vessel>/static/*. Restoring this local :root block,
+     complete this time (includes --by-on-accent and the --by-cat-*
+     activity-category pairs — not just the original set). */
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-r-1:4px; --by-r-pill:999px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-bd-dash:1px dashed var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
+    --by-on-accent:#fff;
+    --by-cat-status-bg:#fce7f3; --by-cat-status-border:#ec4899;
+    --by-cat-scene-bg:#dbeafe; --by-cat-scene-border:#3b82f6;
+    --by-cat-character-bg:#dcfce7; --by-cat-character-border:#22c55e;
+    --by-cat-group-bg:#ede9fe; --by-cat-group-border:#8b5cf6;
+  }
 
   html, body { background: var(--by-bg); }
   body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing:antialiased; padding-bottom: 64px; }
