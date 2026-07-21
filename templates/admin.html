@@ -48,29 +48,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+<!-- CSS file chain (load order matters) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
+
 <style>
-  /* ── BigYes Design Tokens v0.1 ───────────────────────────────────── */
-  :root {
-    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
-    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
-    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
-    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
-    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
-    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
-    --by-f-sans:'Archivo',system-ui,sans-serif;
-    --by-f-body:'Manrope',system-ui,sans-serif;
-    --by-f-mono:'DM Mono',ui-monospace,monospace;
-    --by-t-mono:11.5px;
-    --by-r-1:4px; --by-r-pill:999px;
-    --by-bd:1px solid var(--by-ink);
-    --by-bd-thick:1.5px solid var(--by-ink);
-    --by-bd-soft:1px solid var(--by-bg-3);
-    --by-bd-dash:1px dashed var(--by-bg-3);
-    --by-sh-1:4px 4px 0 0 var(--by-ink);
-    --by-sh-yes:4px 4px 0 0 var(--by-yes);
-    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
-    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
-  }
+  /* phase(6.3a), 2026-07-21: removed a duplicate local :root token block that
+     redeclared every --by-* var with raw hex, out of sync with tokens.css
+     (it was missing --by-success-green, --by-warning-*, and every other
+     business-logic token this file's own .chip-active/.chip-waiting rules
+     reference below — those were silently resolving to nothing before this
+     fix). admin.html did not link the CSS chain at all; base.html-extending
+     templates already did (phase 6.9). tokens.css is now this file's single
+     source of truth too, matching the rest of the vessel. */
 
   /* ── Base ─────────────────────────────────────────────── */
   html, body { background: var(--by-bg); }
@@ -556,10 +549,10 @@
               <!-- Avatar -->
               <img id="header-av-img" class="av object-cover flex-shrink-0"
                    src="{{ current_user_avatar or '' }}"
-                   style="width:28px;height:28px;border:2px solid #000;border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                   style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
                    alt="{{ current_user_initials }}">
               <span id="header-av-init" class="av flex items-center justify-center flex-shrink-0"
-                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-on-accent);{{ 'display:none;' if current_user_avatar else '' }}">
                 {{ current_user_initials }}
               </span>
               <!-- Name + role -->
@@ -829,7 +822,7 @@
                 </a>
                 {% endfor %}
                 {% for show in day_shows %}
-                <div class="px-2 py-1.5 border" style="border-color:var(--by-ink); background:#2A5C3A; color:#D4F0DE;">
+                <div class="px-2 py-1.5 border" style="border-color:var(--by-ink); background:var(--by-success-dark-bg); color:var(--by-success-dark-text);">
                   <div class="text-[11px] font-semibold leading-tight truncate">{{ show.title }}</div>
                   <div class="by-eyebrow mt-0.5" style="font-size:9px; opacity:.75;">{{ show.time }} · Show</div>
                 </div>
@@ -952,7 +945,7 @@
                 {% set vol = (users | selectattr('id', 'equalto', shift.student_id) | first) if shift.student_id else none %}
                 {% set display_name = shift.student_name or (vol.name if vol else none) %}
                 {# Row background reflects assignment state: accepted=yes-soft, requested=warm amber, unassigned=default #}
-                <div class="flex items-center gap-2 px-2 py-1.5 border" style="{% if shift.student_id and shift.status == 'accepted' %}background:var(--by-yes-soft); border-color:var(--by-ink){% elif shift.student_id %}background:#FFFBEB; border-color:#C17A20{% else %}background:var(--by-bg); border-color:var(--by-bg-3){% endif %}">
+                <div class="flex items-center gap-2 px-2 py-1.5 border" style="{% if shift.student_id and shift.status == 'accepted' %}background:var(--by-yes-soft); border-color:var(--by-ink){% elif shift.student_id %}background:var(--by-warning-bg); border-color:var(--by-warning-accent){% else %}background:var(--by-bg); border-color:var(--by-bg-3){% endif %}">
                   <span class="text-[11.5px] font-semibold w-28 flex-shrink-0" style="color:var(--by-ink-3)">{{ shift.role }}</span>
 
                   {% if shift.student_id and shift.status == 'accepted' %}
@@ -972,7 +965,7 @@
                   {# ── Requested: assigned but awaiting student's accept/decline ── #}
                   <div class="flex-1 flex items-center gap-1.5 min-w-0">
                     <span class="w-4 h-4 rounded-full flex-shrink-0 grid place-items-center" style="background:rgba(193,122,32,.15)">
-                      <span class="w-1.5 h-1.5 rounded-full" style="background:#C17A20"></span>
+                      <span class="w-1.5 h-1.5 rounded-full" style="background:var(--by-warning-accent)"></span>
                     </span>
                     <span class="text-[12px] truncate" style="color:var(--by-ink-3)">{{ display_name or 'Unknown user' }}</span>
                     <span class="chip chip-waiting flex-shrink-0" style="font-size:9.5px;padding:.1rem .45rem"><span class="dot"></span>Waiting for reply</span>
@@ -1849,7 +1842,7 @@
                  style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
             <span id="cfg-av-init" class="av flex items-center justify-center"
-                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:#fff;
+                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:var(--by-on-accent);
                          background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
                          {{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
@@ -2790,7 +2783,7 @@
 
     const av = document.getElementById('mail-recipient-av');
     av.textContent = p.initials || p.name.slice(0,2).toUpperCase();
-    av.style.background = p.tint ? `linear-gradient(135deg,${p.tint[0]},${p.tint[1]})` : '#8A8073';
+    av.style.background = p.tint ? `linear-gradient(135deg,${p.tint[0]},${p.tint[1]})` : 'var(--by-ink-4)';
 
     openModal('modal-send-mail');
     setTimeout(() => document.getElementById('mail-subject').focus(), 320);
@@ -2836,7 +2829,7 @@
       } else {
         st.className = '';
         st.style.background  = 'var(--by-tomato)';
-        st.style.color       = '#fff';
+        st.style.color       = 'var(--by-on-accent)';
         st.style.borderColor = 'var(--by-tomato-deep)';
         st.textContent = 'Stage Fright: ' + (data.error || 'Unknown failure');
         btn.disabled = false;
@@ -2845,7 +2838,7 @@
     } catch {
       st.className = '';
       st.style.background  = 'var(--by-tomato)';
-      st.style.color       = '#fff';
+      st.style.color       = 'var(--by-on-accent)';
       st.style.borderColor = 'var(--by-tomato-deep)';
       st.textContent = 'Total Trainwreck — network error.';
       btn.disabled = false;
@@ -2863,12 +2856,12 @@
     clearTimeout(_toastTimer);
     _toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 1800);
   }
-  // Alert variant — tomato (#E5482A) high-contrast theme for slot conflicts.
+  // Alert variant — tomato (var(--by-tomato)) high-contrast theme for slot conflicts.
   function flashToastAlert(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg;
-    el.style.background = '#E5482A';
-    el.style.color = '#fff';
+    el.style.background = 'var(--by-tomato)';
+    el.style.color = 'var(--by-on-accent)';
     el.style.boxShadow = '0 0 0 1px rgba(229,72,42,.6),0 12px 28px -8px rgba(229,72,42,.5)';
     el.style.opacity = '1';
     clearTimeout(_toastTimer);
@@ -3501,7 +3494,7 @@
     const btn       = document.getElementById('bulk-upload-btn');
     if (!fileInput.files.length) {
       resultsEl.className = '';
-      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:#fff">Please select a .csv or .xlsx file first.</div>`;
+      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:var(--by-on-accent)">Please select a .csv or .xlsx file first.</div>`;
       return;
     }
     btn.disabled = true;
@@ -3541,10 +3534,10 @@
         });
         if (c.length) applyFilters();
       } else {
-        resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:#fff">${esc(data.error || 'Upload failed.')}</div>`;
+        resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:var(--by-on-accent)">${esc(data.error || 'Upload failed.')}</div>`;
       }
     } catch {
-      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:#fff">Network error — try again.</div>`;
+      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:var(--by-on-accent)">Network error — try again.</div>`;
     } finally {
       btn.disabled = false;
       btn.textContent = 'Import';
@@ -3655,7 +3648,7 @@
           const avatarGrad = `linear-gradient(135deg,${newPerson.tint[0]},${newPerson.tint[1]})`;
           const liHTML = `<li class="px-4 py-2.5 flex items-center gap-2.5">
             <span class="av text-[10px] flex-shrink-0"
-                  style="width:26px;height:26px;background:${avatarGrad};color:#fff;"
+                  style="width:26px;height:26px;background:${avatarGrad};color:var(--by-on-accent);"
             >${esc(newPerson.initials)}</span>
             <div class="flex-1 min-w-0">
               <div class="text-[12.5px] font-semibold truncate" style="color:var(--by-ink);">${esc(newPerson.name)}</div>
@@ -3694,7 +3687,7 @@
     const el = document.getElementById('assign-status');
     if (!el) return;
     el.textContent = msg;
-    el.style.cssText = 'display:block;margin-top:1rem;padding:.7rem 1rem;font-size:.85rem;font-weight:600;text-align:center;background:#3b0a0a;color:#fca5a5;border:1px solid #7f1d1d;border-radius:.4rem;';
+    el.style.cssText = 'display:block;margin-top:1rem;padding:.7rem 1rem;font-size:.85rem;font-weight:600;text-align:center;background:var(--by-error-dark-bg);color:var(--by-error-dark-text);border:1px solid var(--by-error-dark-border);border-radius:.4rem;';
     try { window.flashToastAlert(msg); } catch (_) {}
   }
 
@@ -4080,7 +4073,7 @@
     document.getElementById('sfin-gross').textContent      = `€${gross.toFixed(2)}`;
     document.getElementById('sfin-fees-total').textContent = `€${fees.toFixed(2)}`;
     document.getElementById('sfin-net').textContent        = `€${net.toFixed(2)}`;
-    document.getElementById('sfin-net').style.color        = net >= 0 ? '#2A8A4F' : 'var(--by-tomato)';
+    document.getElementById('sfin-net').style.color        = net >= 0 ? 'var(--by-success-green)' : 'var(--by-tomato)';
     // Revenue override hint
     const hint = document.getElementById('sfin-revenue-hint');
     if (hint) hint.textContent = hasTiers ? 'Ignored — ticket tiers are active.' : '';
@@ -4095,11 +4088,11 @@
     }
     list.innerHTML = _sfinTiers.map(t => {
       const subtotal = (parseInt(t.quantity || 0) * parseFloat(t.unit_price || 0)).toFixed(2);
-      const badge = {full_price:'#2A8A4F', door:'#E5482A', discount:'#7B5EA7', other:'#5C544A'}[t.tier_type] || '#5C544A';
+      const badge = {full_price:'var(--by-success-green)', door:'var(--by-tomato)', discount:'var(--by-tier-discount)', other:'var(--by-ink-3)'}[t.tier_type] || 'var(--by-ink-3)';
       return `
         <li class="flex items-center gap-2 px-3 py-2.5 border" style="border-color:var(--by-bg-3);background:var(--by-bg);">
           <span class="shrink-0 text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wide"
-                style="background:${badge};color:#fff;">${esc(TIER_TYPE_LABELS[t.tier_type] || t.tier_type)}</span>
+                style="background:${badge};color:var(--by-on-accent);">${esc(TIER_TYPE_LABELS[t.tier_type] || t.tier_type)}</span>
           <span class="flex-1 text-[13px] font-semibold" style="color:var(--by-ink);">${esc(t.label)}</span>
           <span class="font-mono text-[12px]" style="color:var(--by-ink-3);">${esc(String(t.quantity))} × €${parseFloat(t.unit_price).toFixed(2)}</span>
           <span class="font-mono text-[12px] font-bold" style="color:var(--by-ink);">= €${subtotal}</span>
@@ -4228,7 +4221,7 @@
         </div>
         <div>
           <div class="by-eyebrow" style="font-size:9px;">Net</div>
-          <div id="sfin-net" class="font-display text-[19px]" style="color:#2A8A4F;">€0.00</div>
+          <div id="sfin-net" class="font-display text-[19px]" style="color:var(--by-success-green);">€0.00</div>
         </div>
       </div>
 
@@ -4449,7 +4442,7 @@
     <div class="px-6 py-5 flex gap-3">
       <button onclick="confirmDeleteShow()"
         class="flex-1 py-2.5 text-[13px] font-black border"
-        style="background:var(--by-tomato);border-color:var(--by-ink);color:#fff;box-shadow:4px 4px 0 0 var(--by-ink);">
+        style="background:var(--by-tomato);border-color:var(--by-ink);color:var(--by-on-accent);box-shadow:4px 4px 0 0 var(--by-ink);">
         Drop the Curtain
       </button>
       <button onclick="closeModal('modal-delete-show')"
@@ -4482,7 +4475,7 @@
     <div class="px-6 py-5 flex gap-3">
       <button onclick="confirmDeleteAllShows()"
         class="flex-1 py-2.5 text-[13px] font-black border"
-        style="background:var(--by-tomato);border-color:var(--by-ink);color:#fff;box-shadow:4px 4px 0 0 var(--by-ink);">
+        style="background:var(--by-tomato);border-color:var(--by-ink);color:var(--by-on-accent);box-shadow:4px 4px 0 0 var(--by-ink);">
         🔥 Burn It Down
       </button>
       <button onclick="closeModal('modal-delete-all-shows')"
@@ -4615,7 +4608,7 @@
 
     if (!content) {
       statusEl.className = 'px-4 py-3 text-sm font-medium text-center';
-      statusEl.style.cssText = 'background:var(--by-tomato);color:#fff;';
+      statusEl.style.cssText = 'background:var(--by-tomato);color:var(--by-on-accent);';
       statusEl.textContent = 'The machine needs words. Give it something.';
       return;
     }
@@ -4641,12 +4634,12 @@
         setTimeout(() => closeModal('modal-spont-pool'), 1400);
       } else {
         statusEl.className = 'px-4 py-3 text-sm font-medium text-center';
-        statusEl.style.cssText = 'background:var(--by-tomato);color:#fff;';
+        statusEl.style.cssText = 'background:var(--by-tomato);color:var(--by-on-accent);';
         statusEl.textContent = data.error || 'Something went wrong.';
       }
     } catch {
       statusEl.className = 'px-4 py-3 text-sm font-medium text-center';
-      statusEl.style.cssText = 'background:var(--by-tomato);color:#fff;';
+      statusEl.style.cssText = 'background:var(--by-tomato);color:var(--by-on-accent);';
       statusEl.textContent = 'Network error — prompt not saved.';
     }
   }
@@ -4677,7 +4670,7 @@
         <div class="text-[10px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">To</div>
         <div class="flex items-center gap-2 px-3 py-2.5" style="border:var(--by-bd);background:var(--by-bg-2);">
           <span id="mail-recipient-av" class="flex-shrink-0 flex items-center justify-center"
-                style="width:26px;height:26px;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;background:#8A8073;"></span>
+                style="width:26px;height:26px;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-on-accent);background:var(--by-ink-4);"></span>
           <div class="min-w-0">
             <div id="mail-recipient-name" class="text-[13.5px] font-semibold truncate" style="color:var(--by-ink);"></div>
             <div id="mail-recipient-meta" class="text-[11px] font-mono truncate" style="color:var(--by-ink-4);"></div>
@@ -4730,7 +4723,7 @@
       <p style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.14em;
                 text-transform:uppercase;color:var(--by-night-on);margin-bottom:4px;">BigYes · Confirm</p>
       <h3 id="by-confirm-title"
-          style="font-family:var(--by-f-display);font-size:20px;color:#fff;line-height:1.1;"></h3>
+          style="font-family:var(--by-f-display);font-size:20px;color:var(--by-on-accent);line-height:1.1;"></h3>
     </div>
     <div style="padding:20px 20px 8px;">
       <p id="by-confirm-body"
@@ -4762,7 +4755,7 @@
     const ok = document.getElementById('by-confirm-ok');
     ok.textContent      = label;
     ok.style.background = danger ? 'var(--by-tomato)'       : 'var(--by-yes)';
-    ok.style.color      = danger ? '#fff'                    : 'var(--by-ink)';
+    ok.style.color      = danger ? 'var(--by-on-accent)'      : 'var(--by-ink)';
     ok.style.border     = danger ? '1.5px solid var(--by-tomato-deep)' : '1.5px solid var(--by-ink)';
     ok.style.boxShadow  = danger ? '3px 3px 0 0 var(--by-tomato-deep)' : '3px 3px 0 0 var(--by-ink)';
     const shadow = danger ? '3px 3px 0 0 var(--by-tomato-deep)' : '3px 3px 0 0 var(--by-ink)';

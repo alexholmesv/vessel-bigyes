@@ -31,23 +31,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+<!-- CSS file chain (load order matters) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
+
 <style>
-  :root {
-    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
-    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
-    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
-    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
-    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
-    --by-f-sans:'Archivo',system-ui,sans-serif;
-    --by-f-body:'Manrope',system-ui,sans-serif;
-    --by-f-mono:'DM Mono',ui-monospace,monospace;
-    --by-t-mono:11.5px;
-    --by-bd:1px solid var(--by-ink);
-    --by-bd-thick:1.5px solid var(--by-ink);
-    --by-bd-soft:1px solid var(--by-bg-3);
-    --by-sh-1:4px 4px 0 0 var(--by-ink);
-    --by-sh-yes:4px 4px 0 0 var(--by-yes);
-  }
+  /* phase(6.3a), 2026-07-21: removed a duplicate local :root token block,
+     same issue and fix as admin.html — see that file for the full note.
+     classes.html did not link the CSS chain at all; tokens.css is now the
+     single source of truth here too. */
   html, body { background: var(--by-bg); }
   body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing: antialiased; padding-bottom: 64px; }
   @media (min-width:1024px) { body { padding-bottom: 0; } }
@@ -493,10 +488,10 @@
               <!-- Avatar -->
               <img id="header-av-img" class="av object-cover flex-shrink-0"
                    src="{{ current_user_avatar or '' }}"
-                   style="width:28px;height:28px;border:2px solid #000;border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                   style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
                    alt="{{ current_user_initials }}">
               <span id="header-av-init" class="av flex items-center justify-center flex-shrink-0"
-                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-on-accent);{{ 'display:none;' if current_user_avatar else '' }}">
                 {{ current_user_initials }}
               </span>
               <!-- Name + role -->
@@ -1200,7 +1195,7 @@
   <div class="absolute inset-0" style="background:rgba(20,18,16,.6)" onclick="cancelDeletePanel()"></div>
   <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[360px] flex flex-col"
        style="background:var(--by-bg); border-left:2px solid var(--by-tomato);">
-    <div class="px-5 py-5 border-b" style="border-color:var(--by-tomato);background:#FFF5F3;">
+    <div class="px-5 py-5 border-b" style="border-color:var(--by-tomato);background:var(--by-warning-bg);">
       <div class="text-[11.5px] font-mono uppercase tracking-widest mb-2" style="color:var(--by-tomato);">⚠ Hold your horses, Hamlet!</div>
       <h3 id="dcp-title" class="font-display text-[20px]" style="color:var(--by-ink);">Cut from the Show?</h3>
     </div>
@@ -1213,7 +1208,7 @@
     <div class="flex-shrink-0 px-5 py-4 flex gap-3" style="border-top:var(--by-bd);">
       <button onclick="cancelDeletePanel()" class="btn-ghost flex-1 justify-center">No wait, keep them!</button>
       <button onclick="confirmDeleteClass()" class="flex-1 border px-4 py-2.5 text-[13px] font-semibold"
-              style="border-color:var(--by-tomato);color:#fff;background:var(--by-tomato);">
+              style="border-color:var(--by-tomato);color:var(--by-on-accent);background:var(--by-tomato);">
         Yes, strike the set
       </button>
     </div>
@@ -1302,7 +1297,7 @@
       rosterEl.innerHTML = (d.students || []).map(s => {
         const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
         return `<div class="flex items-center gap-2.5 py-2.5 border-b" style="border-color:var(--by-bg-3);" id="cp-row-${classId}-${s.id}">
-          <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:#fff;flex-shrink:0;">${inits}</span>
+          <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:var(--by-on-accent);flex-shrink:0;">${inits}</span>
           <div class="flex-1 min-w-0">
             <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
             <div class="by-eyebrow">${s.roleType} · ${s.pts} pts</div>
@@ -1389,7 +1384,7 @@
     if (teacherInDB) {
       const inits = teacherInDB.name.split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
       displayEl.innerHTML = `
-        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#22D3EE,#FBBF24);color:#fff;flex-shrink:0;">${inits}</span>
+        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#22D3EE,#FBBF24);color:var(--by-on-accent);flex-shrink:0;">${inits}</span>
         <span class="text-[13px] font-semibold" style="color:var(--by-ink);">${_esc(teacherInDB.name)}</span>`;
     } else if (d.teacherName && d.teacherName !== '—') {
       displayEl.innerHTML = `<span class="text-[12px] font-semibold" style="color:var(--by-tomato);">&#9888; ${_esc(d.teacherName)} — not found in member database</span>`;
@@ -1515,7 +1510,7 @@
     listEl.innerHTML = students.map(s => {
       const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
       return `<div class="cp-enroll-row" id="cper-${s.id}">
-        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:#fff;flex-shrink:0;">${inits}</span>
+        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:var(--by-on-accent);flex-shrink:0;">${inits}</span>
         <div class="flex-1 min-w-0">
           <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
           <div class="by-eyebrow">${s.role_type || 'Patron'}</div>
@@ -2186,7 +2181,7 @@
                  style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
             <span id="cfg-av-init" class="av flex items-center justify-center"
-                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:#fff;
+                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:var(--by-on-accent);
                          background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
                          {{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
@@ -2757,7 +2752,7 @@
     ok.textContent = label;
     const shadow = danger ? '4px 4px 0 0 var(--by-tomato-deep)' : '4px 4px 0 0 var(--by-ink)';
     ok.style.background = danger ? 'var(--by-tomato)' : 'var(--by-ink)';
-    ok.style.color      = danger ? '#fff'             : 'var(--by-yes)';
+    ok.style.color      = danger ? 'var(--by-on-accent)' : 'var(--by-yes)';
     ok.style.boxShadow  = shadow;
     ok.onmouseover = () => { ok.style.boxShadow = 'none'; ok.style.transform = 'translate(2px,2px)'; };
     ok.onmouseout  = () => { ok.style.boxShadow = shadow; ok.style.transform = 'translate(0,0)'; };

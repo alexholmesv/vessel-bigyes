@@ -45,28 +45,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+<!-- CSS file chain (load order matters) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
+
 <style>
-  :root {
-    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
-    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
-    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
-    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
-    --by-night:#141210; --by-night-soft:#1E1B17; --by-night-on:#C9BFA8;
-    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
-    --by-f-sans:'Archivo',system-ui,sans-serif;
-    --by-f-body:'Manrope',system-ui,sans-serif;
-    --by-f-mono:'DM Mono',ui-monospace,monospace;
-    --by-t-mono:11.5px;
-    --by-r-1:4px; --by-r-pill:999px;
-    --by-bd:1px solid var(--by-ink);
-    --by-bd-thick:1.5px solid var(--by-ink);
-    --by-bd-soft:1px solid var(--by-bg-3);
-    --by-bd-dash:1px dashed var(--by-bg-3);
-    --by-sh-1:4px 4px 0 0 var(--by-ink);
-    --by-sh-yes:4px 4px 0 0 var(--by-yes);
-    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
-    --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
-  }
+  /* phase(6.3a), 2026-07-21: removed a duplicate local :root token block,
+     same issue and fix as admin.html — see that file for the full note.
+     ensemble_room.html did not link the CSS chain at all; tokens.css is now
+     the single source of truth here too. */
 
   html, body { background: var(--by-bg); }
   body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing:antialiased; padding-bottom: 64px; }
@@ -2013,10 +2003,10 @@
     // Category colour
     const catColors = {
       'Warm-Up':    'background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);',
-      'Status':     'background:#fce7f3;border-color:#ec4899;color:var(--by-ink);',
-      'Scene Work': 'background:#dbeafe;border-color:#3b82f6;color:var(--by-ink);',
-      'Character':  'background:#dcfce7;border-color:#22c55e;color:var(--by-ink);',
-      'Group':      'background:#ede9fe;border-color:#8b5cf6;color:var(--by-ink);',
+      'Status':     'background:var(--by-cat-status-bg);border-color:var(--by-cat-status-border);color:var(--by-ink);',
+      'Scene Work': 'background:var(--by-cat-scene-bg);border-color:var(--by-cat-scene-border);color:var(--by-ink);',
+      'Character':  'background:var(--by-cat-character-bg);border-color:var(--by-cat-character-border);color:var(--by-ink);',
+      'Group':      'background:var(--by-cat-group-bg);border-color:var(--by-cat-group-border);color:var(--by-ink);',
     };
     document.getElementById('actCategory').style.cssText = catColors[g.cat] ||
       'background:var(--by-bg-2);border-color:var(--by-ink);color:var(--by-ink);';

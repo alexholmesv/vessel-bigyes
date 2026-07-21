@@ -102,6 +102,25 @@
   --by-warning-bg:       #FFFBEB;   /* warning container background */
   --by-warning-text:     #92550A;   /* warning container text */
   --by-warning-accent:   #C17A20;   /* warning indicator color */
+  --by-on-accent:        #fff;      /* text on saturated/dark surfaces (tomato buttons,
+                                        badges, dark banners) — matches the raw #fff used
+                                        throughout BigYes Design Language.html's own
+                                        .btn.danger/.tag.tomato rules; tokenized 2026-07-21
+                                        (phase 6.3a) so a future reskin can still find it */
+  --by-tier-discount:    #7B5EA7;   /* ticket-tier badge: discount */
+  --by-success-dark-bg:  #2A5C3A;   /* dark-surface success container background */
+  --by-success-dark-text:#D4F0DE;   /* dark-surface success container text */
+  --by-error-dark-bg:    #3b0a0a;   /* critical error banner background (dark surface) */
+  --by-error-dark-text:  #fca5a5;   /* critical error banner text */
+  --by-error-dark-border:#7f1d1d;   /* critical error banner border */
+
+  /* ─────────────────────────────────────────────────────────
+     Ensemble Room — warm-up activity category legend
+     ───────────────────────────────────────────────────────── */
+  --by-cat-status-bg:      #fce7f3;  --by-cat-status-border:      #ec4899;
+  --by-cat-scene-bg:       #dbeafe;  --by-cat-scene-border:       #3b82f6;
+  --by-cat-character-bg:   #dcfce7;  --by-cat-character-border:   #22c55e;
+  --by-cat-group-bg:       #ede9fe;  --by-cat-group-border:       #8b5cf6;
 
   /* ─────────────────────────────────────────────────────────
      Backstage pop-art design (BigYes-specific, high-contrast)
