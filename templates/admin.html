@@ -34,6 +34,23 @@
           'by-tomato-deep': 'var(--by-tomato-deep)',
           'by-night':       'var(--by-night)',
           'by-night-on':    'var(--by-night-soft)',
+
+          /* phase(6.3b-1): business-logic colors that the :root block already
+             defined but the config never exposed as utilities. Without these,
+             converting an inline style like `color:var(--by-success-green)` to
+             `text-by-success-green` yields a class Tailwind never generates —
+             it fails silently, same failure family as the 6.3a link-chain bug. */
+          'by-on-accent':        'var(--by-on-accent)',
+          'by-success-green':    'var(--by-success-green)',
+          'by-success-dark-bg':  'var(--by-success-dark-bg)',
+          'by-success-dark-text':'var(--by-success-dark-text)',
+          'by-warning-bg':       'var(--by-warning-bg)',
+          'by-warning-text':     'var(--by-warning-text)',
+          'by-warning-accent':   'var(--by-warning-accent)',
+          'by-tier-discount':    'var(--by-tier-discount)',
+          'by-error-dark-bg':    'var(--by-error-dark-bg)',
+          'by-error-dark-text':  'var(--by-error-dark-text)',
+          'by-error-dark-border':'var(--by-error-dark-border)',
         },
         boxShadow: {
           'by-hard':     '4px 4px 0 0 var(--by-ink)',
@@ -475,9 +492,9 @@
 {% if messages %}
 <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
   {% for cat, msg in messages %}
-  <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm" style="background:var(--by-bg); {% if cat == 'error' %}border-color:var(--by-tomato); color:var(--by-tomato);{% elif cat == 'success' %}border-color:var(--by-success-green); color:var(--by-success-green);{% else %}border-color:var(--by-ink); color:var(--by-ink-2);{% endif %}">
+  <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm bg-by-bg {% if cat == 'error' %}border-by-tomato text-by-tomato{% elif cat == 'success' %}border-by-success-green text-by-success-green{% else %}border-by-ink text-by-ink-2{% endif %}">
     <span>{{ msg }}</span>
-    <button onclick="this.parentElement.remove()" class="ml-1 text-xs" style="color:var(--by-ink-3)">✕</button>
+    <button onclick="this.parentElement.remove()" class="ml-1 text-xs text-by-ink-3">✕</button>
   </div>
   {% endfor %}
 </div>
@@ -487,8 +504,8 @@
 
 <!-- Mobile top bar (hidden lg+) -->
 <header class="by-mob-bar">
-  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  <a href="/" class="by-display text-[20px] leading-none text-by-ink no-underline">
+    Big<span class="by-yes-block text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
     <span></span><span></span><span></span>
@@ -498,7 +515,7 @@
 <nav id="mob-drawer" class="by-mob-drawer">
   <div class="px-4 py-4 border-b hairline">
     <div class="by-eyebrow">Stage Manager</div>
-    <div class="by-display text-[18px]" style="color:var(--by-ink);">Studio · BCN</div>
+    <div class="by-display text-[18px] text-by-ink">Studio · BCN</div>
   </div>
   <div class="px-3 py-3">
     <a href="/" class="nav-item{% if not show_section and not show_roster %} active{% endif %}" onclick="toggleMobDrawer()">Dashboard</a>
@@ -510,7 +527,7 @@
     {% if can_view_finances %}
     <a href="/backstage/activity-log" class="nav-item{% if show_section == 'activity_log' %} active{% endif %}" onclick="toggleMobDrawer()">Activity Log</a>
     <a href="/backstage/callboard" class="nav-item{% if show_section == 'callboard' %} active{% endif %}" onclick="toggleMobDrawer()">Callboard</a>
-    <a href="/backstage/finances" class="nav-item{% if show_section == 'finances' %} active{% endif %}" style="color:var(--by-yes-deep); font-weight:700;" onclick="toggleMobDrawer()">Finances ✦</a>
+    <a href="/backstage/finances" class="nav-item text-by-yes-deep font-bold{% if show_section == 'finances' %} active{% endif %}" onclick="toggleMobDrawer()">Finances ✦</a>
     <a href="/backstage/reports" class="nav-item{% if show_section == 'reports' %} active{% endif %}" onclick="toggleMobDrawer()">Reports</a>
     {% endif %}
     <div class="by-eyebrow px-2 pt-4 pb-1">Switch role</div>
@@ -533,7 +550,7 @@
   <div class="flex flex-col min-w-0">
 
     <!-- ─── Sticky header ─── -->
-    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
 
         <!-- Right-pinned action group -->
@@ -542,8 +559,7 @@
           <!-- Add class -->
           <button onclick="openModal('modal-add-class')"
                   title="Add class"
-                  class="btn-ghost flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost flex h-9 px-3 text-[13px] items-center gap-2 bg-by-bg font-body">
             <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
             <span class="hidden sm:inline">Add class</span>
           </button>
@@ -551,8 +567,7 @@
           <!-- Add show -->
           <button onclick="openModal('modal-add-show')"
                   title="Add show"
-                  class="btn-ghost flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost flex h-9 px-3 text-[13px] items-center gap-2 bg-by-bg font-body">
             <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
             <span class="hidden sm:inline">Add show</span>
           </button>
@@ -560,8 +575,7 @@
           <!-- Add performer -->
           <button id="addPerformerBtn"
                   title="Add performer"
-                  class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd-thick); background:var(--by-yes); color:var(--by-ink); font-family:var(--by-f-sans); font-weight:800; letter-spacing:0.02em; text-transform:uppercase;">
+                  class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2 border-[1.5px] border-by-ink font-sans font-extrabold tracking-[0.02em] uppercase">
             <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
             <span class="hidden sm:inline">Add performer</span>
           </button>
@@ -573,44 +587,44 @@
           {% include 'partials/_inbox_btn.html' %}
           <div class="relative flex-shrink-0" id="user-menu-wrap">
             <button id="user-menu-btn" onclick="toggleUserMenu()"
-                    class="flex items-center gap-2 cursor-pointer h-9 px-2"
-                    style="border:var(--by-bd); background:var(--by-bg);">
+                    class="flex items-center gap-2 cursor-pointer h-9 px-2 border border-by-ink bg-by-bg">
               <!-- Avatar -->
-              <img id="header-av-img" class="av object-cover flex-shrink-0"
+              {# WHY the surviving inline `display` on both nodes: _updateHeaderAvatar() swaps
+                 these by assigning style.display = '' to reveal one and 'none' to hide the
+                 other. A Tailwind `hidden` class would outlive style.display = '' and leave the
+                 element permanently hidden, so this one declaration must stay inline. #}
+              <img id="header-av-img" class="av object-cover flex-shrink-0 w-7 h-7 border-2 border-by-ink rounded-full"
                    src="{{ current_user_avatar or '' }}"
-                   style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                   style="{{ '' if current_user_avatar else 'display:none;' }}"
                    alt="{{ current_user_initials }}">
-              <span id="header-av-init" class="av flex items-center justify-center flex-shrink-0"
-                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-on-accent);{{ 'display:none;' if current_user_avatar else '' }}">
+              {# Per-user tint gradient stays inline — computed per request, not a design token.
+                 Same documented exception as profile.html's avatar tints (see 6.3a). #}
+              <span id="header-av-init" class="av flex items-center justify-center flex-shrink-0 w-7 h-7 border-2 border-by-ink rounded-full font-mono text-[10px] font-bold text-by-on-accent"
+                    style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});{{ 'display:none;' if current_user_avatar else '' }}">
                 {{ current_user_initials }}
               </span>
               <!-- Name + role -->
               <div class="hidden sm:block leading-tight text-left min-w-0 max-w-[120px]">
-                <div class="truncate" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
-                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Stage Manager</div>
+                <div class="truncate font-sans font-bold text-[12px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+                <div class="font-mono text-[9.5px] tracking-[.08em] uppercase text-by-ink-3 mt-px">Stage Manager</div>
               </div>
               <!-- Live-status badge — always visible -->
-              <span class="flex flex-shrink-0 items-center justify-center rounded-full"
-                    style="width:8px;height:8px;background:var(--by-tomato);box-shadow:0 0 0 2px white,0 0 0 3px var(--by-tomato);"></span>
+              <span class="flex flex-shrink-0 items-center justify-center rounded-full w-2 h-2 bg-by-tomato shadow-[0_0_0_2px_white,0_0_0_3px_var(--by-tomato)]"></span>
             </button>
             <!-- Dropdown -->
-            <div id="user-menu-drop" class="hidden" style="
-              position:absolute; top:calc(100% + 6px); right:0; z-index:60;
-              min-width:160px; background:var(--by-bg); border:var(--by-bd-thick);
-              box-shadow:var(--by-sh-1);">
-              <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);line-height:1.2">{{ current_user_name }}</div>
-                <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Stage Manager</div>
+            <div id="user-menu-drop"
+              class="hidden absolute top-[calc(100%+6px)] right-0 z-[60] min-w-[160px] bg-by-bg border-[1.5px] border-by-ink shadow-by-hard">
+              <div class="px-3 py-2.5 border-b border-by-bg-3">
+                <div class="font-sans font-bold text-[12.5px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+                <div class="font-mono text-[10.5px] text-by-ink-3 mt-0.5">Stage Manager</div>
               </div>
               <button onclick="openMyConfig(); toggleUserMenu(false)"
-                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b"
-                style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
-                <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b border-by-bg-3 text-[13px] text-by-ink bg-by-bg">
+                <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Config
               </button>
               <a href="/logout"
-                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5"
-                style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);display:flex;">
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-[13px] text-by-tomato bg-by-bg">
                 <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 Log out
               </a>
@@ -632,16 +646,16 @@
     <main class="px-4 lg:px-7 py-4 lg:py-6 grid grid-cols-12 gap-4 lg:gap-5">
 
       <!-- Roster table (8 cols) — mock -->
-      <section id="roster-section" class="col-span-12 xl:col-span-8 border" style="border-color:var(--by-ink); background:var(--by-bg-2);">
-        <header class="px-5 py-4 flex flex-wrap items-center gap-3 border-b" style="border-color:var(--by-ink);">
+      <section id="roster-section" class="col-span-12 xl:col-span-8 border border-by-ink bg-by-bg-2">
+        <header class="px-5 py-4 flex flex-wrap items-center gap-3 border-b border-by-ink">
           <div class="flex-1">
-            <p class="by-h-sans text-[15px]" style="color:var(--by-ink);">Roster <span id="rosterCount" class="by-eyebrow ml-2">24 rows</span></p>
+            <p class="by-h-sans text-[15px] text-by-ink">Roster <span id="rosterCount" class="by-eyebrow ml-2">24 rows</span></p>
           </div>
-          <input id="rosterSearch" type="text" placeholder="Filter roster…" class="rounded px-3 py-1.5 text-[13px] border w-44" style="background:var(--by-bg); border-color:var(--by-ink);" />
+          <input id="rosterSearch" type="text" placeholder="Filter roster…" class="rounded px-3 py-1.5 text-[13px] border bg-by-bg border-by-ink w-44" />
         </header>
         <div class="overflow-x-auto">
           <table class="w-full text-[13px]">
-            <thead><tr class="border-b" style="border-color:var(--by-ink);">
+            <thead><tr class="border-b border-by-ink">
               <th class="px-5 py-2.5 text-left by-eyebrow">Name</th>
               <th class="px-5 py-2.5 text-left by-eyebrow">Level</th>
               <th class="px-5 py-2.5 text-left by-eyebrow">Status</th>
@@ -656,18 +670,18 @@
                 ('Tom Riera','L2','Active',275,'●●●○○'),
                 ('Júlia Mas','L3','Alumni',490,'●●●●●'),
               ] %}
-              <tr class="border-b" style="border-color:var(--by-bg-3);">
+              <tr class="border-b border-by-bg-3">
                 <td class="px-5 py-3 font-semibold">{{ name }}</td>
                 <td class="px-5 py-3 by-eyebrow">{{ level }}</td>
-                <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-semibold border" style="border-color:var(--by-ink);">{{ status }}</span></td>
+                <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-semibold border border-by-ink">{{ status }}</span></td>
                 <td class="px-5 py-3 font-mono">{{ pts }}</td>
-                <td class="px-5 py-3 tracking-widest" style="color:var(--by-yes-deep);">{{ att }}</td>
+                <td class="px-5 py-3 tracking-widest text-by-yes-deep">{{ att }}</td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
-        <footer class="px-5 py-3 by-eyebrow border-t" style="border-color:var(--by-ink);">
+        <footer class="px-5 py-3 by-eyebrow border-t border-by-ink">
           Showing <span id="rosterShown">5</span> of <span id="rosterTotal">24</span>
         </footer>
       </section>
@@ -676,40 +690,40 @@
       <aside id="live-challenge-panel" class="col-span-12 xl:col-span-4 flex flex-col gap-5">
 
         <!-- Volunteer pool mock -->
-        <section class="border p-5" style="border-color:var(--by-ink); background:var(--by-bg-2);">
-          <p class="by-h-sans text-[16px] mb-3" style="color:var(--by-ink);">Volunteer pool</p>
-          <div class="grid grid-cols-3 gap-2 text-center text-[12px] border-b pb-3 mb-3" style="border-color:var(--by-ink);">
+        <section class="border border-by-ink bg-by-bg-2 p-5">
+          <p class="by-h-sans text-[16px] mb-3 text-by-ink">Volunteer pool</p>
+          <div class="grid grid-cols-3 gap-2 text-center text-[12px] border-b border-by-ink pb-3 mb-3">
             <div><p class="by-eyebrow">Door</p><p class="font-black text-[20px]" id="poolN">3</p></div>
             <div><p class="by-eyebrow">Bar</p><p class="font-black text-[20px]">2</p></div>
             <div><p class="by-eyebrow">House</p><p class="font-black text-[20px]">1</p></div>
           </div>
           <ul id="poolList" class="space-y-1.5 text-[13px]">
-            <li class="flex items-center gap-2"><span class="w-6 h-6 rounded border flex items-center justify-center text-[10px] font-black" style="border-color:var(--by-ink); background:var(--by-yes);">AP</span> Ana P. — Door</li>
-            <li class="flex items-center gap-2"><span class="w-6 h-6 rounded border flex items-center justify-center text-[10px] font-black" style="border-color:var(--by-ink); background:var(--by-bg-3);">MP</span> Marc P. — Bar</li>
+            <li class="flex items-center gap-2"><span class="w-6 h-6 rounded border border-by-ink bg-by-yes flex items-center justify-center text-[10px] font-black">AP</span> Ana P. — Door</li>
+            <li class="flex items-center gap-2"><span class="w-6 h-6 rounded border border-by-ink bg-by-bg-3 flex items-center justify-center text-[10px] font-black">MP</span> Marc P. — Bar</li>
           </ul>
         </section>
 
         <!-- Spont generator mock -->
-        <section class="spont-card border p-5" style="border-color:var(--by-ink); background:var(--by-bg-2);">
-          <p class="by-h-sans text-[16px] mb-3" style="color:var(--by-ink);">Scene generator</p>
+        <section class="spont-card border border-by-ink bg-by-bg-2 p-5">
+          <p class="by-h-sans text-[16px] mb-3 text-by-ink">Scene generator</p>
           <div class="flex gap-2 mb-3">
-            <div id="perfA" class="flex items-center gap-2 flex-1 border rounded px-3 py-2" style="border-color:var(--by-ink);">
-              <span class="w-5 h-5 rounded text-[9px] font-black flex items-center justify-center" style="background:var(--by-yes);">AG</span>
+            <div id="perfA" class="flex items-center gap-2 flex-1 border border-by-ink rounded px-3 py-2">
+              <span class="w-5 h-5 rounded text-[9px] font-black flex items-center justify-center bg-by-yes">AG</span>
               <span class="text-[13px]">Ana García</span>
             </div>
-            <div id="perfB" class="flex items-center gap-2 flex-1 border rounded px-3 py-2" style="border-color:var(--by-ink);">
-              <span class="w-5 h-5 rounded text-[9px] font-black flex items-center justify-center" style="background:var(--by-bg-3);">MP</span>
+            <div id="perfB" class="flex items-center gap-2 flex-1 border border-by-ink rounded px-3 py-2">
+              <span class="w-5 h-5 rounded text-[9px] font-black flex items-center justify-center bg-by-bg-3">MP</span>
               <span class="text-[13px]">Marc Puig</span>
             </div>
           </div>
           <div class="space-y-1.5 text-[13px] mb-4">
             <div class="flex justify-between"><span class="by-eyebrow">Location</span><span id="locReel" class="font-semibold">Airport</span></div>
             <div class="flex justify-between"><span class="by-eyebrow">Style</span><span id="styleReel" class="font-semibold">Harold</span></div>
-            <div class="flex justify-between"><span class="by-eyebrow">Constraint</span><span id="constraintReel" style="color:var(--by-tomato);">No questions</span></div>
+            <div class="flex justify-between"><span class="by-eyebrow">Constraint</span><span id="constraintReel" class="text-by-tomato">No questions</span></div>
           </div>
           <div class="flex gap-2">
-            <button id="spinBtn" class="flex-1 h-10 rounded border font-semibold text-[13.5px]" style="background:var(--by-yes); border-color:var(--by-ink);">Spin</button>
-            <button id="saveBtn" class="h-10 px-3 rounded border text-[13px]" style="border-color:var(--by-ink);">Save scene</button>
+            <button id="spinBtn" class="flex-1 h-10 rounded border border-by-ink bg-by-yes font-semibold text-[13.5px]">Spin</button>
+            <button id="saveBtn" class="h-10 px-3 rounded border border-by-ink text-[13px]">Save scene</button>
           </div>
         </section>
 
@@ -726,28 +740,27 @@
       <div class="flex items-start gap-4 flex-wrap">
         <div>
           <div class="by-eyebrow mb-1">Stage Manager · Studio BCN</div>
-          <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+          <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
             Studio <span class="by-yes-block">Dashboard</span>
           </h1>
         </div>
       </div>
       <div class="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-yes);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-yes">
           <div class="by-eyebrow">Active roster</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ student_users | length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ student_users | length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Cohorts</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ classes | length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ classes | length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Shows booked</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ shows | length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ shows | length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Open slots</div>
-          <div class="font-display text-[26px] leading-none mt-1"
-               style="color:{% if open_slot_count.value > 0 %}var(--by-ink){% else %}var(--by-ink-3){% endif %};">
+          <div class="font-display text-[26px] leading-none mt-1 {% if open_slot_count.value > 0 %}text-by-ink{% else %}text-by-ink-3{% endif %}">
             {{ open_slot_count.value }}
           </div>
         </div>
@@ -765,40 +778,38 @@
       <div class="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div class="by-eyebrow mb-1">Stage Manager · Roster</div>
-          <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+          <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
             Performers &amp; <span class="by-yes-block">Patrons</span>
           </h1>
         </div>
         <div class="flex items-center gap-2 flex-wrap self-end pb-1">
           <button onclick="openModal('modal-bulk-upload')"
-            class="flex items-center gap-1.5 px-3 py-2 text-[11.5px] font-semibold"
-            style="border:var(--by-bd);color:var(--by-ink);background:var(--by-bg);">
+            class="flex items-center gap-1.5 px-3 py-2 text-[11.5px] font-semibold border border-by-ink text-by-ink bg-by-bg">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Import Excel
           </button>
           <button onclick="document.getElementById('addPerformerBtn').click()"
-            class="flex items-center gap-1.5 px-3.5 py-2 text-[11.5px] font-bold"
-            style="border:var(--by-bd-thick);color:var(--by-ink);background:var(--by-yes);box-shadow:var(--by-sh-1);">
+            class="flex items-center gap-1.5 px-3.5 py-2 text-[11.5px] font-bold border-[1.5px] border-by-ink text-by-ink bg-by-yes shadow-by-hard">
             + Add Performer
           </button>
         </div>
       </div>
       <div class="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-yes);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-yes">
           <div class="by-eyebrow">Total members</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ student_users | length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ student_users | length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Students</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ student_count }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ student_count }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Teachers</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ teacher_count }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ teacher_count }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Cast eligible</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink-3);">{{ cast_cp + cast_mo }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink-3">{{ cast_cp + cast_mo }}</div>
         </div>
       </div>
     </div>
@@ -808,56 +819,54 @@
 
       {% if not show_roster and not show_section %}
       <!-- ══ Weekly Schedule Matrix ══ -->
-      <div class="col-span-12 border" style="border-color:var(--by-ink); background:var(--by-bg); box-shadow:var(--by-sh-1);">
-        <div class="px-5 py-4 flex items-center justify-between border-b" style="border-color:var(--by-ink); background:var(--by-yes);">
+      <div class="col-span-12 border border-by-ink bg-by-bg shadow-by-hard">
+        <div class="px-5 py-4 flex items-center justify-between border-b border-by-ink bg-by-yes">
           <div>
-            <div class="font-display text-[17px]" style="color:var(--by-ink);">This Week On Stage &amp; In Studio</div>
-            <div class="by-eyebrow mt-0.5" style="font-size:10px; color:var(--by-ink-2);">{{ today_label }}</div>
+            <div class="font-display text-[17px] text-by-ink">This Week On Stage &amp; In Studio</div>
+            <div class="by-eyebrow mt-0.5 text-[10px] text-by-ink-2">{{ today_label }}</div>
           </div>
           <div class="flex items-center gap-3">
-            <button class="card-toggle font-mono text-[11.5px]" data-target="body-weekly-schedule" style="color:var(--by-ink-2);">[-]</button>
+            <button class="card-toggle font-mono text-[11.5px] text-by-ink-2" data-target="body-weekly-schedule">[-]</button>
             <a href="/classes"
-               class="flex items-center gap-1.5 border px-3 py-1.5 text-[11px] font-semibold"
-               style="border-color:var(--by-ink); background:var(--by-ink); color:var(--by-yes); text-decoration:none;">
+               class="flex items-center gap-1.5 border px-3 py-1.5 text-[11px] font-semibold border-by-ink bg-by-ink text-by-yes no-underline">
               View Full Schedule
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
           </div>
         </div>
         <div id="body-weekly-schedule" class="overflow-x-auto">
-          <div class="min-w-[700px]" style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr));">
+          <div class="min-w-[700px] grid" style="grid-template-columns:repeat(7,minmax(0,1fr));">
             {% for day in week_days %}
             {% set day_classes = week_sessions | selectattr('day','equalto',day.short) | list %}
             {% set day_shows   = shows | selectattr('date','equalto',day.iso) | list %}
-            <div class="flex flex-col" style="border-right:{% if not loop.last %}1px solid var(--by-bg-3){% else %}none{% endif %};">
+            <div class="flex flex-col {% if not loop.last %}border-r border-by-bg-3{% endif %}">
               <!-- Column header -->
-              <div class="px-3 py-2.5 border-b flex items-center justify-between"
-                   style="border-color:var(--by-bg-3); background:{% if day.is_today %}var(--by-yes){% else %}var(--by-bg-2){% endif %};">
+              <div class="px-3 py-2.5 border-b border-by-bg-3 flex items-center justify-between {% if day.is_today %}bg-by-yes{% else %}bg-by-bg-2{% endif %}">
                 <div>
-                  <div class="font-display text-[13px]" style="color:var(--by-ink);">{{ day.short }}</div>
-                  <div class="by-eyebrow" style="font-size:9px; color:var(--by-ink-3);">{{ day.date }}</div>
+                  <div class="font-display text-[13px] text-by-ink">{{ day.short }}</div>
+                  <div class="by-eyebrow text-[9px] text-by-ink-3">{{ day.date }}</div>
                 </div>
                 {% if day.is_today %}
-                <span class="by-eyebrow px-1.5 py-0.5" style="font-size:8px; background:var(--by-ink); color:var(--by-yes);">NOW</span>
+                <span class="by-eyebrow px-1.5 py-0.5 text-[8px] bg-by-ink text-by-yes">NOW</span>
                 {% endif %}
               </div>
               <!-- Column content -->
               <div class="p-2 flex flex-col gap-1.5 flex-1" style="min-height:110px;">
                 {% for s in day_classes %}
                 <a href="{% if s.id %}/classes?open={{ s.id }}{% else %}/classes{% endif %}"
-                   class="block px-2 py-1.5 border" style="border-color:var(--by-bg-3); background:var(--by-bg); text-decoration:none; cursor:pointer;">
-                  <div class="text-[11px] font-semibold leading-tight truncate" style="color:var(--by-ink);">{{ s.title }}</div>
-                  <div class="by-eyebrow mt-0.5" style="font-size:9px; color:var(--by-ink-3);">{{ s.time }} · {{ s.count }} enrolled</div>
+                   class="block px-2 py-1.5 border border-by-bg-3 bg-by-bg no-underline cursor-pointer">
+                  <div class="text-[11px] font-semibold leading-tight truncate text-by-ink">{{ s.title }}</div>
+                  <div class="by-eyebrow mt-0.5 text-[9px] text-by-ink-3">{{ s.time }} · {{ s.count }} enrolled</div>
                 </a>
                 {% endfor %}
                 {% for show in day_shows %}
-                <div class="px-2 py-1.5 border" style="border-color:var(--by-ink); background:var(--by-success-dark-bg); color:var(--by-success-dark-text);">
+                <div class="px-2 py-1.5 border border-by-ink bg-by-success-dark-bg text-by-success-dark-text">
                   <div class="text-[11px] font-semibold leading-tight truncate">{{ show.title }}</div>
-                  <div class="by-eyebrow mt-0.5" style="font-size:9px; opacity:.75;">{{ show.time }} · Show</div>
+                  <div class="by-eyebrow mt-0.5 text-[9px] opacity-75">{{ show.time }} · Show</div>
                 </div>
                 {% endfor %}
                 {% if not day_classes and not day_shows %}
-                <div class="flex-1 flex items-center justify-center by-eyebrow" style="font-size:10px; color:var(--by-ink-4);">—</div>
+                <div class="flex-1 flex items-center justify-center by-eyebrow text-[10px] text-by-ink-4">—</div>
                 {% endif %}
               </div>
             </div>
@@ -871,35 +880,30 @@
       <!-- ══ Performer & Student Roster ══ -->
       <!-- Always in DOM so roster JS finds its elements; hidden on dashboard, shown on /performers -->
       <section id="roster-section"
-               class="col-span-12 border hairline"
-               style="background:var(--by-bg);{% if not show_roster %} display:none;{% endif %}">
+               class="col-span-12 border hairline bg-by-bg {% if not show_roster %}hidden{% endif %}">
         <header class="px-5 py-4 flex flex-wrap items-center gap-2 border-b hairline">
           <div class="flex items-center gap-2 flex-shrink-0">
-            <span id="rosterCount" class="by-eyebrow" style="color:var(--by-ink-3)">— rows</span>
+            <span id="rosterCount" class="by-eyebrow text-by-ink-3">— rows</span>
           </div>
           <div class="flex-1"></div>
           <div class="relative flex-shrink-0">
-            <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--by-ink-3)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             <input id="rosterSearch" type="text" placeholder="Filter roster…"
-              class="w-44 border hairline outline-none pl-8 pr-2.5 py-1.5 text-[12.5px]" style="background:var(--by-bg); color:var(--by-ink); border-radius:999px;" />
+              class="w-44 border hairline outline-none pl-8 pr-2.5 py-1.5 text-[12.5px] bg-by-bg text-by-ink rounded-full" />
           </div>
-          <label id="volOnly-pill" for="volOnly" class="flex items-center gap-1.5 text-[11.5px] cursor-pointer select-none px-3 py-1.5 flex-shrink-0"
-                 style="border:1.5px solid var(--by-ink-3);border-radius:999px;color:var(--by-ink-2);background:var(--by-bg);">
+          <label id="volOnly-pill" for="volOnly" class="flex items-center gap-1.5 text-[11.5px] cursor-pointer select-none px-3 py-1.5 flex-shrink-0 rounded-full border-[1.5px] border-by-ink-3 text-by-ink-2 bg-by-bg">
             <input id="volOnly" type="checkbox" class="w-3.5 h-3.5" />
-            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" style="color:var(--by-yes-deep)"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
+            <svg class="w-3 h-3 text-by-yes-deep" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
             Volunteers only
           </label>
           {# Status filter pills — All / Active / Inactive #}
           <div class="flex items-center gap-1 flex-shrink-0">
             <button id="spill-all" onclick="setStatusFilter('all')"
-              class="px-3 py-1.5 text-[11.5px] font-bold tracking-wide"
-              style="border-radius:999px;border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);">All</button>
+              class="px-3 py-1.5 text-[11.5px] font-bold tracking-wide rounded-full border-[1.5px] border-by-ink bg-by-yes text-by-ink">All</button>
             <button id="spill-active" onclick="setStatusFilter('active')"
-              class="px-3 py-1.5 text-[11.5px] font-bold tracking-wide"
-              style="border-radius:999px;border:1.5px solid var(--by-ink-3);background:var(--by-bg-2);color:var(--by-ink-2);">Active</button>
+              class="px-3 py-1.5 text-[11.5px] font-bold tracking-wide rounded-full border-[1.5px] border-by-ink-3 bg-by-bg-2 text-by-ink-2">Active</button>
             <button id="spill-inactive" onclick="setStatusFilter('inactive')"
-              class="px-3 py-1.5 text-[11.5px] font-bold tracking-wide"
-              style="border-radius:999px;border:1.5px solid var(--by-ink-3);background:var(--by-bg-2);color:var(--by-ink-2);">Inactive</button>
+              class="px-3 py-1.5 text-[11.5px] font-bold tracking-wide rounded-full border-[1.5px] border-by-ink-3 bg-by-bg-2 text-by-ink-2">Inactive</button>
           </div>
         </header>
         <div id="rosterCards" class="by-roster-cards"></div>
@@ -907,7 +911,7 @@
         <div class="by-roster-table-wrap overflow-x-auto">
           <table class="w-full text-left">
             <thead>
-              <tr class="text-[10.5px] uppercase tracking-[.16em]" style="color:var(--by-ink-3)">
+              <tr class="text-[10.5px] uppercase tracking-[.16em] text-by-ink-3">
                 <th class="pl-3 pr-1 py-2.5 w-8">
                   <input type="checkbox" id="roster-select-all" class="bulk-select-all w-3.5 h-3.5 cursor-pointer"
                     data-entity="member" title="Select all performers" />
@@ -924,23 +928,23 @@
             <tbody id="rosterBody"></tbody>
           </table>
         </div>
-        <footer class="px-5 py-3 border-t hairline text-[12px]" style="color:var(--by-ink-3)">
-          Showing <span id="rosterShown" class="font-mono" style="color:var(--by-ink-2)">0</span> of <span id="rosterTotal" class="font-mono">0</span>
+        <footer class="px-5 py-3 border-t hairline text-[12px] text-by-ink-3">
+          Showing <span id="rosterShown" class="font-mono text-by-ink-2">0</span> of <span id="rosterTotal" class="font-mono">0</span>
         </footer>
       </section>
 
       {% if not show_roster and not show_section %}
       <!-- ══ Shows & Volunteer Slots (8 cols) + Spontaneity Engine (4 cols) ══ -->
-      <section id="shows-section" class="col-span-12 xl:col-span-8 border hairline" style="background:var(--by-bg)">
+      <section id="shows-section" class="col-span-12 xl:col-span-8 border hairline bg-by-bg">
         <header class="px-5 py-4 border-b hairline flex items-center justify-between">
           <div>
-            <div class="font-display text-[16.5px]" style="color:var(--by-ink)">Shows &amp; Volunteer Slots</div>
+            <div class="font-display text-[16.5px] text-by-ink">Shows &amp; Volunteer Slots</div>
             {# Dashboard card: scoped to the current Mon–Sun calendar week #}
-            <div class="text-[12px]" style="color:var(--by-ink-3)">This week · <a href="/backstage/volunteer-shifts" class="font-semibold" style="color:var(--by-yes-deep)">Full roster →</a></div>
+            <div class="text-[12px] text-by-ink-3">This week · <a href="/backstage/volunteer-shifts" class="font-semibold text-by-yes-deep">Full roster →</a></div>
           </div>
           <div class="flex items-center gap-3">
-            <button class="card-toggle font-mono text-[11.5px]" data-target="body-shows" style="color:var(--by-ink-3)">[-]</button>
-            <button onclick="openModal('modal-add-show')" class="text-[11.5px] font-semibold" style="color:var(--by-yes-deep)">+ Add →</button>
+            <button class="card-toggle font-mono text-[11.5px] text-by-ink-3" data-target="body-shows">[-]</button>
+            <button onclick="openModal('modal-add-show')" class="text-[11.5px] font-semibold text-by-yes-deep">+ Add →</button>
           </div>
         </header>
         <div id="body-shows">
@@ -953,12 +957,12 @@
             <li class="px-5 py-4">
               <div class="flex items-center gap-3 mb-3">
                 <div class="w-12 text-center flex-shrink-0">
-                  <div class="text-[10.5px] uppercase tracking-[.16em]" style="color:var(--by-ink-3)">{{ show.day[:3] }}</div>
-                  <div class="font-display text-[15px] leading-none" style="color:var(--by-ink)">{{ show.time }}</div>
+                  <div class="text-[10.5px] uppercase tracking-[.16em] text-by-ink-3">{{ show.day[:3] }}</div>
+                  <div class="font-display text-[15px] leading-none text-by-ink">{{ show.time }}</div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-[13.5px] truncate" style="color:var(--by-ink)">{{ show.title }}</div>
-                  <div class="text-[11.5px]" style="color:var(--by-ink-3)">{{ show.day }}{% if show.date and show.date != show.day %} · {{ show.date | date_long }}{% endif %}</div>
+                  <div class="text-[13.5px] truncate text-by-ink">{{ show.title }}</div>
+                  <div class="text-[11.5px] text-by-ink-3">{{ show.day }}{% if show.date and show.date != show.day %} · {{ show.date | date_long }}{% endif %}</div>
                 </div>
                 {% if show_shifts and open_cnt == 0 %}
                 <span class="chip chip-active flex-shrink-0"><span class="dot"></span>Fully staffed</span>
@@ -974,8 +978,8 @@
                 {% set vol = (users | selectattr('id', 'equalto', shift.student_id) | first) if shift.student_id else none %}
                 {% set display_name = shift.student_name or (vol.name if vol else none) %}
                 {# Row background reflects assignment state: accepted=yes-soft, requested=warm amber, unassigned=default #}
-                <div class="flex items-center gap-2 px-2 py-1.5 border" style="{% if shift.student_id and shift.status == 'accepted' %}background:var(--by-yes-soft); border-color:var(--by-ink){% elif shift.student_id %}background:var(--by-warning-bg); border-color:var(--by-warning-accent){% else %}background:var(--by-bg); border-color:var(--by-bg-3){% endif %}">
-                  <span class="text-[11.5px] font-semibold w-28 flex-shrink-0" style="color:var(--by-ink-3)">{{ shift.role }}</span>
+                <div class="flex items-center gap-2 px-2 py-1.5 border {% if shift.student_id and shift.status == 'accepted' %}bg-by-yes-soft border-by-ink{% elif shift.student_id %}bg-by-warning-bg border-by-warning-accent{% else %}bg-by-bg border-by-bg-3{% endif %}">
+                  <span class="text-[11.5px] font-semibold w-28 flex-shrink-0 text-by-ink-3">{{ shift.role }}</span>
 
                   {% if shift.student_id and shift.status == 'accepted' %}
                   {# ── Accepted: student confirmed — show green dot + name ── #}
@@ -983,30 +987,31 @@
                     <span class="w-4 h-4 rounded-full bg-emerald-500/20 flex-shrink-0 grid place-items-center">
                       <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                     </span>
-                    <span class="text-[12px] truncate" style="color:var(--by-ink-2)">{{ display_name or 'Unknown user' }}</span>
+                    <span class="text-[12px] truncate text-by-ink-2">{{ display_name or 'Unknown user' }}</span>
                   </div>
                   <button onclick="confirmUnassign('{{ shift.id }}')"
-                    class="btn-ghost h-6 px-2 rounded-md text-[11px] flex-shrink-0"
-                    style="color:var(--by-ink-3);border-color:var(--by-bg-3);"
+                    class="btn-ghost h-6 px-2 rounded-md text-[11px] flex-shrink-0 text-by-ink-3 border-by-bg-3"
                     title="Remove assignment">✕</button>
 
                   {% elif shift.student_id %}
                   {# ── Requested: assigned but awaiting student's accept/decline ── #}
                   <div class="flex-1 flex items-center gap-1.5 min-w-0">
+                    <!-- WHY: rgba(193,122,32,.15) is a translucent tint of --by-warning-accent with no
+                         registered Tailwind opacity utility for this token — kept inline rather than
+                         inventing an unrequested token, same treatment as other non-token color values. -->
                     <span class="w-4 h-4 rounded-full flex-shrink-0 grid place-items-center" style="background:rgba(193,122,32,.15)">
-                      <span class="w-1.5 h-1.5 rounded-full" style="background:var(--by-warning-accent)"></span>
+                      <span class="w-1.5 h-1.5 rounded-full bg-by-warning-accent"></span>
                     </span>
-                    <span class="text-[12px] truncate" style="color:var(--by-ink-3)">{{ display_name or 'Unknown user' }}</span>
+                    <span class="text-[12px] truncate text-by-ink-3">{{ display_name or 'Unknown user' }}</span>
                     <span class="chip chip-waiting flex-shrink-0" style="font-size:9.5px;padding:.1rem .45rem"><span class="dot"></span>Waiting for reply</span>
                   </div>
                   <button onclick="confirmUnassign('{{ shift.id }}')"
-                    class="btn-ghost h-6 px-2 rounded-md text-[11px] flex-shrink-0"
-                    style="color:var(--by-ink-3);border-color:var(--by-bg-3);"
+                    class="btn-ghost h-6 px-2 rounded-md text-[11px] flex-shrink-0 text-by-ink-3 border-by-bg-3"
                     title="Remove assignment">✕</button>
 
                   {% else %}
                   {# ── Unassigned: open slot ── #}
-                  <span class="flex-1 text-[11.5px] italic" style="color:var(--by-ink-4)">Unassigned</span>
+                  <span class="flex-1 text-[11.5px] italic text-by-ink-4">Unassigned</span>
                   <button onclick="openAssignModal(this, '{{ shift.id }}', '{{ shift.role }}')"
                     data-assigned-ids="{{ show_assigned_ids | tojson | string | e }}"
                     class="btn-spot h-6 px-2.5 rounded-md text-[11px] flex-shrink-0">
@@ -1020,58 +1025,63 @@
             {% endfor %}
           </ul>
           {% else %}
-          <div class="px-5 py-10 text-center text-[12.5px]" style="color:var(--by-ink-3)">
+          <div class="px-5 py-10 text-center text-[12.5px] text-by-ink-3">
             No shows on the bill this week.
-            <button onclick="openModal('modal-add-show')" class="font-semibold" style="color:var(--by-yes-deep)">Schedule one →</button>
-            <div class="mt-2"><a href="/backstage/volunteer-shifts" class="font-semibold" style="color:var(--by-ink-3)">View full roster →</a></div>
+            <button onclick="openModal('modal-add-show')" class="font-semibold text-by-yes-deep">Schedule one →</button>
+            <div class="mt-2"><a href="/backstage/volunteer-shifts" class="font-semibold text-by-ink-3">View full roster →</a></div>
           </div>
           {% endif %}
         </div>
       </section>
 
       <!-- ══ Spontaneity Engine / Warm-up Draw (4 cols) ══ -->
-      <section class="col-span-12 xl:col-span-4 spont-card" style="padding:0">
+      <section class="col-span-12 xl:col-span-4 spont-card p-0">
+        <!-- WHY: rgba(20,18,16,.12) is a translucent tint of --by-ink with no registered
+             Tailwind opacity utility for this token — kept inline, same as the matching
+             rgba(20,18,16,.35)/rgba(255,255,255,.35) values further down in this section. -->
         <div class="px-5 pt-5 pb-4 flex items-center justify-between" style="border-bottom:1px solid rgba(20,18,16,.12)">
           <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-md bg-amber-950 border border-amber-700 grid place-items-center flex-shrink-0">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--by-yes-deep)"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
+              <svg class="w-3.5 h-3.5 text-by-yes-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
             </div>
             <div>
-              <div class="text-[10.5px] uppercase tracking-[.18em] font-bold" style="color:var(--by-ink)">Spontaneity Engine</div>
-              <div class="font-display text-[17.5px] leading-tight" style="color:var(--by-ink)">Warm-up draw</div>
+              <div class="text-[10.5px] uppercase tracking-[.18em] font-bold text-by-ink">Spontaneity Engine</div>
+              <div class="font-display text-[17.5px] leading-tight text-by-ink">Warm-up draw</div>
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button id="lockBtn" class="text-[10.5px] uppercase tracking-[.16em]" style="color:var(--by-ink-2)">Lock</button>
-            <button class="card-toggle font-mono text-[11.5px]" data-target="body-spont" style="color:var(--by-ink-2)">[-]</button>
+            <button id="lockBtn" class="text-[10.5px] uppercase tracking-[.16em] text-by-ink-2">Lock</button>
+            <button class="card-toggle font-mono text-[11.5px] text-by-ink-2" data-target="body-spont">[-]</button>
           </div>
         </div>
         <div id="body-spont" class="px-5 pb-5">
-          <div class="mt-4 border hairline px-4 py-4" style="background:var(--by-bg)">
-            <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Two performers</div>
+          <div class="mt-4 border hairline px-4 py-4 bg-by-bg">
+            <div class="text-[10.5px] uppercase tracking-[.18em] text-by-ink-3">Two performers</div>
             <div class="mt-1 flex items-center gap-2 flex-wrap">
               <div id="perfA" class="flex items-center gap-2">
+                <!-- WHY: per-user avatar-tint gradient, computed per performer not a design token —
+                     same documented exception as profile.html's classmate-row tint fallback. -->
                 <span class="av" style="background:linear-gradient(135deg,#FBBF24,#F472B6)">--</span>
-                <span class="font-display text-[18px]" style="color:var(--by-ink)">—</span>
+                <span class="font-display text-[18px] text-by-ink">—</span>
               </div>
-              <span class="font-display text-[16px]" style="color:var(--by-ink-4)">&amp;</span>
+              <span class="font-display text-[16px] text-by-ink-4">&amp;</span>
               <div id="perfB" class="flex items-center gap-2">
                 <span class="av" style="background:linear-gradient(135deg,#818CF8,#FBBF24)">--</span>
-                <span class="font-display text-[18px]" style="color:var(--by-ink)">—</span>
+                <span class="font-display text-[18px] text-by-ink">—</span>
               </div>
             </div>
             <div class="mt-4 grid grid-cols-1 gap-3">
               <div>
-                <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Location</div>
-                <div class="reel-slot mt-0.5 text-[20px] font-display" id="locReel" style="color:var(--by-yes-deep)"><div class="reel"><span>—</span></div></div>
+                <div class="text-[10.5px] uppercase tracking-[.18em] text-by-ink-3">Location</div>
+                <div class="reel-slot mt-0.5 text-[20px] font-display text-by-yes-deep" id="locReel"><div class="reel"><span>—</span></div></div>
               </div>
               <div>
-                <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">In the style of</div>
-                <div class="reel-slot mt-0.5 text-[20px] font-display" id="styleReel" style="color:var(--by-ink)"><div class="reel"><span>—</span></div></div>
+                <div class="text-[10.5px] uppercase tracking-[.18em] text-by-ink-3">In the style of</div>
+                <div class="reel-slot mt-0.5 text-[20px] font-display text-by-ink" id="styleReel"><div class="reel"><span>—</span></div></div>
               </div>
               <div>
-                <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Hidden constraint</div>
-                <div class="reel-slot mt-0.5 text-[15px]" id="constraintReel" style="color:var(--by-ink-2)"><div class="reel"><span>—</span></div></div>
+                <div class="text-[10.5px] uppercase tracking-[.18em] text-by-ink-3">Hidden constraint</div>
+                <div class="reel-slot mt-0.5 text-[15px] text-by-ink-2" id="constraintReel"><div class="reel"><span>—</span></div></div>
               </div>
             </div>
           </div>
@@ -1083,15 +1093,15 @@
             <button id="saveBtn" class="btn-ghost h-10 px-3 rounded-lg text-[13px]">Save scene</button>
           </div>
           <details class="mt-3 group">
-            <summary class="flex items-center justify-between text-[11.5px]" style="color:var(--by-ink-3)">
+            <summary class="flex items-center justify-between text-[11.5px] text-by-ink-3">
               <span>Recent draws</span>
               <svg class="w-3 h-3 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path d="M5 8l5 5 5-5H5z"/></svg>
             </summary>
-            <ul id="spontHistory" class="mt-2 space-y-1.5 text-[12px] font-mono" style="color:var(--by-ink-3)"></ul>
+            <ul id="spontHistory" class="mt-2 space-y-1.5 text-[12px] font-mono text-by-ink-3"></ul>
           </details>
           <button onclick="openModal('modal-spont-pool')"
-            class="mt-3 w-full border py-2 text-[11.5px] font-semibold flex items-center justify-center gap-1.5"
-            style="border-color:rgba(20,18,16,.35); color:var(--by-ink-2); background:rgba(255,255,255,.35);">
+            class="mt-3 w-full border py-2 text-[11.5px] font-semibold flex items-center justify-center gap-1.5 text-by-ink-2"
+            style="border-color:rgba(20,18,16,.35); background:rgba(255,255,255,.35);">
             <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
             Feed the Machine
           </button>
