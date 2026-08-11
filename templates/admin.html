@@ -1113,34 +1113,31 @@
       {# ── Backstage section views — each at its own URL ── #}
       {% if show_section == 'shows_bookings' %}
       {# ══ Shows & Bookings page header + card view ══════════════════════ #}
-      <section id="bs-shows-bookings" class="col-span-12" style="background:var(--by-bg)">
+      <section id="bs-shows-bookings" class="col-span-12 bg-by-bg">
 
         {# ── Page header — mirrors Classes & Cohorts style ── #}
         <div class="px-4 lg:px-7 pt-6 pb-4 border-b hairline">
           <div class="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <div class="by-eyebrow mb-1">Stage Manager · Show Management</div>
-              <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+              <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
                 Shows &amp; <span class="by-yes-block">Bookings</span>
               </h1>
             </div>
             {# Action buttons — right-aligned, aligned to bottom of title #}
             <div class="flex items-center gap-2 flex-wrap self-end pb-1">
               <button onclick="sbSyncBookings()" id="btn-sync-bookings"
-                class="flex items-center gap-1.5 px-3 py-2 text-[11.5px] font-semibold"
-                style="border:var(--by-bd);color:var(--by-ink);background:var(--by-bg);">
+                class="flex items-center gap-1.5 px-3 py-2 text-[11.5px] font-semibold border border-by-ink text-by-ink bg-by-bg">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
                 Sync Bookings
               </button>
               <button onclick="sbSyncShows()" id="btn-sb-sync-shows"
-                class="flex items-center gap-1.5 px-3 py-2 text-[11.5px] font-semibold"
-                style="border:var(--by-bd);color:var(--by-ink);background:var(--by-bg-2);">
+                class="flex items-center gap-1.5 px-3 py-2 text-[11.5px] font-semibold border border-by-ink text-by-ink bg-by-bg-2">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 Sync Shows
               </button>
               <button onclick="openModal('modal-add-show')"
-                class="flex items-center gap-1.5 px-3.5 py-2 text-[11.5px] font-bold"
-                style="border:var(--by-bd-thick);color:var(--by-ink);background:var(--by-yes);box-shadow:var(--by-sh-1);">
+                class="flex items-center gap-1.5 px-3.5 py-2 text-[11.5px] font-bold border-[1.5px] border-by-ink text-by-ink bg-by-yes shadow-by-hard">
                 + Add Show
               </button>
             </div>
@@ -1148,104 +1145,96 @@
 
           {# KPI strip — matches Classes & Cohorts stat boxes #}
           <div class="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
-            <div class="border hairline px-3.5 py-2.5" style="background:var(--by-yes);">
+            <div class="border hairline px-3.5 py-2.5 bg-by-yes">
               <div class="by-eyebrow">Total shows</div>
-              <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);" id="sb-kpi-total">{{ shows | length }}</div>
+              <div class="font-display text-[26px] leading-none mt-1 text-by-ink" id="sb-kpi-total">{{ shows | length }}</div>
             </div>
-            <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+            <div class="border hairline px-3.5 py-2.5 bg-by-bg">
               <div class="by-eyebrow">Upcoming</div>
-              <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);" id="sb-kpi-upcoming">—</div>
+              <div class="font-display text-[26px] leading-none mt-1 text-by-ink" id="sb-kpi-upcoming">—</div>
             </div>
-            <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+            <div class="border hairline px-3.5 py-2.5 bg-by-bg">
               <div class="by-eyebrow">Open slots</div>
-              <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ open_slot_count.value }}</div>
+              <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ open_slot_count.value }}</div>
             </div>
-            <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+            <div class="border hairline px-3.5 py-2.5 bg-by-bg">
               <div class="by-eyebrow">Past shows</div>
-              <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink-3);" id="sb-kpi-past">—</div>
+              <div class="font-display text-[26px] leading-none mt-1 text-by-ink-3" id="sb-kpi-past">—</div>
             </div>
           </div>
         </div>
 
-        <div id="sb-status-bar" class="hidden px-5 py-2 text-[12px] font-medium border-b hairline" style="color:var(--by-ink-3)"></div>
+        <div id="sb-status-bar" class="hidden px-5 py-2 text-[12px] font-medium border-b hairline text-by-ink-3"></div>
         <div class="p-5">
           {# Filter pills — pill shape matching design language #}
           <div class="flex items-center gap-1.5 mb-4 flex-wrap">
             <button id="sbtab-all" onclick="sbSetFilter('all')"
-              class="sbtab px-3.5 py-1.5 text-[11px] font-bold tracking-wide"
-              style="border-radius:999px;border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);">
+              class="sbtab px-3.5 py-1.5 text-[11px] font-bold tracking-wide rounded-full border-[1.5px] border-by-ink bg-by-yes text-by-ink">
               Full Run <span id="sbtab-all-count" class="ml-1 font-mono text-[10px]"></span>
             </button>
             <button id="sbtab-upcoming" onclick="sbSetFilter('upcoming')"
-              class="sbtab px-3.5 py-1.5 text-[11px] font-bold tracking-wide"
-              style="border-radius:999px;border:1.5px solid var(--by-ink-3);background:var(--by-bg-2);color:var(--by-ink-2);">
+              class="sbtab px-3.5 py-1.5 text-[11px] font-bold tracking-wide rounded-full border-[1.5px] border-by-ink-3 bg-by-bg-2 text-by-ink-2">
               On Deck <span id="sbtab-upcoming-count" class="ml-1 font-mono text-[10px]"></span>
             </button>
             <button id="sbtab-past" onclick="sbSetFilter('past')"
-              class="sbtab px-3.5 py-1.5 text-[11px] font-bold tracking-wide"
-              style="border-radius:999px;border:1.5px solid var(--by-ink-3);background:var(--by-bg-2);color:var(--by-ink-2);">
+              class="sbtab px-3.5 py-1.5 text-[11px] font-bold tracking-wide rounded-full border-[1.5px] border-by-ink-3 bg-by-bg-2 text-by-ink-2">
               Gone Dark <span id="sbtab-past-count" class="ml-1 font-mono text-[10px]"></span>
             </button>
           </div>
           <div id="sb-card-grid" class="flex flex-col gap-3">
-            <div class="py-10 col-span-full text-center text-[12.5px]" style="color:var(--by-ink-4)">Loading shows…</div>
+            <div class="py-10 col-span-full text-center text-[12.5px] text-by-ink-4">Loading shows…</div>
           </div>
         </div>
       </section>
 
 
 {% elif show_section == 'scene_library' %}
-      <section id="bs-scenelibrary" class="col-span-12 border hairline" style="background:var(--by-bg)">
+      <section id="bs-scenelibrary" class="col-span-12 border hairline bg-by-bg">
         <header class="px-5 py-4 border-b hairline flex items-center justify-between">
           <div>
             <div class="by-eyebrow mb-1">Backstage</div>
-            <div class="font-display text-[22px]" style="color:var(--by-ink)">Scene Library</div>
-            <div class="text-[12px] mt-0.5" style="color:var(--by-ink-3)">Spontaneity Engine saves · <span id="bs-sceneCount" class="font-mono">0</span> scenes</div>
+            <div class="font-display text-[22px] text-by-ink">Scene Library</div>
+            <div class="text-[12px] mt-0.5 text-by-ink-3">Spontaneity Engine saves · <span id="bs-sceneCount" class="font-mono">0</span> scenes</div>
           </div>
-          <button onclick="clearSceneLibrary()" class="border px-3 py-2 text-[11.5px] font-semibold"
-            style="border-color:var(--by-ink); color:var(--by-tomato); background:var(--by-bg);">Clear all</button>
+          <button onclick="clearSceneLibrary()" class="border px-3 py-2 text-[11.5px] font-semibold border-by-ink text-by-tomato bg-by-bg">Clear all</button>
         </header>
         <div class="px-5 py-2">
-          <ul id="bs-sceneList" class="divide-y" style="border-color:var(--by-bg-3);">
-            <li id="bs-sceneEmpty" class="py-6 text-center text-[12.5px]" style="color:var(--by-ink-4)">
+          <ul id="bs-sceneList" class="divide-y border-by-bg-3">
+            <li id="bs-sceneEmpty" class="py-6 text-center text-[12.5px] text-by-ink-4">
               No scenes saved yet.<br>
-              <span class="text-[11px]" style="color:var(--by-ink-4)">Spin the Spontaneity Engine on the dashboard and save scenes here.</span>
+              <span class="text-[11px] text-by-ink-4">Spin the Spontaneity Engine on the dashboard and save scenes here.</span>
             </li>
           </ul>
         </div>
       </section>
 
       {% elif show_section == 'reports' %}
-      <section id="bs-reports" class="col-span-12 border hairline" style="background:var(--by-bg)">
+      <section id="bs-reports" class="col-span-12 border hairline bg-by-bg">
         <header class="px-5 py-4 border-b hairline">
           <div class="by-eyebrow mb-1">Backstage</div>
-          <div class="font-display text-[22px]" style="color:var(--by-ink)">Reports &amp; Exports</div>
-          <div class="text-[12px] mt-0.5" style="color:var(--by-ink-3)">One-click CSV exports for finance, attendance, and compliance</div>
+          <div class="font-display text-[22px] text-by-ink">Reports &amp; Exports</div>
+          <div class="text-[12px] mt-0.5 text-by-ink-3">One-click CSV exports for finance, attendance, and compliance</div>
         </header>
         <div class="px-5 py-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <button onclick="exportReport('tuition_pipeline')"
-            class="border px-5 py-4 text-left"
-            style="border-color:var(--by-ink); background:var(--by-bg-2); box-shadow:var(--by-sh-1);">
-            <div class="text-[13px] font-bold mb-1" style="color:var(--by-ink)">Tuition Pipeline</div>
-            <div class="text-[11.5px]" style="color:var(--by-ink-3)">Revenue by cohort</div>
+            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
+            <div class="text-[13px] font-bold mb-1 text-by-ink">Tuition Pipeline</div>
+            <div class="text-[11.5px] text-by-ink-3">Revenue by cohort</div>
           </button>
           <button onclick="exportReport('volunteer_audit')"
-            class="border px-5 py-4 text-left"
-            style="border-color:var(--by-ink); background:var(--by-bg-2); box-shadow:var(--by-sh-1);">
-            <div class="text-[13px] font-bold mb-1" style="color:var(--by-ink)">Volunteer Audit</div>
-            <div class="text-[11.5px]" style="color:var(--by-ink-3)">Shift history &amp; coverage</div>
+            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
+            <div class="text-[13px] font-bold mb-1 text-by-ink">Volunteer Audit</div>
+            <div class="text-[11.5px] text-by-ink-3">Shift history &amp; coverage</div>
           </button>
           <button onclick="exportReport('attendance_log')"
-            class="border px-5 py-4 text-left"
-            style="border-color:var(--by-ink); background:var(--by-bg-2); box-shadow:var(--by-sh-1);">
-            <div class="text-[13px] font-bold mb-1" style="color:var(--by-ink)">Attendance Log</div>
-            <div class="text-[11.5px]" style="color:var(--by-ink-3)">Per-class check-in data</div>
+            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
+            <div class="text-[13px] font-bold mb-1 text-by-ink">Attendance Log</div>
+            <div class="text-[11.5px] text-by-ink-3">Per-class check-in data</div>
           </button>
           <button onclick="exportReport('gdpr_summary')"
-            class="border px-5 py-4 text-left"
-            style="border-color:var(--by-ink); background:var(--by-bg-2); box-shadow:var(--by-sh-1);">
-            <div class="text-[13px] font-bold mb-1" style="color:var(--by-ink)">GDPR Summary</div>
-            <div class="text-[11.5px]" style="color:var(--by-ink-3)">Member data consent log</div>
+            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
+            <div class="text-[13px] font-bold mb-1 text-by-ink">GDPR Summary</div>
+            <div class="text-[11.5px] text-by-ink-3">Member data consent log</div>
           </button>
         </div>
       </section>
