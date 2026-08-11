@@ -4229,50 +4229,51 @@
 {# ── Show Finances Modal ── #}
 <div id="modal-show-fin" class="by-panel hidden fixed inset-0 z-[70]">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeShowFinances()"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
-    <div class="px-5 py-4 flex items-center gap-3 flex-shrink-0" style="border-bottom:var(--by-bd); background:var(--by-bg);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
+    <div class="px-5 py-4 flex items-center gap-3 flex-shrink-0 border-b border-by-ink bg-by-bg">
       <div>
         <div class="by-eyebrow mb-0.5">Show Costs &amp; Fees</div>
-        <div id="sfin-title" class="font-display text-[18px]" style="color:var(--by-ink);">—</div>
+        <div id="sfin-title" class="font-display text-[18px] text-by-ink">—</div>
       </div>
-      <button onclick="closeShowFinances()" class="ml-auto flex-shrink-0"
-              style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3);background:none;border:none;cursor:pointer;">
+      <button onclick="closeShowFinances()" class="ml-auto flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3 bg-transparent border-0 cursor-pointer">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
     <div class="flex-1 overflow-y-auto px-5 py-4 space-y-5">
 
       {# Net summary strip #}
-      <div class="grid grid-cols-3 gap-2 text-center"
-           style="background:var(--by-bg-2);border:1.5px solid var(--by-ink);padding:14px;box-shadow:4px 4px 0 0 var(--by-ink);">
+      <div class="grid grid-cols-3 gap-2 text-center bg-by-bg-2 border-[1.5px] border-by-ink p-3.5 shadow-by-hard">
         <div>
-          <div class="by-eyebrow" style="font-size:9px;">Gross</div>
-          <div id="sfin-gross" class="font-display text-[19px]" style="color:var(--by-ink);">€0.00</div>
+          <div class="by-eyebrow text-[9px]">Gross</div>
+          <div id="sfin-gross" class="font-display text-[19px] text-by-ink">€0.00</div>
         </div>
         <div>
-          <div class="by-eyebrow" style="font-size:9px;">Expenses</div>
-          <div id="sfin-fees-total" class="font-display text-[19px]" style="color:var(--by-tomato);">€0.00</div>
+          <div class="by-eyebrow text-[9px]">Expenses</div>
+          <div id="sfin-fees-total" class="font-display text-[19px] text-by-tomato">€0.00</div>
         </div>
         <div>
-          <div class="by-eyebrow" style="font-size:9px;">Net</div>
-          <div id="sfin-net" class="font-display text-[19px]" style="color:var(--by-success-green);">€0.00</div>
+          <div class="by-eyebrow text-[9px]">Net</div>
+          <!-- WHY: color stays a default-state class — calcSfinNet() always assigns an explicit
+               value (success-green or tomato) on recalculation, never clears to '', so JS
+               unconditionally overrides regardless. -->
+          <div id="sfin-net" class="font-display text-[19px] text-by-success-green">€0.00</div>
         </div>
       </div>
 
       {# Ticket Tiers #}
       <div>
-        <div class="text-[11px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">
+        <div class="text-[11px] font-bold uppercase tracking-widest mb-2 text-by-ink-3">
           Ticket Sales
         </div>
         <ul id="sfin-tier-list" class="space-y-1.5 mb-3"></ul>
-        <div style="border:1px solid var(--by-bg-3);background:var(--by-bg-2);padding:12px;" class="space-y-2">
-          <div class="by-eyebrow mb-1" style="font-size:9px;">Add ticket tier</div>
+        <div class="border border-by-bg-3 bg-by-bg-2 p-3 space-y-2">
+          <div class="by-eyebrow mb-1 text-[9px]">Add ticket tier</div>
           <div class="grid grid-cols-2 gap-2">
             <input id="sfin-tier-label" type="text" placeholder="e.g. Online, Door, Student"
-                   style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-size:13px;padding:6px 10px;outline:none;" />
+                   class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink text-[13px] px-2.5 py-1.5 outline-none" />
             <div class="by-select-wrap">
               <select id="sfin-tier-type"
-                      style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-size:13px;padding:6px 10px;outline:none;">
+                      class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink text-[13px] px-2.5 py-1.5 outline-none">
                 <option value="full_price">Full Price</option>
                 <option value="door">Door</option>
                 <option value="discount">Discount</option>
@@ -4282,74 +4283,74 @@
           </div>
           <div class="flex gap-2">
             <div class="flex-1">
-              <div class="by-eyebrow mb-1" style="font-size:9px;">Qty sold</div>
+              <div class="by-eyebrow mb-1 text-[9px]">Qty sold</div>
               <input id="sfin-tier-qty" type="number" min="0" step="1" placeholder="0"
-                     style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:14px;font-weight:700;padding:5px 8px;outline:none;" />
+                     class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[14px] font-bold px-2 py-1.5 outline-none" />
             </div>
             <div class="flex-1">
-              <div class="by-eyebrow mb-1" style="font-size:9px;">Price per ticket (€)</div>
+              <div class="by-eyebrow mb-1 text-[9px]">Price per ticket (€)</div>
               <input id="sfin-tier-price" type="number" min="0" step="0.01" placeholder="0.00"
-                     style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:14px;font-weight:700;padding:5px 8px;outline:none;" />
+                     class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[14px] font-bold px-2 py-1.5 outline-none" />
             </div>
             <div class="flex items-end">
               <button onclick="addSfinTier()"
-                      style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-weight:700;font-size:12px;padding:7px 14px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);white-space:nowrap;">
+                      class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-bold text-[12px] px-3.5 py-[7px] cursor-pointer whitespace-nowrap"
+                      style="box-shadow:3px 3px 0 0 var(--by-ink);">
                 + Add
               </button>
             </div>
           </div>
-          <div id="sfin-tier-status" class="hidden text-[11px]" style="color:var(--by-tomato);"></div>
+          <div id="sfin-tier-status" class="hidden text-[11px] text-by-tomato"></div>
         </div>
       </div>
 
       {# Display Price (box office listing) #}
       <div>
-        <div class="text-[11px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">Display Price</div>
+        <div class="text-[11px] font-bold uppercase tracking-widest mb-2 text-by-ink-3">Display Price</div>
         <input id="sfin-cost" type="text" placeholder="e.g. €12 / Free"
-               style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-size:13px;padding:6px 10px;outline:none;" />
-        <div class="text-[11px] mt-1.5" style="color:var(--by-ink-4)">Shown on the public box office listing — cosmetic only.</div>
+               class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink text-[13px] px-2.5 py-1.5 outline-none" />
+        <div class="text-[11px] mt-1.5 text-by-ink-4">Shown on the public box office listing — cosmetic only.</div>
       </div>
 
       {# Revenue Override (fallback when no tiers) #}
       <div>
-        <div class="text-[11px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">Revenue Override</div>
+        <div class="text-[11px] font-bold uppercase tracking-widest mb-2 text-by-ink-3">Revenue Override</div>
         <input id="sfin-revenue" type="number" min="0" step="0.01" placeholder="Leave blank — tiers are preferred"
                oninput="calcSfinNet()"
-               style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:13px;padding:6px 10px;outline:none;" />
-        <div id="sfin-revenue-hint" class="text-[11px] mt-1" style="color:var(--by-tomato);font-style:italic;"></div>
-        <div class="text-[11px] mt-0.5" style="color:var(--by-ink-4)">Fallback gross when no ticket tiers are set. Ignored once tiers exist.</div>
+               class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[13px] px-2.5 py-1.5 outline-none" />
+        <div id="sfin-revenue-hint" class="text-[11px] mt-1 text-by-tomato italic"></div>
+        <div class="text-[11px] mt-0.5 text-by-ink-4">Fallback gross when no ticket tiers are set. Ignored once tiers exist.</div>
       </div>
 
       {# Production Expense Line Items #}
       <div>
         <div class="by-eyebrow mb-2">Production Expenses</div>
         <ul id="sfin-fee-list" class="space-y-1.5 mb-3"></ul>
-        <div style="border:1px solid var(--by-bg-3);background:var(--by-bg-2);padding:12px;" class="space-y-2">
-          <div class="by-eyebrow mb-1" style="font-size:9px;">Add expense</div>
+        <div class="border border-by-bg-3 bg-by-bg-2 p-3 space-y-2">
+          <div class="by-eyebrow mb-1 text-[9px]">Add expense</div>
           <input id="sfin-fee-title" type="text" placeholder="Description (e.g. Lighting hire)"
-                 style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-size:13px;padding:6px 10px;outline:none;" />
+                 class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink text-[13px] px-2.5 py-1.5 outline-none" />
           <div class="flex gap-2">
             <input id="sfin-fee-amount" type="number" min="0" step="0.01" placeholder="Amount €"
-                   style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:13px;padding:6px 10px;outline:none;" />
+                   class="flex-1 border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[13px] px-2.5 py-1.5 outline-none" />
             <button onclick="addSfinFee()"
-                    style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-weight:700;font-size:12px;padding:6px 16px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);">
+                    class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-bold text-[12px] px-4 py-1.5 cursor-pointer"
+                    style="box-shadow:3px 3px 0 0 var(--by-ink);">
               + Add
             </button>
           </div>
-          <div id="sfin-fee-status" class="hidden text-[11px]" style="color:var(--by-tomato);"></div>
+          <div id="sfin-fee-status" class="hidden text-[11px] text-by-tomato"></div>
         </div>
       </div>
 
     </div>
-    <div class="flex-shrink-0 px-5 py-4 flex gap-2" style="border-top:var(--by-bd);">
+    <div class="flex-shrink-0 px-5 py-4 flex gap-2 border-t border-by-ink">
       <button onclick="saveSfinDetails()"
-        class="flex-1 py-2.5 text-[13px] font-bold border"
-        style="background:var(--by-yes);border-color:var(--by-ink);color:var(--by-ink);box-shadow:var(--by-sh-1);">
+        class="flex-1 py-2.5 text-[13px] font-bold border bg-by-yes border-by-ink text-by-ink shadow-by-hard">
         Save Display Price &amp; Override
       </button>
       <button onclick="closeShowFinances()"
-        class="px-4 py-2.5 text-[13px] font-semibold border"
-        style="border-color:var(--by-ink-3);color:var(--by-ink-2);background:var(--by-bg);">
+        class="px-4 py-2.5 text-[13px] font-semibold border border-by-ink-3 text-by-ink-2 bg-by-bg">
         Close
       </button>
     </div>
@@ -4359,13 +4360,13 @@
 {# ── Edit Show modal ──────────────────────────────────────────── #}
 <div id="modal-edit-show" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-edit-show')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Edit Show</h3>
-        <div class="text-[11.5px] mt-0.5" style="color:var(--by-ink-3)">Manual edits survive resyncs</div>
+        <h3 class="text-base font-semibold text-by-ink">Edit Show</h3>
+        <div class="text-[11.5px] mt-0.5 text-by-ink-3">Manual edits survive resyncs</div>
       </div>
-      <button onclick="closeModal('modal-edit-show')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-edit-show')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -4398,8 +4399,8 @@
       </div>
 
       {# ── Booking status ── #}
-      <div style="border-top:var(--by-bd);padding-top:1rem;">
-        <div class="text-[11px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Booking Status</div>
+      <div class="border-t border-by-ink pt-4">
+        <div class="text-[11px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Booking Status</div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="by-label">Capacity</label>
@@ -4410,45 +4411,41 @@
             <input id="esh-tickets-sold" type="number" min="0" class="by-input w-full" placeholder="0">
           </div>
         </div>
-        <div class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Sync Bookings will auto-update Tickets Sold based on the live site.</div>
+        <div class="mt-1 text-[11px] text-by-ink-4">Sync Bookings will auto-update Tickets Sold based on the live site.</div>
       </div>
 
 
       {% if can_view_finances %}
       {# ── Money Things button ── #}
-      <div style="border-top:var(--by-bd);padding-top:1rem;">
+      <div class="border-t border-by-ink pt-4">
         <button onclick="openFinancePanel()"
-          class="w-full py-2 text-[11.5px] font-semibold border flex items-center justify-center gap-1.5"
-          style="border-color:var(--by-ink-3);color:var(--by-ink-2);background:var(--by-bg-2);">
+          class="w-full py-2 text-[11.5px] font-semibold border flex items-center justify-center gap-1.5 border-by-ink-3 text-by-ink-2 bg-by-bg-2">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
           Money Things
         </button>
       </div>
       {% endif %}
 
-      <p id="esh-error" class="text-[11.5px]" style="color:var(--by-tomato)"></p>
+      <p id="esh-error" class="text-[11.5px] text-by-tomato"></p>
 
       {# ── Danger zone ── #}
-      <div style="border-top:1.5px solid var(--by-tomato);padding-top:1rem;margin-top:1.5rem;">
-        <div class="text-[11px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-tomato)">Danger Zone</div>
+      <div class="border-t-[1.5px] border-by-tomato pt-4 mt-6">
+        <div class="text-[11px] font-bold uppercase tracking-widest mb-2 text-by-tomato">Danger Zone</div>
         <button id="esh-delete-btn" onclick="eshDeleteShow()"
-          class="w-full py-2 text-[12.5px] font-bold border flex items-center justify-center gap-2"
-          style="border-color:var(--by-tomato);color:var(--by-tomato);background:var(--by-bg);">
+          class="w-full py-2 text-[12.5px] font-bold border flex items-center justify-center gap-2 border-by-tomato text-by-tomato bg-by-bg">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
           Delete this show &amp; all its shifts
         </button>
       </div>
 
     </div>
-    <div class="flex-shrink-0 px-5 py-4 flex gap-2" style="border-top:var(--by-bd);">
+    <div class="flex-shrink-0 px-5 py-4 flex gap-2 border-t border-by-ink">
       <button onclick="saveEditShow()"
-        class="flex-1 py-2.5 text-[13px] font-bold border"
-        style="background:var(--by-yes);border-color:var(--by-ink);color:var(--by-ink);box-shadow:var(--by-sh-1);">
+        class="flex-1 py-2.5 text-[13px] font-bold border bg-by-yes border-by-ink text-by-ink shadow-by-hard">
         Save Changes
       </button>
       <button onclick="closeModal('modal-edit-show')"
-        class="px-4 py-2.5 text-[13px] font-semibold border"
-        style="border-color:var(--by-ink-3);color:var(--by-ink-2);background:var(--by-bg);">
+        class="px-4 py-2.5 text-[13px] font-semibold border border-by-ink-3 text-by-ink-2 bg-by-bg">
         Cancel
       </button>
     </div>
@@ -4459,29 +4456,27 @@
 {# ── Delete Single Show modal ─────────────────────────────────── #}
 <div id="modal-delete-show" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.6)" onclick="closeModal('modal-delete-show')"></div>
-  <div class="relative w-full max-w-md border" style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:6px 6px 0 0 var(--by-ink);">
+  <div class="relative w-full max-w-md border bg-by-bg border-by-ink shadow-[6px_6px_0_0_var(--by-ink)]">
     <div class="px-6 pt-6 pb-2">
       <div class="text-[28px] mb-1">🎭</div>
-      <h3 class="text-[17px] font-black mb-1" style="color:var(--by-ink)">Cancel the Show?</h3>
-      <p class="text-[12.5px] leading-relaxed mt-3" style="color:var(--by-ink-2)">
+      <h3 class="text-[17px] font-black mb-1 text-by-ink">Cancel the Show?</h3>
+      <p class="text-[12.5px] leading-relaxed mt-3 text-by-ink-2">
         You're about to strike the set on <strong id="del-show-title">this show</strong> — lights out, volunteers unassigned, shifts vanished into the void.
       </p>
-      <p class="text-[12.5px] leading-relaxed mt-2" style="color:var(--by-ink-3)">
+      <p class="text-[12.5px] leading-relaxed mt-2 text-by-ink-3">
         The performers will survive. The audience will never know. But the show itself? Gone. Like an improv scene where someone just said "actually I'm a spaceship."
       </p>
-      <p class="text-[11.5px] font-bold mt-3" style="color:var(--by-tomato)">
+      <p class="text-[11.5px] font-bold mt-3 text-by-tomato">
         This cannot be workshopped. There is no "Yes, And."
       </p>
     </div>
     <div class="px-6 py-5 flex gap-3">
       <button onclick="confirmDeleteShow()"
-        class="flex-1 py-2.5 text-[13px] font-black border"
-        style="background:var(--by-tomato);border-color:var(--by-ink);color:var(--by-on-accent);box-shadow:4px 4px 0 0 var(--by-ink);">
+        class="flex-1 py-2.5 text-[13px] font-black border bg-by-tomato border-by-ink text-by-on-accent shadow-by-hard">
         Drop the Curtain
       </button>
       <button onclick="closeModal('modal-delete-show')"
-        class="flex-1 py-2.5 text-[13px] font-semibold border"
-        style="border-color:var(--by-ink-3);color:var(--by-ink-2);background:var(--by-bg);">
+        class="flex-1 py-2.5 text-[13px] font-semibold border border-by-ink-3 text-by-ink-2 bg-by-bg">
         The Show Must Go On
       </button>
     </div>
@@ -4490,31 +4485,29 @@
 
 <div id="modal-delete-all-shows" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.6)" onclick="closeModal('modal-delete-all-shows')"></div>
-  <div class="relative w-full max-w-md border" style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:6px 6px 0 0 var(--by-ink);">
+  <div class="relative w-full max-w-md border bg-by-bg border-by-ink shadow-[6px_6px_0_0_var(--by-ink)]">
     <div class="px-6 pt-6 pb-2">
       <div class="text-[28px] mb-1">☠️</div>
-      <h3 class="text-[17px] font-black mb-1" style="color:var(--by-ink)">Nuclear Option — Delete All Shows</h3>
-      <p class="text-[12.5px] leading-relaxed mt-3" style="color:var(--by-ink-2)">
+      <h3 class="text-[17px] font-black mb-1 text-by-ink">Nuclear Option — Delete All Shows</h3>
+      <p class="text-[12.5px] leading-relaxed mt-3 text-by-ink-2">
         You're about to delete <strong id="del-all-count">all</strong> shows and every volunteer slot attached to them.
         Every single one. Gone. Like improv with no audience, no venue, and no show date.
       </p>
-      <p class="text-[12.5px] leading-relaxed mt-2" style="color:var(--by-ink-3)">
+      <p class="text-[12.5px] leading-relaxed mt-2 text-by-ink-3">
         Rosters and volunteers are safe — only shows get torched.
         You can always resync from the live site, but any manual edits you've made will not survive the fire.
       </p>
-      <p class="text-[11.5px] font-bold mt-3" style="color:var(--by-tomato)">
+      <p class="text-[11.5px] font-bold mt-3 text-by-tomato">
         There is no "Yes, And" after this button.
       </p>
     </div>
     <div class="px-6 py-5 flex gap-3">
       <button onclick="confirmDeleteAllShows()"
-        class="flex-1 py-2.5 text-[13px] font-black border"
-        style="background:var(--by-tomato);border-color:var(--by-ink);color:var(--by-on-accent);box-shadow:4px 4px 0 0 var(--by-ink);">
+        class="flex-1 py-2.5 text-[13px] font-black border bg-by-tomato border-by-ink text-by-on-accent shadow-by-hard">
         🔥 Burn It Down
       </button>
       <button onclick="closeModal('modal-delete-all-shows')"
-        class="flex-1 py-2.5 text-[13px] font-semibold border"
-        style="border-color:var(--by-ink-3);color:var(--by-ink-2);background:var(--by-bg);">
+        class="flex-1 py-2.5 text-[13px] font-semibold border border-by-ink-3 text-by-ink-2 bg-by-bg">
         Actually, Never Mind
       </button>
     </div>
@@ -4528,38 +4521,40 @@
 {# ── Feed the Machine — Add to Spontaneity Pool ── #}
 <div id="modal-spont-pool" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-spont-pool')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Feed the Machine</h3>
-        <div class="text-[11.5px] mt-0.5" style="color:var(--by-ink-3)">Add a new prompt to the Spontaneity Engine pool</div>
+        <h3 class="text-base font-semibold text-by-ink">Feed the Machine</h3>
+        <div class="text-[11.5px] mt-0.5 text-by-ink-3">Add a new prompt to the Spontaneity Engine pool</div>
       </div>
-      <button onclick="closeModal('modal-spont-pool')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-spont-pool')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
 
-      <!-- Pool type selector -->
+      <!-- Pool type selector. WHY: .spont-pool-btn's selected state is CSS-class-driven
+           (.spont-pool-btn.selected in the <style> block below, toggled via classList in
+           selectSpontPool()), not JS inline styles — no display/style risk here. -->
       <div>
-        <label class="mb-2.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Which pool?</label>
+        <label class="mb-2.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Which pool?</label>
         <div class="grid grid-cols-3 gap-2" id="spont-pool-type-group">
           <button type="button" class="spont-pool-btn selected" data-type="locations" onclick="selectSpontPool('locations')">
             <div class="text-base mb-0.5">📍</div>
-            <div class="text-[12px] font-bold" style="color:var(--by-ink)">Location</div>
-            <div class="text-[10px]" style="color:var(--by-ink-3)">Where it happens</div>
+            <div class="text-[12px] font-bold text-by-ink">Location</div>
+            <div class="text-[10px] text-by-ink-3">Where it happens</div>
           </button>
           <button type="button" class="spont-pool-btn" data-type="styles" onclick="selectSpontPool('styles')">
             <div class="text-base mb-0.5">🎬</div>
-            <div class="text-[12px] font-bold" style="color:var(--by-ink)">Style</div>
-            <div class="text-[10px]" style="color:var(--by-ink-3)">How it's performed</div>
+            <div class="text-[12px] font-bold text-by-ink">Style</div>
+            <div class="text-[10px] text-by-ink-3">How it's performed</div>
           </button>
           <button type="button" class="spont-pool-btn" data-type="constraints" onclick="selectSpontPool('constraints')">
             <div class="text-base mb-0.5">⚡</div>
-            <div class="text-[12px] font-bold" style="color:var(--by-ink)">Constraint</div>
-            <div class="text-[10px]" style="color:var(--by-ink-3)">The hidden rule</div>
+            <div class="text-[12px] font-bold text-by-ink">Constraint</div>
+            <div class="text-[10px] text-by-ink-3">The hidden rule</div>
           </button>
         </div>
         <input type="hidden" id="spont-pool-type" value="locations" />
@@ -4567,18 +4562,17 @@
 
       <!-- Text input -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Describe it</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Describe it</label>
         <textarea id="spont-pool-content" rows="4" maxlength="300"
           placeholder="e.g. A crowded metro station just as someone's headphones explode with embarrassing music…"
-          class="w-full border px-4 py-3 text-[13.5px] focus:outline-none resize-none leading-relaxed"
-          style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)"></textarea>
+          class="w-full border px-4 py-3 text-[13.5px] focus:outline-none resize-none leading-relaxed border-by-ink text-by-ink-2 bg-by-bg"></textarea>
         <div class="flex items-center justify-between mt-1.5">
-          <div id="spont-pool-hint" class="text-[11px]" style="color:var(--by-ink-4)">Be specific — the weirder the better.</div>
-          <div class="text-[11px] font-mono" id="spont-pool-charcount" style="color:var(--by-ink-4)">0 / 300</div>
+          <div id="spont-pool-hint" class="text-[11px] text-by-ink-4">Be specific — the weirder the better.</div>
+          <div class="text-[11px] font-mono text-by-ink-4" id="spont-pool-charcount">0 / 300</div>
         </div>
       </div>
 
-      <div class="border-l-4 px-4 py-3 text-[12px] leading-relaxed" style="border-color:var(--by-yes); background:var(--by-yes-soft); color:var(--by-ink-2);">
+      <div class="border-l-4 px-4 py-3 text-[12px] leading-relaxed border-by-yes bg-by-yes-soft text-by-ink-2">
         <strong>Yes, And this:</strong> new prompts are added to the pool immediately and persist across sessions. The engine will start drawing them on the next spin. There's no undo — only forward.
       </div>
 
@@ -4586,8 +4580,8 @@
 
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-spont-pool')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-spont-pool')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="submitSpontPoolItem()" class="flex-1 btn-spot py-2.5 text-sm">Yes, And this! →</button>
     </div>
 
@@ -4683,17 +4677,17 @@
 <!-- ══ MAIL MODAL ══════════════════════════════════════════════════════════ -->
 <div id="modal-send-mail" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-send-mail')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v13H4z"/><path d="M4 4l8 8.5L20 4"/></svg>
-          <h3 class="text-base font-semibold" style="color:var(--by-ink)">Send Message</h3>
+          <h3 class="text-base font-semibold text-by-ink">Send Message</h3>
         </div>
-        <div id="mail-modal-subtitle" class="text-[11.5px] mt-0.5 pl-6" style="color:var(--by-ink-3)">Direct dispatch</div>
+        <div id="mail-modal-subtitle" class="text-[11.5px] mt-0.5 pl-6 text-by-ink-3">Direct dispatch</div>
       </div>
-      <button onclick="closeModal('modal-send-mail')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-send-mail')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -4701,42 +4695,38 @@
     <div class="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-5">
 
       <div>
-        <div class="text-[10px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">To</div>
-        <div class="flex items-center gap-2 px-3 py-2.5" style="border:var(--by-bd);background:var(--by-bg-2);">
-          <span id="mail-recipient-av" class="flex-shrink-0 flex items-center justify-center"
-                style="width:26px;height:26px;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-on-accent);background:var(--by-ink-4);"></span>
+        <div class="text-[10px] font-bold uppercase tracking-widest mb-2 text-by-ink-3">To</div>
+        <div class="flex items-center gap-2 px-3 py-2.5 border border-by-ink bg-by-bg-2">
+          <span id="mail-recipient-av" class="flex-shrink-0 flex items-center justify-center w-[26px] h-[26px] rounded-full font-mono text-[10px] font-bold text-by-on-accent bg-by-ink-4"></span>
           <div class="min-w-0">
-            <div id="mail-recipient-name" class="text-[13.5px] font-semibold truncate" style="color:var(--by-ink);"></div>
-            <div id="mail-recipient-meta" class="text-[11px] font-mono truncate" style="color:var(--by-ink-4);"></div>
+            <div id="mail-recipient-name" class="text-[13.5px] font-semibold truncate text-by-ink"></div>
+            <div id="mail-recipient-meta" class="text-[11px] font-mono truncate text-by-ink-4"></div>
           </div>
           <input type="hidden" id="mail-target-group" />
         </div>
       </div>
 
       <div>
-        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5" style="color:var(--by-ink-3)">Subject</label>
+        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5 text-by-ink-3">Subject</label>
         <input type="text" id="mail-subject"
-               class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-               style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg);"
+               class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg"
                placeholder="e.g. See you Thursday — doors at 19:30" />
       </div>
 
       <div>
-        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5" style="color:var(--by-ink-3)">Message</label>
+        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5 text-by-ink-3">Message</label>
         <textarea id="mail-body"
-                  class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-                  style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg);resize:vertical;min-height:200px;font-family:var(--by-f-body);line-height:1.6;"
+                  class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-y font-body leading-relaxed border-by-ink text-by-ink-2 bg-by-bg"
+                  style="min-height:200px;"
                   placeholder="Write your message here. No projecting — the mic is hot."></textarea>
       </div>
 
-      <div id="mail-modal-status" class="hidden text-[12.5px] font-medium px-3 py-2.5 text-center"
-           style="border:var(--by-bd);"></div>
+      <div id="mail-modal-status" class="hidden text-[12.5px] font-medium px-3 py-2.5 text-center border border-by-ink"></div>
 
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-send-mail')" class="flex-1 border py-2.5 text-sm font-semibold"
-              style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-send-mail')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button id="mail-send-btn" onclick="submitMailModal()"
               class="flex-1 btn-spot py-2.5 text-sm flex items-center justify-center gap-2">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
@@ -4751,31 +4741,29 @@
 <div id="by-confirm-modal" aria-modal="true" role="dialog"
      class="hidden fixed inset-0 z-[500] flex items-center justify-center"
      style="background:rgba(20,18,16,.72);">
-  <div style="background:var(--by-bg);border:2px solid var(--by-ink);
-              box-shadow:6px 6px 0 0 var(--by-ink);width:100%;max-width:420px;margin:0 16px;">
-    <div style="background:var(--by-ink);padding:16px 20px;">
-      <p style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.14em;
-                text-transform:uppercase;color:var(--by-night-on);margin-bottom:4px;">BigYes · Confirm</p>
-      <h3 id="by-confirm-title"
-          style="font-family:var(--by-f-display);font-size:20px;color:var(--by-on-accent);line-height:1.1;"></h3>
+  <div class="bg-by-bg border-2 border-by-ink w-full max-w-[420px] mx-4" style="box-shadow:6px 6px 0 0 var(--by-ink);">
+    <div class="bg-by-ink px-5 py-4">
+      <!-- WHY: color stays inline, not text-by-night-on — the tailwind config maps that
+           utility to --by-night-soft (near-black) instead of --by-night-on (light) due to a
+           known, documented, not-yet-fixed config bug (see MASTER_PLAN.md 6.3b-1/6.3b's config
+           notes). Using the utility here would render this label invisible: near-black on the
+           near-black --by-ink header background. Bypasses the bug by referencing the CSS var
+           directly instead of through the broken utility. -->
+      <p class="font-mono text-[10px] tracking-[.14em] uppercase mb-1" style="color:var(--by-night-on);">BigYes · Confirm</p>
+      <h3 id="by-confirm-title" class="font-display text-[20px] text-by-on-accent leading-tight"></h3>
     </div>
-    <div style="padding:20px 20px 8px;">
-      <p id="by-confirm-body"
-         style="font-family:var(--by-f-body);font-size:14px;color:var(--by-ink-2);line-height:1.6;"></p>
+    <div class="px-5 pt-5 pb-2">
+      <p id="by-confirm-body" class="font-body text-sm text-by-ink-2 leading-relaxed"></p>
     </div>
-    <div style="display:flex;gap:12px;padding:16px 20px 20px;">
+    <div class="flex gap-3 px-5 pt-4 pb-5">
       <button onclick="byConfirmClose()"
-              style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);
-                     color:var(--by-ink-2);font-family:var(--by-f-sans);font-weight:600;
-                     font-size:13px;padding:10px 16px;cursor:pointer;transition:background 100ms;"
+              class="flex-1 border-[1.5px] border-by-ink bg-by-bg text-by-ink-2 font-sans font-semibold text-[13px] px-4 py-2.5 cursor-pointer transition-[background] duration-100"
               onmouseover="this.style.background='var(--by-bg-2)'"
               onmouseout="this.style.background='var(--by-bg)'">
         Cancel
       </button>
       <button id="by-confirm-ok" onclick="byConfirmDo()"
-              style="flex:1;font-family:var(--by-f-display);font-size:13px;
-                     letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;
-                     cursor:pointer;transition:box-shadow 100ms,transform 100ms;">
+              class="flex-1 font-display text-[13px] tracking-[.06em] uppercase px-4 py-2.5 cursor-pointer transition-[box-shadow,transform] duration-100">
         Confirm
       </button>
     </div>
@@ -4816,18 +4804,16 @@
 {% include 'partials/_inbox_modal.html' %}
 
 <!-- ══ Bulk Select: Global FAB ══════════════════════════════════════════════ -->
-<div id="bulk-fab" class="hidden fixed bottom-6 left-1/2 z-50 flex items-center gap-3 px-5 py-3 border"
-  style="transform:translateX(-50%);background:var(--by-ink);border-color:var(--by-ink);color:var(--by-yes);box-shadow:4px 4px 0 0 var(--by-yes);min-width:300px;white-space:nowrap;">
+<div id="bulk-fab" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 border min-w-[300px] whitespace-nowrap bg-by-ink border-by-ink text-by-yes"
+  style="box-shadow:4px 4px 0 0 var(--by-yes);">
   <span class="text-[13px] font-bold font-display" id="bulk-fab-count">0 selected</span>
   <div class="flex-1"></div>
   <button onclick="clearBulkSelection()"
-    class="text-[11px] font-semibold px-2.5 py-1.5 border"
-    style="border-color:var(--by-yes);color:var(--by-yes);background:transparent;">
+    class="text-[11px] font-semibold px-2.5 py-1.5 border border-by-yes text-by-yes bg-transparent">
     Clear
   </button>
   <button onclick="openImprovModal()"
-    class="text-[11px] font-bold px-3 py-1.5 border flex items-center gap-1.5"
-    style="border-color:var(--by-tomato);color:var(--by-ink);background:var(--by-tomato);">
+    class="text-[11px] font-bold px-3 py-1.5 border flex items-center gap-1.5 border-by-tomato text-by-ink bg-by-tomato">
     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     Bulk Delete
   </button>
@@ -4835,33 +4821,30 @@
 
 <!-- ══ Improv Warning Modal ═════════════════════════════════════════════════ -->
 <div id="modal-improv-warn" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4" style="background:rgba(20,18,16,.6)">
-  <div class="w-full max-w-md border" style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:6px 6px 0 0 var(--by-ink);">
+  <div class="w-full max-w-md border bg-by-bg border-by-ink shadow-[6px_6px_0_0_var(--by-ink)]">
     <div class="px-6 pt-6 pb-1">
-      <div class="by-eyebrow mb-2" style="color:var(--by-tomato);">⚠ Curtain Call — No Encore Available</div>
-      <div class="font-display text-[22px] leading-tight mb-4" style="color:var(--by-ink);">
+      <div class="by-eyebrow mb-2 text-by-tomato">⚠ Curtain Call — No Encore Available</div>
+      <div class="font-display text-[22px] leading-tight mb-4 text-by-ink">
         "YES, AND…" doesn't apply here.
       </div>
-      <p class="text-[13px] leading-relaxed mb-3" style="color:var(--by-ink-2);">
+      <p class="text-[13px] leading-relaxed mb-3 text-by-ink-2">
         Are you sure you want to erase <strong id="improv-warn-count">these scenes</strong> from existence?
       </p>
-      <div class="border px-4 py-3 mb-4 text-[12.5px] italic leading-relaxed"
-        style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink-2);">
+      <div class="border px-4 py-3 mb-4 text-[12.5px] italic leading-relaxed bg-by-yes-soft border-by-yes-deep text-by-ink-2">
         "Remember: the first rule of improv is <strong>'Yes, And…'</strong> — not <em>'No, and vanish from existence!'</em>
         These records will take a 24-hour backstage break. You can call them back before then. After that? The stage goes dark. Permanently."
       </div>
-      <p class="text-[11.5px] mb-5" style="color:var(--by-ink-3);">
+      <p class="text-[11.5px] mb-5 text-by-ink-3">
         A 24-hour undo window opens immediately after deletion.
       </p>
     </div>
-    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t" style="border-color:var(--by-bg-3);">
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-by-bg-3">
       <button onclick="closeImprovModal()"
-        class="px-4 py-2 text-[12.5px] font-semibold border"
-        style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2);">
+        class="px-4 py-2 text-[12.5px] font-semibold border border-by-ink text-by-ink bg-by-bg-2">
         Abort — Keep the Cast
       </button>
       <button onclick="executeBulkDelete()"
-        class="px-5 py-2 text-[12.5px] font-bold border"
-        style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-tomato);">
+        class="px-5 py-2 text-[12.5px] font-bold border border-by-ink text-by-ink bg-by-tomato">
         Drop the Curtain
       </button>
     </div>
