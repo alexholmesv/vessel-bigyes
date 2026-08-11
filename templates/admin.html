@@ -2173,9 +2173,9 @@
       ? `<span class="text-[12.5px] font-mono text-by-yes-deep">${esc(String(p.points))}</span>`
       : `<span class="text-[12px] text-by-ink-4">—</span>`;
 
-    const inactiveDim = p.is_active === false ? 'opacity:0.45;' : '';
+    const inactiveDim = p.is_active === false ? 'opacity-[.45]' : '';
     return `
-      <tr class="roster-row" data-id="${esc(p.id)}" style="${inactiveDim}">
+      <tr class="roster-row ${inactiveDim}" data-id="${esc(p.id)}">
         <td class="pl-3 pr-1 py-2.5 w-8">
           <input type="checkbox" class="bulk-row-check w-3.5 h-3.5 cursor-pointer"
             data-entity="member" data-id="${esc(p.id)}" />
@@ -2184,7 +2184,7 @@
           <div class="flex items-center gap-3">
             ${resolveAvatarUrl(p.avatar) ? `<img class="av object-cover" src="${resolveAvatarUrl(p.avatar)}" style="background:${tint}">` : `<span class="av" style="background:${tint}">${esc(p.initials)}</span>`}
             <div class="leading-tight">
-              <div class="text-[13.5px] text-by-ink">${esc(p.name)}${p.is_active === false ? ' <span style="font-size:9px;font-family:var(--by-f-mono);color:var(--by-ink-4);border:1px solid var(--by-bg-3);border-radius:3px;padding:0 3px;vertical-align:middle">inactive</span>' : ''}</div>
+              <div class="text-[13.5px] text-by-ink">${esc(p.name)}${p.is_active === false ? ' <span class="text-[9px] font-mono text-by-ink-4 border border-by-bg-3 rounded-[3px] px-[3px] align-middle">inactive</span>' : ''}</div>
               ${rtBadgeHTML(p)}
               <div class="text-[11px] text-by-ink-3 font-mono">${fmtJoinDate(p.joined_at)}</div>
             </div>
@@ -2225,19 +2225,18 @@
     const chipCls = STATUS_CHIP[p.status] || 'chip chip-paused';
     const tint    = `linear-gradient(135deg,${p.tint[0]},${p.tint[1]})`;
     const volBtn  = p.level !== 'INST' ? `
-      <button class="vol-toggle" data-act="vol" data-id="${esc(p.id)}"
+      <button class="vol-toggle min-w-[44px] min-h-[44px] px-2" data-act="vol" data-id="${esc(p.id)}"
         data-on="${p.is_volunteer ? 'true' : 'false'}"
-        style="min-width:44px;min-height:44px;padding:0 8px;"
         title="${p.is_volunteer ? 'Remove from pool' : 'Add to pool'}">
-        <svg viewBox="0 0 24 24" fill="${p.is_volunteer ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px"><path d="M12 3l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 15.8 6.9 18l1.3-5.6L4 8.6 9.6 8 12 3z"/></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="${p.is_volunteer ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 15.8 6.9 18l1.3-5.6L4 8.6 9.6 8 12 3z"/></svg>
       </button>` : '';
-    const cardInactive = p.is_active === false ? 'opacity:0.45;' : '';
+    const cardInactive = p.is_active === false ? 'opacity-[.45]' : '';
     return `
-      <article class="by-roster-card-row" data-id="${esc(p.id)}" style="${cardInactive}">
-        ${resolveAvatarUrl(p.avatar) ? `<img class="av object-cover" src="${resolveAvatarUrl(p.avatar)}" style="background:${tint};width:36px;height:36px;flex-shrink:0">` : `<span class="av" style="background:${tint};width:36px;height:36px;flex-shrink:0">${esc(p.initials)}</span>`}
+      <article class="by-roster-card-row ${cardInactive}" data-id="${esc(p.id)}">
+        ${resolveAvatarUrl(p.avatar) ? `<img class="av object-cover w-9 h-9 flex-shrink-0" src="${resolveAvatarUrl(p.avatar)}" style="background:${tint}">` : `<span class="av w-9 h-9 flex-shrink-0" style="background:${tint}">${esc(p.initials)}</span>`}
         <div class="by-roster-card-id">
-          <div class="by-roster-card-name">${esc(p.name)}${p.is_active === false ? ' <span style="font-size:9px;font-family:var(--by-f-mono);color:var(--by-ink-4)">inactive</span>' : ''}</div>
-          <div class="by-roster-card-meta">${esc(p.level)} · ${esc(p.team && p.team !== '—' ? p.team : 'No team')} · <span class="${chipCls}" style="font-size:9px;padding:.1rem .4rem">${esc(p.status)}</span></div>
+          <div class="by-roster-card-name">${esc(p.name)}${p.is_active === false ? ' <span class="text-[9px] font-mono text-by-ink-4">inactive</span>' : ''}</div>
+          <div class="by-roster-card-meta">${esc(p.level)} · ${esc(p.team && p.team !== '—' ? p.team : 'No team')} · <span class="${chipCls} text-[9px] px-[.4rem] py-[.1rem]">${esc(p.status)}</span></div>
         </div>
         ${volBtn}
       </article>`;
@@ -2258,12 +2257,12 @@
       const tint = `linear-gradient(135deg,${p.tint[0]},${p.tint[1]})`;
       return `
         <li class="px-5 py-2.5 flex items-center gap-3">
-          <span class="av" style="background:${tint};width:26px;height:26px;font-size:10.5px">${esc(p.initials)}</span>
+          <span class="av w-[26px] h-[26px] text-[10.5px]" style="background:${tint}">${esc(p.initials)}</span>
           <div class="flex-1 min-w-0 leading-tight">
             <div class="text-[12.5px] text-by-ink truncate">${esc(p.name)}</div>
             <div class="text-[10.5px] text-by-ink-3 font-mono">${esc(p.level)} · ${esc(p.team && p.team !== '—' ? p.team : 'no team')}</div>
           </div>
-          <button class="vol-toggle pool-remove" data-act="vol" data-id="${p.id}" data-on="true" title="Remove from volunteer pool" style="padding:2px 6px;font-size:10px">
+          <button class="vol-toggle pool-remove px-1.5 py-0.5 text-[10px]" data-act="vol" data-id="${p.id}" data-on="true" title="Remove from volunteer pool">
             <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 15.8 6.9 18l1.3-5.6L4 8.6 9.6 8 12 3z"/></svg>
           </button>
         </li>`;
@@ -2329,7 +2328,7 @@
     const cards = $('#rosterCards');
     if (cards) cards.innerHTML = filtered.length
       ? filtered.map(cardHTML).join('')
-      : `<p class="py-8 text-center text-[12.5px]" style="color:var(--by-ink-3)">No performers match — try a different search.</p>`;
+      : `<p class="py-8 text-center text-[12.5px] text-by-ink-3">No performers match — try a different search.</p>`;
 
     $('#rosterShown').textContent = filtered.length;
     $('#rosterTotal').textContent = ROSTER.length;
@@ -2372,7 +2371,7 @@
     const av = document.getElementById('sp-avatar');
     const avUrl = resolveAvatarUrl(p.avatar);
     if (avUrl) {
-      av.innerHTML = `<img src="${avUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:999px;">`;
+      av.innerHTML = `<img src="${avUrl}" class="w-full h-full object-cover rounded-full">`;
       av.style.background = 'none';
     } else {
       av.innerHTML = '';
@@ -2390,8 +2389,8 @@
     const rtLabel = { Patron:'Patron', Company_Player:'Company Player', Mocatriz:'Mocatriz ✦', Stage_Manager:'Stage Manager' }[p.role_type] || p.role_type;
     const chipCls = STATUS_CHIP[p.status] || 'chip chip-paused';
     badgesEl.innerHTML = `
-      <span class="chip" style="background:var(--by-bg-3);border:var(--by-bd);font-size:10px">${esc(rtLabel)}</span>
-      <span class="${chipCls}" style="font-size:10px"><span class="dot"></span>${esc(p.status)}</span>`;
+      <span class="chip bg-by-bg-3 border border-by-ink text-[10px]">${esc(rtLabel)}</span>
+      <span class="${chipCls} text-[10px]"><span class="dot"></span>${esc(p.status)}</span>`;
 
     // Edit details fields
     document.getElementById('sp-edit-name').value = p.name || '';
@@ -2411,13 +2410,13 @@
     const classesEl = document.getElementById('sp-classes');
     if (p.enrolled_classes && p.enrolled_classes.length) {
       classesEl.innerHTML = p.enrolled_classes.map(c =>
-        `<li class="flex items-center gap-2 text-[13.5px]" style="color:var(--by-ink-2)">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--by-yes-deep);flex-shrink:0;display:inline-block"></span>
+        `<li class="flex items-center gap-2 text-[13.5px] text-by-ink-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-by-yes-deep flex-shrink-0 inline-block"></span>
           ${esc(c.title)}
         </li>`
       ).join('');
     } else {
-      classesEl.innerHTML = `<li class="text-[13px]" style="color:var(--by-ink-4)">No classes enrolled yet.</li>`;
+      classesEl.innerHTML = `<li class="text-[13px] text-by-ink-4">No classes enrolled yet.</li>`;
     }
 
     // Assign-to-class dropdown — exclude already enrolled
@@ -2570,8 +2569,8 @@
         const rtLabel = { Patron:'Patron', Company_Player:'Company Player', Mocatriz:'Mocatriz ✦', Stage_Manager:'Stage Manager' }[p.role_type] || p.role_type;
         const chipCls = STATUS_CHIP[p.status] || 'chip chip-paused';
         document.getElementById('sp-badges').innerHTML = `
-          <span class="chip" style="background:var(--by-bg-3);border:var(--by-bd);font-size:10px">${esc(rtLabel)}</span>
-          <span class="${chipCls}" style="font-size:10px"><span class="dot"></span>${esc(p.status)}</span>`;
+          <span class="chip bg-by-bg-3 border border-by-ink text-[10px]">${esc(rtLabel)}</span>
+          <span class="${chipCls} text-[10px]"><span class="dot"></span>${esc(p.status)}</span>`;
         document.getElementById('sp-level').textContent = p.level;
         flashToast(`${p.name} → ${newRole === 'teacher' ? 'Teacher' : 'Student'}`);
       } else {
@@ -3252,9 +3251,9 @@
             const avEl = domCard.querySelector('.av, img.av');
             if (avEl) {
               if (avUrl) {
-                avEl.outerHTML = `<img class="av object-cover" src="${avUrl}" style="background:${gradient};width:36px;height:36px;flex-shrink:0">`;
+                avEl.outerHTML = `<img class="av object-cover w-9 h-9 flex-shrink-0" src="${avUrl}" style="background:${gradient}">`;
               } else {
-                avEl.outerHTML = `<span class="av" style="background:${gradient};width:36px;height:36px;flex-shrink:0">${esc(newInitials)}</span>`;
+                avEl.outerHTML = `<span class="av w-9 h-9 flex-shrink-0" style="background:${gradient}">${esc(newInitials)}</span>`;
               }
             }
           }
@@ -3314,11 +3313,11 @@
         <label class="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-[var(--by-bg-2)] select-none">
           <input type="checkbox" value="${esc(p.id)}" class="cast-pick w-3.5 h-3.5"
             onchange="updateCastCount()" />
-          <span class="text-[13px] font-medium" style="color:var(--by-ink)">${esc(p.name)}</span>
-          <span class="ml-auto text-[11px] font-mono" style="color:var(--by-ink-3)">${esc(p.role_type || '')}</span>
+          <span class="text-[13px] font-medium text-by-ink">${esc(p.name)}</span>
+          <span class="ml-auto text-[11px] font-mono text-by-ink-3">${esc(p.role_type || '')}</span>
         </label>`).join('');
     } else {
-      castList.innerHTML = '<div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>';
+      castList.innerHTML = '<div class="px-4 py-3 text-[12px] text-by-ink-4">No CAST_ELIGIBLE performers found.</div>';
     }
     document.getElementById('cast-count').textContent = '0 selected';
 
@@ -3405,18 +3404,18 @@
   function _renderRosterList(students) {
     const listEl = document.getElementById('roster-search-list');
     if (!students.length) {
-      listEl.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--by-ink-4);">No members found.</div>';
+      listEl.innerHTML = '<div class="px-3.5 py-2.5 text-[12px] text-by-ink-4">No members found.</div>';
       return;
     }
     listEl.innerHTML = students.map(s => {
       const checked = _selectedStudentIds.has(s.id) ? 'checked' : '';
       const label   = s.role_type === 'Mocatriz' ? `${s.name} ✦` : s.name;
-      return `<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--by-bg-3);"
+      return `<label class="flex items-center gap-2.5 px-3 py-2 cursor-pointer border-b border-by-bg-3"
                      onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background=''">
         <input type="checkbox" value="${s.id}" ${checked}
                onchange="toggleRosterStudent('${s.id}', this.checked)" />
-        <span style="font-size:13px;font-weight:600;color:var(--by-ink);">${label}</span>
-        <span style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;margin-left:auto;">${s.role_type || 'Patron'}</span>
+        <span class="text-[13px] font-semibold text-by-ink">${label}</span>
+        <span class="font-mono text-[10px] text-by-ink-4 uppercase ml-auto">${s.role_type || 'Patron'}</span>
       </label>`;
     }).join('');
   }
@@ -3528,7 +3527,7 @@
     const btn       = document.getElementById('bulk-upload-btn');
     if (!fileInput.files.length) {
       resultsEl.className = '';
-      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:var(--by-on-accent)">Please select a .csv or .xlsx file first.</div>`;
+      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center bg-by-tomato text-by-on-accent">Please select a .csv or .xlsx file first.</div>`;
       return;
     }
     btn.disabled = true;
@@ -3543,11 +3542,11 @@
         const c = data.created || [];
         const s = data.skipped || [];
         const skipRows = s.length ? `<ul class="mt-2 space-y-1">${s.map(r =>
-          `<li class="text-[11.5px] font-mono" style="color:var(--by-tomato)">${esc((r.row?.email || r.row?.name || '?'))} — ${esc(r.reason)}</li>`
+          `<li class="text-[11.5px] font-mono text-by-tomato">${esc((r.row?.email || r.row?.name || '?'))} — ${esc(r.reason)}</li>`
         ).join('')}</ul>` : '';
         resultsEl.innerHTML = `
-          <div class="p-4 border" style="border-color:var(--by-ink-3); background:var(--by-bg-2);">
-            <div class="text-[13px] font-semibold" style="color:var(--by-ink)">
+          <div class="p-4 border border-by-ink-3 bg-by-bg-2">
+            <div class="text-[13px] font-semibold text-by-ink">
               ✓ ${c.length} member${c.length !== 1 ? 's' : ''} created${s.length ? `, ${s.length} skipped` : ''}.
             </div>
             ${skipRows}
@@ -3568,10 +3567,10 @@
         });
         if (c.length) applyFilters();
       } else {
-        resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:var(--by-on-accent)">${esc(data.error || 'Upload failed.')}</div>`;
+        resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center bg-by-tomato text-by-on-accent">${esc(data.error || 'Upload failed.')}</div>`;
       }
     } catch {
-      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center" style="background:var(--by-tomato);color:var(--by-on-accent)">Network error — try again.</div>`;
+      resultsEl.innerHTML = `<div class="px-4 py-3 text-sm font-medium text-center bg-by-tomato text-by-on-accent">Network error — try again.</div>`;
     } finally {
       btn.disabled = false;
       btn.textContent = 'Import';
@@ -3681,12 +3680,12 @@
           const roleLabel  = _roleLabel[newPerson.role_type] || (newPerson.role_type ? newPerson.role_type.replace(/_/g, ' ') : 'Patron');
           const avatarGrad = `linear-gradient(135deg,${newPerson.tint[0]},${newPerson.tint[1]})`;
           const liHTML = `<li class="px-4 py-2.5 flex items-center gap-2.5">
-            <span class="av text-[10px] flex-shrink-0"
-                  style="width:26px;height:26px;background:${avatarGrad};color:var(--by-on-accent);"
+            <span class="av text-[10px] flex-shrink-0 w-[26px] h-[26px] text-by-on-accent"
+                  style="background:${avatarGrad};"
             >${esc(newPerson.initials)}</span>
             <div class="flex-1 min-w-0">
-              <div class="text-[12.5px] font-semibold truncate" style="color:var(--by-ink);">${esc(newPerson.name)}</div>
-              <div class="by-eyebrow" style="font-size:10px;">${esc(roleLabel)}</div>
+              <div class="text-[12.5px] font-semibold truncate text-by-ink">${esc(newPerson.name)}</div>
+              <div class="by-eyebrow text-[10px]">${esc(roleLabel)}</div>
             </div>
           </li>`;
           recentList.insertAdjacentHTML('afterbegin', liHTML);
@@ -4117,21 +4116,20 @@
     const list = document.getElementById('sfin-tier-list');
     const esc  = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     if (!_sfinTiers.length) {
-      list.innerHTML = '<li class="by-eyebrow py-2 text-center" style="color:var(--by-ink-4);">No ticket tiers yet. Add the first one below.</li>';
+      list.innerHTML = '<li class="by-eyebrow py-2 text-center text-by-ink-4">No ticket tiers yet. Add the first one below.</li>';
       calcSfinNet(); return;
     }
     list.innerHTML = _sfinTiers.map(t => {
       const subtotal = (parseInt(t.quantity || 0) * parseFloat(t.unit_price || 0)).toFixed(2);
-      const badge = {full_price:'var(--by-success-green)', door:'var(--by-tomato)', discount:'var(--by-tier-discount)', other:'var(--by-ink-3)'}[t.tier_type] || 'var(--by-ink-3)';
+      const badge = {full_price:'bg-by-success-green', door:'bg-by-tomato', discount:'bg-by-tier-discount', other:'bg-by-ink-3'}[t.tier_type] || 'bg-by-ink-3';
       return `
-        <li class="flex items-center gap-2 px-3 py-2.5 border" style="border-color:var(--by-bg-3);background:var(--by-bg);">
-          <span class="shrink-0 text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wide"
-                style="background:${badge};color:var(--by-on-accent);">${esc(TIER_TYPE_LABELS[t.tier_type] || t.tier_type)}</span>
-          <span class="flex-1 text-[13px] font-semibold" style="color:var(--by-ink);">${esc(t.label)}</span>
-          <span class="font-mono text-[12px]" style="color:var(--by-ink-3);">${esc(String(t.quantity))} × €${parseFloat(t.unit_price).toFixed(2)}</span>
-          <span class="font-mono text-[12px] font-bold" style="color:var(--by-ink);">= €${subtotal}</span>
+        <li class="flex items-center gap-2 px-3 py-2.5 border border-by-bg-3 bg-by-bg">
+          <span class="shrink-0 text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wide ${badge} text-by-on-accent">${esc(TIER_TYPE_LABELS[t.tier_type] || t.tier_type)}</span>
+          <span class="flex-1 text-[13px] font-semibold text-by-ink">${esc(t.label)}</span>
+          <span class="font-mono text-[12px] text-by-ink-3">${esc(String(t.quantity))} × €${parseFloat(t.unit_price).toFixed(2)}</span>
+          <span class="font-mono text-[12px] font-bold text-by-ink">= €${subtotal}</span>
           <button onclick="deleteSfinTier('${esc(t.id)}')"
-                  style="color:var(--by-ink-4);background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;"
+                  class="text-by-ink-4 bg-transparent border-0 cursor-pointer p-0.5 flex-shrink-0"
                   title="Remove tier">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
@@ -4184,11 +4182,11 @@
     }
     const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     list.innerHTML = _sfinFees.map(f => `
-      <li class="flex items-center gap-2 px-3 py-2 border" style="border-color:var(--by-bg-3);background:var(--by-bg);">
-        <span class="flex-1 text-[13px]" style="color:var(--by-ink);">${esc(f.title)}</span>
-        <span class="font-mono text-[12px]" style="color:var(--by-tomato);">−€${parseFloat(f.fee_amount).toFixed(2)}</span>
+      <li class="flex items-center gap-2 px-3 py-2 border border-by-bg-3 bg-by-bg">
+        <span class="flex-1 text-[13px] text-by-ink">${esc(f.title)}</span>
+        <span class="font-mono text-[12px] text-by-tomato">−€${parseFloat(f.fee_amount).toFixed(2)}</span>
         <button onclick="deleteSfinFee('${esc(f.id)}')"
-                style="color:var(--by-ink-4);background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;">
+                class="text-by-ink-4 bg-transparent border-0 cursor-pointer p-0.5 flex-shrink-0">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </li>`).join('');
@@ -4916,33 +4914,25 @@
     el.innerHTML = batches.map(b => {
       const copy = (_COPY[b.entity_type] || _COPY.member)(b.count);
       return `
-      <div class="by-undo-batch" data-batch="${b.id}"
-        style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;margin-bottom:4px;
-               border:1.5px solid var(--by-ink);background:var(--by-yes-soft);
-               box-shadow:3px 3px 0 0 var(--by-ink);">
-        <span style="font-size:20px;flex-shrink:0;line-height:1.3">${copy.icon}</span>
-        <div style="flex:1;min-width:0;">
-          <div style="font-family:var(--by-f-display);font-size:13.5px;font-weight:900;
-                      text-transform:uppercase;letter-spacing:-.01em;color:var(--by-ink);line-height:1.2;">
+      <div class="by-undo-batch flex items-start gap-3 px-4 py-3 mb-1 border-[1.5px] border-by-ink bg-by-yes-soft shadow-[3px_3px_0_0_var(--by-ink)]" data-batch="${b.id}">
+        <span class="text-xl flex-shrink-0 leading-[1.3]">${copy.icon}</span>
+        <div class="flex-1 min-w-0">
+          <div class="font-display text-[13.5px] font-black uppercase tracking-[-.01em] text-by-ink leading-[1.2]">
             ${copy.headline}
           </div>
-          <div style="font-size:11.5px;color:var(--by-ink-3);margin-top:2px;line-height:1.4;">${copy.sub}</div>
+          <div class="text-[11.5px] text-by-ink-3 mt-0.5 leading-[1.4]">${copy.sub}</div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+        <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
           <button onclick="undoBatch('${b.id}')"
-            style="padding:5px 12px;border:1.5px solid var(--by-ink);background:var(--by-ink);
-                   color:var(--by-yes);font-family:var(--by-f-body);font-size:11.5px;font-weight:700;
-                   cursor:pointer;white-space:nowrap;">
+            class="px-3 py-1.5 border-[1.5px] border-by-ink bg-by-ink text-by-yes font-body text-[11.5px] font-bold cursor-pointer whitespace-nowrap">
             ${copy.btn}
           </button>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span class="by-undo-timer" data-until="${b.restorable_until}"
-              style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-3);">
+          <div class="flex items-center gap-2">
+            <span class="by-undo-timer font-mono text-[10px] text-by-ink-3" data-until="${b.restorable_until}">
               ${_timeLeft(b.restorable_until)}
             </span>
             <button onclick="dismissBatch('${b.id}')"
-              style="background:transparent;border:none;color:var(--by-ink-3);cursor:pointer;
-                     font-size:14px;line-height:1;padding:0;" title="Dismiss">✕</button>
+              class="bg-transparent border-0 text-by-ink-3 cursor-pointer text-sm leading-none p-0" title="Dismiss">✕</button>
           </div>
         </div>
       </div>`;
