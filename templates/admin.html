@@ -1243,10 +1243,10 @@
     </main>
     {% endif %}{# end mock_preview #}
 
-    <footer class="px-7 py-6 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3)">
-      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span></div>
+    <footer class="px-7 py-6 text-[11.5px] flex items-center justify-between border-t hairline text-by-ink-3">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono text-by-ink-4">v0.9.2 "Curtain Call"</span></div>
       <div class="flex items-center gap-4">
-        <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+        <a href="/privacy" class="hover:underline text-by-ink-2">Privacy Center</a>
       </div>
     </footer>
   </div>
@@ -1260,14 +1260,14 @@
 {# ── Add Person ── #}
 <div id="modal-add-person" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-person')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Person</h3>
-        <div class="text-[11.5px] mt-0.5" style="color:var(--by-ink-3)">Patron · Company Player · Mocatriz · Stage Manager</div>
+        <h3 class="text-base font-semibold text-by-ink">Add New Person</h3>
+        <div class="text-[11.5px] mt-0.5 text-by-ink-3">Patron · Company Player · Mocatriz · Stage Manager</div>
       </div>
-      <button onclick="closeModal('modal-add-person')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-add-person')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -1277,27 +1277,27 @@
       <!-- Name + Email -->
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Full Name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Full Name</label>
           <input type="text" id="new-person-name" placeholder="Ana García"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Email</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Email</label>
           <input type="email" id="new-person-email" placeholder="ana@bigyes.local"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
 
       <!-- Initial Password -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Password</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Password</label>
         <input type="password" id="new-person-password" name="password" placeholder="Initial passphrase" required
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
 
       <!-- Role Type (primary identity — 4 cards) -->
       <div>
-        <label class="mb-3 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Role Type</label>
+        <label class="mb-3 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Role Type</label>
         <div class="grid grid-cols-2 gap-3" id="rt-card-group">
 
           <div class="rt-card rt-patron selected" data-rt="Patron" onclick="selectRoleType('Patron')">
@@ -1338,23 +1338,24 @@
 
       <!-- Access Level (student/teacher subrole — hidden for Stage Manager) -->
       <div id="subrole-section">
-        <label class="mb-2 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Access Level</label>
+        <label class="mb-2 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Access Level</label>
         <div class="flex gap-2">
+          <!-- WHY: background/color stay inline-set-by-JS on click (selectSystemRole() always
+               assigns an explicit value, never clears to '' — safe to give these their default-
+               state classes since JS unconditionally overrides on interaction either way). -->
           <button type="button" id="sys-role-btn-student" onclick="selectSystemRole('student')"
-            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-yes); color:var(--by-ink)">
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border font-sans border-by-ink bg-by-yes text-by-ink">
             Student
           </button>
           <button type="button" id="sys-role-btn-teacher" onclick="selectSystemRole('teacher')"
-            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-bg); color:var(--by-ink-2)">
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border font-sans border-by-ink bg-by-bg text-by-ink-2">
             Teacher
           </button>
         </div>
         <input type="hidden" id="new-person-role" value="student" />
-        <div class="mt-1.5 text-[11px] leading-relaxed" style="color:var(--by-ink-4)">
-          <strong style="color:var(--by-ink-3)">Student</strong> — shows up, says "Yes, and…", earns points, maybe learns something.
-          <strong style="color:var(--by-ink-3)">Teacher</strong> — walks in with a hat and an agenda, runs the Ensemble Room.
+        <div class="mt-1.5 text-[11px] leading-relaxed text-by-ink-4">
+          <strong class="text-by-ink-3">Student</strong> — shows up, says "Yes, and…", earns points, maybe learns something.
+          <strong class="text-by-ink-3">Teacher</strong> — walks in with a hat and an agenda, runs the Ensemble Room.
         </div>
       </div>
 
@@ -1362,14 +1363,17 @@
       <!-- Can View Finances — only shown when Stage Manager role type is selected -->
       <div id="fin-section" class="hidden">
         <label class="flex items-center gap-3 cursor-pointer select-none">
-          <div class="relative flex-shrink-0" style="width:40px;height:22px;">
+          <div class="relative flex-shrink-0 w-10 h-[22px]">
             <input type="checkbox" id="new-person-fin" class="sr-only" onchange="newPersonFinToggle(this.checked)" />
-            <div id="new-person-fin-track" style="position:absolute;inset:0;border:1.5px solid var(--by-ink);border-radius:999px;background:var(--by-bg-3);transition:background 150ms;"></div>
-            <div id="new-person-fin-thumb" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:999px;background:var(--by-ink);transition:transform 150ms;"></div>
+            <!-- WHY: background (track) / transform (thumb) are always explicitly reassigned by
+                 newPersonFinToggle() on change, never cleared to '' — same safe pattern as the
+                 role buttons above. -->
+            <div id="new-person-fin-track" class="absolute inset-0 border-[1.5px] rounded-full transition-[background] duration-150 border-by-ink bg-by-bg-3"></div>
+            <div id="new-person-fin-thumb" class="absolute top-0.5 left-0.5 w-3.5 h-3.5 rounded-full transition-transform duration-150 bg-by-ink"></div>
           </div>
           <div>
-            <div class="text-[13px] font-semibold" style="color:var(--by-ink)">Can View Finances</div>
-            <div class="text-[11px] mt-0.5" style="color:var(--by-ink-4)">Grants access to the Finances backstage section.</div>
+            <div class="text-[13px] font-semibold text-by-ink">Can View Finances</div>
+            <div class="text-[11px] mt-0.5 text-by-ink-4">Grants access to the Finances backstage section.</div>
           </div>
         </label>
       </div>
@@ -1378,8 +1382,8 @@
       <div id="add-person-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-person')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-person')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createPerson()" class="flex-1 btn-spot py-2.5 text-sm">Add Person</button>
     </div>
 
@@ -1389,41 +1393,41 @@
 {# ── Add Class ── #}
 <div id="modal-add-class" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-class')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
-      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Class</h3>
-      <button onclick="closeModal('modal-add-class')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <h3 class="text-base font-semibold text-by-ink">Add New Class</h3>
+      <button onclick="closeModal('modal-add-class')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Class Name</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Class Name</label>
         <input type="text" id="new-class-name" placeholder="e.g. Level 2 Improv"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Day</label>
           <div class="by-select-wrap">
-            <select id="new-class-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <select id="new-class-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
               {% for d in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
             </select>
           </div>
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Time</label>
           <input type="time" id="new-class-time" value="18:00"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Select Term</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Select Term</label>
         <div class="by-select-wrap">
           <select id="new-class-term" onchange="handleTermChange(this)"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
             <option value="">— No specific term —</option>
             {% for term in terms %}
             <option value="{{ term.id }}" data-start="{{ term.start_date }}" data-end="{{ term.end_date }}">
@@ -1433,12 +1437,16 @@
           </select>
         </div>
       </div>
-      {# Past-term sensei warning banner — shown when a past term is selected #}
-      <div id="past-term-warning" style="display:none; background:var(--by-yes-soft); border:var(--by-bd-thick); padding:12px 14px;">
+      {# Past-term sensei warning banner — shown when a past term is selected.
+         WHY: `display` stays inline — _resetClassModal() sets it to the literal string 'none'
+         (not a class toggle), and nothing ever re-shows it via a class either, so a `hidden`
+         class would just be redundant, not risky, but keeping display alongside the other
+         properties it was already grouped with avoids a mixed inline+class split for one rule. #}
+      <div id="past-term-warning" style="display:none;" class="bg-by-yes-soft border-[1.5px] border-by-ink py-3 px-3.5">
         <div class="flex items-start gap-2">
-          <span style="font-size:18px; flex-shrink:0;">🕰️</span>
+          <span class="text-[18px] flex-shrink-0">🕰️</span>
           <div class="flex-1 min-w-0">
-            <p class="text-[13px] font-semibold" style="color:var(--by-ink); line-height:1.4;">Time travel hasn't been invented yet. This term has already ended, are you sure?</p>
+            <p class="text-[13px] font-semibold leading-snug text-by-ink">Time travel hasn't been invented yet. This term has already ended, are you sure?</p>
             <div class="flex gap-2 mt-2.5">
               <button type="button" onclick="confirmPastTerm()"
                 class="btn-spot text-[11px] px-3 py-1.5">Confirm — log it anyway</button>
@@ -1449,9 +1457,9 @@
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Assign Teacher</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Assign Teacher</label>
         <div class="by-select-wrap">
-          <select id="new-class-teacher" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+          <select id="new-class-teacher" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
             {% set teachers = users | selectattr('identity', 'equalto', 'teacher') | list %}
             {% if teachers %}{% for t in teachers %}<option value="{{ t.id }}">{{ t.name }}</option>{% endfor %}
             {% else %}<option value="" disabled>No teachers found</option>{% endif %}
@@ -1459,40 +1467,43 @@
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Initial Enrollment</label>
-        <div style="position:relative;">
-          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--by-ink-4);pointer-events:none;"
-               class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Initial Enrollment</label>
+        <div class="relative">
+          <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none w-4 h-4 text-by-ink-4"
+               fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input type="text" id="roster-search" placeholder="Search members by name…" autocomplete="off"
             oninput="filterRosterSearch(this.value)"
-            class="w-full border px-3 py-2.5 text-sm focus:outline-none"
-            style="padding-left:34px; border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border py-2.5 pl-[34px] pr-3 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div id="roster-search-list"
-             style="max-height:160px; overflow-y:auto; border:1px solid var(--by-ink); border-top:none; background:var(--by-bg);">
+             class="max-h-40 overflow-y-auto border border-t-0 border-by-ink bg-by-bg">
         </div>
-        <div id="roster-selected-summary" class="mt-2 text-[11px]" style="color:var(--by-ink-3); font-family:var(--by-f-mono);display:none;">
+        <!-- WHY: display stays inline — toggleRosterStudent() sets it to '' (show) or 'none'
+             (hide) depending on selection count; a `hidden` class would survive the '' clear
+             and leave this permanently hidden, same failure mode already documented for the
+             header avatar in 6.3b-1. -->
+        <div id="roster-selected-summary" class="mt-2 text-[11px] font-mono text-by-ink-3" style="display:none;">
           <span id="roster-selected-count">0</span> member(s) selected for initial enrollment
         </div>
-        <p class="mt-3 text-[12px] px-3 py-2.5" style="background:var(--by-bg-2); border:var(--by-bd); color:var(--by-ink-2); line-height:1.5;">
+        <p class="mt-3 text-[12px] px-3 py-2.5 leading-relaxed bg-by-bg-2 border border-by-ink text-by-ink-2">
           <strong>Tip:</strong> Don't stress about adding everyone right now! You can always add or adjust users in this class at any time via the Classes &amp; Cohorts page later.
         </p>
       </div>
 
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Tuition Fee <span style="color:var(--by-ink-4); font-weight:400;">(optional)</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Tuition Fee <span class="font-normal text-by-ink-4">(optional)</span></label>
         <input type="text" id="new-class-fee" placeholder="e.g. €120 / term · Free"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
-        <p class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Free-form. Used in tuition pipeline reports.</p>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
+        <p class="mt-1 text-[11px] text-by-ink-4">Free-form. Used in tuition pipeline reports.</p>
       </div>
 
       <div id="add-class-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-class')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-class')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createClass()" class="flex-1 btn-spot py-2.5 text-sm">Add Class</button>
     </div>
   </div>
@@ -1501,14 +1512,14 @@
 {# ── Add Show ── #}
 <div id="modal-add-show" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-show')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Schedule a Show</h3>
-        <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3)">Link a show type or create a one-off</div>
+        <h3 class="text-base font-semibold text-by-ink">Schedule a Show</h3>
+        <div class="text-[11px] mt-0.5 text-by-ink-3">Link a show type or create a one-off</div>
       </div>
-      <button onclick="closeModal('modal-add-show')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-add-show')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -1517,67 +1528,67 @@
 
       <!-- Show Type -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Show Type</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Show Type</label>
         <div class="by-select-wrap">
-          <select id="show-type-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" onchange="onShowTypeChange()">
+          <select id="show-type-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" onchange="onShowTypeChange()">
             <option value="">— New one-off (enter title below) —</option>
             {# Populated by JS from SHOW_TYPES — Jinja also renders any pre-existing types #}
           </select>
         </div>
-        <p id="show-type-hint" class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Select an existing type to reuse its description, or leave blank to create a one-off.</p>
+        <p id="show-type-hint" class="mt-1 text-[11px] text-by-ink-4">Select an existing type to reuse its description, or leave blank to create a one-off.</p>
       </div>
 
       <!-- Title (one-off) -->
       <div id="show-title-wrap">
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Title <span style="color:var(--by-tomato)">*</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Title <span class="text-by-tomato">*</span></label>
         <input type="text" id="show-title" placeholder="e.g. Friday Night Harold"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
 
       <!-- Day + Time + Date + Cost -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day <span style="color:var(--by-tomato)">*</span></label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Day <span class="text-by-tomato">*</span></label>
           <div class="by-select-wrap">
-            <select id="show-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <select id="show-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
               {% for d in ['Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
             </select>
           </div>
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time <span style="color:var(--by-tomato)">*</span></label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Time <span class="text-by-tomato">*</span></label>
           <input type="time" id="show-time" value="20:00"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Date</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Date</label>
           <input type="date" id="show-date"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Ticket cost</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Ticket cost</label>
           <input type="text" id="show-cost" placeholder="e.g. €12 / Free"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
 
       <!-- Cast picker -->
       <div>
         <div class="mb-2 flex items-center justify-between">
-          <label class="text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Cast <span style="color:var(--by-ink-4); font-weight:400; normal-case">(CAST_ELIGIBLE performers)</span></label>
-          <span id="cast-count" class="text-[11px] font-mono" style="color:var(--by-ink-4)">0 selected</span>
+          <label class="text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Cast <span class="font-normal normal-case text-by-ink-4">(CAST_ELIGIBLE performers)</span></label>
+          <span id="cast-count" class="text-[11px] font-mono text-by-ink-4">0 selected</span>
         </div>
-        <div id="cast-list" class="border divide-y max-h-44 overflow-y-auto" style="border-color:var(--by-ink);">
+        <div id="cast-list" class="border divide-y max-h-44 overflow-y-auto border-by-ink">
           {# Populated by JS from CAST_PERFORMERS #}
-          <div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>
+          <div class="px-4 py-3 text-[12px] text-by-ink-4">No CAST_ELIGIBLE performers found.</div>
         </div>
       </div>
 
       <div id="add-show-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-show')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-show')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createShow()" class="flex-1 btn-spot py-2.5 text-sm">Schedule Show</button>
     </div>
   </div>
@@ -1586,39 +1597,39 @@
 {# ── Assign Volunteer ── #}
 <div id="modal-assign-volunteer" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-assign-volunteer')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Assign Volunteer</h3>
-        <div class="text-[11.5px] font-mono mt-0.5" style="color:var(--by-yes-deep)">Role: <span id="assign-role-label">—</span></div>
+        <h3 class="text-base font-semibold text-by-ink">Assign Volunteer</h3>
+        <div class="text-[11.5px] font-mono mt-0.5 text-by-yes-deep">Role: <span id="assign-role-label">—</span></div>
       </div>
-      <button onclick="closeModal('modal-assign-volunteer')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-assign-volunteer')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">
           Select Volunteer
-          <span class="ml-1 normal-case font-normal" style="color:var(--by-ink-3)">(designated volunteers only)</span>
+          <span class="ml-1 normal-case font-normal text-by-ink-3">(designated volunteers only)</span>
         </label>
         <div class="by-select-wrap">
-          <select id="volunteer-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+          <select id="volunteer-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
             {# Populated by rebuildVolunteerSelect() on load #}
             <option value="" disabled>Loading…</option>
           </select>
         </div>
-        <p class="mt-2 text-[11.5px]" style="color:var(--by-ink-3)">
+        <p class="mt-2 text-[11.5px] text-by-ink-3">
           Only volunteers you've added to the pool appear here.
         </p>
       </div>
       <div id="assign-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-assign-volunteer')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-assign-volunteer')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="confirmAssign()" class="flex-1 btn-spot py-2.5 text-sm">Confirm Assignment</button>
     </div>
   </div>
@@ -1628,14 +1639,14 @@
 {# ── Student Info ── #}
 <div id="modal-student-info" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-student-info')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[420px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[420px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <div class="text-[11px] font-bold uppercase tracking-widest mb-0.5" style="color:var(--by-ink-3)">Member profile</div>
-        <h3 class="text-base font-semibold leading-tight" id="sp-name" style="color:var(--by-ink)">—</h3>
+        <div class="text-[11px] font-bold uppercase tracking-widest mb-0.5 text-by-ink-3">Member profile</div>
+        <h3 class="text-base font-semibold leading-tight text-by-ink" id="sp-name">—</h3>
       </div>
-      <button onclick="closeModal('modal-student-info')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-student-info')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -1643,26 +1654,26 @@
     <div class="flex-1 overflow-y-auto">
 
       <!-- Avatar + identity block -->
-      <div class="px-5 pt-5 pb-4 flex items-start gap-4" style="border-bottom:var(--by-bd);">
-        <span id="sp-avatar" class="av flex-shrink-0" style="width:60px;height:60px;font-size:20px"></span>
+      <div class="px-5 pt-5 pb-4 flex items-start gap-4 border-b border-by-ink">
+        <span id="sp-avatar" class="av flex-shrink-0 w-[60px] h-[60px] text-[20px]"></span>
         <div class="min-w-0 flex-1">
-          <div id="sp-full-name" class="font-semibold text-[15px] leading-tight" style="color:var(--by-ink)"></div>
-          <div id="sp-email" class="font-mono text-[11.5px] mt-0.5 truncate" style="color:var(--by-ink-3)"></div>
+          <div id="sp-full-name" class="font-semibold text-[15px] leading-tight text-by-ink"></div>
+          <div id="sp-email" class="font-mono text-[11.5px] mt-0.5 truncate text-by-ink-3"></div>
           <div class="flex flex-wrap gap-1.5 mt-2" id="sp-badges"></div>
         </div>
       </div>
 
       <!-- Edit Details -->
-      <div class="px-5 py-4" style="border-bottom:var(--by-bd);">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Details</div>
+      <div class="px-5 py-4 border-b border-by-ink">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Details</div>
         <div class="space-y-3">
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--by-ink-3)">Name</label>
-            <input type="text" id="sp-edit-name" class="w-full border px-3 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            <label class="block text-[11px] font-bold uppercase tracking-widest mb-1.5 text-by-ink-3">Name</label>
+            <input type="text" id="sp-edit-name" class="w-full border px-3 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
           </div>
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--by-ink-3)">Bio</label>
-            <textarea id="sp-edit-bio" rows="3" placeholder="A few words about this person…" class="w-full border px-3 py-2.5 text-sm focus:outline-none resize-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)"></textarea>
+            <label class="block text-[11px] font-bold uppercase tracking-widest mb-1.5 text-by-ink-3">Bio</label>
+            <textarea id="sp-edit-bio" rows="3" placeholder="A few words about this person…" class="w-full border px-3 py-2.5 text-sm focus:outline-none resize-none border-by-ink text-by-ink-2 bg-by-bg"></textarea>
           </div>
           <button id="sp-save-details-btn" class="btn-spot w-full py-2.5 text-sm">Save Details</button>
           <div id="sp-edit-status" class="hidden px-3 py-2 text-sm font-medium text-center"></div>
@@ -1670,80 +1681,80 @@
       </div>
 
       <!-- Stats row -->
-      <div class="px-5 py-4 grid grid-cols-3 gap-3" style="border-bottom:var(--by-bd);">
+      <div class="px-5 py-4 grid grid-cols-3 gap-3 border-b border-by-ink">
         <div class="flex flex-col gap-1">
-          <div class="text-[10px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Level</div>
-          <div id="sp-level" class="font-mono text-[14px] font-semibold" style="color:var(--by-ink)">—</div>
+          <div class="text-[10px] font-bold uppercase tracking-widest text-by-ink-3">Level</div>
+          <div id="sp-level" class="font-mono text-[14px] font-semibold text-by-ink">—</div>
         </div>
         <div class="flex flex-col gap-1">
-          <div class="text-[10px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Yes &amp; Points</div>
-          <div id="sp-points" class="font-mono text-[14px] font-semibold" style="color:var(--by-yes-deep)">—</div>
+          <div class="text-[10px] font-bold uppercase tracking-widest text-by-ink-3">Yes &amp; Points</div>
+          <div id="sp-points" class="font-mono text-[14px] font-semibold text-by-yes-deep">—</div>
         </div>
         <div class="flex flex-col gap-1">
-          <div class="text-[10px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Volunteer</div>
-          <div id="sp-volunteer" class="text-[13px] font-semibold" style="color:var(--by-ink)">—</div>
+          <div class="text-[10px] font-bold uppercase tracking-widest text-by-ink-3">Volunteer</div>
+          <div id="sp-volunteer" class="text-[13px] font-semibold text-by-ink">—</div>
         </div>
       </div>
 
-      <!-- System role -->
-      <div class="px-5 py-4" style="border-bottom:var(--by-bd);">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Identity</div>
+      <!-- System role. WHY: .sp-role-btn's active state is CSS-class-driven (.sp-role-btn.active,
+           see the <style> block), not JS style manipulation — safe to convert unconditionally. -->
+      <div class="px-5 py-4 border-b border-by-ink">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Identity</div>
         <div class="flex gap-2" id="sp-role-btns">
           <button data-role="student" onclick="spSetRole('student')"
-            class="sp-role-btn flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans)">
+            class="sp-role-btn flex-1 py-2.5 text-[12.5px] font-semibold border font-sans">
             Student
           </button>
           <button data-role="teacher" onclick="spSetRole('teacher')"
-            class="sp-role-btn flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans)">
+            class="sp-role-btn flex-1 py-2.5 text-[12.5px] font-semibold border font-sans">
             Teacher
           </button>
         </div>
-        <div class="mt-2 text-[11px] leading-relaxed" style="color:var(--by-ink-4)">
-          <strong style="color:var(--by-ink-3)">Student</strong> — shows up, says "Yes, and…", earns points, maybe learns something.
-          <strong style="color:var(--by-ink-3)">Teacher</strong> — walks in with a hat and an agenda, runs the Ensemble Room.
+        <div class="mt-2 text-[11px] leading-relaxed text-by-ink-4">
+          <strong class="text-by-ink-3">Student</strong> — shows up, says "Yes, and…", earns points, maybe learns something.
+          <strong class="text-by-ink-3">Teacher</strong> — walks in with a hat and an agenda, runs the Ensemble Room.
         </div>
         <div id="sp-role-status" class="hidden mt-2 px-3 py-2 text-sm font-medium text-center"></div>
       </div>
 
       <!-- Access control (theatre owner only — hidden for non-Stage-Manager members via JS) -->
       {% if can_view_finances %}
-      <div id="sp-access-control" class="px-5 py-4" style="border-bottom:var(--by-bd);">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Access control</div>
+      <div id="sp-access-control" class="px-5 py-4 border-b border-by-ink">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Access control</div>
         <label class="flex items-center gap-3 cursor-pointer select-none">
-          <div class="relative flex-shrink-0" style="width:40px;height:22px;">
+          <div class="relative flex-shrink-0 w-10 h-[22px]">
             <input type="checkbox" id="sp-fin-toggle" class="sr-only peer" />
-            <div class="peer-checked:bg-amber-400 peer-unchecked:bg-gray-200 rounded-full transition-colors duration-150"
-                 style="position:absolute;inset:0;border:1.5px solid var(--by-ink);border-radius:999px;background:var(--by-bg-3);transition:background 150ms;">
+            <div class="peer-checked:bg-amber-400 peer-unchecked:bg-gray-200 rounded-full transition-colors duration-150 absolute inset-0 border-[1.5px] border-by-ink">
             </div>
-            <div class="peer-checked:translate-x-[18px] translate-x-0 transition-transform duration-150"
-                 style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:999px;background:var(--by-ink);transition:transform 150ms;">
+            <div class="peer-checked:translate-x-[18px] translate-x-0 transition-transform duration-150 absolute top-0.5 left-0.5 w-3.5 h-3.5 rounded-full bg-by-ink">
             </div>
           </div>
           <div>
-            <div class="text-[13px] font-semibold" style="color:var(--by-ink)">Can View Finances</div>
-            <div class="text-[11px] mt-0.5" style="color:var(--by-ink-4)">Grants access to the Finances backstage section.</div>
+            <div class="text-[13px] font-semibold text-by-ink">Can View Finances</div>
+            <div class="text-[11px] mt-0.5 text-by-ink-4">Grants access to the Finances backstage section.</div>
           </div>
         </label>
         <div id="sp-fin-status" class="hidden mt-2 px-3 py-2 text-sm font-medium text-center"></div>
       </div>
       {% endif %}
 
-      <!-- Member status (active / inactive) -->
-      <div class="px-5 py-4" style="border-bottom:var(--by-bd);">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Member status</div>
+      <!-- Member status (active / inactive). WHY: track/thumb background+transform stay as
+           default-state classes — spSetActive()/the load handler always assign an explicit
+           value on toggle, never clear to '', so JS unconditionally overrides these classes on
+           interaction (same safe pattern as the Add Person modal's finance toggle). -->
+      <div class="px-5 py-4 border-b border-by-ink">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Member status</div>
         <div class="flex items-center justify-between gap-3">
           <div class="min-w-0">
-            <div class="text-[13px] font-semibold" id="sp-active-label" style="color:var(--by-ink)">Active</div>
-            <div class="text-[11px] mt-0.5" style="color:var(--by-ink-4)">Inactive members are hidden from the roster by default.</div>
-            <div class="text-[11px] mt-1 font-mono" id="sp-joined-at" style="color:var(--by-ink-4)"></div>
+            <div class="text-[13px] font-semibold text-by-ink" id="sp-active-label">Active</div>
+            <div class="text-[11px] mt-0.5 text-by-ink-4">Inactive members are hidden from the roster by default.</div>
+            <div class="text-[11px] mt-1 font-mono text-by-ink-4" id="sp-joined-at"></div>
           </div>
           <label class="flex-shrink-0 cursor-pointer select-none">
-            <div class="relative" style="width:40px;height:22px;">
+            <div class="relative w-10 h-[22px]">
               <input type="checkbox" id="sp-active-toggle" class="sr-only" />
-              <div id="sp-active-track" style="position:absolute;inset:0;border:1.5px solid var(--by-ink);border-radius:999px;background:var(--by-bg-3);transition:background 150ms;"></div>
-              <div id="sp-active-thumb" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:999px;background:var(--by-ink);transition:transform 150ms;"></div>
+              <div id="sp-active-track" class="absolute inset-0 border-[1.5px] rounded-full transition-[background] duration-150 border-by-ink bg-by-bg-3"></div>
+              <div id="sp-active-thumb" class="absolute top-0.5 left-0.5 w-3.5 h-3.5 rounded-full transition-transform duration-150 bg-by-ink"></div>
             </div>
           </label>
         </div>
@@ -1751,17 +1762,17 @@
       </div>
 
       <!-- Enrolled classes -->
-      <div class="px-5 py-4" style="border-bottom:var(--by-bd);">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">Classes enrolled</div>
+      <div class="px-5 py-4 border-b border-by-ink">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-2 text-by-ink-3">Classes enrolled</div>
         <ul id="sp-classes" class="space-y-1.5"></ul>
       </div>
 
       <!-- Assign to class -->
-      <div class="px-5 py-4" style="border-bottom:var(--by-bd);">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">Assign to class</div>
+      <div class="px-5 py-4 border-b border-by-ink">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-2 text-by-ink-3">Assign to class</div>
         <div class="flex gap-2">
           <div class="by-select-wrap flex-1">
-            <select id="sp-assign-select" class="w-full border px-3 py-2 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <select id="sp-assign-select" class="w-full border px-3 py-2 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
               <option value="">— pick a class —</option>
             </select>
           </div>
@@ -1772,29 +1783,26 @@
 
       <!-- Password change request -->
       <div class="px-5 py-4">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-2" style="color:var(--by-ink-3)">Password</div>
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-2 text-by-ink-3">Password</div>
         <button id="sp-pw-request-btn" onclick="spRequestPasswordChange()"
-                class="w-full border py-2.5 text-[13px] font-semibold"
-                style="border-color:var(--by-ink); color:var(--by-ink); background:var(--by-bg)">
+                class="w-full border py-2.5 text-[13px] font-semibold border-by-ink text-by-ink bg-by-bg">
           Request password change
         </button>
-        <div id="sp-pw-request-status" class="hidden mt-2 text-[11.5px] font-medium text-center"
-             style="color:var(--by-ink-4);font-family:var(--by-f-mono)">Request sent</div>
+        <div id="sp-pw-request-status" class="hidden mt-2 text-[11.5px] font-medium text-center font-mono text-by-ink-4">Request sent</div>
       </div>
 
     </div><!-- /scrollable body -->
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-student-info')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Close</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-student-info')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Close</button>
       {% if can_view_finances or is_sm_user %}
       <button id="sp-delete-btn" onclick="spDeletePerson()"
-              class="border py-2.5 px-4 text-sm font-semibold flex-shrink-0"
-              style="border-color:var(--by-tomato);color:var(--by-tomato);background:var(--by-bg)">
+              class="border py-2.5 px-4 text-sm font-semibold flex-shrink-0 border-by-tomato text-by-tomato bg-by-bg">
         Delete
       </button>
       {% endif %}
     </div>
-    <div id="sp-delete-status" class="hidden px-5 py-3 text-sm font-medium text-center" style="border-top:var(--by-bd)"></div>
+    <div id="sp-delete-status" class="hidden px-5 py-3 text-sm font-medium text-center border-t border-by-ink"></div>
 
   </div>
 </div>
@@ -1802,42 +1810,41 @@
 {# ── Bulk Upload (Import from Excel) ── #}
 <div id="modal-bulk-upload" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-bulk-upload')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[480px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[480px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Import from Excel</h3>
-        <div class="text-[11.5px] mt-0.5" style="color:var(--by-ink-3)">Add members in bulk from an .xlsx spreadsheet.</div>
+        <h3 class="text-base font-semibold text-by-ink">Import from Excel</h3>
+        <div class="text-[11.5px] mt-0.5 text-by-ink-3">Add members in bulk from an .xlsx spreadsheet.</div>
       </div>
-      <button onclick="closeModal('modal-bulk-upload')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-bulk-upload')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
       <!-- Format guide -->
-      <div class="p-4 border" style="border-color:var(--by-ink-3); background:var(--by-bg-2);">
-        <div class="text-[11.5px] font-bold mb-2 uppercase tracking-widest" style="color:var(--by-ink-3)">Expected columns (row 1 = headers)</div>
-        <table class="w-full text-[12px]" style="color:var(--by-ink-2)">
-          <tr><td class="font-mono pr-4 py-0.5 align-top" style="color:var(--by-ink)">name</td><td style="color:var(--by-ink-3)">Required</td></tr>
-          <tr><td class="font-mono pr-4 py-0.5 align-top" style="color:var(--by-ink)">email</td><td style="color:var(--by-ink-3)">Required</td></tr>
-          <tr><td class="font-mono pr-4 py-0.5 align-top" style="color:var(--by-ink)">role_type</td><td style="color:var(--by-ink-3)">Optional — Patron (default), Company_Player, Mocatriz, Stage_Manager</td></tr>
-          <tr><td class="font-mono pr-4 py-0.5 align-top" style="color:var(--by-ink)">identity</td><td style="color:var(--by-ink-3)">Optional — student (default), teacher</td></tr>
+      <div class="p-4 border border-by-ink-3 bg-by-bg-2">
+        <div class="text-[11.5px] font-bold mb-2 uppercase tracking-widest text-by-ink-3">Expected columns (row 1 = headers)</div>
+        <table class="w-full text-[12px] text-by-ink-2">
+          <tr><td class="font-mono pr-4 py-0.5 align-top text-by-ink">name</td><td class="text-by-ink-3">Required</td></tr>
+          <tr><td class="font-mono pr-4 py-0.5 align-top text-by-ink">email</td><td class="text-by-ink-3">Required</td></tr>
+          <tr><td class="font-mono pr-4 py-0.5 align-top text-by-ink">role_type</td><td class="text-by-ink-3">Optional — Patron (default), Company_Player, Mocatriz, Stage_Manager</td></tr>
+          <tr><td class="font-mono pr-4 py-0.5 align-top text-by-ink">identity</td><td class="text-by-ink-3">Optional — student (default), teacher</td></tr>
         </table>
       </div>
       <!-- File picker -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Select .csv or .xlsx file</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Select .csv or .xlsx file</label>
         <input type="file" id="bulk-file-input" accept=".csv,.xlsx"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-          style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <!-- Results -->
       <div id="bulk-upload-results" class="hidden"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-bulk-upload')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-bulk-upload')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="uploadExcel()" id="bulk-upload-btn" class="flex-1 btn-spot py-2.5 text-sm">Import</button>
     </div>
 
@@ -1847,11 +1854,11 @@
 {# ── My Config ── #}
 <div id="modal-my-config" class="by-panel hidden fixed inset-0 z-50">
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-my-config')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
-      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Personal info</h3>
-      <button onclick="closeModal('modal-my-config')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <h3 class="text-base font-semibold text-by-ink">Personal info</h3>
+      <button onclick="closeModal('modal-my-config')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -1860,113 +1867,112 @@
 
       <!-- Avatar section -->
       <div>
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Avatar</div>
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Avatar</div>
 
-        <!-- Preview -->
+        <!-- Preview. WHY: `display` on both nodes stays inline and Jinja-conditional (not a
+             Tailwind `hidden` class) — _updateCfgPreview() always reveals/hides them via
+             `.style.display = ''`/`'none'`, and clearing to '' falls back to whatever class is
+             present; a `hidden` class would outlive that clear and leave the element stuck,
+             same failure mode already documented for the header avatar in 6.3b-1. Everything
+             else (size, border, font, per-user tint gradient) is safe to convert/keep as usual. -->
         <div class="flex items-center gap-4 mb-4">
-          <div class="relative flex-shrink-0" style="width:64px;height:64px;">
-            <img id="cfg-av-img" class="av object-cover"
+          <div class="relative flex-shrink-0 w-16 h-16">
+            <img id="cfg-av-img" class="av object-cover w-16 h-16 border-[1.5px] border-by-ink"
                  src="{{ current_user_avatar or '' }}"
-                 style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
+                 style="{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
-            <span id="cfg-av-init" class="av flex items-center justify-center"
-                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:var(--by-on-accent);
-                         background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
+            <span id="cfg-av-init" class="av flex items-center justify-center w-16 h-16 text-[22px] font-bold text-by-on-accent"
+                  style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
                          {{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
             </span>
           </div>
           <div>
-            <div id="cfg-av-label" class="text-[11px] font-semibold" style="color:var(--by-ink)">
+            <div id="cfg-av-label" class="text-[11px] font-semibold text-by-ink">
               {% if current_user_avatar_raw.startswith('char:') and current_user_avatar_raw[5:].isdigit() %}{{ char_avatars[current_user_avatar_raw[5:]|int].name }}{% elif current_user_avatar_raw.startswith('data:') %}Custom photo{% else %}Gradient initials{% endif %}
             </div>
-            <div class="text-[10.5px] mt-0.5" style="color:var(--by-ink-3)">Pick a character, upload a photo,<br>or choose a gradient colour.</div>
+            <div class="text-[10.5px] mt-0.5 text-by-ink-3">Pick a character, upload a photo,<br>or choose a gradient colour.</div>
           </div>
         </div>
 
-        <!-- Character grid (3 × 2) -->
+        <!-- Character grid (3 × 2). WHY: border-color/background stay a Jinja-conditional class
+             pair, not inline — cfgPickCharacter()/cfgHandleUpload()/cfgPickTint()/openMyConfig()
+             all always assign an explicit value to every button on change, never clear to '',
+             so JS unconditionally overrides these classes on interaction regardless. -->
         <div class="grid grid-cols-3 gap-2 mb-3" id="cfg-char-grid">
           {% for ch in char_avatars %}
-          <button type="button" class="cfg-char-btn flex flex-col items-center gap-1 p-1.5 border"
-                  style="border-color:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-ink){% else %}var(--by-bg-3){% endif %};background:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-yes-soft){% else %}var(--by-bg){% endif %};"
+          <button type="button" class="cfg-char-btn flex flex-col items-center gap-1 p-1.5 border {% if current_user_avatar_raw == 'char:' ~ loop.index0 %}border-by-ink bg-by-yes-soft{% else %}border-by-bg-3 bg-by-bg{% endif %}"
                   onclick="cfgPickCharacter({{ loop.index0 }})">
-            <img src="{{ ch.url }}" alt="{{ ch.name }}" style="width:52px;height:52px;border-radius:50%;display:block;">
-            <span style="font-family:var(--by-f-mono);font-size:8.5px;color:var(--by-ink-3);letter-spacing:.04em;line-height:1.2;text-align:center;">{{ ch.name }}</span>
+            <img src="{{ ch.url }}" alt="{{ ch.name }}" class="w-[52px] h-[52px] rounded-full block">
+            <span class="font-mono text-[8.5px] tracking-wide leading-tight text-center text-by-ink-3">{{ ch.name }}</span>
           </button>
           {% endfor %}
         </div>
 
         <!-- Upload photo -->
-        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold"
-               style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg);">
+        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold border-by-ink text-by-ink bg-by-bg">
           <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Upload photo
           <input type="file" accept="image/*" class="hidden" onchange="cfgHandleUpload(this)">
         </label>
 
         <!-- Gradient colour swatches -->
-        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold" style="color:var(--by-ink-3)">Gradient colour</div>
+        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold text-by-ink-3">Gradient colour</div>
         <div class="flex gap-2 flex-wrap" id="cfg-tint-swatches"></div>
       </div>
 
       <!-- Name fields -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">First name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">First name</label>
           <input type="text" id="cfg-first" placeholder="Sofia"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Last name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Last name</label>
           <input type="text" id="cfg-last" placeholder="Reyes"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
 
       <!-- Bio -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Bio</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Bio</label>
         <textarea id="cfg-bio" rows="4" placeholder="A few words about yourself…"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed"
-          style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)"></textarea>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed border-by-ink text-by-ink-2 bg-by-bg"></textarea>
       </div>
 
       <div id="cfg-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
 
       <!-- Change password -->
-      <div style="border-top:var(--by-bd-soft);padding-top:1.25rem">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Change password</div>
+      <div class="border-t border-by-bg-3 pt-5">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Change password</div>
         <div class="space-y-3">
           <div>
-            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Current password</label>
+            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Current password</label>
             <input type="password" id="cfg-pw-current" placeholder="••••••••"
-              class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-              style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+              class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">New password</label>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">New password</label>
               <input type="password" id="cfg-pw-new" placeholder="••••••••"
-                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
             </div>
             <div>
-              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Confirm</label>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Confirm</label>
               <input type="password" id="cfg-pw-confirm" placeholder="••••••••"
-                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
             </div>
           </div>
-          <button onclick="changePassword()" class="w-full border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2)">Update password</button>
+          <button onclick="changePassword()" class="w-full border py-2.5 text-sm font-semibold border-by-ink text-by-ink bg-by-bg-2">Update password</button>
           <div id="cfg-pw-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
         </div>
       </div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-my-config')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-my-config')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="saveMyConfig()" class="flex-1 btn-spot py-2.5 text-sm">Save</button>
     </div>
 
