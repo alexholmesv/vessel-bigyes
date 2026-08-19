@@ -210,6 +210,17 @@
   // ── Config state (set once at page load) ──────────────────────────────────
   const NAV_TINTS    = {{ nav_tints_json | safe }};
   const CHAR_AVATARS = {{ char_avatars_json | safe }};
+
+  function resolveAvatarUrl(avatar) {
+    if (!avatar) return null;
+    if (avatar.startsWith('char:')) {
+      const idx = parseInt(avatar.split(':')[1], 10);
+      return (CHAR_AVATARS[idx] && CHAR_AVATARS[idx].url) || null;
+    }
+    if (avatar.startsWith('data:')) return avatar;
+    return null;
+  }
+
   let _cfgTintIndex   = {{ current_user_tint_idx }};
   let _cfgInitialName = {{ current_user_name | tojson }};
   let _cfgInitialBio  = {{ current_user_bio  | tojson }};
@@ -418,7 +429,8 @@
       if (data.ok) {
         const tint     = NAV_TINTS[_cfgTintIndex];
         const gradient = `linear-gradient(135deg,${tint[0]},${tint[1]})`;
-        _updateHeaderAvatar(data.avatar_url || null, data.initials, gradient);
+        const newAvatarRaw = avatarPayload === 'gradient' ? '' : (avatarPayload || '');
+        _updateHeaderAvatar(resolveAvatarUrl(newAvatarRaw), data.initials, gradient);
         document.querySelectorAll('.by-um-name').forEach(el => el.textContent = data.name);
         _cfgInitialName = data.name;
         _cfgInitialBio  = data.bio !== undefined ? data.bio : bio;
