@@ -3219,7 +3219,11 @@
         const newInitials = data.initials;
         const tint    = NAV_TINTS[_cfgTintIndex];
         const gradient = `linear-gradient(135deg,${tint[0]},${tint[1]})`;
-        _updateHeaderAvatar(data.avatar_url || null, newInitials, gradient);
+        // newAvatarRaw is the local value we just submitted — always fresh, unlike
+        // data.avatar_url, and resolveAvatarUrl() turns 'char:N'/'data:...' into a real
+        // src (or null for 'gradient'/''), same conversion the page uses on load (fix 6.10).
+        const newAvatarRaw = avatarPayload === 'gradient' ? '' : (avatarPayload || '');
+        _updateHeaderAvatar(resolveAvatarUrl(newAvatarRaw), newInitials, gradient);
         // Update dropdown name
         const nameEl = document.querySelector('#user-menu-drop div div:first-child');
         if (nameEl) nameEl.textContent = newName;
@@ -3229,12 +3233,11 @@
         _cfgInitialName = newName;
         _cfgInitialBio  = data.bio !== undefined ? data.bio : bio;
         // Sync ROSTER entry + DOM row for the current user
-        const newAvatarRaw = avatarPayload === 'gradient' ? '' : (avatarPayload || '');
         const rosterEntry = ROSTER.find(r => r.id === CURRENT_USER_ID);
         if (rosterEntry) {
           rosterEntry.avatar = newAvatarRaw;
           rosterEntry.name   = newName;
-          const avUrl = data.avatar_url || null;
+          const avUrl = resolveAvatarUrl(newAvatarRaw);
           const domRow = document.querySelector(`tr.roster-row[data-id="${CURRENT_USER_ID}"]`);
           if (domRow) {
             const avEl = domRow.querySelector('.av, img.av');
