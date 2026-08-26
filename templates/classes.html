@@ -1983,42 +1983,42 @@
 
 {# ── Add Class ── #}
 <div id="modal-add-class" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-class')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-add-class')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
-      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Class</h3>
-      <button onclick="closeModal('modal-add-class')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <h3 class="text-base font-semibold text-by-ink">Add New Class</h3>
+      <button onclick="closeModal('modal-add-class')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Class Name</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Class Name</label>
         <input type="text" id="new-class-name" placeholder="e.g. Level 2 Improv"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Day</label>
           <div class="by-select-wrap">
-            <select id="new-class-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <select id="new-class-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
               {% for d in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
             </select>
           </div>
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Time</label>
           <input type="time" id="new-class-time" value="18:00"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Select Term</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Select Term</label>
         <div class="by-select-wrap">
           <select id="new-class-term" onchange="handleTermChange(this)"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
             <option value="">— No specific term —</option>
             {% for term in terms %}
             <option value="{{ term.id }}" data-start="{{ term.start_date }}" data-end="{{ term.end_date }}">
@@ -2028,11 +2028,11 @@
           </select>
         </div>
       </div>
-      <div id="past-term-warning" style="display:none; background:var(--by-yes-soft); border:var(--by-bd-thick); padding:12px 14px;">
+      <div id="past-term-warning" class="bg-by-yes-soft border-[1.5px] border-by-ink py-3 px-3.5" style="display:none;">
         <div class="flex items-start gap-2">
-          <span style="font-size:18px; flex-shrink:0;">🕰️</span>
+          <span class="text-[18px] flex-shrink-0">🕰️</span>
           <div class="flex-1 min-w-0">
-            <p class="text-[13px] font-semibold" style="color:var(--by-ink); line-height:1.4;">Time travel hasn't been invented yet. This term has already ended, are you sure?</p>
+            <p class="text-[13px] font-semibold text-by-ink leading-[1.4]">Time travel hasn't been invented yet. This term has already ended, are you sure?</p>
             <div class="flex gap-2 mt-2.5">
               <button type="button" onclick="confirmPastTerm()" class="btn-spot text-[11px] px-3 py-1.5">Confirm — log it anyway</button>
               <button type="button" onclick="resetTermSelect()" class="btn-ghost text-[11px] px-3 py-1.5">Pick another term</button>
@@ -2041,9 +2041,9 @@
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Assign Teacher</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Assign Teacher</label>
         <div class="by-select-wrap">
-          <select id="new-class-teacher" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+          <select id="new-class-teacher" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
             {% if teachers %}
               {% for t in teachers.values() %}
               <option value="{{ t.id }}">{{ t.name }}</option>
@@ -2055,39 +2055,38 @@
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Initial Enrollment</label>
-        <div style="position:relative;">
-          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--by-ink-4);pointer-events:none;" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Initial Enrollment</label>
+        <div class="relative">
+          <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-by-ink-4 pointer-events-none w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="text" id="roster-search" placeholder="Search students by name…" autocomplete="off"
             oninput="filterRosterSearch(this.value)"
-            class="w-full border px-3 py-2.5 text-sm focus:outline-none"
-            style="padding-left:34px; border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-3 py-2.5 text-sm focus:outline-none pl-[34px] border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
-        <div id="roster-search-list" style="max-height:160px; overflow-y:auto; border:1px solid var(--by-ink); border-top:none; background:var(--by-bg);"></div>
-        <div id="roster-selected-summary" class="mt-2 text-[11px]" style="color:var(--by-ink-3); font-family:var(--by-f-mono);display:none;">
+        <div id="roster-search-list" class="max-h-[160px] overflow-y-auto border border-by-ink border-t-0 bg-by-bg"></div>
+        <div id="roster-selected-summary" class="mt-2 text-[11px] text-by-ink-3 font-mono" style="display:none;">
           <span id="roster-selected-count">0</span> patron(s) selected for initial enrollment
         </div>
-        <p class="mt-3 text-[12px] px-3 py-2.5" style="background:var(--by-bg-2); border:var(--by-bd); color:var(--by-ink-2); line-height:1.5;">
+        <p class="mt-3 text-[12px] px-3 py-2.5 bg-by-bg-2 border border-by-ink text-by-ink-2 leading-[1.5]">
           <strong>Tip:</strong> Don't stress about adding everyone right now! You can always add or adjust users in this class at any time via the Classes &amp; Cohorts page later.
         </p>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Maximum Students <span style="color:var(--by-ink-4); font-weight:400;">(optional)</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Maximum Students <span class="text-by-ink-4 font-normal">(optional)</span></label>
         <input type="number" id="new-class-capacity" min="0" step="1" inputmode="numeric" placeholder="e.g. 16"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
-        <p class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Leave blank for no maximum.</p>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
+        <p class="mt-1 text-[11px] text-by-ink-4">Leave blank for no maximum.</p>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Tuition Fee <span style="color:var(--by-ink-4); font-weight:400;">(optional)</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Tuition Fee <span class="text-by-ink-4 font-normal">(optional)</span></label>
         <input type="text" id="new-class-fee" placeholder="e.g. €120 / term · Free"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
-        <p class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Free-form. Used in tuition pipeline reports.</p>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
+        <p class="mt-1 text-[11px] text-by-ink-4">Free-form. Used in tuition pipeline reports.</p>
       </div>
       <div id="add-class-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-class')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-class')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createClass()" class="flex-1 btn-spot py-2.5 text-sm">Add Class</button>
     </div>
   </div>
