@@ -1205,23 +1205,21 @@
 
 {# ── Delete confirmation panel ── #}
 <div id="delete-confirm-panel" class="by-panel hidden fixed inset-0 z-[60]" role="dialog">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.6)" onclick="cancelDeletePanel()"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[360px] flex flex-col"
-       style="background:var(--by-bg); border-left:2px solid var(--by-tomato);">
-    <div class="px-5 py-5 border-b" style="border-color:var(--by-tomato);background:var(--by-alert-bg);">
-      <div class="text-[11.5px] font-mono uppercase tracking-widest mb-2" style="color:var(--by-tomato);">⚠ Hold your horses, Hamlet!</div>
-      <h3 id="dcp-title" class="font-display text-[20px]" style="color:var(--by-ink);">Cut from the Show?</h3>
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.6)]" onclick="cancelDeletePanel()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[360px] flex flex-col bg-by-bg border-l-2 border-by-tomato">
+    <div class="px-5 py-5 border-b border-by-tomato bg-by-alert-bg">
+      <div class="text-[11.5px] font-mono uppercase tracking-widest mb-2 text-by-tomato">⚠ Hold your horses, Hamlet!</div>
+      <h3 id="dcp-title" class="font-display text-[20px] text-by-ink">Cut from the Show?</h3>
     </div>
     <div class="flex-1 px-5 py-5">
-      <p id="dcp-body" class="text-[13.5px] leading-relaxed" style="color:var(--by-ink-2);"></p>
-      <div class="mt-4 border px-4 py-3 text-[12px]" style="border-color:var(--by-bg-3);background:var(--by-bg-2);color:var(--by-ink-3);">
+      <p id="dcp-body" class="text-[13.5px] leading-relaxed text-by-ink-2"></p>
+      <div class="mt-4 border px-4 py-3 text-[12px] border-by-bg-3 bg-by-bg-2 text-by-ink-3">
         This deletes ALL enrollment records, attendance history, and challenge reactions. There are no second acts after this curtain call.
       </div>
     </div>
-    <div class="flex-shrink-0 px-5 py-4 flex gap-3" style="border-top:var(--by-bd);">
+    <div class="flex-shrink-0 px-5 py-4 flex gap-3 border-t border-by-ink">
       <button onclick="cancelDeletePanel()" class="btn-ghost flex-1 justify-center">No wait, keep them!</button>
-      <button onclick="confirmDeleteClass()" class="flex-1 border px-4 py-2.5 text-[13px] font-semibold"
-              style="border-color:var(--by-tomato);color:var(--by-on-accent);background:var(--by-tomato);">
+      <button onclick="confirmDeleteClass()" class="flex-1 border px-4 py-2.5 text-[13px] font-semibold border-by-tomato text-by-on-accent bg-by-tomato">
         Yes, strike the set
       </button>
     </div>
