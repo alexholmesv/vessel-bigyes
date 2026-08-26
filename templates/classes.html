@@ -1021,10 +1021,10 @@
 
     </div>{# /px-4 py-6 #}
 
-    <footer class="px-4 lg:px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3)">
-      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span></div>
+    <footer class="px-4 lg:px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline text-by-ink-3">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono text-by-ink-4">v0.9.2 "Curtain Call"</span></div>
       <div class="flex items-center gap-4">
-        <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+        <a href="/privacy" class="hover:underline text-by-ink-2">Privacy Center</a>
       </div>
     </footer>
   </main>
@@ -1035,30 +1035,29 @@
 
 {# ── Class detail panel (slide-in right) ── #}
 <div id="class-panel" class="by-panel hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeClassPanel()"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[480px] flex flex-col"
-       style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeClassPanel()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[480px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
     {# Header #}
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd-thick);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b-[1.5px] border-by-ink">
       <div>
-        <h3 id="cp-title" class="font-display text-[18px]" style="color:var(--by-ink);"></h3>
+        <h3 id="cp-title" class="font-display text-[18px] text-by-ink"></h3>
         <div id="cp-meta" class="by-eyebrow mt-0.5"></div>
       </div>
-      <button onclick="closeClassPanel()" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3);background:none;border:none;cursor:pointer;">
+      <button onclick="closeClassPanel()" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3 bg-none border-none cursor-pointer">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     {# Tab bar #}
-    <div class="flex-shrink-0 flex" style="border-bottom:var(--by-bd-thick);">
+    <div class="flex-shrink-0 flex border-b-[1.5px] border-by-ink">
       <button id="cp-tab-btn-cast" onclick="switchCpTab('cast')"
-              style="flex:1;padding:10px 0;font-family:var(--by-f-sans);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;background:var(--by-bg);color:var(--by-ink);border-bottom:2.5px solid var(--by-yes);transition:color 120ms,border-color 120ms;">
+              class="flex-1 py-2.5 px-0 font-sans text-[11px] font-bold tracking-[.1em] uppercase border-none cursor-pointer bg-by-bg text-by-ink border-b-[2.5px] border-by-yes transition-colors duration-[120ms]">
         Cast
       </button>
       {% if can_view_finances %}
       <button id="cp-tab-btn-finances" onclick="openClassFinances(_cpClassId)"
-              style="flex:1;padding:10px 0;font-family:var(--by-f-sans);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;background:var(--by-bg);color:var(--by-ink-3);border-bottom:2.5px solid transparent;transition:color 120ms,border-color 120ms;">
+              class="flex-1 py-2.5 px-0 font-sans text-[11px] font-bold tracking-[.1em] uppercase border-none cursor-pointer bg-by-bg text-by-ink-3 border-b-[2.5px] border-transparent transition-colors duration-[120ms]">
         Finances
       </button>
       {% endif %}
@@ -1071,45 +1070,43 @@
       <div id="cp-tab-cast">
 
         {# Teacher section #}
-        <div class="px-5 pt-4 pb-4" style="border-bottom:var(--by-bd-soft);">
+        <div class="px-5 pt-4 pb-4 border-b border-by-bg-3">
           <div class="by-eyebrow mb-2">Teacher</div>
           <div id="cp-teacher-display" class="flex items-center gap-2 mb-3 min-h-[26px]"></div>
           <div class="flex gap-2">
             <div class="by-select-wrap flex-1">
               <select id="cp-teacher-select"
-                      class="w-full border px-3 py-2 text-[13px] focus:outline-none"
-                      style="border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);">
+                      class="w-full border px-3 py-2 text-[13px] focus:outline-none border-by-ink bg-by-bg text-by-ink">
               </select>
             </div>
             <button onclick="assignTeacher()"
-                    style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 14px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);white-space:nowrap;">
+                    class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-bold text-xs py-1.5 px-3.5 cursor-pointer shadow-[3px_3px_0_0_var(--by-ink)] whitespace-nowrap">
               Assign
             </button>
           </div>
         </div>
 
         {# Capacity section #}
-        <div class="px-5 pt-4 pb-4" style="border-bottom:var(--by-bd-soft);">
+        <div class="px-5 pt-4 pb-4 border-b border-by-bg-3">
           <div class="flex items-center justify-between gap-3 mb-2">
             <div class="by-eyebrow">Maximum Students</div>
-            <div id="cp-capacity-percent" class="by-eyebrow" style="color:var(--by-ink);">No cap</div>
+            <div id="cp-capacity-percent" class="by-eyebrow text-by-ink">No cap</div>
           </div>
           <div class="mb-3">
             <div class="enrollment-meter-track" aria-label="Enrollment progress">
-              <div id="cp-capacity-fill" class="enrollment-meter-fill" style="width:0%;"></div>
+              <div id="cp-capacity-fill" class="enrollment-meter-fill w-0"></div>
             </div>
-            <div id="cp-capacity-summary" class="mt-2 text-[12px]" style="color:var(--by-ink-3);">Set a class maximum to track enrollment.</div>
+            <div id="cp-capacity-summary" class="mt-2 text-[12px] text-by-ink-3">Set a class maximum to track enrollment.</div>
           </div>
           <div class="flex gap-2">
             <input id="cp-capacity-input" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum"
-                   class="flex-1 border px-3 py-2 text-[13px] focus:outline-none"
-                   style="border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);" />
+                   class="flex-1 border px-3 py-2 text-[13px] focus:outline-none border-by-ink bg-by-bg text-by-ink" />
             <button onclick="saveClassCapacity()"
-                    style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 14px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);white-space:nowrap;">
+                    class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-bold text-xs py-1.5 px-3.5 cursor-pointer shadow-[3px_3px_0_0_var(--by-ink)] whitespace-nowrap">
               Save
             </button>
           </div>
-          <div id="cp-capacity-status" class="hidden mt-2 text-[11px]" style="color:var(--by-tomato);"></div>
+          <div id="cp-capacity-status" class="hidden mt-2 text-[11px] text-by-tomato"></div>
         </div>
 
         {# Cast list #}
@@ -1119,20 +1116,18 @@
         </div>
 
         {# Add to cast #}
-        <div class="px-5 pt-3 pb-5" style="border-top:var(--by-bd-soft);">
+        <div class="px-5 pt-3 pb-5 border-t border-by-bg-3">
           <div class="by-eyebrow mb-2">Add Student</div>
-          <div style="position:relative;" class="mb-2">
-            <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--by-ink-4);pointer-events:none;"
-                 class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <div class="relative mb-2">
+            <svg class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-by-ink-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
             </svg>
             <input id="cp-enroll-search" type="search" placeholder="Search by name…" autocomplete="off"
-                   class="w-full border px-3 py-2 text-[13px] focus:outline-none"
-                   style="padding-left:34px;border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);"
+                   class="w-full border px-3 py-2 text-[13px] focus:outline-none pl-[34px] border-by-ink bg-by-bg text-by-ink"
                    oninput="filterCpEnrollList(this.value)" />
           </div>
           <div id="cp-enroll-list"></div>
-          <div id="cp-enroll-empty" class="by-eyebrow py-4 text-center" style="display:none;color:var(--by-ink-4);">No members to add.</div>
+          <div id="cp-enroll-empty" class="by-eyebrow py-4 text-center text-by-ink-4" style="display:none;">No members to add.</div>
         </div>
 
       </div>{# /cp-tab-cast #}
@@ -1142,32 +1137,32 @@
       <div id="cp-tab-finances" class="px-5 py-4 space-y-5 hidden">
 
         {# Revenue calculator #}
-        <div style="background:var(--by-bg-2);border:1.5px solid var(--by-ink);padding:16px;box-shadow:4px 4px 0 0 var(--by-ink);">
+        <div class="bg-by-bg-2 border-[1.5px] border-by-ink p-4 shadow-by-hard">
           <div class="by-eyebrow mb-3">Revenue Calculator</div>
           <div class="grid grid-cols-2 gap-3 mb-3">
             <div>
-              <div class="by-eyebrow mb-1" style="font-size:10px;">Enrolled students</div>
-              <div id="cfin-enrolled" class="font-display text-[24px]" style="color:var(--by-ink);">0</div>
+              <div class="by-eyebrow mb-1 text-[10px]">Enrolled students</div>
+              <div id="cfin-enrolled" class="font-display text-[24px] text-by-ink">0</div>
             </div>
             <div>
-              <div class="by-eyebrow mb-1" style="font-size:10px;">Tuition rate (€ / student)</div>
+              <div class="by-eyebrow mb-1 text-[10px]">Tuition rate (€ / student)</div>
               <input id="cfin-rate" type="number" min="0" step="0.01" placeholder="0.00"
                      oninput="calcClassNet()"
-                     style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:15px;font-weight:700;padding:4px 8px;outline:none;" />
+                     class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[15px] font-bold py-1 px-2 outline-none" />
             </div>
           </div>
-          <div class="border-t pt-3 grid grid-cols-3 gap-2 text-center" style="border-color:var(--by-bg-3);">
+          <div class="border-t pt-3 grid grid-cols-3 gap-2 text-center border-by-bg-3">
             <div>
-              <div class="by-eyebrow" style="font-size:9px;">Revenue</div>
-              <div id="cfin-gross" class="font-display text-[17px]" style="color:var(--by-ink);">€0.00</div>
+              <div class="by-eyebrow text-[9px]">Revenue</div>
+              <div id="cfin-gross" class="font-display text-[17px] text-by-ink">€0.00</div>
             </div>
             <div>
-              <div class="by-eyebrow" style="font-size:9px;">Expenses</div>
-              <div id="cfin-fees-total" class="font-display text-[17px]" style="color:var(--by-tomato);">€0.00</div>
+              <div class="by-eyebrow text-[9px]">Expenses</div>
+              <div id="cfin-fees-total" class="font-display text-[17px] text-by-tomato">€0.00</div>
             </div>
             <div>
-              <div class="by-eyebrow" style="font-size:9px;">Net</div>
-              <div id="cfin-net" class="font-display text-[17px]" style="color:var(--by-success-green);">€0.00</div>
+              <div class="by-eyebrow text-[9px]">Net</div>
+              <div id="cfin-net" class="font-display text-[17px] text-by-success-green">€0.00</div>
             </div>
           </div>
         </div>
@@ -1176,19 +1171,19 @@
         <div>
           <div class="by-eyebrow mb-2">Expense Line Items</div>
           <ul id="cfin-fee-list" class="space-y-1.5 mb-3"></ul>
-          <div style="border:1px solid var(--by-bg-3);background:var(--by-bg-2);padding:12px;" class="space-y-2">
-            <div class="by-eyebrow mb-1" style="font-size:9px;">Add expense</div>
+          <div class="space-y-2 border border-by-bg-3 bg-by-bg-2 p-3">
+            <div class="by-eyebrow mb-1 text-[9px]">Add expense</div>
             <input id="cfin-fee-title" type="text" placeholder="Description (e.g. Room rental)"
-                   style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-body);font-size:13px;padding:6px 10px;outline:none;" />
+                   class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink font-body text-[13px] py-1.5 px-2.5 outline-none" />
             <div class="flex gap-2">
               <input id="cfin-fee-amount" type="number" min="0" step="0.01" placeholder="Amount €"
-                     style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:13px;padding:6px 10px;outline:none;" />
+                     class="flex-1 border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[13px] py-1.5 px-2.5 outline-none" />
               <button onclick="addCfinFee()"
-                      style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 16px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);">
+                      class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-bold text-xs py-1.5 px-4 cursor-pointer shadow-[3px_3px_0_0_var(--by-ink)]">
                 + Add
               </button>
             </div>
-            <div id="cfin-fee-status" class="hidden text-[11px]" style="color:var(--by-tomato);"></div>
+            <div id="cfin-fee-status" class="hidden text-[11px] text-by-tomato"></div>
           </div>
         </div>
 
@@ -1198,7 +1193,7 @@
     </div>
 
     {# Footer #}
-    <div class="flex-shrink-0 px-5 py-4 flex items-center gap-2 flex-wrap" style="border-top:var(--by-bd);">
+    <div class="flex-shrink-0 px-5 py-4 flex items-center gap-2 flex-wrap border-t border-by-ink">
       <button class="btn-danger ml-auto" onclick="deleteClassFromPanel()">
         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         Cut from the Show
