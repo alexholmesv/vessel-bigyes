@@ -819,35 +819,34 @@
       <section>
         <div class="flex items-center gap-3 mb-4 flex-wrap">
           <div class="flex-1">
-            <h2 class="font-display text-[18px]" style="color:var(--by-ink);">
-              The Troupe's <span class="by-yes-block" style="font-size:inherit;padding:0 10px 3px;">Workshops</span>
+            <h2 class="font-display text-[18px] text-by-ink">
+              The Troupe's <span class="by-yes-block text-[length:inherit] pt-0 px-[10px] pb-[3px]">Workshops</span>
             </h2>
             <div class="by-eyebrow mt-1">Every class begins with a blank stage. Nobody knows what happens next. That's the point.</div>
           </div>
           <button id="btn-sync-classes-section" onclick="syncClasses()"
                   title="Sync classes from barcelonaimprovgroup.com"
-                  class="btn-ghost flex items-center gap-1.5 h-8 px-2.5 text-[11.5px] flex-shrink-0"
-                  style="border:var(--by-bd); font-family:var(--by-f-mono); letter-spacing:.06em; text-transform:uppercase;">
+                  class="btn-ghost flex items-center gap-1.5 h-8 px-2.5 text-[11.5px] flex-shrink-0 border border-by-ink font-mono tracking-[.06em] uppercase">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
             Sync
           </button>
           <div class="flex items-center gap-2 flex-wrap">
             <button class="filter-pill active" data-filter="active" onclick="applyClassFilter('active')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--by-success-green);flex-shrink:0;"></span>
+              <span class="dot w-1.5 h-1.5 rounded-full bg-by-success-green flex-shrink-0"></span>
               On Stage
               <span class="pill-count">{{ active_classes|length }}</span>
             </button>
             <button class="filter-pill" data-filter="future" onclick="applyClassFilter('future')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--by-future-purple);flex-shrink:0;"></span>
+              <span class="dot w-1.5 h-1.5 rounded-full bg-by-future-purple flex-shrink-0"></span>
               Warming Up
               <span class="pill-count">{{ future_classes|length }}</span>
             </button>
             <button class="filter-pill" data-filter="past" onclick="applyClassFilter('past')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--by-ink-4);flex-shrink:0;"></span>
+              <span class="dot w-1.5 h-1.5 rounded-full bg-by-ink-4 flex-shrink-0"></span>
               Curtain Down
               <span class="pill-count">{{ past_classes|length }}</span>
             </button>
-            <button class="filter-pill" data-filter="all" onclick="applyClassFilter('all')" style="margin-left:auto;">
+            <button class="filter-pill ml-auto" data-filter="all" onclick="applyClassFilter('all')">
               Full Ensemble
               <span class="pill-count">{{ (active_classes|length) + (future_classes|length) + (past_classes|length) }}</span>
             </button>
@@ -859,13 +858,12 @@
 
           {# ── Group header: On Stage ── #}
           <div class="class-group-hdr" data-group="active">
-            <div class="flex items-center justify-between px-4 py-2.5"
-                 style="background:var(--by-yes);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);margin-bottom:2px;">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-by-yes border-[1.5px] border-by-ink shadow-by-hard mb-0.5">
               <div>
-                <div class="font-display text-[16px]" style="color:var(--by-ink);">On Stage</div>
+                <div class="font-display text-[16px] text-by-ink">On Stage</div>
                 <div class="by-eyebrow mt-0.5">Currently running · attendance required · no understudy available</div>
               </div>
-              <span class="font-display text-[24px]" style="color:var(--by-ink);">{{ active_classes|length }}</span>
+              <span class="font-display text-[24px] text-by-ink">{{ active_classes|length }}</span>
             </div>
           </div>
 
@@ -876,16 +874,16 @@
           {% set bar_pct = 100 if pct > 100 else pct %}
           <div class="class-card cursor-pointer" data-status="active" id="class-card-{{ cls.id }}"
                onclick="openClassPanel('{{ cls.id }}')">
-            <div class="flex items-stretch" style="transition:background 80ms;">
-              <div class="flex-shrink-0" style="width:3px;background:var(--by-success-green);"></div>
-              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+            <div class="flex items-stretch transition-colors duration-[80ms]">
+              <div class="flex-shrink-0 w-[3px] bg-by-success-green"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)] transition-colors duration-[80ms]">
                 <div class="flex-1 min-w-0">
-                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5 text-by-ink">{{ cls.title }}</div>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="chip chip-active" style="font-size:9px;padding:.06rem .38rem;"><span class="dot"></span>On Stage</span>
-                    {% if cls.get('fee') %}<span class="by-eyebrow" style="background:var(--by-yes);color:var(--by-ink);padding:1px 5px;font-size:8.5px;">{{ cls.fee }}</span>{% endif %}
-                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
-                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                    <span class="chip chip-active text-[9px] py-[.06rem] px-[.38rem]"><span class="dot"></span>On Stage</span>
+                    {% if cls.get('fee') %}<span class="by-eyebrow bg-by-yes text-by-ink py-px px-[5px] text-[8.5px]">{{ cls.fee }}</span>{% endif %}
+                    {% if cls.schedule %}<span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow text-[9.5px] text-by-ink-4">·</span><span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.teacher_name }}</span>{% endif %}
                   </div>
                 </div>
                 <div class="flex items-center gap-2.5 flex-shrink-0">
@@ -899,10 +897,10 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink);">{{ cls.enrolled_count }}</div>
-                    <div class="by-eyebrow" style="font-size:8px;">cast</div>
+                    <div class="font-display text-[20px] leading-none enrolled-count text-by-ink">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow text-[8px]">cast</div>
                   </div>
-                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                  <svg class="w-3.5 h-3.5 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
               </div>
             </div>
@@ -911,13 +909,12 @@
 
           {# ── Group header: Warming Up ── #}
           <div class="class-group-hdr mt-4" data-group="future">
-            <div class="flex items-center justify-between px-4 py-2.5"
-                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid var(--by-future-purple);box-shadow:var(--by-sh-1);margin-bottom:2px;">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-by-bg-2 border-[1.5px] border-by-ink border-l-4 border-l-by-future-purple shadow-by-hard mb-0.5">
               <div>
-                <div class="font-display text-[16px]" style="color:var(--by-ink);">Warming Up</div>
+                <div class="font-display text-[16px] text-by-ink">Warming Up</div>
                 <div class="by-eyebrow mt-0.5">Upcoming · vocals not yet loosened · anticipation building</div>
               </div>
-              <span class="font-display text-[24px]" style="color:var(--by-future-purple);">{{ future_classes|length }}</span>
+              <span class="font-display text-[24px] text-by-future-purple">{{ future_classes|length }}</span>
             </div>
           </div>
 
@@ -929,15 +926,15 @@
           <div class="class-card cursor-pointer" data-status="future" id="class-card-{{ cls.id }}" style="display:none;"
                onclick="openClassPanel('{{ cls.id }}')">
             <div class="flex items-stretch">
-              <div class="flex-shrink-0" style="width:3px;background:var(--by-future-purple);"></div>
-              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+              <div class="flex-shrink-0 w-[3px] bg-by-future-purple"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)] transition-colors duration-[80ms]">
                 <div class="flex-1 min-w-0">
-                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5 text-by-ink">{{ cls.title }}</div>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="chip chip-future" style="font-size:9px;padding:.06rem .38rem;border-color:var(--by-future-purple);color:var(--by-future-purple);"><span class="dot"></span>Warming Up</span>
-                    {% if cls.get('fee') %}<span class="by-eyebrow" style="background:var(--by-yes);color:var(--by-ink);padding:1px 5px;font-size:8.5px;">{{ cls.fee }}</span>{% endif %}
-                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
-                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                    <span class="chip chip-future text-[9px] py-[.06rem] px-[.38rem] border-by-future-purple text-by-future-purple"><span class="dot"></span>Warming Up</span>
+                    {% if cls.get('fee') %}<span class="by-eyebrow bg-by-yes text-by-ink py-px px-[5px] text-[8.5px]">{{ cls.fee }}</span>{% endif %}
+                    {% if cls.schedule %}<span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow text-[9.5px] text-by-ink-4">·</span><span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.teacher_name }}</span>{% endif %}
                   </div>
                 </div>
                 <div class="flex items-center gap-2.5 flex-shrink-0">
@@ -951,10 +948,10 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink);">{{ cls.enrolled_count }}</div>
-                    <div class="by-eyebrow" style="font-size:8px;">cast</div>
+                    <div class="font-display text-[20px] leading-none enrolled-count text-by-ink">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow text-[8px]">cast</div>
                   </div>
-                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                  <svg class="w-3.5 h-3.5 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
               </div>
             </div>
@@ -963,13 +960,12 @@
 
           {# ── Group header: Curtain Down ── #}
           <div class="class-group-hdr mt-4" data-group="past">
-            <div class="flex items-center justify-between px-4 py-2.5"
-                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid var(--by-ink-4);opacity:.85;margin-bottom:2px;">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-by-bg-2 border-[1.5px] border-by-ink border-l-4 border-l-by-ink-4 opacity-[.85] mb-0.5">
               <div>
-                <div class="font-display text-[16px]" style="color:var(--by-ink-2);">Curtain Down</div>
+                <div class="font-display text-[16px] text-by-ink-2">Curtain Down</div>
                 <div class="by-eyebrow mt-0.5">Completed · the applause has faded · the memories linger</div>
               </div>
-              <span class="font-display text-[24px]" style="color:var(--by-ink-4);">{{ past_classes|length }}</span>
+              <span class="font-display text-[24px] text-by-ink-4">{{ past_classes|length }}</span>
             </div>
           </div>
 
@@ -981,19 +977,19 @@
           <div class="class-card cursor-pointer" data-status="past" id="class-card-{{ cls.id }}" style="display:none;opacity:.65;"
                onclick="openClassPanel('{{ cls.id }}')">
             <div class="flex items-stretch">
-              <div class="flex-shrink-0" style="width:3px;background:var(--by-ink-4);"></div>
-              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+              <div class="flex-shrink-0 w-[3px] bg-by-ink-4"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)] transition-colors duration-[80ms]">
                 <div class="flex-1 min-w-0">
-                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink-2);">{{ cls.title }}</div>
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5 text-by-ink-2">{{ cls.title }}</div>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="chip chip-past" style="font-size:9px;padding:.06rem .38rem;border-color:var(--by-ink-4);color:var(--by-ink-4);"><span class="dot"></span>Curtain Down</span>
-                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
-                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                    <span class="chip chip-past text-[9px] py-[.06rem] px-[.38rem] border-by-ink-4 text-by-ink-4"><span class="dot"></span>Curtain Down</span>
+                    {% if cls.schedule %}<span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow text-[9.5px] text-by-ink-4">·</span><span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.teacher_name }}</span>{% endif %}
                   </div>
                 </div>
                 <div class="flex items-center gap-2.5 flex-shrink-0">
                   <div class="enrollment-meter">
-                    <div class="enrollment-meter-top" style="color:var(--by-ink-4);">
+                    <div class="enrollment-meter-top text-by-ink-4">
                       <span class="enrollment-ratio">{{ cls.enrolled_count }}{% if cap %}/{{ cap }}{% else %} enrolled{% endif %}</span>
                       <span class="enrollment-percent">{% if cap %}{{ pct }}%{% else %}No cap{% endif %}</span>
                     </div>
@@ -1002,10 +998,10 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink-3);">{{ cls.enrolled_count }}</div>
-                    <div class="by-eyebrow" style="font-size:8px;color:var(--by-ink-4);">graduated</div>
+                    <div class="font-display text-[20px] leading-none enrolled-count text-by-ink-3">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow text-[8px] text-by-ink-4">graduated</div>
                   </div>
-                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-4);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                  <svg class="w-3.5 h-3.5 text-by-ink-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
               </div>
             </div>
@@ -1015,8 +1011,8 @@
           {# Empty state #}
           {% if not active_classes and not future_classes and not past_classes %}
           <div class="by-card px-6 py-12 text-center">
-            <div class="font-display text-[18px] mb-2" style="color:var(--by-ink-3);">The stage is empty!</div>
-            <div class="text-[13px]" style="color:var(--by-ink-4);">Hit "Add class" and get this troupe rolling!</div>
+            <div class="font-display text-[18px] mb-2 text-by-ink-3">The stage is empty!</div>
+            <div class="text-[13px] text-by-ink-4">Hit "Add class" and get this troupe rolling!</div>
           </div>
           {% endif %}
 
