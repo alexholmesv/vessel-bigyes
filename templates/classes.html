@@ -1898,15 +1898,15 @@
 
 {# ── Add Person ── #}
 <div id="modal-add-person" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-person')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-add-person')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Person</h3>
-        <div class="text-[11.5px] mt-0.5" style="color:var(--by-ink-3)">Patron · Company Player · Mocatriz · Stage Manager</div>
+        <h3 class="text-base font-semibold text-by-ink">Add New Person</h3>
+        <div class="text-[11.5px] mt-0.5 text-by-ink-3">Patron · Company Player · Mocatriz · Stage Manager</div>
       </div>
-      <button onclick="closeModal('modal-add-person')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-add-person')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -1914,18 +1914,18 @@
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Full Name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Full Name</label>
           <input type="text" id="new-person-name" placeholder="Ana García"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Email</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Email</label>
           <input type="email" id="new-person-email" placeholder="ana@bigyes.local"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <div>
-        <label class="mb-3 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Role Type</label>
+        <label class="mb-3 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Role Type</label>
         <div class="grid grid-cols-2 gap-3" id="rt-card-group">
           <div class="rt-card rt-patron selected" data-rt="Patron" onclick="selectRoleType('Patron')">
             <div class="rt-check"></div>
@@ -1953,31 +1953,29 @@
 
       <!-- Access Level (student/teacher subrole — hidden for Stage Manager) -->
       <div id="subrole-section">
-        <label class="mb-2 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Access Level</label>
+        <label class="mb-2 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Access Level</label>
         <div class="flex gap-2">
           <button type="button" id="sys-role-btn-student" onclick="selectSystemRole('student')"
-            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-yes); color:var(--by-ink)">
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border font-sans border-by-ink bg-by-yes text-by-ink">
             Student
           </button>
           <button type="button" id="sys-role-btn-teacher" onclick="selectSystemRole('teacher')"
-            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-bg); color:var(--by-ink-2)">
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border font-sans border-by-ink bg-by-bg text-by-ink-2">
             Teacher
           </button>
         </div>
         <input type="hidden" id="new-person-role" value="student" />
-        <div class="mt-1.5 text-[11px] leading-relaxed" style="color:var(--by-ink-4)">
-          <strong style="color:var(--by-ink-3)">Student</strong> sees the Student dashboard.
-          <strong style="color:var(--by-ink-3)">Teacher</strong> accesses the Ensemble Room.
+        <div class="mt-1.5 text-[11px] leading-relaxed text-by-ink-4">
+          <strong class="text-by-ink-3">Student</strong> sees the Student dashboard.
+          <strong class="text-by-ink-3">Teacher</strong> accesses the Ensemble Room.
         </div>
       </div>
 
       <div id="add-person-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-person')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-person')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createPerson()" class="flex-1 btn-spot py-2.5 text-sm">Add Person</button>
     </div>
   </div>
