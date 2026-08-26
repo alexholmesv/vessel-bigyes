@@ -21,6 +21,22 @@
           'by-ink':      'var(--by-ink)', 'by-ink-2':    'var(--by-ink-2)', 'by-ink-3':    'var(--by-ink-3)', 'by-ink-4': 'var(--by-ink-4)',
           'by-bg':       'var(--by-bg)', 'by-bg-2':     'var(--by-bg-2)', 'by-bg-3':     'var(--by-bg-3)',
           'by-tomato':   'var(--by-tomato)', 'by-tomato-deep': 'var(--by-tomato-deep)',
+
+          /* phase(6.3c-1): business-logic colors the :root block(s) already define but the
+             config never exposed as utilities — same fix admin.html needed in 6.3b-1. Without
+             these, `color:var(--by-success-green)` -> `text-by-success-green` would generate a
+             class Tailwind never emits, silently dropping the color. */
+          'by-on-accent':      'var(--by-on-accent)',
+          'by-success-green':  'var(--by-success-green)',
+          'by-future-purple':  'var(--by-future-purple)',
+          'by-warning-bg':     'var(--by-warning-bg)',
+          'by-warning-text':   'var(--by-warning-text)',
+          'by-warning-accent': 'var(--by-warning-accent)',
+          'by-alert-bg':       'var(--by-alert-bg)',
+        },
+        boxShadow: {
+          'by-hard':     '4px 4px 0 0 var(--by-ink)',
+          'by-hard-yes': '4px 4px 0 0 var(--by-yes)',
         },
       },
     },
@@ -407,10 +423,9 @@
 {% if messages %}
 <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
   {% for cat, msg in messages %}
-  <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm"
-       style="background:var(--by-bg); {% if cat=='error' %}border-color:var(--by-tomato);color:var(--by-tomato);{% elif cat=='success' %}border-color:var(--by-success-green);color:var(--by-success-green);{% else %}border-color:var(--by-ink);color:var(--by-ink-2);{% endif %}">
+  <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm bg-by-bg {% if cat=='error' %}border-by-tomato text-by-tomato{% elif cat=='success' %}border-by-success-green text-by-success-green{% else %}border-by-ink text-by-ink-2{% endif %}">
     <span>{{ msg }}</span>
-    <button onclick="this.parentElement.remove()" class="ml-1 text-xs" style="color:var(--by-ink-3)">✕</button>
+    <button onclick="this.parentElement.remove()" class="ml-1 text-xs text-by-ink-3">✕</button>
   </div>
   {% endfor %}
 </div>
@@ -419,8 +434,8 @@
 
 {# ── Mobile top bar ── #}
 <header class="by-mob-bar lg:hidden">
-  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  <a href="/" class="by-display text-[20px] text-by-ink no-underline leading-none">
+    Big<span class="by-yes-block text-[18px] pt-0 px-[9px] pb-[3px]">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
     <span></span><span></span><span></span>
@@ -430,7 +445,7 @@
 <nav id="mob-drawer" class="by-mob-drawer">
   <div class="px-4 py-4 border-b hairline">
     <div class="by-eyebrow">Stage Manager</div>
-    <div class="by-display text-[18px]" style="color:var(--by-ink)">Studio · BCN</div>
+    <div class="by-display text-[18px] text-by-ink">Studio · BCN</div>
   </div>
   <div class="px-3 py-3">
     <a href="/"           class="nav-item" onclick="toggleMobDrawer()">Dashboard</a>
@@ -454,7 +469,7 @@
   <main class="flex-1 min-w-0 overflow-x-hidden">
 
     {# ── Sticky application header ── #}
-    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
 
         <!-- Right-pinned action group -->
@@ -463,8 +478,7 @@
           <!-- Sync classes from website -->
           <button id="btn-sync-classes" onclick="syncClasses()"
                   title="Sync classes from barcelonaimprovgroup.com"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2 border border-by-ink bg-by-bg text-by-ink font-body">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
             Yes-And the Schedule!
           </button>
@@ -472,8 +486,7 @@
           <!-- Add class -->
           <button onclick="openModal('modal-add-class')"
                   title="Add class"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2 border border-by-ink bg-by-bg text-by-ink font-body">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
             Add class
           </button>
@@ -481,8 +494,7 @@
           <!-- Add show -->
           <button onclick="openModal('modal-add-show')"
                   title="Add show"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2 border border-by-ink bg-by-bg text-by-ink font-body">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
             Add show
           </button>
@@ -490,8 +502,7 @@
           <!-- Add performer -->
           <button onclick="openModal('modal-add-person')"
                   title="Add performer"
-                  class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd-thick); background:var(--by-yes); color:var(--by-ink); font-family:var(--by-f-sans); font-weight:800; letter-spacing:0.02em; text-transform:uppercase;">
+                  class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2 border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-extrabold tracking-[0.02em] uppercase">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
             <span class="hidden lg:inline">Add performer</span>
           </button>
@@ -503,9 +514,12 @@
           {% include 'partials/_inbox_btn.html' %}
           <div class="relative flex-shrink-0" id="user-menu-wrap">
             <button id="user-menu-btn" onclick="toggleUserMenu()"
-                    class="flex items-center gap-2 cursor-pointer h-9 px-2"
-                    style="border:var(--by-bd); background:var(--by-bg);">
+                    class="flex items-center gap-2 cursor-pointer h-9 px-2 border border-by-ink bg-by-bg">
               <!-- Avatar -->
+              {# WHY the surviving inline `display`/size/border on both nodes: _updateHeaderAvatar()
+                 swaps these by assigning style.display = '' to reveal one and 'none' to hide the
+                 other. A Tailwind `hidden` class would outlive style.display = '' and leave the
+                 element permanently hidden, so this must stay inline (same fix as admin.html 6.3b-1). #}
               <img id="header-av-img" class="av object-cover flex-shrink-0"
                    src="{{ current_user_avatar or '' }}"
                    style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
@@ -516,31 +530,25 @@
               </span>
               <!-- Name + role -->
               <div class="hidden lg:block leading-tight text-left">
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
-                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Stage Manager</div>
+                <div class="font-sans font-bold text-[12px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+                <div class="font-mono text-[9.5px] tracking-[.08em] uppercase text-by-ink-3 mt-px">Stage Manager</div>
               </div>
               <!-- Live-status dot -->
-              <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full"
-                    style="width:8px;height:8px;background:var(--by-tomato);box-shadow:0 0 0 2px white,0 0 0 3px var(--by-tomato);"></span>
+              <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full w-2 h-2 bg-by-tomato shadow-[0_0_0_2px_white,0_0_0_3px_var(--by-tomato)]"></span>
             </button>
             <!-- Dropdown -->
-            <div id="user-menu-drop" class="hidden" style="
-              position:absolute; top:calc(100% + 6px); right:0; z-index:60;
-              min-width:160px; background:var(--by-bg); border:var(--by-bd-thick);
-              box-shadow:var(--by-sh-1);">
-              <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);line-height:1.2">{{ current_user_name }}</div>
-                <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Stage Manager</div>
+            <div id="user-menu-drop" class="hidden absolute top-[calc(100%_+_6px)] right-0 z-[60] min-w-[160px] bg-by-bg border-[1.5px] border-by-ink shadow-by-hard">
+              <div class="px-3 py-2.5 border-b border-by-bg-3">
+                <div class="font-sans font-bold text-[12.5px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+                <div class="font-mono text-[10.5px] text-by-ink-3 mt-0.5">Stage Manager</div>
               </div>
               <button onclick="openMyConfig(); toggleUserMenu(true)"
-                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b"
-                style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
-                <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b border-by-bg-3 text-[13px] text-by-ink bg-by-bg">
+                <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Config
               </button>
               <a href="/logout"
-                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5"
-                style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);display:flex;text-decoration:none;">
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-[13px] text-by-tomato bg-by-bg no-underline">
                 <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 Log out
               </a>
@@ -555,7 +563,7 @@
       <div class="flex items-start gap-4 flex-wrap">
         <div>
           <div class="by-eyebrow mb-1">Stage Manager · Cohort Management</div>
-          <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+          <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
             Classes &amp; <span class="by-yes-block">Cohorts</span>
           </h1>
         </div>
@@ -563,21 +571,21 @@
 
       {# KPI strip #}
       <div class="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-yes);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-yes">
           <div class="by-eyebrow">Active classes</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ active_classes|length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ active_classes|length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Total enrolled</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ total_enrolled }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ total_enrolled }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Upcoming</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ future_classes|length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ future_classes|length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Past classes</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink-3);">{{ past_classes|length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink-3">{{ past_classes|length }}</div>
         </div>
       </div>
     </div>
@@ -592,11 +600,11 @@
           <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
             <div>
               <div class="by-eyebrow mb-0.5">Studio · BCN · What's On This Week</div>
-              <h2 class="font-display text-[18px] sm:text-[20px]" style="color:var(--by-ink);">
+              <h2 class="font-display text-[18px] sm:text-[20px] text-by-ink">
                 {% if view_mode == 'month' %}
-                  <span style="color:var(--by-yes-deep);">{{ month_label }}</span><span class="hidden sm:inline"> — Full House View</span>
+                  <span class="text-by-yes-deep">{{ month_label }}</span><span class="hidden sm:inline"> — Full House View</span>
                 {% else %}
-                  <span class="hidden sm:inline">Week of </span><span style="color:var(--by-yes-deep);">{{ week_label }}</span>
+                  <span class="hidden sm:inline">Week of </span><span class="text-by-yes-deep">{{ week_label }}</span>
                 {% endif %}
               </h2>
               <div class="by-eyebrow mt-1">The schedule doesn't lie. Your availability might.</div>
@@ -604,25 +612,25 @@
             {# Desktop nav — hidden on mobile #}
             <div class="hidden sm:flex items-center gap-2">
               {% if view_mode == 'month' %}
-              <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week" style="background:var(--by-bg);color:var(--by-ink);">
+              <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week bg-by-bg text-by-ink">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
               </a>
-              <a href="/classes?view=month" class="btn-week" style="background:var(--by-bg-2);color:var(--by-ink);">This Month</a>
-              <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week" style="background:var(--by-yes);color:var(--by-ink);">
+              <a href="/classes?view=month" class="btn-week bg-by-bg-2 text-by-ink">This Month</a>
+              <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week bg-by-yes text-by-ink">
                 Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
               </a>
-              <a href="/classes" class="btn-week" style="background:var(--by-ink);color:var(--by-yes);text-decoration:none;">
+              <a href="/classes" class="btn-week bg-by-ink text-by-yes no-underline">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Week View
               </a>
               {% else %}
-              <a href="/classes?week_start={{ prev_week }}" class="btn-week" style="background:var(--by-bg);color:var(--by-ink);">
+              <a href="/classes?week_start={{ prev_week }}" class="btn-week bg-by-bg text-by-ink">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
               </a>
-              <a href="/classes?week_start={{ week_start_monday }}" class="btn-week" style="background:var(--by-bg-2);color:var(--by-ink);">Today</a>
-              <a href="/classes?week_start={{ next_week }}" class="btn-week" style="background:var(--by-yes);color:var(--by-ink);">
+              <a href="/classes?week_start={{ week_start_monday }}" class="btn-week bg-by-bg-2 text-by-ink">Today</a>
+              <a href="/classes?week_start={{ next_week }}" class="btn-week bg-by-yes text-by-ink">
                 Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
               </a>
-              <a href="/classes?view=month" class="btn-week" style="background:var(--by-ink);color:var(--by-yes);text-decoration:none;">
+              <a href="/classes?view=month" class="btn-week bg-by-ink text-by-yes no-underline">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Full Month
               </a>
               {% endif %}
@@ -631,19 +639,19 @@
           {# Mobile nav — full-width button row, visible only on mobile #}
           <div class="flex sm:hidden gap-1.5">
             {% if view_mode == 'month' %}
-            <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg);color:var(--by-ink);">
+            <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week flex-1 justify-center bg-by-bg text-by-ink">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
             </a>
-            <a href="/classes?view=month" class="btn-week flex-1 justify-center" style="background:var(--by-bg-2);color:var(--by-ink);">This Month</a>
-            <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week flex-1 justify-center" style="background:var(--by-yes);color:var(--by-ink);">
+            <a href="/classes?view=month" class="btn-week flex-1 justify-center bg-by-bg-2 text-by-ink">This Month</a>
+            <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week flex-1 justify-center bg-by-yes text-by-ink">
               Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
             </a>
             {% else %}
-            <a href="/classes?week_start={{ prev_week }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg);color:var(--by-ink);">
+            <a href="/classes?week_start={{ prev_week }}" class="btn-week flex-1 justify-center bg-by-bg text-by-ink">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
             </a>
-            <a href="/classes?week_start={{ week_start_monday }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg-2);color:var(--by-ink);">Today</a>
-            <a href="/classes?week_start={{ next_week }}" class="btn-week flex-1 justify-center" style="background:var(--by-yes);color:var(--by-ink);">
+            <a href="/classes?week_start={{ week_start_monday }}" class="btn-week flex-1 justify-center bg-by-bg-2 text-by-ink">Today</a>
+            <a href="/classes?week_start={{ next_week }}" class="btn-week flex-1 justify-center bg-by-yes text-by-ink">
               Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
             </a>
             {% endif %}
@@ -653,28 +661,26 @@
         {% if view_mode == 'month' %}
         <div class="by-card overflow-hidden">
           <div class="overflow-x-auto">
-            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:var(--by-bd-thick);">
+            <div class="grid min-w-[640px] grid-cols-[repeat(7,1fr)] border-b-[1.5px] border-by-ink">
               {% for dname in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] %}
-              <div class="px-2 py-2 text-center border-r hairline last:border-r-0" style="background:var(--by-bg-2);">
-                <span class="font-display text-[11px]" style="color:var(--by-ink);">{{ dname }}</span>
+              <div class="px-2 py-2 text-center border-r hairline last:border-r-0 bg-by-bg-2">
+                <span class="font-display text-[11px] text-by-ink">{{ dname }}</span>
               </div>
               {% endfor %}
             </div>
             {% for week in month_weeks %}
-            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--by-bg-3);">
+            <div class="grid min-w-[640px] grid-cols-[repeat(7,1fr)] border-b border-by-bg-3">
               {% for day in week %}
-              <div class="border-r hairline last:border-r-0 p-1.5 min-h-[80px]"
-                   style="{% if not day.in_month %}opacity:.35;{% endif %}{% if day.is_today %}background:var(--by-yes-soft);{% endif %}">
+              <div class="border-r hairline last:border-r-0 p-1.5 min-h-[80px] {% if not day.in_month %}opacity-[.35]{% endif %} {% if day.is_today %}bg-by-yes-soft{% endif %}">
                 <div class="mb-1">
-                  <span class="font-display text-[12px]"
-                    style="{% if day.is_today %}background:var(--by-ink);color:var(--by-yes);padding:1px 5px;{% else %}color:var(--by-ink-3);{% endif %}">
+                  <span class="font-display text-[12px] {% if day.is_today %}bg-by-ink text-by-yes py-px px-[5px]{% else %}text-by-ink-3{% endif %}">
                     {{ day.label }}
                   </span>
                 </div>
                 {% for session in day.sessions %}
                 <div class="cal-session mb-1">
-                  <div class="text-[10px] font-semibold leading-tight truncate" style="color:var(--by-ink);">{{ session.title }}</div>
-                  <div class="by-eyebrow mt-0.5" style="font-size:8.5px;">{{ session.time }}</div>
+                  <div class="text-[10px] font-semibold leading-tight truncate text-by-ink">{{ session.title }}</div>
+                  <div class="by-eyebrow mt-0.5 text-[8.5px]">{{ session.time }}</div>
                 </div>
                 {% endfor %}
               </div>
@@ -690,19 +696,19 @@
           {% for day in calendar_days %}
           <div class="cal-mobile-day">
             <div class="cal-mobile-day-hd {% if day.is_today %}today{% endif %}">
-              <div class="font-display text-[13px]" style="color:var(--by-ink);">{{ day.short }}</div>
-              <div class="by-eyebrow" style="font-size:9px;color:{% if day.is_today %}var(--by-ink-2){% else %}var(--by-ink-4){% endif %};">{{ day.label }}</div>
+              <div class="font-display text-[13px] text-by-ink">{{ day.short }}</div>
+              <div class="by-eyebrow text-[9px] {% if day.is_today %}text-by-ink-2{% else %}text-by-ink-4{% endif %}">{{ day.label }}</div>
             </div>
             <div class="cal-mobile-sessions">
               {% if day.sessions %}
                 {% for session in day.sessions %}
-                <div class="cal-session" style="margin-bottom:{% if not loop.last %}6px{% else %}0{% endif %};">
-                  <div class="text-[12px] font-semibold leading-tight" style="color:var(--by-ink);">{{ session.title }}</div>
-                  <div class="by-eyebrow mt-0.5" style="font-size:9px;">{{ session.time }} · {{ session.count }} cast</div>
+                <div class="cal-session {% if not loop.last %}mb-1.5{% else %}mb-0{% endif %}">
+                  <div class="text-[12px] font-semibold leading-tight text-by-ink">{{ session.title }}</div>
+                  <div class="by-eyebrow mt-0.5 text-[9px]">{{ session.time }} · {{ session.count }} cast</div>
                 </div>
                 {% endfor %}
               {% else %}
-                <span class="by-eyebrow" style="font-size:10px;color:var(--by-bg-3);">No sessions</span>
+                <span class="by-eyebrow text-[10px] text-by-bg-3">No sessions</span>
               {% endif %}
             </div>
           </div>
@@ -712,25 +718,24 @@
         {# Desktop grid (sm+) #}
         <div class="by-card overflow-hidden hidden sm:block">
           <div class="overflow-x-auto">
-            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:var(--by-bd-thick);">
+            <div class="grid min-w-[640px] grid-cols-[repeat(7,1fr)] border-b-[1.5px] border-by-ink">
               {% for day in calendar_days %}
               <div class="cal-col {% if day.is_today %}today{% endif %} border-r hairline last:border-r-0">
-                <div class="cal-day-header px-3 py-2.5 border-b hairline"
-                     style="{% if day.is_today %}background:var(--by-yes);{% else %}background:var(--by-bg-2);{% endif %}">
-                  <div class="font-display text-[12px]" style="color:var(--by-ink);">{{ day.short }}</div>
-                  <div class="by-eyebrow" style="color:{% if day.is_today %}var(--by-ink-2){% else %}var(--by-ink-4){% endif %}">{{ day.label }}</div>
+                <div class="cal-day-header px-3 py-2.5 border-b hairline {% if day.is_today %}bg-by-yes{% else %}bg-by-bg-2{% endif %}">
+                  <div class="font-display text-[12px] text-by-ink">{{ day.short }}</div>
+                  <div class="by-eyebrow {% if day.is_today %}text-by-ink-2{% else %}text-by-ink-4{% endif %}">{{ day.label }}</div>
                 </div>
                 <div class="p-2 min-h-[100px]">
                   {% if day.sessions %}
                     {% for session in day.sessions %}
                     <div class="cal-session mb-1">
-                      <div class="text-[11.5px] font-semibold leading-tight" style="color:var(--by-ink);">{{ session.title }}</div>
-                      <div class="by-eyebrow mt-0.5" style="font-size:9.5px;">{{ session.time }} · {{ session.count }}</div>
+                      <div class="text-[11.5px] font-semibold leading-tight text-by-ink">{{ session.title }}</div>
+                      <div class="by-eyebrow mt-0.5 text-[9.5px]">{{ session.time }} · {{ session.count }}</div>
                     </div>
                     {% endfor %}
                   {% else %}
                   <div class="flex items-center justify-center h-full pt-4">
-                    <span class="by-eyebrow" style="font-size:10px;color:var(--by-bg-3);">—</span>
+                    <span class="by-eyebrow text-[10px] text-by-bg-3">—</span>
                   </div>
                   {% endif %}
                 </div>
@@ -743,11 +748,11 @@
 
         <div class="mt-3 flex items-center gap-4 flex-wrap">
           <div class="flex items-center gap-1.5">
-            <div style="width:12px;height:12px;background:var(--by-yes);border:1px solid var(--by-ink);flex-shrink:0;"></div>
+            <div class="w-[12px] h-[12px] bg-by-yes border border-by-ink flex-shrink-0"></div>
             <span class="by-eyebrow">Today</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <div style="width:3px;height:12px;background:var(--by-yes-deep);flex-shrink:0;"></div>
+            <div class="w-[3px] h-[12px] bg-by-yes-deep flex-shrink-0"></div>
             <span class="by-eyebrow">Class session</span>
           </div>
         </div>
