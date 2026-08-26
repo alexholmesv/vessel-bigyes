@@ -2094,73 +2094,73 @@
 
 {# ── Add Show ── #}
 <div id="modal-add-show" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-show')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-add-show')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Schedule a Show</h3>
-        <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3)">Link a show type or create a one-off</div>
+        <h3 class="text-base font-semibold text-by-ink">Schedule a Show</h3>
+        <div class="text-[11px] mt-0.5 text-by-ink-3">Link a show type or create a one-off</div>
       </div>
-      <button onclick="closeModal('modal-add-show')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-add-show')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Show Type</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Show Type</label>
         <div class="by-select-wrap">
-          <select id="show-type-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" onchange="onShowTypeChange()">
+          <select id="show-type-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" onchange="onShowTypeChange()">
             <option value="">— New one-off (enter title below) —</option>
           </select>
         </div>
-        <p id="show-type-hint" class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Select an existing type to reuse its description, or leave blank to create a one-off.</p>
+        <p id="show-type-hint" class="mt-1 text-[11px] text-by-ink-4">Select an existing type to reuse its description, or leave blank to create a one-off.</p>
       </div>
       <div id="show-title-wrap">
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Title <span style="color:var(--by-tomato)">*</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Title <span class="text-by-tomato">*</span></label>
         <input type="text" id="show-title" placeholder="e.g. Friday Night Harold"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day <span style="color:var(--by-tomato)">*</span></label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Day <span class="text-by-tomato">*</span></label>
           <div class="by-select-wrap">
-            <select id="show-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <select id="show-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
               {% for d in ['Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
             </select>
           </div>
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time <span style="color:var(--by-tomato)">*</span></label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Time <span class="text-by-tomato">*</span></label>
           <input type="time" id="show-time" value="20:00"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Date</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Date</label>
           <input type="date" id="show-date"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Ticket cost</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Ticket cost</label>
           <input type="text" id="show-cost" placeholder="e.g. €12 / Free"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <div>
         <div class="mb-2 flex items-center justify-between">
-          <label class="text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Cast</label>
-          <span id="cast-count" class="text-[11px] font-mono" style="color:var(--by-ink-4)">0 selected</span>
+          <label class="text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Cast</label>
+          <span id="cast-count" class="text-[11px] font-mono text-by-ink-4">0 selected</span>
         </div>
-        <div id="cast-list" class="border divide-y max-h-44 overflow-y-auto" style="border-color:var(--by-ink);">
-          <div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>
+        <div id="cast-list" class="border divide-y max-h-44 overflow-y-auto border-by-ink">
+          <div class="px-4 py-3 text-[12px] text-by-ink-4">No CAST_ELIGIBLE performers found.</div>
         </div>
       </div>
       <div id="add-show-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-show')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-show')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createShow()" class="flex-1 btn-spot py-2.5 text-sm">Schedule Show</button>
     </div>
   </div>
