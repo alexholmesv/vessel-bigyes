@@ -89,11 +89,11 @@
 {% endblock %}
 
 {% block page_header %}
-<header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+<header class="sticky top-0 z-30 border-b hairline bg-by-bg">
   <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
     <div class="min-w-0">
       <div class="by-eyebrow mb-1">Backstage · Analytics</div>
-      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+      <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
         Analytics <span class="by-yes-block">Reports</span>
       </h1>
     </div>
@@ -102,7 +102,7 @@
     </div>
   </div>
 </header>
-<div id="filter-strip" style="border-bottom:var(--by-bd);background:var(--by-bg-2);">
+<div id="filter-strip" class="border-b border-by-ink bg-by-bg-2">
   <div class="max-w-[1440px] mx-auto px-6 py-3 filter-bar">
     <span class="f-label">Year</span>
     <select id="f-year" class="f-select" onchange="onFilterChange()">
@@ -132,11 +132,11 @@
     <div class="f-sep"></div>
     <button class="btn-apply" id="btn-apply" onclick="applyFilters()">Apply</button>
     <button onclick="clearFilters()"
-            style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.08em;color:var(--by-ink-3);background:none;border:none;cursor:pointer;padding:4px 6px;text-decoration:underline;text-transform:uppercase;">
+            class="font-mono text-[10px] tracking-[.08em] text-by-ink-3 bg-transparent border-0 cursor-pointer py-1 px-1.5 underline uppercase">
       Clear
     </button>
     <div class="ml-auto">
-      <span id="filter-label" class="by-eyebrow" style="color:var(--by-ink-4);">Showing all time</span>
+      <span id="filter-label" class="by-eyebrow text-by-ink-4">Showing all time</span>
     </div>
   </div>
 </div>
@@ -147,103 +147,103 @@
 
   <div class="mb-7">
     <div class="by-eyebrow">Backstage Intelligence · Financial Access Required</div>
-    <h1 style="font-family:var(--by-f-display);font-size:26px;line-height:1.1;color:var(--by-ink);margin-top:4px;">
+    <h1 class="font-display text-[26px] leading-[1.1] text-by-ink mt-1">
       The Numbers Never Lie.<br>
-      <span style="color:var(--by-yes-deep);">The Stage Manager Might.</span>
+      <span class="text-by-yes-deep">The Stage Manager Might.</span>
     </h1>
   </div>
 
   <!-- ── KPI strip ── -->
   <div id="kpi-strip" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-    <div class="stat-tile skeleton" style="height:64px;"></div>
-    <div class="stat-tile skeleton" style="height:64px;"></div>
-    <div class="stat-tile skeleton" style="height:64px;"></div>
-    <div class="stat-tile skeleton" style="height:64px;"></div>
+    <div class="stat-tile skeleton h-16"></div>
+    <div class="stat-tile skeleton h-16"></div>
+    <div class="stat-tile skeleton h-16"></div>
+    <div class="stat-tile skeleton h-16"></div>
   </div>
 
   <!-- ── Four cards ── -->
   <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
     <!-- Card Alpha -->
-    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-alpha">
+    <div class="rpt-card shadow-by-hard" id="card-alpha">
       <div class="rpt-card-head">
         <div class="rpt-card-icon">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
         </div>
         <div class="flex-1 min-w-0">
           <div class="by-eyebrow">Card Alpha</div>
-          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">VIP Patrons, Churn Risk &amp; Patron LTV</div>
-          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Stage-Hog Index</div>
+          <div class="font-display text-[14px] mt-0.5">VIP Patrons, Churn Risk &amp; Patron LTV</div>
+          <div class="text-[11px] mt-0.5 text-by-ink-3">Stage-Hog Index</div>
         </div>
-        <span id="alpha-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+        <span id="alpha-status" class="by-eyebrow text-by-ink-4">…</span>
       </div>
       <div class="rpt-card-body" id="alpha-body">
-        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
-        <div class="skeleton" style="height:180px;"></div>
+        <div class="skeleton h-[250px] mb-3"></div>
+        <div class="skeleton h-[180px]"></div>
       </div>
     </div>
 
     <!-- Card Beta -->
-    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-beta">
+    <div class="rpt-card shadow-by-hard" id="card-beta">
       <div class="rpt-card-head">
         <div class="rpt-card-icon">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
         </div>
         <div class="flex-1 min-w-0">
           <div class="by-eyebrow">Card Beta</div>
-          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">Production Margin Matrix &amp; ROI</div>
-          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Sleeper Hit vs Money Pit</div>
+          <div class="font-display text-[14px] mt-0.5">Production Margin Matrix &amp; ROI</div>
+          <div class="text-[11px] mt-0.5 text-by-ink-3">Sleeper Hit vs Money Pit</div>
         </div>
-        <span id="beta-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+        <span id="beta-status" class="by-eyebrow text-by-ink-4">…</span>
       </div>
       <div class="rpt-card-body" id="beta-body">
-        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
-        <div class="skeleton" style="height:180px;"></div>
+        <div class="skeleton h-[250px] mb-3"></div>
+        <div class="skeleton h-[180px]"></div>
       </div>
     </div>
 
     <!-- Card Gamma -->
-    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-gamma">
+    <div class="rpt-card shadow-by-hard" id="card-gamma">
       <div class="rpt-card-head">
         <div class="rpt-card-icon">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8" cy="15" r="1.5" fill="var(--by-ink)"/></svg>
         </div>
         <div class="flex-1 min-w-0">
           <div class="by-eyebrow">Card Gamma</div>
-          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">Capacity Forecast &amp; Seasonal Velocity</div>
-          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Ghost Town Forecast</div>
+          <div class="font-display text-[14px] mt-0.5">Capacity Forecast &amp; Seasonal Velocity</div>
+          <div class="text-[11px] mt-0.5 text-by-ink-3">Ghost Town Forecast</div>
         </div>
-        <span id="gamma-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+        <span id="gamma-status" class="by-eyebrow text-by-ink-4">…</span>
       </div>
       <div class="rpt-card-body" id="gamma-body">
-        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
-        <div class="skeleton" style="height:180px;"></div>
+        <div class="skeleton h-[250px] mb-3"></div>
+        <div class="skeleton h-[180px]"></div>
       </div>
     </div>
 
     <!-- Card Delta -->
-    <div class="rpt-card" style="box-shadow:var(--by-sh-1);" id="card-delta">
+    <div class="rpt-card shadow-by-hard" id="card-delta">
       <div class="rpt-card-head">
         <div class="rpt-card-icon">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--by-ink)" stroke-width="2.2"><circle cx="9" cy="8" r="3"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5"/><path d="M17 11l2 2 4-4"/></svg>
         </div>
         <div class="flex-1 min-w-0">
           <div class="by-eyebrow">Card Delta</div>
-          <div style="font-family:var(--by-f-display);font-size:14px;margin-top:2px;">Backstage Ops &amp; Volunteer Attrition</div>
-          <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3);">Flake Alert Tracker</div>
+          <div class="font-display text-[14px] mt-0.5">Backstage Ops &amp; Volunteer Attrition</div>
+          <div class="text-[11px] mt-0.5 text-by-ink-3">Flake Alert Tracker</div>
         </div>
-        <span id="delta-status" class="by-eyebrow" style="color:var(--by-ink-4);">…</span>
+        <span id="delta-status" class="by-eyebrow text-by-ink-4">…</span>
       </div>
       <div class="rpt-card-body" id="delta-body">
-        <div class="skeleton" style="height:250px;margin-bottom:12px;"></div>
-        <div class="skeleton" style="height:180px;"></div>
+        <div class="skeleton h-[250px] mb-3"></div>
+        <div class="skeleton h-[180px]"></div>
       </div>
     </div>
 
   </div>
 
-  <div class="mt-10 pt-5" style="border-top:1px solid var(--by-bg-3);">
-    <p class="by-eyebrow" style="color:var(--by-ink-4);">BigYes Analytics · Live DB · Chart anchors ready for expansion</p>
+  <div class="mt-10 pt-5 border-t border-by-bg-3">
+    <p class="by-eyebrow text-by-ink-4">BigYes Analytics · Live DB · Chart anchors ready for expansion</p>
   </div>
 </main>
 {% endblock %}
@@ -446,7 +446,7 @@ async function loadKPI() {
   const strip = document.getElementById('kpi-strip');
   function kpi(val, lbl, danger) {
     return `<div class="stat-tile">
-      <div class="val" style="${danger?'color:var(--by-tomato);':''}">${val}</div>
+      <div class="val ${danger?'text-by-tomato':''}">${val}</div>
       <div class="lbl">${lbl}</div>
     </div>`;
   }
@@ -500,7 +500,7 @@ async function loadAlpha() {
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
         <div class="stat-tile"><div class="val">${euro(totalLTV)}</div><div class="lbl">Total LTV</div></div>
         <div class="stat-tile"><div class="val">${euro(avgLTV)}</div><div class="lbl">Avg LTV</div></div>
-        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${highChurn}</div><div class="lbl">Churn Risk</div></div>
+        <div class="stat-tile"><div class="val text-by-tomato">${highChurn}</div><div class="lbl">Churn Risk</div></div>
         <div class="stat-tile"><div class="val">${avgDays!=null?avgDays+'d':'—'}</div><div class="lbl">Avg Re-Enrol</div></div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
@@ -509,7 +509,7 @@ async function loadAlpha() {
         ${chartBox('Enrolment Count Distribution','chart-alpha-enrol',160)}
         ${chartBox('Points vs Classes Enrolled','chart-alpha-pts',160)}
       </div>
-      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Student Detail</div>
+      <div class="by-eyebrow mb-2 text-by-ink-2">Student Detail</div>
       <div class="scroll-table"><table class="rpt-table">
         <thead><tr>
           <th>Student</th><th class="text-right">LTV</th>
@@ -518,13 +518,13 @@ async function loadAlpha() {
         </tr></thead>
         <tbody>
           ${students.map(s=>`<tr>
-            <td><span style="font-weight:600;">${s.name}</span><br>
-                <span style="font-size:10px;color:var(--by-ink-4);">${s.email}</span></td>
-            <td class="text-right" style="font-family:var(--by-f-mono);">${euro(s.ltv)}</td>
+            <td><span class="font-semibold">${s.name}</span><br>
+                <span class="text-[10px] text-by-ink-4">${s.email}</span></td>
+            <td class="text-right font-mono">${euro(s.ltv)}</td>
             <td class="text-center">${s.enrolled_count}</td>
-            <td class="text-center" style="font-family:var(--by-f-mono);">${s.days_to_second_enrollment!=null?s.days_to_second_enrollment+'d':'—'}</td>
+            <td class="text-center font-mono">${s.days_to_second_enrollment!=null?s.days_to_second_enrollment+'d':'—'}</td>
             <td>${churnBadge(s.churn_risk)}</td>
-            <td class="text-right" style="font-family:var(--by-f-mono);color:var(--by-yes-deep);">${s.yes_and_points||0}</td>
+            <td class="text-right font-mono text-by-yes-deep">${s.yes_and_points||0}</td>
           </tr>`).join('')}
         </tbody>
       </table></div>`;
@@ -561,7 +561,7 @@ async function loadBeta() {
         <div class="stat-tile"><div class="val">${euro(totalGross)}</div><div class="lbl">Total Gross</div></div>
         <div class="stat-tile"><div class="val" style="color:${totalNet>=0?'var(--by-badge-green-text)':'var(--by-tomato)'};">${euro(totalNet)}</div><div class="lbl">Net Profit</div></div>
         <div class="stat-tile"><div class="val" style="color:#166534;">${gems}</div><div class="lbl">Hidden Gems</div></div>
-        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${pits}</div><div class="lbl">Money Pits</div></div>
+        <div class="stat-tile"><div class="val text-by-tomato">${pits}</div><div class="lbl">Money Pits</div></div>
       </div>
       ${(()=>{
         const tiered = shows.filter(s=>s.has_tier_breakdown);
@@ -577,8 +577,8 @@ async function loadBeta() {
             <div class="val" style="color:#166534;">${fpTix}</div>
             <div class="lbl">Full-Price Tix · ${euro(fpRev)}</div>
           </div>
-          <div class="stat-tile" style="border-left:3px solid var(--by-tomato);">
-            <div class="val" style="color:var(--by-tomato);">${drTix}</div>
+          <div class="stat-tile border-l-[3px] border-by-tomato">
+            <div class="val text-by-tomato">${drTix}</div>
             <div class="lbl">Door Tix · ${euro(drRev)}</div>
           </div>
           <div class="stat-tile" style="border-left:3px solid #7B5EA7;">
@@ -593,7 +593,7 @@ async function loadBeta() {
         ${chartBox('Capacity Utilisation %','chart-beta-util',160)}
         ${chartBox('Classification Breakdown','chart-beta-classify',160)}
       </div>
-      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Show Detail</div>
+      <div class="by-eyebrow mb-2 text-by-ink-2">Show Detail</div>
       <div class="scroll-table"><table class="rpt-table">
         <thead><tr>
           <th>Show</th><th class="text-right">Gross</th><th class="text-right">Expenses</th>
@@ -605,20 +605,20 @@ async function loadBeta() {
             if (s.has_tier_breakdown) {
               const parts = [];
               if (s.full_price_tickets) parts.push(`<span title="Full price" style="color:#166534;font-weight:700;">${s.full_price_tickets}×FP</span>`);
-              if (s.door_tickets)       parts.push(`<span title="Door" style="color:var(--by-tomato);font-weight:700;">${s.door_tickets}×DR</span>`);
+              if (s.door_tickets)       parts.push(`<span title="Door" class="text-by-tomato font-bold">${s.door_tickets}×DR</span>`);
               if (s.discount_tickets)   parts.push(`<span title="Discount" style="color:#7B5EA7;font-weight:700;">${s.discount_tickets}×DC</span>`);
-              if (s.other_tickets)      parts.push(`<span title="Other" style="color:var(--by-ink-3);font-weight:700;">${s.other_tickets}×OT</span>`);
+              if (s.other_tickets)      parts.push(`<span title="Other" class="text-by-ink-3 font-bold">${s.other_tickets}×OT</span>`);
               breakdown = parts.length ? parts.join(' ') : '0 tix';
             }
             return `<tr>
-              <td><span style="font-weight:600;">${s.title}</span><br>
-                  <span style="font-size:10px;color:var(--by-ink-4);">${s.date} · ${s.show_type}</span></td>
-              <td class="text-right" style="font-family:var(--by-f-mono);">${euro(s.gross)}</td>
-              <td class="text-right" style="font-family:var(--by-f-mono);color:var(--by-tomato);">${euro(s.total_expenses)}</td>
+              <td><span class="font-semibold">${s.title}</span><br>
+                  <span class="text-[10px] text-by-ink-4">${s.date} · ${s.show_type}</span></td>
+              <td class="text-right font-mono">${euro(s.gross)}</td>
+              <td class="text-right font-mono text-by-tomato">${euro(s.total_expenses)}</td>
               <td class="text-right" style="font-family:var(--by-f-mono);color:${s.net_profit>=0?'var(--by-badge-green-text)':'var(--by-tomato)'};">${euro(s.net_profit)}</td>
-              <td style="font-family:var(--by-f-mono);">${pct(s.roi_pct)}</td>
+              <td class="font-mono">${pct(s.roi_pct)}</td>
               <td>${classifyBadge(s.classification)}</td>
-              <td style="font-family:var(--by-f-mono);font-size:11px;">${breakdown}</td>
+              <td class="font-mono text-[11px]">${breakdown}</td>
             </tr>`;
           }).join('')}
         </tbody>
@@ -658,7 +658,7 @@ async function loadGamma() {
       <div class="grid grid-cols-3 gap-2 mb-5">
         <div class="stat-tile"><div class="val">${totalShows}</div><div class="lbl">Shows Analysed</div></div>
         <div class="stat-tile"><div class="val">${totalAtt}</div><div class="lbl">Attendance Records</div></div>
-        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${slowMo}</div><div class="lbl">High-Risk Months</div></div>
+        <div class="stat-tile"><div class="val text-by-tomato">${slowMo}</div><div class="lbl">High-Risk Months</div></div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
         ${chartBox('Monthly Attendance (present / late / absent)','chart-gamma-att',200)}
@@ -666,7 +666,7 @@ async function loadGamma() {
         ${chartBox('Monthly Show Utilisation Trend','chart-gamma-util',160)}
         ${chartBox('Day-of-Week Attendance Volume','chart-gamma-doa',160)}
       </div>
-      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Slow-Period Risk by Month</div>
+      <div class="by-eyebrow mb-2 text-by-ink-2">Slow-Period Risk by Month</div>
       <div class="scroll-table"><table class="rpt-table">
         <thead><tr>
           <th>Month</th><th class="text-right">Avg Util %</th>
@@ -674,15 +674,15 @@ async function loadGamma() {
         </tr></thead>
         <tbody>
           ${msuSorted.length?msuSorted.map(m=>`<tr>
-            <td style="font-family:var(--by-f-mono);">${m.month}</td>
-            <td class="text-right" style="font-family:var(--by-f-mono);">${pct(m.avg_utilization_pct)}</td>
+            <td class="font-mono">${m.month}</td>
+            <td class="text-right font-mono">${pct(m.avg_utilization_pct)}</td>
             <td class="text-right">${m.show_count}</td>
-            <td style="min-width:140px;">
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div style="flex:1;height:7px;background:var(--by-bg-3);border:1px solid var(--by-bg-3);">
+            <td class="min-w-[140px]">
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-[7px] bg-by-bg-3 border border-by-bg-3">
                   <div style="height:100%;width:${m.slow_probability_pct}%;background:${m.slow_probability_pct>60?'var(--by-tomato)':m.slow_probability_pct>30?'var(--by-yes)':'var(--by-badge-green-text)'};"></div>
                 </div>
-                <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(m.slow_probability_pct)}</span>
+                <span class="font-mono text-[10px]">${pct(m.slow_probability_pct)}</span>
               </div>
             </td>
           </tr>`).join(''):'<tr><td colspan="4" class="chart-empty">No show date data in this period.</td></tr>'}
@@ -719,7 +719,7 @@ async function loadDelta() {
     body.innerHTML = `
       <div class="grid grid-cols-3 gap-2 mb-5">
         <div class="stat-tile"><div class="val">${total}</div><div class="lbl">Volunteers</div></div>
-        <div class="stat-tile"><div class="val" style="color:var(--by-tomato);">${flaky}</div><div class="lbl">Flake Risk</div></div>
+        <div class="stat-tile"><div class="val text-by-tomato">${flaky}</div><div class="lbl">Flake Risk</div></div>
         <div class="stat-tile"><div class="val">${pct(avgRel)}</div><div class="lbl">Avg Reliability</div></div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
@@ -728,7 +728,7 @@ async function loadDelta() {
         ${chartBox('Shifts Completed vs Dropped','chart-delta-shifts',160)}
         ${chartBox('Flake Risk Distribution','chart-delta-flake',160)}
       </div>
-      <div class="by-eyebrow mb-2" style="color:var(--by-ink-2);">Volunteer Reliability Ranking</div>
+      <div class="by-eyebrow mb-2 text-by-ink-2">Volunteer Reliability Ranking</div>
       <div class="scroll-table"><table class="rpt-table">
         <thead><tr>
           <th>Volunteer</th><th class="text-center">Done</th>
@@ -736,22 +736,22 @@ async function loadDelta() {
         </tr></thead>
         <tbody>
           ${vols.length?vols.map(v=>`<tr>
-            <td style="font-weight:600;">${v.name}</td>
+            <td class="font-semibold">${v.name}</td>
             <td class="text-center">${v.shifts_completed}</td>
-            <td class="text-center" style="color:var(--by-tomato);">${v.shifts_dropped}</td>
-            <td style="min-width:120px;">
-              <div style="display:flex;align-items:center;gap:6px;">
-                <div style="flex:1;height:6px;background:var(--by-bg-3);">
+            <td class="text-center text-by-tomato">${v.shifts_dropped}</td>
+            <td class="min-w-[120px]">
+              <div class="flex items-center gap-1.5">
+                <div class="flex-1 h-1.5 bg-by-bg-3">
                   <div style="height:100%;width:${v.reliability_pct}%;background:${v.reliability_pct<60?'var(--by-tomato)':v.reliability_pct<85?'var(--by-yes)':'var(--by-badge-green-text)'};"></div>
                 </div>
-                <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(v.reliability_pct)}</span>
+                <span class="font-mono text-[10px]">${pct(v.reliability_pct)}</span>
               </div>
             </td>
             <td>${flakeBadge(v.flake_risk)}</td>
           </tr>`).join(''):'<tr><td colspan="5" class="chart-empty">No volunteers designated yet.</td></tr>'}
         </tbody>
       </table></div>
-      <div class="by-eyebrow mb-2 mt-5" style="color:var(--by-ink-2);">Role Shortage Analysis</div>
+      <div class="by-eyebrow mb-2 mt-5 text-by-ink-2">Role Shortage Analysis</div>
       <div class="scroll-table"><table class="rpt-table">
         <thead><tr>
           <th>Role</th><th class="text-center">Total</th>
@@ -759,16 +759,16 @@ async function loadDelta() {
         </tr></thead>
         <tbody>
           ${roles.map(r=>`<tr>
-            <td style="font-family:var(--by-f-mono);">${r.role}</td>
+            <td class="font-mono">${r.role}</td>
             <td class="text-center">${r.total_slots}</td>
             <td class="text-center" style="color:#166534;">${r.filled_slots}</td>
-            <td class="text-center" style="color:var(--by-tomato);font-weight:700;">${r.open_slots}</td>
-            <td style="min-width:120px;">
-              <div style="display:flex;align-items:center;gap:6px;">
-                <div style="flex:1;height:6px;background:var(--by-bg-3);">
-                  <div style="height:100%;width:${r.shortage_pct}%;background:${r.shortage_pct>60?'var(--by-tomato)':'var(--by-yes)'};"></div>
+            <td class="text-center text-by-tomato font-bold">${r.open_slots}</td>
+            <td class="min-w-[120px]">
+              <div class="flex items-center gap-1.5">
+                <div class="flex-1 h-1.5 bg-by-bg-3">
+                  <div class="h-full ${r.shortage_pct>60?'bg-by-tomato':'bg-by-yes'}" style="width:${r.shortage_pct}%;"></div>
                 </div>
-                <span style="font-family:var(--by-f-mono);font-size:10px;">${pct(r.shortage_pct)}</span>
+                <span class="font-mono text-[10px]">${pct(r.shortage_pct)}</span>
               </div>
             </td>
           </tr>`).join('')}
