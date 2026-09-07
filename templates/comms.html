@@ -284,8 +284,8 @@
 
 <!-- ── Mobile top bar ── -->
 <header class="by-mob-bar">
-  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  <a href="/" class="by-display text-[20px] text-by-ink no-underline leading-none">
+    Big<span class="by-yes-block text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
     <span></span><span></span><span></span>
@@ -295,7 +295,7 @@
 <nav id="mob-drawer" class="by-mob-drawer">
   <div class="px-4 py-4 border-b hairline">
     <div class="by-eyebrow">Stage Manager</div>
-    <div class="by-display text-[18px]" style="color:var(--by-ink);">Studio · BCN</div>
+    <div class="by-display text-[18px] text-by-ink">Studio · BCN</div>
   </div>
   <div class="px-3 py-3">
     <a href="/" class="nav-item" onclick="toggleMobDrawer()">Dashboard</a>
@@ -308,7 +308,7 @@
     <a href="/backstage/activity-log" class="nav-item" onclick="toggleMobDrawer()">Activity Log</a>
     <a href="/backstage/comms" class="nav-item active" onclick="toggleMobDrawer()">Comms</a>
     {% if can_view_finances %}
-    <a href="/backstage/finances" class="nav-item" style="color:var(--by-yes-deep);font-weight:700;" onclick="toggleMobDrawer()">Finances ✦</a>
+    <a href="/backstage/finances" class="nav-item text-by-yes-deep font-bold" onclick="toggleMobDrawer()">Finances ✦</a>
     {% endif %}
   </div>
 </nav>
@@ -325,11 +325,11 @@
   <div class="flex flex-col min-w-0">
 
     <!-- ─── Sticky page header ─── -->
-    <header class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+    <header class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
         <div class="min-w-0">
           <div class="by-eyebrow">Backstage</div>
-          <h1 class="font-display text-[20px] leading-tight mt-0.5" style="color:var(--by-ink);">Comms</h1>
+          <h1 class="font-display text-[20px] leading-tight mt-0.5 text-by-ink">Comms</h1>
         </div>
         <div class="ml-auto flex items-center gap-3 flex-shrink-0">
           <span class="badge badge-pending hidden lg:inline">Restricted</span>
@@ -338,18 +338,17 @@
           <!-- Inbox -->
           {% include 'partials/_inbox_btn.html' %}
           <!-- User pill -->
-          <div class="flex items-center gap-2 h-9 px-2.5" style="border:var(--by-bd);background:var(--by-bg);">
-            <span class="flex items-center justify-center flex-shrink-0"
-                  style="width:26px;height:26px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;">
+          <div class="flex items-center gap-2 h-9 px-2.5 border border-by-ink bg-by-bg">
+            <span class="flex items-center justify-center flex-shrink-0 w-[26px] h-[26px] rounded-full font-mono text-[10px] font-bold text-white"
+                  style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;">
               {{ current_user_initials }}
             </span>
             <div class="hidden lg:block leading-tight">
-              <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
-              <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C544A;margin-top:1px;">Stage Manager</div>
+              <div class="font-sans font-bold text-[12px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+              <div class="font-mono text-[9.5px] tracking-[.08em] uppercase text-by-ink-3 mt-px">Stage Manager</div>
             </div>
           </div>
-          <a href="/logout" class="hidden lg:flex items-center h-9 px-3 text-[12px]"
-             style="border:var(--by-bd);color:var(--by-tomato);background:var(--by-bg);font-family:var(--by-f-sans);font-weight:600;text-decoration:none;">
+          <a href="/logout" class="hidden lg:flex items-center h-9 px-3 text-[12px] border border-by-ink text-by-tomato bg-by-bg font-sans font-semibold no-underline">
             Log out
           </a>
         </div>
@@ -361,7 +360,7 @@
 
       <!-- Sub-heading -->
       <div class="mb-6">
-        <p class="text-[13px]" style="color:var(--by-ink-3);">
+        <p class="text-[13px] text-by-ink-3">
           Dispatch directives to your cast. Messages land in the external inbox and the in-app dashboard simultaneously.
         </p>
       </div>
@@ -372,15 +371,15 @@
         <!-- ════════════════════════════════════════════════════════
              LEFT — DIRECTIVES COMPOSER
         ════════════════════════════════════════════════════════ -->
-        <section style="border:var(--by-bd-thick);background:var(--by-bg);">
+        <section class="border-[1.5px] border-by-ink bg-by-bg">
 
-          <header class="px-5 py-4 flex items-center gap-3" style="border-bottom:var(--by-bd);">
+          <header class="px-5 py-4 flex items-center gap-3 border-b border-by-ink">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                 style="width:17px;height:17px;flex-shrink:0;">
+                 class="w-[17px] h-[17px] flex-shrink-0">
               <path d="M4 4h16v13H4z"/><path d="M4 4l8 8.5L20 4"/>
             </svg>
             <div>
-              <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">The Directives Composer</div>
+              <div class="font-sans font-bold text-[14.5px] text-by-ink">The Directives Composer</div>
               <div class="by-eyebrow mt-0.5">Write · Target · Broadcast</div>
             </div>
           </header>
@@ -418,7 +417,7 @@
                 </select>
               </div>
               {% if preset_member %}
-              <p class="mt-2 text-[11px]" style="color:var(--by-ink-3);font-family:var(--by-f-mono);">
+              <p class="mt-2 text-[11px] text-by-ink-3 font-mono">
                 ↳ Pre-scoped to {{ preset_member.name }}
               </p>
               {% endif %}
@@ -443,7 +442,7 @@
               <button type="submit" id="blastBtn" class="by-btn-primary">
                 📣 Broadcast Scene Directions
               </button>
-              <span id="blastSpinner" class="hidden by-eyebrow" style="color:var(--by-ink-3);">Dispatching…</span>
+              <span id="blastSpinner" class="hidden by-eyebrow text-by-ink-3">Dispatching…</span>
             </div>
 
           </form>
@@ -453,28 +452,28 @@
         <!-- ════════════════════════════════════════════════════════
              RIGHT — BACKSTAGE TRANSMISSION LOG
         ════════════════════════════════════════════════════════ -->
-        <section id="logPanel" style="border:var(--by-bd-thick);background:var(--by-bg);">
+        <section id="logPanel" class="border-[1.5px] border-by-ink bg-by-bg">
 
-          <header class="px-5 py-4 flex items-center justify-between gap-3" style="border-bottom:var(--by-bd);">
+          <header class="px-5 py-4 flex items-center justify-between gap-3 border-b border-by-ink">
             <div class="flex items-center gap-3">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                   style="width:17px;height:17px;flex-shrink:0;">
+                   class="w-[17px] h-[17px] flex-shrink-0">
                 <path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>
               </svg>
               <div>
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:14.5px;color:var(--by-ink);">Transmission Log</div>
+                <div class="font-sans font-bold text-[14.5px] text-by-ink">Transmission Log</div>
                 <div class="by-eyebrow mt-0.5">Recent Dispatches</div>
               </div>
             </div>
             <span class="by-eyebrow">{{ mail_logs | length }} entries</span>
           </header>
 
-          <div id="logList" style="max-height:560px;overflow-y:auto;">
+          <div id="logList" class="max-h-[560px] overflow-y-auto">
             {% if mail_logs %}
               {% for log in mail_logs %}
               <div class="log-row" onclick="openLogDetail({{ log.id }})" data-log-id="{{ log.id }}">
                 <div class="min-w-0">
-                  <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">
+                  <div class="by-eyebrow mb-1 text-by-yes-deep">
                     {% if log.recipient_name %}
                       👤 {{ log.recipient_name }}
                     {% elif log.recipient_group == 'all_members' %}
@@ -487,8 +486,8 @@
                       {{ log.recipient_group or '—' }}
                     {% endif %}
                   </div>
-                  <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">{{ log.subject }}</div>
-                  <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">
+                  <div class="text-[13px] font-semibold truncate text-by-ink">{{ log.subject }}</div>
+                  <div class="mt-1 text-[11px] text-by-ink-4 font-mono">
                     {{ log.sender_name }} · {{ log.created_at[:16] | replace('T',' ') }}
                   </div>
                 </div>
@@ -505,8 +504,8 @@
               {% endfor %}
             {% else %}
               <div class="px-6 py-14 text-center">
-                <div class="font-display text-[20px] mb-2" style="color:var(--by-ink-4);">( silence )</div>
-                <div class="text-[13px]" style="color:var(--by-ink-4);">No transmissions yet. The booth awaits its first broadcast.</div>
+                <div class="font-display text-[20px] mb-2 text-by-ink-4">( silence )</div>
+                <div class="text-[13px] text-by-ink-4">No transmissions yet. The booth awaits its first broadcast.</div>
               </div>
             {% endif %}
           </div>
@@ -516,10 +515,10 @@
       </div><!-- /grid -->
     </main>
 
-    <footer class="px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3)">
-      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span></div>
+    <footer class="px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline text-by-ink-3">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono text-by-ink-4">v0.9.2 "Curtain Call"</span></div>
       <div class="flex items-center gap-4">
-        <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+        <a href="/privacy" class="hover:underline text-by-ink-2">Privacy Center</a>
       </div>
     </footer>
 
@@ -536,15 +535,13 @@
 <div id="tx-panel" aria-modal="true" role="dialog">
 
   <!-- Header -->
-  <div class="flex items-center justify-between shrink-0 px-5 py-3"
-       style="border-bottom:2px solid var(--by-ink);background:var(--by-ink);">
+  <div class="flex items-center justify-between shrink-0 px-5 py-3 border-b-2 border-by-ink bg-by-ink">
     <div>
-      <p style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.14em;
-                text-transform:uppercase;color:var(--by-night-on);margin-bottom:3px;">
+      <p class="font-mono text-[10px] tracking-[.14em] uppercase text-by-night-on mb-[3px]">
         Transmission · Thread
       </p>
       <h3 id="tx-subject"
-          style="font-family:var(--by-f-display);font-size:17px;color:#fff;line-height:1.1;"></h3>
+          class="font-display text-[17px] text-white leading-[1.1]"></h3>
     </div>
     <button onclick="closeTxPanel()"
             style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,.25);
@@ -559,39 +556,32 @@
   </div>
 
   <!-- Meta bar -->
-  <div id="tx-meta" class="shrink-0 px-5 py-3 flex items-center gap-3 flex-wrap"
-       style="border-bottom:1px solid var(--by-bg-3);font-family:var(--by-f-mono);
-              font-size:10.5px;color:var(--by-ink-4);letter-spacing:.06em;text-transform:uppercase;">
+  <div id="tx-meta" class="shrink-0 px-5 py-3 flex items-center gap-3 flex-wrap border-b border-by-bg-3 font-mono text-[10.5px] text-by-ink-4 tracking-[.06em] uppercase">
   </div>
 
   <!-- Original message -->
-  <div class="shrink-0 px-5 py-4" style="border-bottom:var(--by-bd-thick);">
+  <div class="shrink-0 px-5 py-4 border-b-[1.5px] border-by-ink">
     <p class="by-eyebrow mb-2">Original message</p>
-    <p id="tx-body" style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);
-                           white-space:pre-wrap;line-height:1.65;"></p>
+    <p id="tx-body" class="font-body text-[13.5px] text-by-ink-2 whitespace-pre-wrap leading-[1.65]"></p>
   </div>
 
   <!-- Thread list -->
   <div class="flex-1 overflow-y-auto px-5 py-4">
     <p class="by-eyebrow mb-3">Conversation threads</p>
     <div id="tx-threads">
-      <p style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;">Loading…</p>
+      <p class="text-by-ink-4 font-mono text-[11px]">Loading…</p>
     </div>
   </div>
 
   <!-- Reply input -->
-  <div id="tx-reply-wrap" class="shrink-0 px-5 pb-5 pt-3"
-       style="border-top:var(--by-bd-thick);">
+  <div id="tx-reply-wrap" class="shrink-0 px-5 pb-5 pt-3 border-t-[1.5px] border-by-ink">
     <p class="by-eyebrow mb-2">Reply to selected thread</p>
-    <p id="tx-reply-target" style="font-family:var(--by-f-body);font-size:12px;
-                                   color:var(--by-ink-3);margin-bottom:8px;"></p>
+    <p id="tx-reply-target" class="font-body text-[12px] text-by-ink-3 mb-2"></p>
     <div class="flex gap-2">
       <textarea id="tx-reply-input"
                 placeholder="Write a reply…"
                 rows="2"
-                style="flex:1;padding:8px 10px;border:var(--by-bd-thick);background:var(--by-bg);
-                       color:var(--by-ink-2);font-family:var(--by-f-body);font-size:13px;
-                       line-height:1.5;resize:none;outline:none;"
+                class="flex-1 px-2.5 py-2 border-[1.5px] border-by-ink bg-by-bg text-by-ink-2 font-body text-[13px] leading-normal resize-none outline-none"
                 onfocus="this.style.boxShadow='0 0 0 2px var(--by-yes)'"
                 onblur="this.style.boxShadow=''"
                 onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){sendTxReply();}"></textarea>
@@ -605,7 +595,7 @@
         Send
       </button>
     </div>
-    <p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:4px;">
+    <p class="font-mono text-[10px] text-by-ink-4 mt-1">
       Ctrl+Enter to send · select a thread below to target a recipient
     </p>
   </div>
@@ -657,7 +647,7 @@
     document.getElementById('tx-panel').classList.add('open');
     document.getElementById('tx-backdrop').classList.add('open');
     document.getElementById('tx-threads').innerHTML =
-      '<p style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;">Loading…</p>';
+      '<p class="text-by-ink-4 font-mono text-[11px]">Loading…</p>';
     document.getElementById('tx-reply-target').textContent = '';
     document.getElementById('tx-reply-input').value = '';
 
@@ -698,18 +688,18 @@
     const statusLbl = log.status === 'sent' ? 'Delivered' : (log.status === 'pending' ? 'On Stage' : 'Trainwreck');
     document.getElementById('tx-meta').innerHTML =
       `<span>📤 ${esc(log.sender_name)}</span>
-       <span style="color:var(--by-bg-3);">·</span>
+       <span class="text-by-bg-3">·</span>
        <span>→ ${esc(recipientLabel)}</span>
-       <span style="color:var(--by-bg-3);">·</span>
+       <span class="text-by-bg-3">·</span>
        <span>${fmtDate(log.created_at)}</span>
-       <span style="color:var(--by-bg-3);">·</span>
-       <span style="color:${statusCls};font-weight:700;">${statusLbl}</span>`;
+       <span class="text-by-bg-3">·</span>
+       <span class="font-bold" style="color:${statusCls};">${statusLbl}</span>`;
 
     // Threads
     const threadsEl = document.getElementById('tx-threads');
     if (!log.threads || !log.threads.length) {
       threadsEl.innerHTML =
-        '<p style="color:var(--by-ink-4);font-family:var(--by-f-mono);font-size:11px;text-align:center;padding:24px 0;">No recipient threads yet.</p>';
+        '<p class="text-by-ink-4 font-mono text-[11px] text-center py-6 px-0">No recipient threads yet.</p>';
       return;
     }
 
@@ -726,9 +716,9 @@
         'background:var(--by-bg-2);cursor:pointer;display:flex;align-items:center;gap:8px;';
       hdr.onclick = () => selectTxThread(notif.id, notif.recipient_name);
       hdr.innerHTML =
-        `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="color:var(--by-ink-3);flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-         <span style="font-family:var(--by-f-sans);font-size:12.5px;font-weight:700;color:var(--by-ink);">${esc(notif.recipient_name)}</span>
-         ${!notif.is_read ? '<span style="margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--by-tomato);flex-shrink:0;"></span>' : ''}`;
+        `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" class="text-by-ink-3 flex-shrink-0"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+         <span class="font-sans text-[12.5px] font-bold text-by-ink">${esc(notif.recipient_name)}</span>
+         ${!notif.is_read ? '<span class="ml-auto w-[7px] h-[7px] rounded-full bg-by-tomato flex-shrink-0"></span>' : ''}`;
 
       // Replies
       const repliesWrap = document.createElement('div');
@@ -736,18 +726,16 @@
 
       if (!notif.replies || !notif.replies.length) {
         repliesWrap.innerHTML =
-          '<p style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-4);">No replies yet — select to reply.</p>';
+          '<p class="font-mono text-[10.5px] text-by-ink-4">No replies yet — select to reply.</p>';
       } else {
         notif.replies.forEach(r => {
           const isMine = r.sender_name === '{{ current_user_name | default("") | e }}';
           const msg = document.createElement('div');
           msg.className = 'tx-thread-item ' + (isMine ? 'mine' : 'theirs');
           msg.innerHTML =
-            `<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);
-                       text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">
+            `<p class="font-mono text-[10px] text-by-ink-4 uppercase tracking-[.08em] mb-1">
                ${esc(r.sender_name)} · ${fmtDate(r.created_at)}</p>
-             <p style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-2);
-                       white-space:pre-wrap;line-height:1.6;">${esc(r.body)}</p>`;
+             <p class="font-body text-[13px] text-by-ink-2 whitespace-pre-wrap leading-[1.6]">${esc(r.body)}</p>`;
           repliesWrap.appendChild(msg);
         });
       }
@@ -817,9 +805,9 @@
     const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
     row.innerHTML = `
       <div class="min-w-0">
-        <div class="by-eyebrow mb-1" style="color:var(--by-yes-deep);">${audienceLabel}</div>
-        <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(log.subject)}</div>
-        <div class="mt-1 text-[11px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">You · ${now}</div>
+        <div class="by-eyebrow mb-1 text-by-yes-deep">${audienceLabel}</div>
+        <div class="text-[13px] font-semibold truncate text-by-ink">${esc(log.subject)}</div>
+        <div class="mt-1 text-[11px] text-by-ink-4 font-mono">You · ${now}</div>
       </div>
       <div class="flex-shrink-0 pt-0.5">
         <span class="badge badge-pending">On Stage</span>
