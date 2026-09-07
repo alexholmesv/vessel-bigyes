@@ -1303,14 +1303,14 @@
     const rosterEl = document.getElementById('cp-roster');
     if (!rosterEl) return;
     if (!(d.students || []).length) {
-      rosterEl.innerHTML = '<p class="by-eyebrow py-3 text-center" style="color:var(--by-ink-4);">No one cast yet.</p>';
+      rosterEl.innerHTML = '<p class="by-eyebrow py-3 text-center text-by-ink-4">No one cast yet.</p>';
     } else {
       rosterEl.innerHTML = (d.students || []).map(s => {
         const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-        return `<div class="flex items-center gap-2.5 py-2.5 border-b" style="border-color:var(--by-bg-3);" id="cp-row-${classId}-${s.id}">
-          <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:var(--by-on-accent);flex-shrink:0;">${inits}</span>
+        return `<div class="flex items-center gap-2.5 py-2.5 border-b border-by-bg-3" id="cp-row-${classId}-${s.id}">
+          <span class="av text-[10px] w-[26px] h-[26px] text-by-on-accent flex-shrink-0" style="background:linear-gradient(135deg,#FBBF24,#A78BFA);">${inits}</span>
           <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
+            <div class="text-[13px] font-semibold truncate text-by-ink">${_esc(s.name)}</div>
             <div class="by-eyebrow">${s.roleType} · ${s.pts} pts</div>
           </div>
           <button class="btn-danger" onclick="unenrollFromPanel('${s.id}','${classId}','${_esc(s.name)}',this)">
@@ -1395,12 +1395,12 @@
     if (teacherInDB) {
       const inits = teacherInDB.name.split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
       displayEl.innerHTML = `
-        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#22D3EE,#FBBF24);color:var(--by-on-accent);flex-shrink:0;">${inits}</span>
-        <span class="text-[13px] font-semibold" style="color:var(--by-ink);">${_esc(teacherInDB.name)}</span>`;
+        <span class="av text-[10px] w-[26px] h-[26px] text-by-on-accent flex-shrink-0" style="background:linear-gradient(135deg,#22D3EE,#FBBF24);">${inits}</span>
+        <span class="text-[13px] font-semibold text-by-ink">${_esc(teacherInDB.name)}</span>`;
     } else if (d.teacherName && d.teacherName !== '—') {
-      displayEl.innerHTML = `<span class="text-[12px] font-semibold" style="color:var(--by-tomato);">&#9888; ${_esc(d.teacherName)} — not found in member database</span>`;
+      displayEl.innerHTML = `<span class="text-[12px] font-semibold text-by-tomato">&#9888; ${_esc(d.teacherName)} — not found in member database</span>`;
     } else {
-      displayEl.innerHTML = `<span class="by-eyebrow" style="color:var(--by-ink-4);">No teacher assigned.</span>`;
+      displayEl.innerHTML = `<span class="by-eyebrow text-by-ink-4">No teacher assigned.</span>`;
     }
 
     if (ALL_TEACHERS.length) {
@@ -1521,9 +1521,9 @@
     listEl.innerHTML = students.map(s => {
       const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
       return `<div class="cp-enroll-row" id="cper-${s.id}">
-        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:var(--by-on-accent);flex-shrink:0;">${inits}</span>
+        <span class="av text-[10px] w-[26px] h-[26px] text-by-on-accent flex-shrink-0" style="background:linear-gradient(135deg,#FBBF24,#A78BFA);">${inits}</span>
         <div class="flex-1 min-w-0">
-          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
+          <div class="text-[13px] font-semibold truncate text-by-ink">${_esc(s.name)}</div>
           <div class="by-eyebrow">${s.role_type || 'Patron'}</div>
         </div>
         <button class="enroll-row-btn" onclick="enrollStudent('${s.id}','${_esc(s.name)}','${_esc(classId)}',this)">
@@ -1664,16 +1664,16 @@
   function renderCfinFees() {
     const list = document.getElementById('cfin-fee-list');
     if (!_cfinFees.length) {
-      list.innerHTML = '<li class="by-eyebrow py-2 text-center" style="color:var(--by-ink-4);">No expenses added yet.</li>';
+      list.innerHTML = '<li class="by-eyebrow py-2 text-center text-by-ink-4">No expenses added yet.</li>';
       calcClassNet();
       return;
     }
     list.innerHTML = _cfinFees.map(f => `
-      <li class="flex items-center gap-2 px-3 py-2 border" style="border-color:var(--by-bg-3);background:var(--by-bg);">
-        <span class="flex-1 text-[13px]" style="color:var(--by-ink);">${_esc(f.title)}</span>
-        <span class="font-mono text-[12px]" style="color:var(--by-tomato);">−€${parseFloat(f.fee_amount).toFixed(2)}</span>
+      <li class="flex items-center gap-2 px-3 py-2 border border-by-bg-3 bg-by-bg">
+        <span class="flex-1 text-[13px] text-by-ink">${_esc(f.title)}</span>
+        <span class="font-mono text-[12px] text-by-tomato">−€${parseFloat(f.fee_amount).toFixed(2)}</span>
         <button onclick="deleteCfinFee('${_esc(f.id)}')"
-                style="color:var(--by-ink-4);background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;">
+                class="text-by-ink-4 bg-transparent border-0 cursor-pointer p-0.5 flex-shrink-0">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </li>`).join('');
@@ -2168,12 +2168,12 @@
 
 {# ── My Config ── #}
 <div id="modal-my-config" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-my-config')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-my-config')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
-      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Personal info</h3>
-      <button onclick="closeModal('modal-my-config')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <h3 class="text-base font-semibold text-by-ink">Personal info</h3>
+      <button onclick="closeModal('modal-my-config')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -2181,25 +2181,24 @@
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
       <!-- Avatar section -->
       <div>
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Avatar</div>
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Avatar</div>
         <div class="flex items-center gap-4 mb-4">
-          <div class="relative flex-shrink-0" style="width:64px;height:64px;">
-            <img id="cfg-av-img" class="av object-cover"
+          <div class="relative flex-shrink-0 w-[64px] h-[64px]">
+            <img id="cfg-av-img" class="av object-cover w-[64px] h-[64px] border-[1.5px] border-by-ink"
                  src="{{ current_user_avatar or '' }}"
-                 style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
+                 style="{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
-            <span id="cfg-av-init" class="av flex items-center justify-center"
-                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:var(--by-on-accent);
-                         background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
+            <span id="cfg-av-init" class="av flex items-center justify-center w-[64px] h-[64px] text-[22px] font-bold text-by-on-accent"
+                  style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
                          {{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
             </span>
           </div>
           <div>
-            <div id="cfg-av-label" class="text-[11px] font-semibold" style="color:var(--by-ink)">
+            <div id="cfg-av-label" class="text-[11px] font-semibold text-by-ink">
               {% if current_user_avatar_raw.startswith('char:') and current_user_avatar_raw[5:].isdigit() %}{{ char_avatars[current_user_avatar_raw[5:]|int].name }}{% elif current_user_avatar_raw.startswith('data:') %}Custom photo{% else %}Gradient initials{% endif %}
             </div>
-            <div class="text-[10.5px] mt-0.5" style="color:var(--by-ink-3)">Pick a character, upload a photo,<br>or choose a gradient colour.</div>
+            <div class="text-[10.5px] mt-0.5 text-by-ink-3">Pick a character, upload a photo,<br>or choose a gradient colour.</div>
           </div>
         </div>
         <!-- Character grid -->
@@ -2208,77 +2207,70 @@
           <button type="button" class="cfg-char-btn flex flex-col items-center gap-1 p-1.5 border"
                   style="border-color:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-ink){% else %}var(--by-bg-3){% endif %};background:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-yes-soft){% else %}var(--by-bg){% endif %};"
                   onclick="cfgPickCharacter({{ loop.index0 }})">
-            <img src="{{ ch.url }}" alt="{{ ch.name }}" style="width:52px;height:52px;border-radius:50%;display:block;">
-            <span style="font-family:var(--by-f-mono);font-size:8.5px;color:var(--by-ink-3);letter-spacing:.04em;line-height:1.2;text-align:center;">{{ ch.name }}</span>
+            <img src="{{ ch.url }}" alt="{{ ch.name }}" class="w-[52px] h-[52px] rounded-full block">
+            <span class="font-mono text-[8.5px] text-by-ink-3 tracking-[.04em] leading-[1.2] text-center">{{ ch.name }}</span>
           </button>
           {% endfor %}
         </div>
         <!-- Upload photo -->
-        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold"
-               style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg);">
+        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold border-by-ink text-by-ink bg-by-bg">
           <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Upload photo
           <input type="file" accept="image/*" class="hidden" onchange="cfgHandleUpload(this)">
         </label>
         <!-- Gradient colour swatches -->
-        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold" style="color:var(--by-ink-3)">Gradient colour</div>
+        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold text-by-ink-3">Gradient colour</div>
         <div class="flex gap-2 flex-wrap" id="cfg-tint-swatches"></div>
       </div>
       <!-- Name fields -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">First name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">First name</label>
           <input type="text" id="cfg-first" placeholder="Sofia"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Last name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Last name</label>
           <input type="text" id="cfg-last" placeholder="Reyes"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <!-- Bio -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Bio</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Bio</label>
         <textarea id="cfg-bio" rows="4" placeholder="A few words about yourself…"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed"
-          style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)"></textarea>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed border-by-ink text-by-ink-2 bg-by-bg"></textarea>
       </div>
       <div id="cfg-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
       <!-- Change password -->
-      <div style="border-top:var(--by-bd-soft);padding-top:1.25rem">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Change password</div>
+      <div class="border-t border-by-bg-3 pt-5">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Change password</div>
         <div class="space-y-3">
           <div>
-            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Current password</label>
+            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Current password</label>
             <input type="password" id="cfg-pw-current" placeholder="••••••••"
-              class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-              style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+              class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">New password</label>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">New password</label>
               <input type="password" id="cfg-pw-new" placeholder="••••••••"
-                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
             </div>
             <div>
-              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Confirm</label>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Confirm</label>
               <input type="password" id="cfg-pw-confirm" placeholder="••••••••"
-                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
             </div>
           </div>
-          <button onclick="changePassword()" class="w-full border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2)">Update password</button>
+          <button onclick="changePassword()" class="w-full border py-2.5 text-sm font-semibold border-by-ink text-by-ink bg-by-bg-2">Update password</button>
           <div id="cfg-pw-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
         </div>
       </div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-my-config')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-my-config')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="saveMyConfig()" class="flex-1 btn-spot py-2.5 text-sm">Save</button>
     </div>
   </div>
@@ -2536,13 +2528,13 @@
     const castList = document.getElementById('cast-list');
     if (CAST_PERFORMERS.length) {
       castList.innerHTML = CAST_PERFORMERS.map(p => `
-        <label class="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" style="background:var(--by-bg);" onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'">
+        <label class="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none bg-by-bg hover:bg-by-bg-2">
           <input type="checkbox" value="${_esc(p.id)}" class="cast-pick w-3.5 h-3.5" onchange="updateCastCount()" />
-          <span class="text-[13px] font-medium" style="color:var(--by-ink)">${_esc(p.name)}</span>
-          <span class="ml-auto text-[11px] font-mono" style="color:var(--by-ink-3)">${_esc(p.role_type || '')}</span>
+          <span class="text-[13px] font-medium text-by-ink">${_esc(p.name)}</span>
+          <span class="ml-auto text-[11px] font-mono text-by-ink-3">${_esc(p.role_type || '')}</span>
         </label>`).join('');
     } else {
-      castList.innerHTML = '<div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>';
+      castList.innerHTML = '<div class="px-4 py-3 text-[12px] text-by-ink-4">No CAST_ELIGIBLE performers found.</div>';
     }
     document.getElementById('cast-count').textContent = '0 selected';
     document.getElementById('show-title').value = '';
@@ -2617,18 +2609,17 @@
   function _renderRosterList(students) {
     const listEl = document.getElementById('roster-search-list');
     if (!students.length) {
-      listEl.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--by-ink-4);">No students found.</div>';
+      listEl.innerHTML = '<div class="px-3.5 py-2.5 text-[12px] text-by-ink-4">No students found.</div>';
       return;
     }
     listEl.innerHTML = students.map(s => {
       const checked = _selectedStudentIds.has(s.id) ? 'checked' : '';
       const label   = s.role_type === 'Mocatriz' ? `${s.name} ✦` : s.name;
-      return `<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--by-bg-3);"
-                     onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background=''">
+      return `<label class="flex items-center gap-2.5 px-3 py-2 cursor-pointer border-b border-by-bg-3 hover:bg-by-bg-2">
         <input type="checkbox" value="${s.id}" ${checked}
                onchange="toggleRosterStudent('${s.id}', this.checked)" />
-        <span style="font-size:13px;font-weight:600;color:var(--by-ink);">${label}</span>
-        <span style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;margin-left:auto;">${s.role_type || 'Patron'}</span>
+        <span class="text-[13px] font-semibold text-by-ink">${label}</span>
+        <span class="font-mono text-[10px] text-by-ink-4 uppercase ml-auto">${s.role_type || 'Patron'}</span>
       </label>`;
     }).join('');
   }
@@ -2794,21 +2785,19 @@
 {% include 'partials/_inbox_modal.html' %}
 
 {# ── Confirm modal ── #}
-<div id="by-confirm-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4" style="background:rgba(20,18,16,.6)">
-  <div class="w-full max-w-sm border" style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:6px 6px 0 0 var(--by-ink);">
+<div id="by-confirm-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4 bg-[rgba(20,18,16,.6)]">
+  <div class="w-full max-w-sm border bg-by-bg border-by-ink shadow-[6px_6px_0_0_var(--by-ink)]">
     <div class="p-5">
-      <div id="by-confirm-title" class="font-display text-[18px] mb-2" style="color:var(--by-ink);"></div>
-      <p id="by-confirm-body" class="text-[13px] leading-relaxed" style="color:var(--by-ink-2);"></p>
+      <div id="by-confirm-title" class="font-display text-[18px] mb-2 text-by-ink"></div>
+      <p id="by-confirm-body" class="text-[13px] leading-relaxed text-by-ink-2"></p>
     </div>
-    <div style="display:flex;gap:12px;padding:16px 20px 20px;">
+    <div class="flex gap-3 px-5 pb-5 pt-4">
       <button onclick="byConfirmClose()"
-              style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);
-                     font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);padding:10px 0;cursor:pointer;">
+              class="flex-1 border-[1.5px] border-by-ink bg-by-bg font-body text-[13px] font-semibold text-by-ink py-2.5 cursor-pointer">
         Cancel
       </button>
       <button id="by-confirm-ok" onclick="byConfirmDo()"
-              style="flex:1;font-family:var(--by-f-display);font-size:13px;
-                     border:1.5px solid var(--by-ink);padding:10px 0;cursor:pointer;text-transform:uppercase;letter-spacing:.02em;">
+              class="flex-1 font-display text-[13px] border-[1.5px] border-by-ink py-2.5 cursor-pointer uppercase tracking-[.02em]">
         Confirm
       </button>
     </div>
