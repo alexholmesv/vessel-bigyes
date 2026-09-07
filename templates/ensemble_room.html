@@ -31,6 +31,24 @@
           'by-tomato-deep': 'var(--by-tomato-deep)',
           'by-night':       'var(--by-night)',
           'by-night-on':    'var(--by-night-soft)',
+
+          /* phase(6.3d-1): business-logic colors tokens.css already defines but the local
+             config never exposed as utilities — same fix admin.html/classes.html needed
+             (6.3b-1/6.3c-1). Without these, e.g. color:var(--by-success-green) ->
+             text-by-success-green would generate a class Tailwind never emits, silently
+             dropping the color. Note `by-night-on` above is a PRE-EXISTING bug (maps to
+             var(--by-night-soft), the dark tone, not the actual --by-night-on light token) —
+             already documented in admin.html's 6.3b-5b note, left unfixed here too per that
+             same precedent (out of scope for a mechanical style-attribute conversion pass). */
+          'by-success-green':     'var(--by-success-green)',
+          'by-cat-status-bg':     'var(--by-cat-status-bg)',
+          'by-cat-status-border': 'var(--by-cat-status-border)',
+          'by-cat-scene-bg':       'var(--by-cat-scene-bg)',
+          'by-cat-scene-border':   'var(--by-cat-scene-border)',
+          'by-cat-character-bg':     'var(--by-cat-character-bg)',
+          'by-cat-character-border': 'var(--by-cat-character-border)',
+          'by-cat-group-bg':     'var(--by-cat-group-bg)',
+          'by-cat-group-border': 'var(--by-cat-group-border)',
         },
         boxShadow: {
           'by-hard':     '4px 4px 0 0 var(--by-ink)',
@@ -261,27 +279,27 @@
 <body class="min-h-screen w-full overflow-x-hidden">
 
 <!-- Toast -->
-<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.25rem;font-size:.8rem;font-weight:600;background:var(--by-yes);color:var(--by-ink);border:1.5px solid var(--by-ink);box-shadow:var(--by-sh-1);opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 rounded text-[.8rem] font-semibold bg-by-yes text-by-ink border-[1.5px] border-by-ink shadow-by-hard pointer-events-none whitespace-nowrap" style="opacity:0;transition:opacity 200ms ease;"></div>
 
 <!-- Unified sidebar slide-over (all screen sizes) -->
 <div id="sidebar-overlay" class="app-sidebar-overlay" onclick="toggleSidebar()"></div>
 <aside id="app-sidebar" class="app-sidebar">
   <div class="px-5 pt-6 pb-4 flex items-start justify-between">
     <div>
-      <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-        Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+      <a href="/" class="by-display" class="text-[20px] text-by-ink no-underline leading-none">
+        Big<span class="by-yes-block" class="text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
       </a>
       <div class="by-eyebrow mt-1.5">Barcelona Improv</div>
     </div>
-    <button onclick="toggleSidebar()" class="mt-1 w-8 h-8 flex items-center justify-center" style="border:var(--by-bd);background:var(--by-bg-2);">
+    <button onclick="toggleSidebar()" class="mt-1 w-8 h-8 flex items-center justify-center" class="border border-by-ink bg-by-bg-2">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
   </div>
 
-  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2" style="border:var(--by-bd);background:var(--by-bg-2);">
-    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="background:var(--by-yes);border:var(--by-bd);font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-ink);">T</span>
+  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2" class="border border-by-ink bg-by-bg-2">
+    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" class="bg-by-yes border border-by-ink font-mono text-[10px] font-bold text-by-ink">T</span>
     <div class="flex-1 min-w-0">
-      <div class="text-[12.5px] truncate" style="font-family:var(--by-f-sans);font-weight:700;color:var(--by-ink);">Teacher view</div>
+      <div class="text-[12.5px] truncate" class="font-sans font-bold text-by-ink">Teacher view</div>
       <div class="by-eyebrow truncate">{{ current_user_name }}</div>
     </div>
   </div>
@@ -307,24 +325,24 @@
   </nav>
 
   {% set next_cls = active_classes[0] if active_classes else none %}
-  <div class="m-3 p-3" style="border:var(--by-bd);background:var(--by-bg-2);">
+  <div class="m-3 p-3" class="border border-by-ink bg-by-bg-2">
     <div class="by-eyebrow flex items-center gap-2">
-      <span class="pulse-ring w-1.5 h-1.5 flex-shrink-0" style="border-radius:999px;background:var(--by-yes);"></span>
+      <span class="pulse-ring w-1.5 h-1.5 flex-shrink-0" class="rounded-full bg-by-yes"></span>
       Next class
     </div>
     {% if next_cls %}
-    <div class="mt-1.5 font-display text-[15px] leading-snug" style="color:var(--by-ink);">{{ next_cls.title }}</div>
+    <div class="mt-1.5 font-display text-[15px] leading-snug text-by-ink">{{ next_cls.title }}</div>
     <div class="by-eyebrow mt-0.5">{{ next_cls.schedule }} · {{ next_cls.students | length }} enrolled</div>
     {% else %}
-    <div class="mt-1.5 text-[13px]" style="color:var(--by-ink-3);">No active classes</div>
+    <div class="mt-1.5 text-[13px] text-by-ink-3">No active classes</div>
     {% endif %}
   </div>
 </aside>
 
 <!-- Mobile top bar -->
 <header class="by-mob-bar">
-  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  <a href="/" class="by-display" class="text-[20px] text-by-ink no-underline leading-none">
+    Big<span class="by-yes-block" class="text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleSidebar()">
     <span></span><span></span><span></span>
@@ -337,7 +355,7 @@
   <div class="flex flex-col min-w-0 flex-1 w-full">
 
     <!-- Sticky header -->
-    <header id="page-header" class="sticky top-0 z-30" style="background:var(--by-bg);border-bottom:3px solid var(--by-yes);">
+    <header id="page-header" class="sticky top-0 z-30 bg-by-bg border-b-[3px] border-b-by-yes">
       <div class="px-4 lg:px-7 py-3 flex items-center gap-3">
         <!-- Sidebar toggle -->
         <button onclick="toggleSidebar()" class="hidden lg:flex h-9 w-9 items-center justify-center flex-shrink-0 btn-ghost" title="Toggle sidebar">
@@ -345,28 +363,26 @@
         </button>
         <div class="leading-tight min-w-0">
           <div class="by-eyebrow">Barcelona Improv · Teacher</div>
-          <div id="headerGreeting" class="font-display text-[22px] lg:text-[26px] leading-tight" style="color:var(--by-ink);"></div>
+          <div id="headerGreeting" class="font-display text-[22px] lg:text-[26px] leading-tight text-by-ink"></div>
         </div>
 
         <div class="relative flex-1 max-w-xs ml-4 hidden md:block" id="search-wrap">
-          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--by-ink-4);pointer-events:none;z-index:1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-by-ink-4 pointer-events-none z-[1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <input id="searchInput" type="text" placeholder="Search classes or students…"
-            class="w-full outline-none pl-9 pr-3 py-2 text-[13px]"
-            style="background:var(--by-bg-2);border:var(--by-bd);font-family:var(--by-f-body);color:var(--by-ink);"
+            class="w-full outline-none pl-9 pr-3 py-2 text-[13px] bg-by-bg-2 border border-by-ink font-body text-by-ink"
             autocomplete="off"
             oninput="searchEnsemble(this.value)"
             onfocus="searchEnsemble(this.value); this.style.boxShadow='var(--by-sh-yes)'"
             onblur="setTimeout(clearSearch,180); this.style.boxShadow=''" />
           <!-- Search results dropdown -->
-          <div id="searchDrop" class="hidden absolute left-0 right-0 top-full mt-0.5 z-50"
-               style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);max-height:320px;overflow-y:auto;">
+          <div id="searchDrop" class="hidden absolute left-0 right-0 top-full mt-0.5 z-50 bg-by-bg border-[1.5px] border-by-ink shadow-by-hard max-h-[320px] overflow-y-auto">
           </div>
         </div>
 
         <div class="flex-1"></div>
 
         <!-- Quick Message button -->
-        <button onclick="openMsgPanel()" class="btn-ghost h-9 px-3 text-[13px] flex items-center gap-2" style="font-family:var(--by-f-body);">
+        <button onclick="openMsgPanel()" class="btn-ghost h-9 px-3 text-[13px] flex items-center gap-2 font-body">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Message
         </button>
@@ -376,32 +392,31 @@
 
         <div class="relative flex-shrink-0" id="user-menu-wrap">
           <button id="user-menu-btn" onclick="toggleUserMenu()"
-                  class="flex items-center gap-2 cursor-pointer h-9 px-2"
-                  style="border:var(--by-bd);background:var(--by-bg);">
-            <img class="by-um-av-img av object-cover flex-shrink-0"
+                  class="flex items-center gap-2 cursor-pointer h-9 px-2 border border-by-ink bg-by-bg">
+            <img class="by-um-av-img av object-cover flex-shrink-0 w-[28px] h-[28px] border-2 border-by-ink rounded-full"
                  src="{{ current_user_avatar or '' }}"
-                 style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                 style="{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
-            <span class="by-um-av-init av flex items-center justify-center flex-shrink-0"
-                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:white;{{ 'display:none;' if current_user_avatar else '' }}">
+            <span class="by-um-av-init av flex items-center justify-center flex-shrink-0 w-[28px] h-[28px] border-2 border-by-ink rounded-full font-mono text-[10px] font-bold text-white"
+                  style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});{{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
             </span>
             <div class="hidden md:block leading-tight text-left">
-              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
-              <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Faculty</div>
+              <div class="by-um-name font-sans font-bold text-[12px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+              <div class="font-mono text-[9.5px] tracking-[.08em] uppercase text-by-ink-3 mt-px">Faculty</div>
             </div>
-            <svg class="h-3 w-3 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--by-ink-4);" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+            <svg class="h-3 w-3 ml-0.5 text-by-ink-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
           </button>
-          <div id="user-menu-drop" class="hidden" style="position:absolute;top:calc(100% + 6px);right:0;z-index:60;min-width:168px;background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
-            <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
-              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);">{{ current_user_name }}</div>
-              <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Teacher</div>
+          <div id="user-menu-drop" class="hidden absolute top-[calc(100%+6px)] right-0 z-[60] min-w-[168px] bg-by-bg border-[1.5px] border-by-ink shadow-by-hard">
+            <div class="px-3 py-2.5 border-b border-by-bg-3">
+              <div class="by-um-name font-sans font-bold text-[12.5px] text-by-ink">{{ current_user_name }}</div>
+              <div class="font-mono text-[10.5px] text-by-ink-3 mt-0.5">Teacher</div>
             </div>
-            <button onclick="openMyConfig(); toggleUserMenu(true)" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b" style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
-              <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <button onclick="openMyConfig(); toggleUserMenu(true)" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b border-by-bg-3 text-[13px] text-by-ink bg-by-bg">
+              <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               Config
             </button>
-            <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5" style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);text-decoration:none;">
+            <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-[13px] text-by-tomato bg-by-bg no-underline">
               <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               Log out
             </a>
@@ -421,7 +436,7 @@
           Past <span class="count" id="cntPast">{{ past_classes | length }}</span>
         </button>
         <div class="flex-1"></div>
-        <div class="by-eyebrow hidden sm:block">Term · <span style="color:var(--by-ink);">Spring 2026</span></div>
+        <div class="by-eyebrow hidden sm:block">Term · <span class="text-by-ink">Spring 2026</span></div>
       </div>
     </header>
 
@@ -431,50 +446,50 @@
     {% for c in active_classes %}{% set total_stu.n = total_stu.n + (c.students | length) %}{% endfor %}
     {% set wk_sessions = namespace(n=0) %}
     {% for d in week_days %}{% set wk_sessions.n = wk_sessions.n + (d.classes | length) %}{% endfor %}
-    <div class="px-4 lg:px-7 pt-5 pb-4 border-b" style="background:var(--by-bg);border-color:var(--by-ink);">
+    <div class="px-4 lg:px-7 pt-5 pb-4 border-b bg-by-bg border-by-ink">
       <div class="by-eyebrow mb-1">Faculty · {{ today_label }}</div>
-      <h1 class="by-display text-[32px] lg:text-[40px] mb-4" style="color:var(--by-ink);line-height:1.0;">
-        Ensemble <span class="by-yes-block" style="font-size:inherit;padding:0 14px 5px;">Room</span>
+      <h1 class="by-display text-[32px] lg:text-[40px] mb-4 text-by-ink leading-none">
+        Ensemble <span class="by-yes-block text-inherit pt-0 pb-[5px] px-[14px]">Room</span>
       </h1>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <div class="border px-3.5 py-2.5" style="background:var(--by-yes);border-color:var(--by-ink);box-shadow:var(--by-sh-1);">
+        <div class="border px-3.5 py-2.5 bg-by-yes border-by-ink shadow-by-hard">
           <div class="by-eyebrow">Active Classes</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ active_classes | length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ active_classes | length }}</div>
         </div>
-        <div class="border px-3.5 py-2.5" style="background:var(--by-bg-2);border-color:var(--by-ink);">
+        <div class="border px-3.5 py-2.5 bg-by-bg-2 border-by-ink">
           <div class="by-eyebrow">Total Students</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ total_stu.n }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ total_stu.n }}</div>
         </div>
-        <div class="border px-3.5 py-2.5 col-span-2 sm:col-span-1" style="background:var(--by-bg-2);border-color:var(--by-ink);">
+        <div class="border px-3.5 py-2.5 col-span-2 sm:col-span-1 bg-by-bg-2 border-by-ink">
           <div class="by-eyebrow">Sessions This Week</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ wk_sessions.n }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ wk_sessions.n }}</div>
         </div>
       </div>
     </div>
 
     <!-- ══ Week at a Glance ══ -->
-    <section id="week-strip" class="px-4 lg:px-7 mt-5 border" style="background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-yes);">
-      <div class="px-4 py-3 flex items-center justify-between" style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
-        <div class="font-display text-[22px]" style="color:var(--by-ink);">This Week</div>
-        <button onclick="openMonthView()" class="h-8 px-3 text-[11.5px] flex items-center gap-1.5" style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-body);cursor:pointer;font-weight:600;">
+    <section id="week-strip" class="px-4 lg:px-7 mt-5 border bg-by-bg border-[1.5px] border-by-ink shadow-by-hard-yes">
+      <div class="px-4 py-3 flex items-center justify-between bg-by-yes border-b-[1.5px] border-b-by-ink">
+        <div class="font-display text-[22px] text-by-ink">This Week</div>
+        <button onclick="openMonthView()" class="h-8 px-3 text-[11.5px] flex items-center gap-1.5 border-[1.5px] border-by-ink bg-by-bg text-by-ink font-body cursor-pointer font-semibold">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
           View month
         </button>
       </div>
-      <div class="flex overflow-x-auto" style="min-height:88px;">
+      <div class="flex overflow-x-auto min-h-[88px]">
         {% for day in week_days %}
         <div class="week-col {% if day.is_today %}is-today{% endif %}">
-          <div class="by-eyebrow" style="color:{% if day.is_today %}var(--by-yes-deep){% else %}var(--by-ink-3){% endif %};">{{ day.short }}</div>
-          <div class="font-display text-[15px] leading-none mt-0.5" style="color:{% if day.is_today %}var(--by-ink){% else %}var(--by-ink){% endif %};">{{ day.date_num }}</div>
+          <div class="by-eyebrow {% if day.is_today %}text-by-yes-deep{% else %}text-by-ink-3{% endif %}">{{ day.short }}</div>
+          <div class="font-display text-[15px] leading-none mt-0.5 text-by-ink">{{ day.date_num }}</div>
           {% if day.classes %}
             {% for cls in day.classes %}
             <button class="week-pill" data-class-id="{{ cls.id }}" onclick="selectClass('{{ cls.id }}')">
-              <div class="font-semibold truncate" style="font-family:var(--by-f-sans);font-size:10px;">{{ cls.title | truncate(16, true, '…') }}</div>
-              <div style="font-family:var(--by-f-mono);font-size:9px;color:var(--by-ink-3);margin-top:1px;">{{ cls.time }}</div>
+              <div class="font-semibold truncate font-sans text-[10px]">{{ cls.title | truncate(16, true, '…') }}</div>
+              <div class="font-mono text-[9px] text-by-ink-3 mt-px">{{ cls.time }}</div>
             </button>
             {% endfor %}
           {% else %}
-          <div class="mt-3 text-[10px]" style="color:var(--by-ink-4);font-family:var(--by-f-mono);">—</div>
+          <div class="mt-3 text-[10px] text-by-ink-4 font-mono">—</div>
           {% endif %}
         </div>
         {% endfor %}
@@ -484,10 +499,10 @@
     <!-- ══ Activity Box + Live Challenge (side by side) ══ -->
     <div class="px-4 lg:px-7 mt-3 mb-5 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 min-w-0">
       <!-- Activity Box -->
-      <section id="activity-box" class="border flex flex-col" style="background:var(--by-bg);border-color:var(--by-ink);border-top:3px solid var(--by-yes);">
-        <div class="px-5 py-3 flex items-center justify-between border-b" style="border-color:var(--by-ink);">
+      <section id="activity-box" class="border flex flex-col bg-by-bg border-by-ink border-t-[3px] border-t-by-yes">
+        <div class="px-5 py-3 flex items-center justify-between border-b border-by-ink">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-display text-[18px]" style="color:var(--by-ink);">Activity Box</span>
+            <span class="font-display text-[18px] text-by-ink">Activity Box</span>
             <span id="actCategory" class="chip text-[10px]" style="background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);">Warm-Up</span>
             <span id="actCounter" class="by-eyebrow">1 / 50</span>
           </div>
@@ -499,12 +514,12 @@
         </div>
         <div class="px-5 py-4 lg:flex lg:gap-8 lg:items-start flex-1">
           <div class="flex-1 min-w-0">
-            <h3 id="actTitle" class="font-display text-[24px] lg:text-[28px] leading-tight" style="color:var(--by-ink);">Yes-And Circle</h3>
-            <p id="actDesc" class="mt-2 text-[13px] leading-relaxed" style="color:var(--by-ink-2);max-width:65ch;">
+            <h3 id="actTitle" class="font-display text-[24px] lg:text-[28px] leading-tight text-by-ink">Yes-And Circle</h3>
+            <p id="actDesc" class="mt-2 text-[13px] leading-relaxed text-by-ink-2 max-w-[65ch]">
               Players stand in a circle and build a shared imaginary world one "Yes, and…" at a time.
             </p>
-            <div id="actTip" class="mt-3 px-3 py-2.5 text-[12px]" style="background:var(--by-yes-soft);border-left:3px solid var(--by-yes-deep);color:var(--by-ink-2);">
-              <span class="by-eyebrow" style="color:var(--by-yes-deep);">Teaching note · </span>Watch for "yes, but" sneaking in.
+            <div id="actTip" class="mt-3 px-3 py-2.5 text-[12px] bg-by-yes-soft border-l-[3px] border-l-by-yes-deep text-by-ink-2">
+              <span class="by-eyebrow text-by-yes-deep">Teaching note · </span>Watch for "yes, but" sneaking in.
             </div>
           </div>
           <div class="mt-4 lg:mt-0 flex items-center gap-2 flex-shrink-0">
@@ -514,8 +529,7 @@
             <button onclick="shuffleActivity()" class="h-9 w-9 flex items-center justify-center btn-ghost" title="Shuffle">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 3h5v5M4 20l16-16M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
             </button>
-            <button onclick="nextActivity()" class="h-9 w-9 flex items-center justify-center"
-              style="background:var(--by-yes);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
+            <button onclick="nextActivity()" class="h-9 w-9 flex items-center justify-center bg-by-yes border-[1.5px] border-by-ink shadow-by-hard">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
             </button>
           </div>
@@ -523,17 +537,17 @@
       </section>
 
       <!-- Live Challenge card -->
-      <div id="liveCard" class="live-card" style="border:var(--by-bd-thick);">
+      <div id="liveCard" class="live-card border-[1.5px] border-by-ink">
         <div class="live-card-inner">
 
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" style="background:rgba(229,72,42,.1);border:1px solid rgba(229,72,42,.3);">
+              <div class="w-8 h-8 flex items-center justify-center flex-shrink-0 bg-[rgba(229,72,42,.1)] border border-[rgba(229,72,42,.3)]">
                 <svg class="w-4 h-4 text-live-indicator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
               </div>
               <div>
                 <div class="by-eyebrow text-live-indicator">Live Challenge</div>
-                <div id="liveTitle" class="font-display text-[22px] leading-tight" style="color:var(--by-ink);">Deploy a prompt</div>
+                <div id="liveTitle" class="font-display text-[22px] leading-tight text-by-ink">Deploy a prompt</div>
               </div>
             </div>
             <span id="liveStatus" class="chip chip-past"><span class="dot"></span>Idle</span>
@@ -541,17 +555,15 @@
 
           <!-- Idle: prompt picker -->
           <div id="idleState" class="mt-4">
-            <p class="text-[12.5px] leading-snug mb-3" style="color:var(--by-ink-3);">
-              Pick or write a prompt. Challenge stays open <b style="color:var(--by-ink-2);">48 hours</b> — students respond within <b style="color:var(--by-ink-2);">30 seconds</b> and the winner earns <b style="color:var(--by-yes-deep);">+20 pts</b>.
+            <p class="text-[12.5px] leading-snug mb-3 text-by-ink-3">
+              Pick or write a prompt. Challenge stays open <b class="text-by-ink-2">48 hours</b> — students respond within <b class="text-by-ink-2">30 seconds</b> and the winner earns <b class="text-by-yes-deep">+20 pts</b>.
             </p>
             <textarea id="challengePromptInput" rows="3" maxlength="280"
               placeholder="Write your own prompt, or shuffle for inspiration…"
-              class="w-full border hairline outline-none px-3 py-2.5 text-[13px] resize-none"
-              style="background:var(--by-bg);color:var(--by-ink);line-height:1.5;"></textarea>
+              class="w-full border hairline outline-none px-3 py-2.5 text-[13px] resize-none bg-by-bg text-by-ink leading-[1.5]"></textarea>
             <div class="mt-2 flex items-center gap-2">
               <button id="shufflePromptBtn" onclick="shufflePrompt()"
-                class="flex items-center gap-1.5 px-3 h-8 text-[12px] border hairline"
-                style="color:var(--by-ink-2);background:var(--by-bg);">
+                class="flex items-center gap-1.5 px-3 h-8 text-[12px] border hairline text-by-ink-2 bg-by-bg">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
                   <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
@@ -568,14 +580,14 @@
           <!-- Live: active challenge -->
           <div id="liveState" class="mt-4 hidden">
             <div class="by-eyebrow mb-1">Active prompt</div>
-            <div id="livePromptText" class="text-[13px] leading-snug mb-3 italic" style="color:var(--by-ink-2);">—</div>
-            <div class="border hairline p-4" style="background:var(--by-bg);">
+            <div id="livePromptText" class="text-[13px] leading-snug mb-3 italic text-by-ink-2">—</div>
+            <div class="border hairline p-4 bg-by-bg">
               <div class="flex items-center gap-2 mb-2">
-                <div class="w-2 h-2 rounded-full" style="background:var(--by-tomato);animation:chip-pulse 1.6s infinite;"></div>
+                <div class="w-2 h-2 rounded-full bg-by-tomato animate-[chip-pulse_1.6s_infinite]"></div>
                 <div class="text-[11.5px] font-semibold text-live-indicator">Challenge active · 48h window</div>
               </div>
-              <div class="text-[12px]" style="color:var(--by-ink-3);">
-                <span id="respCount" class="font-mono text-[15px]" style="color:var(--by-ink);">0</span>
+              <div class="text-[12px] text-by-ink-3">
+                <span id="respCount" class="font-mono text-[15px] text-by-ink">0</span>
                 of <span id="respTotal" class="font-mono">0</span> students responded
               </div>
             </div>
@@ -592,11 +604,11 @@
         <!-- Recent challenges list -->
         <div class="border-t hairline">
           <div class="px-5 py-4 flex items-center justify-between border-b hairline">
-            <div class="font-display text-[20px]" style="color:var(--by-ink);">Recent Challenges</div>
+            <div class="font-display text-[20px] text-by-ink">Recent Challenges</div>
             <span class="by-eyebrow">Last 7 days</span>
           </div>
-          <ul id="recentChallenges" class="divide-y text-[12.5px]" style="border-color:var(--by-bg-3);">
-            <li class="px-5 py-3 text-center text-[12px]" style="color:var(--by-ink-3);">No challenges yet this week.</li>
+          <ul id="recentChallenges" class="divide-y text-[12.5px] border-by-bg-3">
+            <li class="px-5 py-3 text-center text-[12px] text-by-ink-3">No challenges yet this week.</li>
           </ul>
         </div>
       </div>
@@ -608,7 +620,7 @@
       <!-- Left column: Classes stacked vertically -->
       <section class="w-full md:col-span-6 flex flex-col gap-3 min-w-0" id="classStackCol">
         <div class="flex items-center justify-between">
-          <div class="font-display text-[17px]" style="color:var(--by-ink);">Classes</div>
+          <div class="font-display text-[17px] text-by-ink">Classes</div>
           <span id="classStackCount" class="by-eyebrow">{{ active_classes | length }} active</span>
         </div>
         <div id="classStrip" class="flex flex-col gap-2 max-h-[calc(100vh-420px)] md:max-h-[calc(100vh-380px)] overflow-y-auto pr-0.5"></div>
@@ -618,58 +630,58 @@
       <section class="w-full md:col-span-6 flex flex-col gap-4 lg:gap-5 min-w-0">
 
         <!-- Roster -->
-        <section id="rosterPanel" class="border hairline" style="background:var(--by-bg);">
+        <section id="rosterPanel" class="border hairline bg-by-bg">
 
           <!-- Roster header -->
           <header class="px-5 py-4 flex items-start gap-4 border-b hairline">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
-                <h2 id="selTitle" class="font-display text-[24px] leading-tight" style="color:var(--by-ink);">Select a class on the left</h2>
+                <h2 id="selTitle" class="font-display text-[24px] leading-tight text-by-ink">Select a class on the left</h2>
                 <span id="selChip" class="chip chip-active hidden"><span class="dot"></span>Active</span>
               </div>
-              <div class="mt-1 flex items-center gap-3 flex-wrap text-[12.5px]" style="color:var(--by-ink-3);">
+              <div class="mt-1 flex items-center gap-3 flex-wrap text-[12.5px] text-by-ink-3">
                 <span id="selSchedule" class="flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                   —
                 </span>
-                <span id="selTerm" class="font-mono" style="color:var(--by-ink-3);">—</span>
+                <span id="selTerm" class="font-mono text-by-ink-3">—</span>
               </div>
             </div>
             <!-- Enrolled KPI -->
             <div class="text-right flex-shrink-0">
               <div class="by-eyebrow">Enrolled</div>
-              <div class="font-display text-[28px] leading-none mt-0.5" style="color:var(--by-ink);">
-                <span id="selEnrolled">—</span><span class="text-[14px]" style="color:var(--by-ink-4);">/<span id="selCap">—</span></span>
+              <div class="font-display text-[28px] leading-none mt-0.5 text-by-ink">
+                <span id="selEnrolled">—</span><span class="text-[14px] text-by-ink-4">/<span id="selCap">—</span></span>
               </div>
             </div>
           </header>
 
           <!-- Attendance KPI bar -->
-          <div class="px-5 py-3 flex items-center gap-3 border-b hairline flex-wrap" style="background:var(--by-bg-2);">
+          <div class="px-5 py-3 flex items-center gap-3 border-b hairline flex-wrap bg-by-bg-2">
             <div class="stat-kpi flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-success-green);"></span>
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 bg-by-success-green"></span>
               <div>
                 <div class="by-eyebrow">Present</div>
-                <div class="font-display text-[20px] leading-none" style="color:var(--by-success-green);"><span id="presentCount">0</span></div>
+                <div class="font-display text-[20px] leading-none text-by-success-green"><span id="presentCount">0</span></div>
               </div>
             </div>
             <div class="stat-kpi flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-yes-deep);"></span>
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 bg-by-yes-deep"></span>
               <div>
                 <div class="by-eyebrow">Late</div>
-                <div class="font-display text-[20px] leading-none" style="color:var(--by-yes-deep);"><span id="lateCount">0</span></div>
+                <div class="font-display text-[20px] leading-none text-by-yes-deep"><span id="lateCount">0</span></div>
               </div>
             </div>
             <div class="stat-kpi flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-tomato);"></span>
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 bg-by-tomato"></span>
               <div>
                 <div class="by-eyebrow">Absent</div>
-                <div class="font-display text-[20px] leading-none" style="color:var(--by-tomato);"><span id="absentCount">0</span></div>
+                <div class="font-display text-[20px] leading-none text-by-tomato"><span id="absentCount">0</span></div>
               </div>
             </div>
             <div class="flex-1"></div>
             <div class="flex items-center gap-1.5">
-              <button id="markAllPresent" class="btn-ghost h-7 px-2 text-[11.5px]" style="font-family:var(--by-f-body);">Mark all present (+10)</button>
+              <button id="markAllPresent" class="btn-ghost h-7 px-2 text-[11.5px] font-body">Mark all present (+10)</button>
             </div>
           </div>
 
@@ -685,7 +697,7 @@
                 </tr>
               </thead>
               <tbody id="rosterBody">
-                <tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">
+                <tr><td colspan="4" class="px-5 py-12 text-center text-[13px] text-by-ink-3">
                   Select a class on the left to open its roster.
                 </td></tr>
               </tbody>
@@ -693,14 +705,14 @@
           </div>
 
           <!-- Roster footer -->
-          <footer class="px-5 py-3 border-t hairline flex flex-wrap items-center justify-between gap-2 text-[12px]" style="color:var(--by-ink-3);">
-            <div id="rosterFooterMsg" class="text-[12px] flex-shrink-0" style="color:var(--by-ink-3);">No class selected.</div>
+          <footer class="px-5 py-3 border-t hairline flex flex-wrap items-center justify-between gap-2 text-[12px] text-by-ink-3">
+            <div id="rosterFooterMsg" class="text-[12px] flex-shrink-0 text-by-ink-3">No class selected.</div>
             <div class="flex flex-wrap items-center gap-2">
-              <button id="msgClassBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="font-family:var(--by-f-body);" onclick="openMsgPanel()">
+              <button id="msgClassBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5 font-body" onclick="openMsgPanel()">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Message this cohort
               </button>
-              <button id="detailsBtn" class="h-7 px-2 text-[11.5px] hidden items-center gap-1.5" style="background:var(--by-yes);border:var(--by-bd);cursor:pointer;color:var(--by-ink);font-family:var(--by-f-body);font-weight:600;" onclick="openSelectedClassModal()">
+              <button id="detailsBtn" class="h-7 px-2 text-[11.5px] hidden items-center gap-1.5 bg-by-yes border border-by-ink cursor-pointer text-by-ink font-body font-semibold" onclick="openSelectedClassModal()">
                 More details →
               </button>
             </div>
@@ -711,9 +723,9 @@
 
     </main>
 
-    <footer class="px-4 lg:px-7 py-4 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3);">
-      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4);">v0.9.2 "Curtain Call"</span></div>
-      <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+    <footer class="px-4 lg:px-7 py-4 text-[11.5px] flex items-center justify-between border-t hairline text-by-ink-3">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono text-by-ink-4">v0.9.2 "Curtain Call"</span></div>
+      <a href="/privacy" class="hover:underline text-by-ink-2">Privacy Center</a>
     </footer>
   </div>
 </div>
@@ -740,14 +752,13 @@
 <!-- ══ Student Detail Drawer ══ -->
 <div id="student-drawer-overlay" class="by-drawer-overlay" onclick="closeStudentDrawer()"></div>
 <div id="student-drawer" class="by-drawer">
-  <div class="px-5 py-4 flex items-start justify-between gap-4 flex-shrink-0"
-       style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
+  <div class="px-5 py-4 flex items-start justify-between gap-4 flex-shrink-0 bg-by-yes border-b-[1.5px] border-b-by-ink">
     <div class="flex items-center gap-3 min-w-0">
-      <span id="sd-av" class="flex-shrink-0 w-12 h-12 flex items-center justify-center font-display text-[18px]"
-            style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink);">?</span>
+      <span id="sd-av" class="flex-shrink-0 w-12 h-12 flex items-center justify-center font-display text-[18px] border-[1.5px] border-by-ink"
+            style="background:var(--by-bg);color:var(--by-ink);">?</span>
       <div class="min-w-0">
         <div class="by-eyebrow mb-0.5">Student Profile</div>
-        <div id="sd-name" class="font-display text-[22px] leading-tight truncate" style="color:var(--by-ink);">—</div>
+        <div id="sd-name" class="font-display text-[22px] leading-tight truncate text-by-ink">—</div>
       </div>
     </div>
     <button onclick="closeStudentDrawer()" class="flex-shrink-0 w-9 h-9 flex items-center justify-center mt-0.5 btn-ghost">
@@ -760,8 +771,8 @@
 <!-- ══ Message Students drawer ══ -->
 <div id="msg-drawer-overlay" class="by-drawer-overlay" onclick="closeMsgModal()"></div>
 <div id="msg-drawer" class="by-drawer">
-  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--by-ink);">
-    <div class="font-display text-[22px]" style="color:var(--by-ink);">Message Students</div>
+  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0 bg-by-yes border-by-ink">
+    <div class="font-display text-[22px] text-by-ink">Message Students</div>
     <button onclick="closeMsgModal()" class="w-9 h-9 flex items-center justify-center btn-ghost">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
@@ -774,7 +785,7 @@
 
       <!-- Selected recipient chips -->
       <div id="msgChips" class="flex flex-wrap gap-1.5 mb-3 min-h-[28px]">
-        <span class="by-eyebrow" style="color:var(--by-ink-4);font-size:11px;" id="msgNoRecip">No recipients selected yet.</span>
+        <span class="by-eyebrow text-by-ink-4 text-[11px]" id="msgNoRecip">No recipients selected yet.</span>
       </div>
 
       <!-- Student search -->
@@ -784,8 +795,7 @@
           <input id="msgStudentSearch" type="text" placeholder="Type student name…" class="msg-input w-full"
             autocomplete="off" oninput="filterStudents(this.value)" onfocus="filterStudents(this.value)" />
           <div id="msgStudentDrop"
-            class="hidden absolute left-0 right-0 z-20 border-x border-b"
-            style="background:var(--by-bg);border-color:var(--by-ink);max-height:200px;overflow-y:auto;top:100%;">
+            class="hidden absolute left-0 right-0 z-20 border-x border-b bg-by-bg border-by-ink max-h-[200px] overflow-y-auto top-full">
           </div>
         </div>
       </div>
@@ -806,19 +816,18 @@
     <!-- ── Body ── -->
     <div class="flex flex-col flex-1">
       <label class="by-eyebrow block mb-1.5">Message</label>
-      <textarea id="msgBody" placeholder="Write your message…" class="msg-textarea w-full" style="min-height:120px;flex:1;"></textarea>
+      <textarea id="msgBody" placeholder="Write your message…" class="msg-textarea w-full min-h-[120px] flex-1"></textarea>
     </div>
 
     <!-- ── Actions ── -->
     <div class="flex gap-3 pt-1">
       <button id="msgSendBtn" onclick="sendTeacherMessage()"
-        class="flex-1 h-11 font-display text-[14px] flex items-center justify-center gap-2"
-        style="background:var(--by-yes);color:var(--by-ink);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);cursor:pointer;">
+        class="flex-1 h-11 font-display text-[14px] flex items-center justify-center gap-2 bg-by-yes text-by-ink border-[1.5px] border-by-ink shadow-by-hard cursor-pointer">
         Send →
       </button>
-      <button onclick="closeMsgModal()" class="h-11 px-4 btn-ghost text-[13px]" style="font-family:var(--by-f-body);">Cancel</button>
+      <button onclick="closeMsgModal()" class="h-11 px-4 btn-ghost text-[13px] font-body">Cancel</button>
     </div>
-    <div id="msgConfirm" class="hidden text-center text-[12px] py-2" style="color:var(--by-success-green);font-family:var(--by-f-mono);">
+    <div id="msgConfirm" class="hidden text-center text-[12px] py-2 text-by-success-green font-mono">
       ✓ Message sent
     </div>
   </div>
@@ -827,8 +836,8 @@
 <!-- ══ Month View drawer ══ -->
 <div id="month-drawer-overlay" class="by-drawer-overlay" onclick="closeMonthView()"></div>
 <div id="month-drawer" class="by-drawer by-drawer-wide">
-  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0" style="background:var(--by-yes);border-color:var(--by-ink);">
-    <div class="font-display text-[22px]" style="color:var(--by-ink);">Monthly View</div>
+  <div class="px-5 py-4 flex items-center justify-between border-b flex-shrink-0 bg-by-yes border-by-ink">
+    <div class="font-display text-[22px] text-by-ink">Monthly View</div>
     <button onclick="closeMonthView()" class="w-9 h-9 flex items-center justify-center btn-ghost">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
@@ -919,17 +928,17 @@
     return `
       <div class="class-card ${isSel ? 'selected' : ''}" data-id="${esc(c.id)}">
         <div class="flex items-start justify-between gap-2">
-          <div class="font-display text-[15.5px] leading-tight" style="color:var(--by-ink);">${esc(c.title)}</div>
+          <div class="font-display text-[15.5px] leading-tight text-by-ink">${esc(c.title)}</div>
           ${chip}
         </div>
-        <div class="mt-2 text-[12px] flex items-center gap-1.5" style="color:var(--by-ink-3);">
+        <div class="mt-2 text-[12px] flex items-center gap-1.5 text-by-ink-3">
           <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           ${esc(c.sched)}
         </div>
-        <div class="mt-1 text-[11.5px] font-mono" style="color:var(--by-ink-3);">${esc(c.term)}</div>
-        <div class="mt-3 pt-3 flex items-center justify-between" style="border-top:1px solid var(--by-bg-3);">
-          <span class="text-[11.5px]" style="color:var(--by-ink-3);">${esc(c.room)}</span>
-          <span class="text-[13px] font-mono" style="color:var(--by-ink);"><b>${enrolled}</b><span style="color:var(--by-ink-4);">/${c.cap}</span></span>
+        <div class="mt-1 text-[11.5px] font-mono text-by-ink-3">${esc(c.term)}</div>
+        <div class="mt-3 pt-3 flex items-center justify-between border-t border-by-bg-3">
+          <span class="text-[11.5px] text-by-ink-3">${esc(c.room)}</span>
+          <span class="text-[13px] font-mono text-by-ink"><b>${enrolled}</b><span class="text-by-ink-4">/${c.cap}</span></span>
         </div>
       </div>`;
   }
@@ -937,7 +946,7 @@
   function renderStrip() {
     const items = CLASSES.filter(c => c.status === STATE.tab);
     $('#classStrip').innerHTML = items.map(classCardHTML).join('') ||
-      `<div class="text-center text-[12.5px] py-8 border hairline" style="background:var(--by-bg-2);color:var(--by-ink-3);">No classes in this bucket.</div>`;
+      `<div class="text-center text-[12.5px] py-8 border hairline bg-by-bg-2 text-by-ink-3">No classes in this bucket.</div>`;
   }
 
   $('#classStrip').addEventListener('click', e => {
@@ -960,18 +969,18 @@
       <tr class="roster-row" data-id="${esc(s.id)}">
         <td class="pl-5 pr-3 py-2.5">
           <div class="flex items-center gap-3">
-            <span class="av" style="background:linear-gradient(135deg,${t[0]},${t[1]});border:1.5px solid var(--by-ink);">${esc(s.initials)}</span>
+            <span class="av border-[1.5px] border-by-ink" style="background:linear-gradient(135deg,${t[0]},${t[1]});">${esc(s.initials)}</span>
             <div class="leading-tight">
-              <div class="text-[13.5px] font-semibold" style="color:var(--by-ink);">${esc(s.name)}</div>
-              <div class="text-[11px] font-mono" style="color:var(--by-ink-3);">${esc(s.id)}</div>
+              <div class="text-[13.5px] font-semibold text-by-ink">${esc(s.name)}</div>
+              <div class="text-[11px] font-mono text-by-ink-3">${esc(s.id)}</div>
             </div>
           </div>
         </td>
         <td class="px-3 py-2.5">
-          <span class="pts" id="pts-${esc(s.id)}">${s.pts} <span style="color:var(--by-ink-3);">pts</span></span>
+          <span class="pts" id="pts-${esc(s.id)}">${s.pts} <span class="text-by-ink-3">pts</span></span>
         </td>
         <td class="px-3 py-2.5 hidden sm:table-cell">
-          <span class="text-[12.5px] font-mono" style="color:var(--by-ink-2);">${s.streak}<span style="color:var(--by-ink-3);"> wks</span></span>
+          <span class="text-[12.5px] font-mono text-by-ink-2">${s.streak}<span class="text-by-ink-3"> wks</span></span>
         </td>
         <td class="pl-3 pr-5 py-2.5 text-right">
           <div class="att inline-flex" data-id="${esc(s.id)}">
@@ -994,7 +1003,7 @@
       $('#selEnrolled').textContent = '—';
       $('#selCap').textContent = '—';
       $('#respTotal').textContent = '0';
-      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-12 text-center text-[13px]" style="color:var(--by-ink-3);">Select a class on the left to open its roster.</td></tr>`;
+      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-12 text-center text-[13px] text-by-ink-3">Select a class on the left to open its roster.</td></tr>`;
       $('#rosterFooterMsg').textContent = 'No class selected.';
       $('#msgClassBtn').style.display = 'none';
       $('#detailsBtn').style.display = 'none';
@@ -1017,7 +1026,7 @@
     $('#detailsBtn').style.display = 'flex';
 
     if (!c.students.length) {
-      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center text-[13px]" style="color:var(--by-ink-3);">Roster opens when this class becomes active.</td></tr>`;
+      $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center text-[13px] text-by-ink-3">Roster opens when this class becomes active.</td></tr>`;
     } else {
       $('#rosterBody').innerHTML = c.students.map(rowTemplate).join('');
     }
@@ -1057,7 +1066,7 @@
           const el = $(`#pts-${studentId}`);
           if (el) {
             el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-            el.innerHTML = `${data.new_balance} <span style="color:var(--by-ink-3);">pts</span>`;
+            el.innerHTML = `${data.new_balance} <span class="text-by-ink-3">pts</span>`;
           }
           flashToast(`${stu.name} · +10 pts → ${data.new_balance} pts`);
         }
@@ -1114,17 +1123,16 @@
   function renderRecentChallenges() {
     if (!recentChallenges.length) {
       $('#recentChallenges').innerHTML =
-        '<li class="px-5 py-3 text-center text-[12px]" style="color:var(--by-ink-3);">No challenges yet this week.</li>';
+        '<li class="px-5 py-3 text-center text-[12px] text-by-ink-3">No challenges yet this week.</li>';
       return;
     }
     $('#recentChallenges').innerHTML = recentChallenges.map((r, idx) => {
       var prompt = (r.prompt || r.title || '').slice(0, 55);
       var title  = prompt.length > 50 ? prompt + '…' : prompt;
-      return '<li class="px-5 py-2.5 flex items-start gap-2 cursor-pointer"'
-        + ' onclick="cmOpenChallengeDetail(\'' + esc(r.id) + '\')"'
-        + ' onmouseover="this.style.background=\'var(--by-bg-2)\'" onmouseout="this.style.background=\'\'">'
-        + '<span class="flex-1 leading-snug" style="color:var(--by-ink-2);font-size:12.5px;">' + esc(title) + '</span>'
-        + '<span class="by-eyebrow flex-shrink-0" style="font-size:10px;">' + esc(r.posted_by_name || 'Teacher') + '</span>'
+      return '<li class="px-5 py-2.5 flex items-start gap-2 cursor-pointer hover:bg-by-bg-2"'
+        + ' onclick="cmOpenChallengeDetail(\'' + esc(r.id) + '\')">'
+        + '<span class="flex-1 leading-snug text-by-ink-2 text-[12.5px]">' + esc(title) + '</span>'
+        + '<span class="by-eyebrow flex-shrink-0 text-[10px]">' + esc(r.posted_by_name || 'Teacher') + '</span>'
         + '</li>';
     }).join('');
   }
@@ -1280,10 +1288,10 @@
           const list = $('#liveResponsesList');
           feed.classList.remove('hidden');
           list.innerHTML = d.responses.map(resp =>
-            `<li class="px-3 py-2 border hairline text-[12px]" style="background:var(--by-bg);">
-              <span class="font-semibold" style="color:var(--by-ink);">${esc(resp.student_name)}</span>
-              <span style="color:var(--by-ink-3);"> · </span>
-              <span style="color:var(--by-ink-2);">${esc(resp.response_text)}</span>
+            `<li class="px-3 py-2 border hairline text-[12px] bg-by-bg">
+              <span class="font-semibold text-by-ink">${esc(resp.student_name)}</span>
+              <span class="text-by-ink-3"> · </span>
+              <span class="text-by-ink-2">${esc(resp.response_text)}</span>
             </li>`
           ).join('');
         }
@@ -1311,14 +1319,14 @@
     if (!modal) { console.error('responsesModal not in DOM'); return; }
     modal.style.display = 'block';
     if (subEmpty) subEmpty.style.display = 'none';
-    if (subList) subList.innerHTML = '<div style="padding:20px;text-align:center;font-family:var(--by-f-body);font-size:12.5px;color:var(--by-ink-3);">Loading…</div>';
+    if (subList) subList.innerHTML = '<div class="p-5 text-center font-body text-[12.5px] text-by-ink-3">Loading…</div>';
 
     // Add delete button to the footer
     var foot = modal.querySelector('footer');
     if (foot) {
       foot.innerHTML = '<button onclick="cmDeleteChallenge(\'' + esc(challengeId) + '\')" '
-        + 'style="width:100%;padding:10px;border:var(--by-bd-thick);background:var(--by-tomato);color:white;'
-        + 'font-family:var(--by-f-body);font-size:12.5px;font-weight:700;cursor:pointer;">'
+        + 'class="w-full p-2.5 border-[1.5px] border-by-ink bg-by-tomato text-white '
+        + 'font-body text-[12.5px] font-bold cursor-pointer">'
         + '🗑 Delete this challenge</button>';
     }
 
@@ -1337,19 +1345,19 @@
       if (subList) {
         subList.innerHTML = responses.map(function(r, idx) {
           var voted = r.voter_rated || r.user_rated || false;
-          return '<div style="padding:12px 18px;border-bottom:1px solid var(--by-bg-3);">'
-            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
-            + '<div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);">' + esc('Anonymous #' + (idx + 1)) + '</div>'
-            + '<div style="display:flex;align-items:center;gap:6px;">'
-            + '<span style="font-family:var(--by-f-mono);font-size:13px;font-weight:700;color:var(--by-tomato);">♥ ' + (r.favorite_count || 0) + '</span>'
+          return '<div class="py-3 px-[18px] border-b border-by-bg-3">'
+            + '<div class="flex items-center justify-between mb-1">'
+            + '<div class="font-body text-[13px] font-semibold text-by-ink">' + esc('Anonymous #' + (idx + 1)) + '</div>'
+            + '<div class="flex items-center gap-1.5">'
+            + '<span class="font-mono text-[13px] font-bold text-by-tomato">♥ ' + (r.favorite_count || 0) + '</span>'
             + (voted
-                ? '<span style="font-size:11px;color:var(--by-yes-deep);">voted</span>'
+                ? '<span class="text-[11px] text-by-yes-deep">voted</span>'
                 : '<button onclick="cmVoteOnResponse(\'' + esc(challengeId) + '\',\'' + esc(r.id) + '\')" '
-                +   'style="font-size:10.5px;padding:2px 8px;border:1px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-ink);font-family:var(--by-f-mono);">'
+                +   'class="text-[10.5px] py-0.5 px-2 border border-by-bg-3 bg-by-bg cursor-pointer text-by-ink font-mono">'
                 +   '♡ Vote</button>')
             + '</div>'
             + '</div>'
-            + '<div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-2);line-height:1.5;">' + esc(r.response_text) + '</div>'
+            + '<div class="font-body text-[13px] text-by-ink-2 leading-[1.5]">' + esc(r.response_text) + '</div>'
             + '</div>';
         }).join('');
       }
@@ -1426,9 +1434,8 @@
     container.querySelectorAll('.msg-chip').forEach(c => c.remove());
     items.forEach(r => {
       const chip = document.createElement('span');
-      chip.className = 'msg-chip flex items-center gap-1 px-2 py-0.5 text-[11.5px] font-semibold cursor-pointer';
-      chip.style.cssText = 'background:var(--by-yes);border:var(--by-bd);font-family:var(--by-f-mono);';
-      chip.innerHTML = `${esc(r.label)} <span style="font-size:14px;line-height:1;" onclick="event.stopPropagation()">×</span>`;
+      chip.className = 'msg-chip flex items-center gap-1 px-2 py-0.5 text-[11.5px] font-semibold cursor-pointer bg-by-yes border border-by-ink font-mono';
+      chip.innerHTML = `${esc(r.label)} <span class="text-sm leading-none" onclick="event.stopPropagation()">×</span>`;
       chip.querySelector('span').addEventListener('click', () => { _msgSelected.delete(r.id); _renderChips(); _renderClassList(); });
       container.appendChild(chip);
     });
@@ -1439,12 +1446,11 @@
     if (!container) return;
     const activeClasses = CLASSES.filter(c => c.status === 'active');
     container.innerHTML = '';
-    if (!activeClasses.length) { container.innerHTML = '<span class="by-eyebrow" style="color:var(--by-ink-4);">No active classes.</span>'; return; }
+    if (!activeClasses.length) { container.innerHTML = '<span class="by-eyebrow text-by-ink-4">No active classes.</span>'; return; }
     activeClasses.forEach(c => {
       const checked = _msgSelected.has(c.id);
       const row = document.createElement('label');
-      row.className = 'flex items-center gap-2.5 px-3 py-2 cursor-pointer';
-      row.style.cssText = `border:var(--by-bd);background:${checked ? 'var(--by-yes-soft)' : 'var(--by-bg)'};`;
+      row.className = 'flex items-center gap-2.5 px-3 py-2 cursor-pointer border border-by-ink ' + (checked ? 'bg-by-yes-soft' : 'bg-by-bg');
       row.innerHTML = `
         <input type="checkbox" ${checked ? 'checked' : ''} />
         <div class="flex-1 min-w-0">
@@ -1473,11 +1479,9 @@
         seen.add(s.id); results.push({...s, cls: c.title});
       }
     }));
-    if (!results.length) { drop.innerHTML = '<div class="px-3 py-2 text-[12px]" style="color:var(--by-ink-3);">No students found.</div>'; drop.classList.remove('hidden'); return; }
+    if (!results.length) { drop.innerHTML = '<div class="px-3 py-2 text-[12px] text-by-ink-3">No students found.</div>'; drop.classList.remove('hidden'); return; }
     drop.innerHTML = results.sort((a,b)=>a.name.localeCompare(b.name)).map(s =>
-      `<div class="px-3 py-2 text-[13px] cursor-pointer flex items-center justify-between"
-            style="border-bottom:1px solid var(--by-bg-3);"
-            onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background=''"
+      `<div class="px-3 py-2 text-[13px] cursor-pointer flex items-center justify-between border-b border-by-bg-3 hover:bg-by-bg-2"
             onclick="addStudentRecip('${esc(s.id)}','${esc(s.name)}')">
         <span class="font-semibold">${esc(s.name)}</span>
         <span class="by-eyebrow">${esc(s.cls.split(' ').slice(0,2).join(' '))}</span>
@@ -1579,41 +1583,35 @@
     }));
 
     if (!matchedClasses.length && !matchedStudents.length) {
-      drop.innerHTML = `<div class="px-4 py-3 by-eyebrow" style="color:var(--by-ink-4);">No results for "${esc(query)}"</div>`;
+      drop.innerHTML = `<div class="px-4 py-3 by-eyebrow text-by-ink-4">No results for "${esc(query)}"</div>`;
       drop.classList.remove('hidden');
       return;
     }
 
     let html = '';
     if (matchedClasses.length) {
-      html += `<div class="px-4 pt-3 pb-1 by-eyebrow" style="border-bottom:var(--by-bd-soft);">Classes</div>`;
+      html += `<div class="px-4 pt-3 pb-1 by-eyebrow border-b border-by-bg-3">Classes</div>`;
       html += matchedClasses.map(c => `
-        <div class="px-4 py-2.5 flex items-center gap-3 cursor-pointer"
-             style="border-bottom:1px solid var(--by-bg-3);"
-             onmousedown="selectClass('${esc(c.id)}');document.getElementById('searchInput').value='';clearSearch();"
-             onmouseover="this.style.background='var(--by-yes-soft)'"
-             onmouseout="this.style.background=''">
-          <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
+        <div class="px-4 py-2.5 flex items-center gap-3 cursor-pointer border-b border-by-bg-3 hover:bg-by-yes-soft"
+             onmousedown="selectClass('${esc(c.id)}');document.getElementById('searchInput').value='';clearSearch();">
+          <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
           <div class="min-w-0">
-            <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(c.title)}</div>
+            <div class="text-[13px] font-semibold truncate text-by-ink">${esc(c.title)}</div>
             <div class="by-eyebrow">${esc(c.sched)} · ${c.students.length} student${c.students.length!==1?'s':''}</div>
           </div>
         </div>`).join('');
     }
     if (matchedStudents.length) {
-      html += `<div class="px-4 pt-3 pb-1 by-eyebrow" style="border-bottom:var(--by-bd-soft);">Students</div>`;
+      html += `<div class="px-4 pt-3 pb-1 by-eyebrow border-b border-by-bg-3">Students</div>`;
       html += matchedStudents.map(s => `
-        <div class="px-4 py-2.5 flex items-center gap-3 cursor-pointer"
-             style="border-bottom:1px solid var(--by-bg-3);"
-             onmousedown="openStudentDrawer('${esc(s.id)}');document.getElementById('searchInput').value='';clearSearch();"
-             onmouseover="this.style.background='var(--by-yes-soft)'"
-             onmouseout="this.style.background=''">
-          <span class="w-8 h-8 flex-shrink-0 flex items-center justify-center text-[11px] font-bold"
-                style="background:linear-gradient(135deg,${s.tint[0]},${s.tint[1]});border:var(--by-bd);color:white;">
+        <div class="px-4 py-2.5 flex items-center gap-3 cursor-pointer border-b border-by-bg-3 hover:bg-by-yes-soft"
+             onmousedown="openStudentDrawer('${esc(s.id)}');document.getElementById('searchInput').value='';clearSearch();">
+          <span class="w-8 h-8 flex-shrink-0 flex items-center justify-center text-[11px] font-bold border border-by-ink text-white"
+                style="background:linear-gradient(135deg,${s.tint[0]},${s.tint[1]});">
             ${esc(s.initials)}
           </span>
           <div class="min-w-0">
-            <div class="text-[13px] font-semibold" style="color:var(--by-ink);">${esc(s.name)}</div>
+            <div class="text-[13px] font-semibold text-by-ink">${esc(s.name)}</div>
             <div class="by-eyebrow">${esc(s.cls)} · ${s.pts} pts</div>
           </div>
         </div>`).join('');
@@ -1649,32 +1647,32 @@
     $('#sd-name').textContent = student.name;
 
     const classRows = enrolledClasses.map(c => `
-      <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--by-bg-3);">
+      <div class="flex items-center justify-between py-2 border-b border-by-bg-3">
         <div class="min-w-0">
-          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${esc(c.title)}</div>
+          <div class="text-[13px] font-semibold truncate text-by-ink">${esc(c.title)}</div>
           <div class="by-eyebrow">${esc(c.sched)}</div>
         </div>
         <button onclick="selectClass('${esc(c.id)}');closeStudentDrawer();"
-          class="h-7 px-2 text-[11px] btn-ghost flex-shrink-0 ml-3" style="font-family:var(--by-f-body);">View class →</button>
+          class="h-7 px-2 text-[11px] btn-ghost flex-shrink-0 ml-3 font-body">View class →</button>
       </div>`).join('');
 
     const attBtns = STATE.attendance[student.id] || null;
 
     $('#sd-body').innerHTML = `
       <div class="grid grid-cols-2 gap-2">
-        <div style="border:var(--by-bd);background:var(--by-yes);padding:12px 14px;">
+        <div class="border border-by-ink bg-by-yes py-3 px-3.5">
           <div class="by-eyebrow">Yes-And Points</div>
-          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--by-ink);">${student.pts}</div>
+          <div class="font-display text-[28px] leading-none mt-1 text-by-ink">${student.pts}</div>
         </div>
-        <div style="border:var(--by-bd);background:var(--by-bg-2);padding:12px 14px;">
+        <div class="border border-by-ink bg-by-bg-2 py-3 px-3.5">
           <div class="by-eyebrow">Attendance Streak</div>
-          <div class="font-display text-[28px] leading-none mt-1" style="color:var(--by-ink);">${student.streak}<span class="text-[14px]" style="color:var(--by-ink-3);"> wk</span></div>
+          <div class="font-display text-[28px] leading-none mt-1 text-by-ink">${student.streak}<span class="text-[14px] text-by-ink-3"> wk</span></div>
         </div>
       </div>
       <div>
         <div class="by-eyebrow mb-2">Enrolled Classes</div>
-        <div style="border:var(--by-bd);background:var(--by-bg);">
-          ${classRows || '<div class="px-4 py-3 by-eyebrow" style="color:var(--by-ink-4);">Not enrolled in any active class.</div>'}
+        <div class="border border-by-ink bg-by-bg">
+          ${classRows || '<div class="px-4 py-3 by-eyebrow text-by-ink-4">Not enrolled in any active class.</div>'}
         </div>
       </div>
       <div>
@@ -1688,8 +1686,8 @@
       <div>
         <div class="by-eyebrow mb-2">Quick Actions</div>
         <button onclick="openMsgModal('${esc(student.id)}');closeStudentDrawer();"
-          class="w-full h-10 font-display text-[13px] flex items-center justify-center gap-2"
-          style="background:var(--by-bg-2);border:var(--by-bd-thick);cursor:pointer;">
+          class="w-full h-10 font-display text-[13px] flex items-center justify-center gap-2
+          bg-by-bg-2 border-[1.5px] border-by-ink cursor-pointer">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Message ${esc(student.name.split(' ')[0])}
         </button>
@@ -1780,7 +1778,7 @@
     ];
     const g = greetings[Math.floor(Math.random() * greetings.length)];
     const el = document.getElementById('headerGreeting');
-    if (el) el.innerHTML = `${g} <span style="color:var(--by-yes-deep);">${firstName}</span>`;
+    if (el) el.innerHTML = `${g} <span class="text-by-yes-deep">${firstName}</span>`;
   })();
 
   // ── Sidebar toggle ──────────────────────────────────────────────────────
@@ -1824,7 +1822,7 @@
     let html = `<div class="by-eyebrow mb-4">${monthName} ${year}</div>`;
     html += '<div class="grid grid-cols-7 gap-1">';
     dayNames.forEach(d => {
-      html += `<div class="by-eyebrow text-center pb-1" style="font-size:9px;">${d}</div>`;
+      html += `<div class="by-eyebrow text-center pb-1 text-[9px]">${d}</div>`;
     });
     for (let i = 0; i < startOffset; i++) html += '<div></div>';
     const today = new Date().getDate();
@@ -1832,9 +1830,9 @@
       const col = (startOffset + day - 1) % 7; // 0=Mon
       const isToday = (day === today);
       const hasClass = classByDay[col] && classByDay[col].length > 0;
-      html += `<div class="p-1 text-center" style="border:1px solid var(--by-bg-3);${isToday ? 'background:var(--by-yes-soft);' : ''}">
-        <div class="text-[12px] font-semibold" style="color:${isToday ? 'var(--by-ink)' : 'var(--by-ink-3)'};">${day}</div>
-        ${hasClass ? classByDay[col].map(c => `<div class="mt-0.5 px-1 text-[9px] truncate" style="background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-mono);">${c.title.split(' ').slice(0,2).join(' ')}</div>`).join('') : ''}
+      html += `<div class="p-1 text-center border border-by-bg-3 ${isToday ? 'bg-by-yes-soft' : ''}">
+        <div class="text-[12px] font-semibold ${isToday ? 'text-by-ink' : 'text-by-ink-3'}">${day}</div>
+        ${hasClass ? classByDay[col].map(c => `<div class="mt-0.5 px-1 text-[9px] truncate bg-by-yes text-by-ink font-mono">${c.title.split(' ').slice(0,2).join(' ')}</div>`).join('') : ''}
       </div>`;
     }
     html += '</div>';
@@ -2024,7 +2022,7 @@
     document.getElementById('actPlayers').textContent  = g.players;
     document.getElementById('actDesc').textContent     = g.desc;
     document.getElementById('actTip').innerHTML =
-      `<span class="by-eyebrow" style="color:var(--by-yes-deep);">Teaching note · </span>${g.tip}`;
+      `<span class="by-eyebrow text-by-yes-deep">Teaching note · </span>${g.tip}`;
     document.getElementById('actCounter').textContent  = `${_actIdx + 1} / ${GAMES.length}`;
 
     // Category colour
@@ -2084,128 +2082,129 @@
      CLASS DETAIL MODAL  — slides in from the right
 ══════════════════════════════════════════════════════════════════ -->
 <div id="classModal" aria-modal="true" role="dialog"
-     style="display:none;position:fixed;inset:0;z-index:400;">
+     class="fixed inset-0 z-[400]" style="display:none;">
   <!-- Overlay -->
   <div id="classModalOverlay"
-       style="position:absolute;inset:0;background:rgba(20,18,16,.45);"
+       class="absolute inset-0 bg-[rgba(20,18,16,.45)]"
        onclick="closeClassModal()"></div>
 
   <!-- Panel -->
   <div id="classModalPanel"
-       style="position:absolute;top:0;right:0;height:100%;width:100%;max-width:480px;
-              background:var(--by-bg);border-left:var(--by-bd-thick);
-              box-shadow:-6px 0 24px rgba(0,0,0,.18);
-              display:flex;flex-direction:column;overflow:hidden;
-              transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);">
+       class="absolute top-0 right-0 h-full w-full max-w-[480px]
+              bg-by-bg border-l-[1.5px] border-by-ink
+              shadow-[-6px_0_24px_rgba(0,0,0,.18)]
+              flex flex-col overflow-hidden
+              transition-transform duration-[260ms] ease-[cubic-bezier(.4,0,.2,1)]"
+       style="transform:translateX(100%);">
 
     <!-- Modal header -->
-    <header style="padding:18px 20px 14px;border-bottom:var(--by-bd-thick);background:var(--by-bg);flex-shrink:0;">
-      <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="flex:1;min-width:0;">
-          <div id="cmEyebrow" style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);margin-bottom:4px;">Class</div>
-          <h2 id="cmTitle" style="font-family:var(--by-f-display);font-size:22px;line-height:1.1;color:var(--by-ink);margin:0;"></h2>
-          <div id="cmMeta" style="margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-3);"></div>
+    <header class="pt-[18px] px-5 pb-3.5 border-b-[1.5px] border-by-ink bg-by-bg shrink-0">
+      <div class="flex items-start gap-3">
+        <div class="flex-1 min-w-0">
+          <div id="cmEyebrow" class="font-mono text-[10px] tracking-[.12em] uppercase text-by-ink-3 mb-1">Class</div>
+          <h2 id="cmTitle" class="font-display text-[22px] leading-[1.1] text-by-ink m-0"></h2>
+          <div id="cmMeta" class="mt-1.5 flex items-center gap-2.5 flex-wrap font-mono text-[11px] text-by-ink-3"></div>
         </div>
         <button onclick="closeClassModal()"
-                style="flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;
-                       border:var(--by-bd-thick);background:var(--by-bg);cursor:pointer;color:var(--by-ink-3);">
+                class="shrink-0 w-9 h-9 flex items-center justify-center
+                       border-[1.5px] border-by-ink bg-by-bg cursor-pointer text-by-ink-3">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
 
       <!-- Tab strip -->
-      <div style="display:flex;gap:2px;margin-top:14px;">
+      <div class="flex gap-0.5 mt-3.5">
         <button id="cmTabStudents" onclick="cmSetTab('students')"
-                style="flex:1;padding:7px 0;font-family:var(--by-f-body);font-size:12.5px;font-weight:600;
-                       border:var(--by-bd-thick);cursor:pointer;transition:background 120ms;">
+                class="flex-1 py-[7px] font-body text-[12.5px] font-semibold
+                       border-[1.5px] border-by-ink cursor-pointer transition-[background] duration-[120ms]">
           Students (<span id="cmStudentCount">0</span>)
         </button>
         <button id="cmTabChallenge" onclick="cmSetTab('challenge')"
-                style="flex:1;padding:7px 0;font-family:var(--by-f-body);font-size:12.5px;font-weight:600;
-                       border:var(--by-bd-thick);cursor:pointer;transition:background 120ms;">
+                class="flex-1 py-[7px] font-body text-[12.5px] font-semibold
+                       border-[1.5px] border-by-ink cursor-pointer transition-[background] duration-[120ms]">
           Challenge
         </button>
       </div>
     </header>
 
     <!-- Tab: Students -->
-    <div id="cmPanelStudents" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+    <div id="cmPanelStudents" class="flex-1 overflow-y-auto flex-col" style="display:flex;">
 
       <!-- Action bar -->
-      <div style="padding:12px 16px;border-bottom:1px solid var(--by-bg-3);display:flex;align-items:center;gap:8px;flex-shrink:0;background:var(--by-bg-2);">
+      <div class="py-3 px-4 border-b border-by-bg-3 flex items-center gap-2 shrink-0 bg-by-bg-2">
         <button onclick="cmMsgAll()"
-                style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:var(--by-bd-thick);
-                       background:var(--by-bg);font-family:var(--by-f-body);font-size:12px;font-weight:600;
-                       cursor:pointer;color:var(--by-ink);">
+                class="flex items-center gap-1.5 py-1.5 px-3 border-[1.5px] border-by-ink
+                       bg-by-bg font-body text-xs font-semibold
+                       cursor-pointer text-by-ink">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Message All
         </button>
         <button onclick="cmToggleAddStudent()"
-                style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:var(--by-bd-thick);
-                       background:var(--by-yes);font-family:var(--by-f-body);font-size:12px;font-weight:600;
-                       cursor:pointer;color:var(--by-ink);">
+                class="flex items-center gap-1.5 py-1.5 px-3 border-[1.5px] border-by-ink
+                       bg-by-yes font-body text-xs font-semibold
+                       cursor-pointer text-by-ink">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Add Student
         </button>
       </div>
 
       <!-- Add-student search (hidden by default) -->
-      <div id="cmAddStudentBox" style="display:none;padding:12px 16px;border-bottom:1px solid var(--by-bg-3);background:var(--by-bg);flex-shrink:0;">
+      <div id="cmAddStudentBox" class="py-3 px-4 border-b border-by-bg-3 bg-by-bg shrink-0" style="display:none;">
         <input id="cmStudentSearch" type="text" placeholder="Search by name…"
                oninput="cmFilterAddList(this.value)"
-               style="width:100%;padding:8px 12px;border:var(--by-bd-thick);background:var(--by-bg);
-                      font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);outline:none;box-sizing:border-box;"/>
-        <div id="cmAddList" style="margin-top:8px;max-height:180px;overflow-y:auto;border:1px solid var(--by-bg-3);"></div>
+               class="w-full py-2 px-3 border-[1.5px] border-by-ink bg-by-bg
+                      font-body text-[13px] text-by-ink outline-none box-border"/>
+        <div id="cmAddList" class="mt-2 max-h-[180px] overflow-y-auto border border-by-bg-3"></div>
       </div>
 
       <!-- Student list -->
-      <div id="cmStudentList" style="flex:1;overflow-y:auto;"></div>
+      <div id="cmStudentList" class="flex-1 overflow-y-auto"></div>
     </div>
 
     <!-- Tab: Challenge -->
-    <div id="cmPanelChallenge" style="flex:1;overflow-y:auto;display:none;flex-direction:column;padding:20px 16px;gap:16px;">
+    <div id="cmPanelChallenge" class="flex-1 overflow-y-auto flex-col py-5 px-4 gap-4" style="display:none;">
 
-      <div style="font-family:var(--by-f-display);font-size:16px;color:var(--by-ink);">Deploy Challenge</div>
-      <p style="font-family:var(--by-f-body);font-size:12.5px;color:var(--by-ink-3);margin:0;line-height:1.5;">
-        Students have <b style="color:var(--by-ink-2);">30 seconds</b> to respond after accepting.
+      <div class="font-display text-base text-by-ink">Deploy Challenge</div>
+      <p class="font-body text-[12.5px] text-by-ink-3 m-0 leading-[1.5]">
+        Students have <b class="text-by-ink-2">30 seconds</b> to respond after accepting.
         Responses are shared with the class — everyone votes for their favourite.
-        Winner earns <b style="color:var(--by-ink-2);">+20 pts</b>. Challenge closes after <b style="color:var(--by-ink-2);">48 hours</b>.
+        Winner earns <b class="text-by-ink-2">+20 pts</b>. Challenge closes after <b class="text-by-ink-2">48 hours</b>.
       </p>
 
       <!-- Prompt — editable textarea + shuffle -->
       <div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <div style="font-family:var(--by-f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);">Prompt</div>
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="font-mono text-[10px] tracking-[.12em] uppercase text-by-ink-3">Prompt</div>
           <button onclick="cmShufflePrompt()"
-                  style="font-family:var(--by-f-body);font-size:11.5px;color:var(--by-ink-3);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;">
+                  class="font-body text-[11.5px] text-by-ink-3 bg-none border-none cursor-pointer underline p-0">
             ↺ Shuffle
           </button>
         </div>
         <textarea id="cmPromptText" rows="4" maxlength="280"
                   placeholder="Write your own prompt, or shuffle for inspiration…"
-                  style="width:100%;padding:10px 12px;border:var(--by-bd-thick);background:var(--by-bg);
-                         font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);
-                         outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;"></textarea>
+                  class="w-full py-2.5 px-3 border-[1.5px] border-by-ink bg-by-bg
+                         font-body text-[13px] text-by-ink
+                         outline-none resize-y box-border leading-[1.5]"></textarea>
       </div>
 
       <!-- Deploy -->
       <button id="cmDeployBtn" onclick="cmDeployChallenge()"
-              style="width:100%;padding:11px;border:var(--by-bd-thick);
-                     background:var(--by-ink);color:var(--by-bg);
-                     font-family:var(--by-f-body);font-size:13px;font-weight:700;
-                     cursor:pointer;letter-spacing:.04em;box-shadow:var(--by-sh-1);">
+              class="w-full p-[11px] border-[1.5px] border-by-ink
+                     bg-by-ink text-by-bg
+                     font-body text-[13px] font-bold
+                     cursor-pointer tracking-[.04em] shadow-by-hard">
         Deploy to Class
       </button>
 
       <!-- View responses -->
       <button id="cmViewResponsesBtn" onclick="cmOpenResponses()"
-              style="width:100%;padding:10px;border:var(--by-bd-thick);
-                     background:var(--by-bg);color:var(--by-ink);
-                     font-family:var(--by-f-body);font-size:12.5px;font-weight:600;cursor:pointer;">
+              class="w-full p-2.5 border-[1.5px] border-by-ink
+                     bg-by-bg text-by-ink
+                     font-body text-[12.5px] font-semibold cursor-pointer">
         View Responses (<span id="cmRespCount">…</span>)
       </button>
 
-      <div id="cmChallengeStatus" style="font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-3);min-height:18px;text-align:center;"></div>
+      <div id="cmChallengeStatus" class="font-mono text-[11px] min-h-[18px] text-center" style="color:var(--by-ink-3);"></div>
     </div>
 
   </div><!-- /panel -->
@@ -2216,31 +2215,31 @@
      RESPONSES SUBMODAL  — overlays the class modal without closing it
 ══════════════════════════════════════════════════════════════════ -->
 <div id="responsesModal" aria-modal="true" role="dialog"
-     style="display:none;position:fixed;inset:0;z-index:500;">
-  <div style="position:absolute;inset:0;background:rgba(20,18,16,.3);"
+     class="fixed inset-0 z-[500]" style="display:none;">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.3)]"
        onclick="cmCloseResponses()"></div>
 
-  <div style="position:absolute;top:0;right:0;height:100%;width:100%;max-width:380px;
-              background:var(--by-bg);border-left:var(--by-bd-thick);
-              box-shadow:-4px 0 16px rgba(0,0,0,.2);
-              display:flex;flex-direction:column;overflow:hidden;">
+  <div class="absolute top-0 right-0 h-full w-full max-w-[380px]
+              bg-by-bg border-l-[1.5px] border-by-ink
+              shadow-[-4px_0_16px_rgba(0,0,0,.2)]
+              flex flex-col overflow-hidden">
 
-    <header style="padding:16px 18px;border-bottom:var(--by-bd-thick);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;">
+    <header class="py-4 px-[18px] border-b-[1.5px] border-by-ink shrink-0 flex items-center justify-between">
       <div>
-        <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--by-ink-3);">Challenge</div>
-        <div id="respSubPrompt" style="font-family:var(--by-f-display);font-size:15px;color:var(--by-ink);margin-top:2px;line-height:1.3;"></div>
+        <div class="font-mono text-[9.5px] tracking-[.12em] uppercase text-by-ink-3">Challenge</div>
+        <div id="respSubPrompt" class="font-display text-[15px] text-by-ink mt-0.5 leading-[1.3]"></div>
       </div>
       <button onclick="cmCloseResponses()"
-              style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;
-                     border:var(--by-bd-thick);background:var(--by-bg);cursor:pointer;flex-shrink:0;color:var(--by-ink-3);">
+              class="w-[34px] h-[34px] flex items-center justify-center
+                     border-[1.5px] border-by-ink bg-by-bg cursor-pointer shrink-0 text-by-ink-3">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </header>
 
-    <div id="respSubList" style="flex:1;overflow-y:auto;padding:4px 0;"></div>
+    <div id="respSubList" class="flex-1 overflow-y-auto py-1"></div>
 
-    <footer style="padding:12px 18px;border-top:1px solid var(--by-bg-3);flex-shrink:0;">
-      <div id="respSubEmpty" style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-3);text-align:center;display:none;">
+    <footer class="py-3 px-[18px] border-t border-by-bg-3 shrink-0">
+      <div id="respSubEmpty" class="font-body text-[13px] text-by-ink-3 text-center" style="display:none;">
         No responses yet. Students haven't submitted yet.
       </div>
     </footer>
@@ -2275,10 +2274,10 @@
     $('cmEyebrow').textContent = cls.status === 'active' ? 'Active Class' : cls.status === 'past' ? 'Past Class' : 'Class';
     $('cmMeta').innerHTML =
       `<span>${esc(cls.sched || '—')}</span>` +
-      `<span style="color:var(--by-bg-3);">·</span>` +
+      `<span class="text-by-bg-3">·</span>` +
       `<span>${esc(cls.term || '')}</span>` +
-      `<span style="color:var(--by-bg-3);">·</span>` +
-      `<span><b>${cls.students.length}</b>/<span style="color:var(--by-ink-4);">${cls.cap}</span> enrolled</span>`;
+      `<span class="text-by-bg-3">·</span>` +
+      `<span><b>${cls.students.length}</b>/<span class="text-by-ink-4">${cls.cap}</span> enrolled</span>`;
 
     cmSetTab('students');
     cmRenderStudents();
@@ -2327,31 +2326,32 @@
     const list = _cmClass.students;
     $('cmStudentCount').textContent = list.length;
     $('cmStudentList').innerHTML = list.length === 0
-      ? `<div style="padding:32px 20px;text-align:center;font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-3);">No students enrolled. Use <b>Add Student</b> above.</div>`
+      ? `<div class="py-8 px-5 text-center font-body text-[13px] text-by-ink-3">No students enrolled. Use <b>Add Student</b> above.</div>`
       : list.map(s => {
           const t = tintStr(s.tint);
           return `
-          <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--by-bg-3);">
-            <div style="width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-                        background:linear-gradient(135deg,${t});border:1.5px solid var(--by-ink);
-                        font-family:var(--by-f-mono);font-size:11px;font-weight:700;color:var(--by-ink);">
+          <div class="flex items-center gap-3 py-2.5 px-4 border-b border-by-bg-3">
+            <div class="w-[34px] h-[34px] shrink-0 flex items-center justify-center
+                        border-[1.5px] border-by-ink
+                        font-mono text-[11px] font-bold text-by-ink"
+                 style="background:linear-gradient(135deg,${t});">
               ${esc(s.initials)}
             </div>
-            <div style="flex:1;min-width:0;">
-              <div style="font-family:var(--by-f-body);font-size:13.5px;font-weight:600;color:var(--by-ink);truncate;">${esc(s.name)}</div>
-              <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);">${esc(s.identity)} · ${s.pts} pts</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-body text-[13.5px] font-semibold text-by-ink truncate">${esc(s.name)}</div>
+              <div class="font-mono text-[10.5px] text-by-ink-3">${esc(s.identity)} · ${s.pts} pts</div>
             </div>
-            <div style="display:flex;gap:4px;flex-shrink:0;">
+            <div class="flex gap-1 shrink-0">
               <button onclick="cmMsgOne('${esc(s.id)}','${esc(s.name)}')"
                       title="Message ${esc(s.name)}"
-                      style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;
-                             border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-ink-3);">
+                      class="w-[30px] h-[30px] flex items-center justify-center
+                             border-[1.5px] border-by-bg-3 bg-by-bg cursor-pointer text-by-ink-3">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </button>
               <button onclick="cmRemoveStudent('${esc(s.id)}','${esc(s.name)}')"
                       title="Remove from class"
-                      style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;
-                             border:1.5px solid var(--by-bg-3);background:var(--by-bg);cursor:pointer;color:var(--by-tomato);">
+                      class="w-[30px] h-[30px] flex items-center justify-center
+                             border-[1.5px] border-by-bg-3 bg-by-bg cursor-pointer text-by-tomato">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
               </button>
             </div>
@@ -2378,13 +2378,12 @@
     ).slice(0, 12);
 
     $('cmAddList').innerHTML = results.length === 0
-      ? `<div style="padding:10px 12px;font-family:var(--by-f-body);font-size:12.5px;color:var(--by-ink-3);">${q ? 'No matches.' : 'All members already enrolled.'}</div>`
+      ? `<div class="py-2.5 px-3 font-body text-[12.5px] text-by-ink-3">${q ? 'No matches.' : 'All members already enrolled.'}</div>`
       : results.map(s => `
-          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--by-bg-3);cursor:pointer;background:var(--by-bg);"
-               onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'"
+          <div class="flex items-center gap-2 py-2 px-2.5 border-b border-by-bg-3 cursor-pointer bg-by-bg hover:bg-by-bg-2"
                onclick="cmAddStudent('${esc(s.id)}','${esc(s.name)}')">
-            <div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink);flex:1;">${esc(s.name)}</div>
-            <div style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-3);">${esc(s.identity)}</div>
+            <div class="font-body text-[13px] text-by-ink flex-1">${esc(s.name)}</div>
+            <div class="font-mono text-[10px] text-by-ink-3">${esc(s.identity)}</div>
           </div>`).join('');
   };
 
@@ -2517,12 +2516,12 @@
         } else {
           $('respSubEmpty').style.display = 'none';
           $('respSubList').innerHTML = data.responses.map(r => `
-            <div style="padding:12px 18px;border-bottom:1px solid var(--by-bg-3);">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                <div style="font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);">${esc(r.student_name)}</div>
-                <div style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">${esc(r.submitted_at ? r.submitted_at.slice(0,16).replace('T',' ') : '')}</div>
+            <div class="py-3 px-[18px] border-b border-by-bg-3">
+              <div class="flex items-center justify-between mb-1">
+                <div class="font-body text-[13px] font-semibold text-by-ink">${esc(r.student_name)}</div>
+                <div class="font-mono text-[10px] text-by-ink-4">${esc(r.submitted_at ? r.submitted_at.slice(0,16).replace('T',' ') : '')}</div>
               </div>
-              <div style="font-family:var(--by-f-body);font-size:13px;color:var(--by-ink-2);line-height:1.5;">${esc(r.response_text)}</div>
+              <div class="font-body text-[13px] text-by-ink-2 leading-[1.5]">${esc(r.response_text)}</div>
             </div>`).join('');
         }
         $('responsesModal').style.display = 'block';
