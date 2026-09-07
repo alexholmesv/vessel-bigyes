@@ -286,20 +286,20 @@
 <aside id="app-sidebar" class="app-sidebar">
   <div class="px-5 pt-6 pb-4 flex items-start justify-between">
     <div>
-      <a href="/" class="by-display" class="text-[20px] text-by-ink no-underline leading-none">
-        Big<span class="by-yes-block" class="text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
+      <a href="/" class="by-display text-[20px] text-by-ink no-underline leading-none">
+        Big<span class="by-yes-block text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
       </a>
       <div class="by-eyebrow mt-1.5">Barcelona Improv</div>
     </div>
-    <button onclick="toggleSidebar()" class="mt-1 w-8 h-8 flex items-center justify-center" class="border border-by-ink bg-by-bg-2">
+    <button onclick="toggleSidebar()" class="mt-1 w-8 h-8 flex items-center justify-center border border-by-ink bg-by-bg-2">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
   </div>
 
-  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2" class="border border-by-ink bg-by-bg-2">
-    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" class="bg-by-yes border border-by-ink font-mono text-[10px] font-bold text-by-ink">T</span>
+  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2 border border-by-ink bg-by-bg-2">
+    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-by-yes border border-by-ink font-mono text-[10px] font-bold text-by-ink">T</span>
     <div class="flex-1 min-w-0">
-      <div class="text-[12.5px] truncate" class="font-sans font-bold text-by-ink">Teacher view</div>
+      <div class="text-[12.5px] truncate font-sans font-bold text-by-ink">Teacher view</div>
       <div class="by-eyebrow truncate">{{ current_user_name }}</div>
     </div>
   </div>
@@ -325,9 +325,9 @@
   </nav>
 
   {% set next_cls = active_classes[0] if active_classes else none %}
-  <div class="m-3 p-3" class="border border-by-ink bg-by-bg-2">
+  <div class="m-3 p-3 border border-by-ink bg-by-bg-2">
     <div class="by-eyebrow flex items-center gap-2">
-      <span class="pulse-ring w-1.5 h-1.5 flex-shrink-0" class="rounded-full bg-by-yes"></span>
+      <span class="pulse-ring w-1.5 h-1.5 flex-shrink-0 rounded-full bg-by-yes"></span>
       Next class
     </div>
     {% if next_cls %}
@@ -341,8 +341,8 @@
 
 <!-- Mobile top bar -->
 <header class="by-mob-bar">
-  <a href="/" class="by-display" class="text-[20px] text-by-ink no-underline leading-none">
-    Big<span class="by-yes-block" class="text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
+  <a href="/" class="by-display text-[20px] text-by-ink no-underline leading-none">
+    Big<span class="by-yes-block text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleSidebar()">
     <span></span><span></span><span></span>

@@ -199,27 +199,27 @@
 <body class="min-h-screen">
 
 <!-- Toast -->
-<div id="toast" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;padding:.625rem 1rem;border-radius:.5rem;font-size:.78125rem;font-weight:600;opacity:0;transition:opacity 200ms ease;pointer-events:none;white-space:nowrap;"></div>
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 rounded text-[.78125rem] font-semibold pointer-events-none whitespace-nowrap" style="opacity:0;transition:opacity 200ms ease;"></div>
 
 <!-- Sidebar overlay + drawer -->
 <div id="sidebar-overlay" class="app-sidebar-overlay" onclick="toggleSidebar()"></div>
 <aside id="app-sidebar" class="app-sidebar">
   <div class="px-5 pt-6 pb-4 flex items-start justify-between">
     <div>
-      <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-        Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+      <a href="/" class="by-display text-[20px] text-by-ink no-underline leading-none">
+        Big<span class="by-yes-block text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
       </a>
       <div class="by-eyebrow mt-1.5">Barcelona Improv</div>
     </div>
-    <button onclick="toggleSidebar()" class="mt-1 w-8 h-8 flex items-center justify-center" style="border:var(--by-bd);background:var(--by-bg-2);">
+    <button onclick="toggleSidebar()" class="mt-1 w-8 h-8 flex items-center justify-center border border-by-ink bg-by-bg-2">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
   </div>
 
-  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2" style="border:var(--by-bd);background:var(--by-bg-2);">
-    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0" style="background:var(--by-ink);border:var(--by-bd);font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-bg);">S</span>
+  <div class="mx-3 mb-4 px-3 py-2 flex items-center gap-2 border border-by-ink bg-by-bg-2">
+    <span class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-by-ink border border-by-ink font-mono text-[10px] font-bold text-by-bg">S</span>
     <div class="flex-1 min-w-0">
-      <div class="text-[12.5px] truncate" style="font-family:var(--by-f-sans);font-weight:700;color:var(--by-ink);">Student view</div>
+      <div class="text-[12.5px] truncate font-sans font-bold text-by-ink">Student view</div>
       <div class="by-eyebrow truncate">{{ current_user_name }}</div>
     </div>
   </div>
@@ -245,22 +245,22 @@
 
   </nav>
 
-  <div class="m-3 p-3" style="border:var(--by-bd);background:var(--by-bg-2);">
+  <div class="m-3 p-3 border border-by-ink bg-by-bg-2">
     <div class="by-eyebrow">Yes-And balance</div>
     <div class="mt-1 flex items-baseline gap-1">
-      <span id="sidePoints" class="font-display text-[26px] leading-none" style="color:var(--by-ink);">{{ user.yes_and_points | default(0) }}</span>
+      <span id="sidePoints" class="font-display text-[26px] leading-none text-by-ink">{{ user.yes_and_points | default(0) }}</span>
       <span class="by-eyebrow">pts</span>
     </div>
-    <div class="mt-2" style="height:4px; background:var(--by-bg-3);">
-      <i style="display:block; height:100%; width:{{ [((user.yes_and_points | default(0)) % 100), 100] | min }}%; background:var(--by-yes);"></i>
+    <div class="mt-2 h-1 bg-by-bg-3">
+      <i class="block h-full bg-by-yes" style="width:{{ [((user.yes_and_points | default(0)) % 100), 100] | min }}%;"></i>
     </div>
   </div>
 </aside>
 
 <!-- Mobile top bar -->
 <header class="by-mob-bar">
-  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  <a href="/" class="by-display text-[20px] text-by-ink no-underline leading-none">
+    Big<span class="by-yes-block text-[18px] px-[9px] pt-0 pb-[3px]">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleSidebar()">
     <span></span><span></span><span></span>
@@ -273,7 +273,7 @@
   <div class="flex flex-col min-w-0">
 
     <!-- Sticky header -->
-    <header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+    <header class="sticky top-0 z-30 border-b hairline bg-by-bg">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-3 lg:gap-4">
         <!-- Sidebar toggle (desktop) -->
         <button onclick="toggleSidebar()" class="hidden lg:flex h-9 w-9 items-center justify-center flex-shrink-0 btn-ghost" title="Toggle sidebar">
@@ -282,15 +282,15 @@
 
         <div class="leading-tight">
           <div class="by-eyebrow">Student</div>
-          <div class="font-display text-[22px]" style="color:var(--by-ink);">Profile</div>
+          <div class="font-display text-[22px] text-by-ink">Profile</div>
         </div>
 
         <div class="flex-1"></div>
 
         <!-- Points indicator in header (dynamic) -->
-        <div class="flex items-center gap-1.5 px-3 py-1.5" style="border:var(--by-bd);background:var(--by-bg-2);">
-          <svg class="w-3.5 h-3.5" style="color:var(--by-yes-deep)" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
-          <span id="ptsHeader" class="font-display text-[18px] leading-none" style="color:var(--by-ink);">{{ user.yes_and_points | default(0) }}</span>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 border border-by-ink bg-by-bg-2">
+          <svg class="w-3.5 h-3.5 text-by-yes-deep" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
+          <span id="ptsHeader" class="font-display text-[18px] leading-none text-by-ink">{{ user.yes_and_points | default(0) }}</span>
           <span class="by-eyebrow">pts</span>
         </div>
 
@@ -299,27 +299,26 @@
 
         <div class="relative flex-shrink-0" id="user-menu-wrap">
           <button id="user-menu-btn" onclick="toggleUserMenu()"
-                  class="flex items-center gap-2 cursor-pointer h-9 px-2"
-                  style="border:var(--by-bd); background:var(--by-bg);">
-            <span class="av flex items-center justify-center flex-shrink-0"
-                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;">
+                  class="flex items-center gap-2 cursor-pointer h-9 px-2 border border-by-ink bg-by-bg">
+            <span class="av flex items-center justify-center flex-shrink-0 w-[28px] h-[28px] border-2 border-by-ink rounded-full font-mono text-[10px] font-bold text-white"
+                  style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});">
               {{ current_user_initials }}
             </span>
             <div class="hidden md:block leading-tight text-left">
-              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);line-height:1.2;">{{ current_user_name }}</div>
-              <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--by-ink-3);margin-top:1px;">Student</div>
+              <div class="by-um-name font-sans font-bold text-[12px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+              <div class="font-mono text-[9.5px] tracking-[.08em] uppercase text-by-ink-3 mt-px">Student</div>
             </div>
-            <svg class="h-3 w-3 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--by-ink-4);" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+            <svg class="h-3 w-3 ml-0.5 text-by-ink-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
           </button>
-          <div id="user-menu-drop" class="hidden" style="position:absolute;top:calc(100% + 6px);right:0;z-index:60;min-width:168px;background:var(--by-bg);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);">
-            <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
-              <div class="by-um-name" style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);">{{ current_user_name }}</div>
-              <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Student</div>
+          <div id="user-menu-drop" class="hidden absolute top-[calc(100%+6px)] right-0 z-[60] min-w-[168px] bg-by-bg border-[1.5px] border-by-ink shadow-by-hard">
+            <div class="px-3 py-2.5 border-b border-by-bg-3">
+              <div class="by-um-name font-sans font-bold text-[12.5px] text-by-ink">{{ current_user_name }}</div>
+              <div class="font-mono text-[10.5px] text-by-ink-3 mt-0.5">Student</div>
             </div>
-            <button onclick="openMyConfig(); toggleUserMenu(true)" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b" style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
+            <button onclick="openMyConfig(); toggleUserMenu(true)" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b border-by-bg-3 text-[13px] text-by-ink bg-by-bg">
               Config
             </button>
-            <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5" style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);text-decoration:none;display:flex;">Log out</a>
+            <a href="/logout" class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-[13px] text-by-tomato bg-by-bg no-underline">Log out</a>
           </div>
         </div>
       </div>
@@ -331,14 +330,14 @@
       <section class="col-span-12 points-hero">
         <div class="points-hero-inner grid grid-cols-12 gap-4 lg:gap-6 items-center">
           <div class="col-span-12 lg:col-span-5">
-            <div class="flex items-center gap-2 text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-yes-deep)">
+            <div class="flex items-center gap-2 text-[10.5px] uppercase tracking-[.18em] text-by-yes-deep">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5 5.6.6-4.2 3.8 1.3 5.6L12 14.8 6.9 17l1.3-5.6L4 7.6 9.6 7 12 2z"/></svg>
               Yes-And Points
             </div>
             <div class="mt-2 flex items-end gap-3 flex-wrap">
               <span class="points-num" id="ptsNum">{{ user.yes_and_points | default(0) }}</span>
               <div class="pb-2 leading-tight">
-                <div class="text-[12px]" style="color:var(--by-night-on)">Lifetime</div>
+                <div class="text-[12px] text-by-night-on">Lifetime</div>
               </div>
             </div>
             <div id="profileChips" class="mt-4 flex items-center gap-2 flex-wrap">
@@ -349,50 +348,50 @@
           </div>
 
           <div class="col-span-12 lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+            <div class="p-3 border border-white/[.18] bg-white/[.06]">
               <div class="flex items-center justify-between">
-                <span class="text-[11.5px]" style="color:var(--by-night-on)">Class attendance</span>
-                <span class="text-[12px] font-mono" style="color:var(--by-bg)">{{ points_breakdown.attendance_count }} session{{ 's' if points_breakdown.attendance_count != 1 else '' }} · {{ points_breakdown.attendance_pts }} pts</span>
+                <span class="text-[11.5px] text-by-night-on">Class attendance</span>
+                <span class="text-[12px] font-mono text-by-bg">{{ points_breakdown.attendance_count }} session{{ 's' if points_breakdown.attendance_count != 1 else '' }} · {{ points_breakdown.attendance_pts }} pts</span>
               </div>
               <div class="mt-2 bd-bar"><i style="width:{{ points_breakdown.attendance_bar }}%; background:linear-gradient(90deg,#34D399,#22D3EE)"></i></div>
-              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">+10 pts per attended session</div>
+              <div class="mt-1 text-[10.5px] text-by-night-on">+10 pts per attended session</div>
             </div>
-            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+            <div class="p-3 border border-white/[.18] bg-white/[.06]">
               <div class="flex items-center justify-between">
-                <span class="text-[11.5px]" style="color:var(--by-night-on)">Volunteer shifts</span>
-                <span class="text-[12px] font-mono" style="color:var(--by-bg)">{{ points_breakdown.shifts_claimed }} shift{{ 's' if points_breakdown.shifts_claimed != 1 else '' }} · {{ points_breakdown.shift_pts }} pts</span>
+                <span class="text-[11.5px] text-by-night-on">Volunteer shifts</span>
+                <span class="text-[12px] font-mono text-by-bg">{{ points_breakdown.shifts_claimed }} shift{{ 's' if points_breakdown.shifts_claimed != 1 else '' }} · {{ points_breakdown.shift_pts }} pts</span>
               </div>
               <div class="mt-2 bd-bar"><i style="width:{{ points_breakdown.shift_bar }}%; background:linear-gradient(90deg,#22D3EE,#67E8F9)"></i></div>
-              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">+20 pts per claimed shift</div>
+              <div class="mt-1 text-[10.5px] text-by-night-on">+20 pts per claimed shift</div>
             </div>
-            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+            <div class="p-3 border border-white/[.18] bg-white/[.06]">
               <div class="flex items-center justify-between">
-                <span class="text-[11.5px]" style="color:var(--by-night-on)">Live challenges</span>
-                <span class="text-[12px] font-mono" style="color:var(--by-bg)">{{ points_breakdown.challenges_count }} submitted · {{ points_breakdown.challenges_wins }} won · {{ points_breakdown.challenge_pts }} pts</span>
+                <span class="text-[11.5px] text-by-night-on">Live challenges</span>
+                <span class="text-[12px] font-mono text-by-bg">{{ points_breakdown.challenges_count }} submitted · {{ points_breakdown.challenges_wins }} won · {{ points_breakdown.challenge_pts }} pts</span>
               </div>
               <div class="mt-2 bd-bar"><i style="width:{{ points_breakdown.challenge_bar }}%; background:linear-gradient(90deg,#FBBF24,#F59E0B)"></i></div>
-              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">+1 pt for submitting · +10 pts if you win</div>
+              <div class="mt-1 text-[10.5px] text-by-night-on">+1 pt for submitting · +10 pts if you win</div>
             </div>
-            <div class="p-3" style="border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);">
+            <div class="p-3 border border-white/[.18] bg-white/[.06]">
               <div class="flex items-center justify-between">
-                <span class="text-[11.5px]" style="color:var(--by-night-on)">Total balance</span>
-                <span class="text-[12px] font-mono" style="color:var(--by-bg)">{{ points_breakdown.total_pts }} pts</span>
+                <span class="text-[11.5px] text-by-night-on">Total balance</span>
+                <span class="text-[12px] font-mono text-by-bg">{{ points_breakdown.total_pts }} pts</span>
               </div>
               <div class="mt-2 bd-bar"><i style="width:{{ points_breakdown.total_bar }}%; background:linear-gradient(90deg,#F472B6,#FBBF24)"></i></div>
-              <div class="mt-1 text-[10.5px]" style="color:var(--by-night-on)">Keep it up!</div>
+              <div class="mt-1 text-[10.5px] text-by-night-on">Keep it up!</div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ── MY CLASSES (7 cols) ── -->
-      <section id="classes" class="col-span-12 xl:col-span-7 border hairline" style="background:var(--by-bg);">
+      <section id="classes" class="col-span-12 xl:col-span-7 border hairline bg-by-bg">
         <header class="px-5 py-4 flex items-center justify-between border-b hairline">
           <div>
-            <div class="font-display text-[17px]" style="color:var(--by-ink)">My classes</div>
-            <div class="text-[12px]" style="color:var(--by-ink-3)">In session this term</div>
+            <div class="font-display text-[17px] text-by-ink">My classes</div>
+            <div class="text-[12px] text-by-ink-3">In session this term</div>
           </div>
-          <span class="text-[11.5px] font-mono" style="color:var(--by-ink-3)">{{ classes | length }} enrolled</span>
+          <span class="text-[11.5px] font-mono text-by-ink-3">{{ classes | length }} enrolled</span>
         </header>
         <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
           {% for c in classes %}
@@ -401,7 +400,7 @@
                onclick="openClassmatesModal(this.dataset.classId, this.dataset.classTitle)"
                title="{{ _('View classmates & message options') }}">
             <div class="flex items-start justify-between gap-2">
-              <div class="font-display text-[15.5px] leading-tight" style="color:var(--by-ink)">{{ c.title }}</div>
+              <div class="font-display text-[15.5px] leading-tight text-by-ink">{{ c.title }}</div>
               {% if c.end_date and c.end_date < '2026-05-21' %}
               <span class="chip chip-taken"><span class="dot"></span>Past</span>
               {% elif c.start_date and c.start_date > '2026-05-21' %}
@@ -410,12 +409,12 @@
               <span class="chip chip-active"><span class="dot"></span>Active</span>
               {% endif %}
             </div>
-            <div class="mt-2 text-[12.5px] flex items-center gap-1.5" style="color:var(--by-ink-3)">
+            <div class="mt-2 text-[12.5px] flex items-center gap-1.5 text-by-ink-3">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
               {{ c.schedule | default('TBD') }}
             </div>
             {% if c.start_date or c.end_date %}
-            <div class="text-[11.5px] mt-1 font-mono" style="color:var(--by-ink-3)">
+            <div class="text-[11.5px] mt-1 font-mono text-by-ink-3">
               {{ c.start_date | default('') }}{% if c.start_date and c.end_date %} → {{ c.end_date }}{% elif c.end_date %} → {{ c.end_date }}{% endif %}
             </div>
             {% endif %}
@@ -423,17 +422,16 @@
               <div class="flex items-center gap-2 min-w-0">
                 <span class="av w-7 h-7 text-[11px] flex-shrink-0" style="background:linear-gradient(135deg,#FBBF24,#22D3EE)">{{ c.teacher_initials | default('?') }}</span>
                 <div class="leading-tight min-w-0">
-                  <div class="text-[12.5px] truncate" style="color:var(--by-ink)">{{ c.teacher_name | default('—') }}</div>
-                  <div class="text-[10.5px]" style="color:var(--by-ink-3)">Instructor</div>
+                  <div class="text-[12.5px] truncate text-by-ink">{{ c.teacher_name | default('—') }}</div>
+                  <div class="text-[10.5px] text-by-ink-3">Instructor</div>
                 </div>
               </div>
               {% if c.teacher_email %}
               <button data-teacher-email="{{ c.teacher_email }}" data-teacher-name="{{ c.teacher_name }}"
                       onclick="event.stopPropagation(); composeMsgTo(this.dataset.teacherEmail, this.dataset.teacherName)"
                       title="Message {{ c.teacher_name | e }}"
-                      class="flex-shrink-0 flex items-center gap-1.5 px-3 h-8 text-[11.5px] font-semibold border"
-                      style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg);cursor:pointer;
-                             transition:background 100ms,color 100ms;"
+                      class="flex-shrink-0 flex items-center gap-1.5 px-3 h-8 text-[11.5px] font-semibold border border-by-ink cursor-pointer transition-colors duration-100"
+                      style="color:var(--by-ink);background:var(--by-bg);"
                       onmouseenter="this.style.background='var(--by-ink)';this.style.color='var(--by-bg)'"
                       onmouseleave="this.style.background='var(--by-bg)';this.style.color='var(--by-ink)'">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -445,14 +443,14 @@
             </div>
             <!-- Classmates row — populated by JS on page load -->
             <div class="mt-2.5 pt-2.5 border-t hairline">
-              <div class="text-[10px] uppercase tracking-widest mb-1.5 font-bold" style="color:var(--by-ink-3)">{{ _('Classmates') }}</div>
+              <div class="text-[10px] uppercase tracking-widest mb-1.5 font-bold text-by-ink-3">{{ _('Classmates') }}</div>
               <div id="classmates-{{ c.id }}" class="flex flex-col gap-0">
-                <span class="text-[11.5px]" style="color:var(--by-ink-4)">{{ _('Loading…') }}</span>
+                <span class="text-[11.5px] text-by-ink-4">{{ _('Loading…') }}</span>
               </div>
             </div>
           </div>
           {% else %}
-          <div class="md:col-span-2 py-10 text-center text-[13px]" style="color:var(--by-ink-3)">
+          <div class="md:col-span-2 py-10 text-center text-[13px] text-by-ink-3">
             You are not enrolled in any classes yet.
           </div>
           {% endfor %}
@@ -470,41 +468,41 @@
                 </div>
                 <div>
                   <div class="text-[10.5px] uppercase tracking-[.18em] text-live-indicator">Live Challenge</div>
-                  <div id="liveTitle" class="font-display text-[17.5px] leading-tight" style="color:var(--by-ink)">No prompt right now</div>
+                  <div id="liveTitle" class="font-display text-[17.5px] leading-tight text-by-ink">No prompt right now</div>
                 </div>
               </div>
               <span id="liveStatus" class="chip chip-taken"><span class="dot"></span>Idle</span>
             </div>
 
             <div id="idleState" class="mt-4">
-              <p id="idleMsg" class="text-[12.5px] leading-snug" style="color:var(--by-ink-3)">
-                When your teacher posts a challenge it appears here. Accept it and you'll have <b style="color:var(--by-yes-deep)">30 seconds</b> to respond and earn <b style="color:var(--by-yes-deep)">+15 pts</b>.
+              <p id="idleMsg" class="text-[12.5px] leading-snug text-by-ink-3">
+                When your teacher posts a challenge it appears here. Accept it and you'll have <b class="text-by-yes-deep">30 seconds</b> to respond and earn <b class="text-by-yes-deep">+15 pts</b>.
               </p>
               <div id="availableList" class="hidden mt-4 flex flex-col gap-3"></div>
             </div>
 
             <div id="liveState" class="mt-4 hidden">
-              <div class="border hairline p-4 flex items-center gap-4" style="background:var(--by-bg);">
+              <div class="border hairline p-4 flex items-center gap-4 bg-by-bg">
                 <div class="text-center min-w-[110px]">
                   <div id="countdown" class="countdown calm">30</div>
-                  <div class="text-[10.5px] uppercase tracking-[.18em] mt-1" style="color:var(--by-ink-3)">seconds left</div>
+                  <div class="text-[10.5px] uppercase tracking-[.18em] mt-1 text-by-ink-3">seconds left</div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Difficulty</div>
-                  <div id="liveDiff" class="font-display text-[15.5px]" style="color:var(--by-ink)">—</div>
-                  <div class="mt-1 text-[12.5px] leading-snug" id="livePrompt" style="color:var(--by-ink-2)">—</div>
+                  <div class="text-[10.5px] uppercase tracking-[.18em] text-by-ink-3">Difficulty</div>
+                  <div id="liveDiff" class="font-display text-[15.5px] text-by-ink">—</div>
+                  <div class="mt-1 text-[12.5px] leading-snug text-by-ink-2" id="livePrompt">—</div>
                 </div>
               </div>
               <div class="mt-3 h-1.5 rounded-full bg-white/5 overflow-hidden">
                 <div id="progressBar" class="h-full transition-[width,background-color] duration-300" style="width:100%;background:#22D3EE"></div>
               </div>
               <div class="mt-4">
-                <label class="text-[11px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Your response</label>
+                <label class="text-[11px] uppercase tracking-[.18em] text-by-ink-3">Your response</label>
                 <textarea id="responseInput" rows="3" maxlength="240" placeholder="Type your answer — keep it punchy."
-                  class="mt-1 w-full border hairline outline-none px-3 py-2.5 text-[13.5px] resize-none" style="background:var(--by-bg); color:var(--by-ink);"></textarea>
+                  class="mt-1 w-full border hairline outline-none px-3 py-2.5 text-[13.5px] resize-none bg-by-bg text-by-ink"></textarea>
                 <div class="mt-1 flex items-center justify-between text-[11px]">
-                  <span class="" style="color:var(--by-ink-3)"><span id="charCount" class="font-mono" style="color:var(--by-ink-2)">0</span> / 240</span>
-                  <span class="font-mono" style="color:var(--by-ink-3)">⌘↵ to submit</span>
+                  <span class="text-by-ink-3"><span id="charCount" class="font-mono text-by-ink-2">0</span> / 240</span>
+                  <span class="font-mono text-by-ink-3">⌘↵ to submit</span>
                 </div>
                 <button id="submitBtn" class="btn-live w-full h-10 mt-3 rounded-lg text-[13px] flex items-center justify-center gap-2">
                   Submit response <span class="text-[11px] opacity-75 font-mono">+15 pts</span>
@@ -513,17 +511,17 @@
             </div>
 
             <div id="lockedState" class="mt-4 hidden">
-              <div class="border hairline p-4" style="background:var(--by-bg);">
+              <div class="border hairline p-4 bg-by-bg">
                 <div class="flex items-center gap-3">
-                  <div id="lockedIcon" class="w-10 h-10 rounded-full grid place-items-center font-display text-[20px]" style="background:var(--by-bg-3); color:var(--by-ink);">·</div>
+                  <div id="lockedIcon" class="w-10 h-10 rounded-full grid place-items-center font-display text-[20px] bg-by-bg-3 text-by-ink">·</div>
                   <div class="flex-1 min-w-0">
-                    <div class="text-[10.5px] uppercase tracking-[.18em]" style="color:var(--by-ink-3)">Result</div>
-                    <div id="lockedTitle" class="font-display text-[20px] leading-tight" style="color:var(--by-ink-2)">Time's up</div>
+                    <div class="text-[10.5px] uppercase tracking-[.18em] text-by-ink-3">Result</div>
+                    <div id="lockedTitle" class="font-display text-[20px] leading-tight text-by-ink-2">Time's up</div>
                   </div>
                 </div>
-                <div class="mt-3 text-[12.5px]" id="lockedDetail" style="color:var(--by-ink-3)">The prompt is closed. Watch for the next one.</div>
-                <div id="lockedSubmission" class="hidden mt-3 p-3 rounded-lg bg-white/5 text-[12.5px]" style="color:var(--by-ink-2)">
-                  <div class="text-[10.5px] uppercase tracking-[.18em] mb-1" style="color:var(--by-ink-3)">Your response</div>
+                <div class="mt-3 text-[12.5px] text-by-ink-3" id="lockedDetail">The prompt is closed. Watch for the next one.</div>
+                <div id="lockedSubmission" class="hidden mt-3 p-3 rounded-lg bg-white/5 text-[12.5px] text-by-ink-2">
+                  <div class="text-[10.5px] uppercase tracking-[.18em] mb-1 text-by-ink-3">Your response</div>
                   <div id="submittedText">—</div>
                 </div>
               </div>
@@ -532,17 +530,17 @@
         </div>
 
         <!-- Achievements / Trophies -->
-        <section id="achievements" class="border hairline" style="background:var(--by-bg);">
+        <section id="achievements" class="border hairline bg-by-bg">
           <header class="px-5 py-4 border-b hairline flex items-center justify-between">
-            <div class="font-display text-[16px]" style="color:var(--by-ink)">Achievements</div>
-            <span class="text-[11.5px] font-mono" style="color:var(--by-ink-3)">{{ trophies | length }} earned</span>
+            <div class="font-display text-[16px] text-by-ink">Achievements</div>
+            <span class="text-[11.5px] font-mono text-by-ink-3">{{ trophies | length }} earned</span>
           </header>
           <div id="trophyGrid" class="p-4 grid grid-cols-3 gap-2.5">
             {% if trophies %}
             {% for t in trophies[:6] %}
             <div class="ach relative group">
-              <div class="icon" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);font-size:18px;line-height:1;display:grid;place-items:center;">{{ t.icon }}</div>
-              <div class="text-[12px] font-semibold" style="color:var(--by-ink)">{{ t.name }}</div>
+              <div class="icon text-[18px] leading-none grid place-items-center" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);">{{ t.icon }}</div>
+              <div class="text-[12px] font-semibold text-by-ink">{{ t.name }}</div>
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-[#1A120E] text-[#F4EEE2] text-[11.5px] leading-snug rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 shadow-lg max-w-[200px]">
                 {{ t.description }}
                 <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-[#1A120E] rotate-45"></div>
@@ -552,8 +550,8 @@
             {% else %}
             <div class="col-span-3 py-6 text-center">
               <div class="text-[28px] mb-2">🎭</div>
-              <div class="text-[13px] font-semibold" style="color:var(--by-ink)">No achievements yet</div>
-              <div class="text-[11px] mt-1" style="color:var(--by-ink-3)">Complete challenges and attend classes to earn badges</div>
+              <div class="text-[13px] font-semibold text-by-ink">No achievements yet</div>
+              <div class="text-[11px] mt-1 text-by-ink-3">Complete challenges and attend classes to earn badges</div>
             </div>
             {% endif %}
           </div>
@@ -565,28 +563,28 @@
         </section>
 
         <!-- Volunteer Shifts — redirect CTA to the dedicated page -->
-        <a href="/volunteer-shifts" class="flex items-center justify-between px-4 py-3 border hairline no-underline" style="background:var(--by-bg);">
+        <a href="/volunteer-shifts" class="flex items-center justify-between px-4 py-3 border hairline no-underline bg-by-bg">
           <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--by-yes-deep);"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
-            <span class="font-display text-[15px]" style="color:var(--by-ink);">Volunteer Shifts</span>
+            <svg class="w-4 h-4 flex-shrink-0 text-by-yes-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
+            <span class="font-display text-[15px] text-by-ink">Volunteer Shifts</span>
             <span class="chip {% if user.is_volunteer %}chip-mine{% else %}chip-taken{% endif %}">
               <span class="dot"></span>
               {% if user.is_volunteer %}On the pool{% else %}Locked{% endif %}
             </span>
           </div>
-          <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--by-ink-3);"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </aside>
 
       <!-- ── DISPATCH INBOX ── -->
       {% if notifications %}
-      <section id="inbox" class="col-span-12 border hairline" style="background:var(--by-bg);">
+      <section id="inbox" class="col-span-12 border hairline bg-by-bg">
         <header class="px-5 py-4 flex items-center justify-between gap-3 border-b hairline">
           <div>
-            <div class="font-display text-[17px]" style="color:var(--by-ink);">Dispatch from the Stage</div>
-            <div class="mt-0.5 text-[12px]" style="color:var(--by-ink-3);">Messages from your Stage Manager</div>
+            <div class="font-display text-[17px] text-by-ink">Dispatch from the Stage</div>
+            <div class="mt-0.5 text-[12px] text-by-ink-3">Messages from your Stage Manager</div>
           </div>
-          <span class="font-mono text-[10px] px-2 py-1 border" style="background:var(--by-yes);border-color:var(--by-ink);color:var(--by-ink);">
+          <span class="font-mono text-[10px] px-2 py-1 border bg-by-yes border-by-ink text-by-ink">
             {{ notifications | selectattr('is_read', 'equalto', 0) | list | length }} unread
           </span>
         </header>
@@ -597,14 +595,14 @@
             <div class="mt-1 w-2 h-2 rounded-full flex-shrink-0 {% if not notif.is_read %}bg-[#FFC629]{% else %}bg-transparent border hairline{% endif %}"></div>
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2 flex-wrap">
-                <div class="text-[14px] font-semibold" style="color:var(--by-ink);">{{ notif.subject }}</div>
-                <div class="text-[11px] font-mono whitespace-nowrap" style="color:var(--by-ink-4);">{{ notif.created_at[:16] | replace('T', ' ') }}</div>
+                <div class="text-[14px] font-semibold text-by-ink">{{ notif.subject }}</div>
+                <div class="text-[11px] font-mono whitespace-nowrap text-by-ink-4">{{ notif.created_at[:16] | replace('T', ' ') }}</div>
               </div>
-              <div class="mt-1 text-[13px]" style="color:var(--by-ink-2);white-space:pre-wrap;">{{ notif.body }}</div>
-              <div class="mt-2 text-[11px] font-mono" style="color:var(--by-ink-4);">
+              <div class="mt-1 text-[13px] text-by-ink-2 whitespace-pre-wrap">{{ notif.body }}</div>
+              <div class="mt-2 text-[11px] font-mono text-by-ink-4">
                 From {{ notif.sender_name }}
                 {% if not notif.is_read %}
-                · <button onclick="markRead({{ notif.id }})" class="underline cursor-pointer" style="color:var(--by-ink-3);background:none;border:none;font:inherit;padding:0;">Mark as read</button>
+                · <button onclick="markRead({{ notif.id }})" class="underline cursor-pointer text-by-ink-3 bg-transparent border-0 [font:inherit] p-0">Mark as read</button>
                 {% endif %}
               </div>
             </div>
@@ -617,9 +615,9 @@
     </main>
 
     <footer class="px-4 lg:px-7 py-6 border-t hairline">
-      <div class="flex items-center justify-between text-[12px]" style="color:var(--by-ink-3)">
+      <div class="flex items-center justify-between text-[12px] text-by-ink-3">
         <span>© 2026 Barcelona Improv Group · Big Yes CRM</span>
-        <a href="/privacy" style="color:var(--by-ink-2);">Privacy Center</a>
+        <a href="/privacy" class="text-by-ink-2">Privacy Center</a>
       </div>
     </footer>
   </div>
@@ -722,18 +720,15 @@
     var grad = 'linear-gradient(135deg,' + tint[0] + ',' + tint[1] + ')';
     return '<div class="flex items-center justify-between gap-2 py-1">'
       + '<div class="flex items-center gap-2 min-w-0">'
-      + '<span class="av flex-shrink-0" style="width:24px;height:24px;font-size:9.5px;font-weight:700;'
-      +   'border-radius:50%;display:inline-flex;align-items:center;justify-content:center;'
-      +   'background:' + grad + ';color:#fff;">' + _esc(s.initials) + '</span>'
-      + '<span class="truncate" style="font-size:12.5px;color:var(--by-ink-2);">' + _esc(s.name) + '</span>'
+      + '<span class="av flex-shrink-0 w-6 h-6 text-[9.5px] font-bold rounded-full inline-flex items-center justify-center text-white" style="background:' + grad + ';">' + _esc(s.initials) + '</span>'
+      + '<span class="truncate text-[12.5px] text-by-ink-2">' + _esc(s.name) + '</span>'
       + '</div>'
       + (s.email
         ? '<button data-email="' + _esc(s.email) + '" data-name="' + _esc(s.name) + '" '
         +   'onclick="event.stopPropagation();composeMsgTo(this.dataset.email, this.dataset.name)" '
         +   'title="' + I18N_CM_MESSAGE + ' ' + _esc(s.name) + '" '
-        +   'style="flex-shrink:0;width:26px;height:26px;display:flex;align-items:center;justify-content:center;'
-        +     'border:1px solid var(--by-bg-3);border-radius:4px;background:var(--by-bg);cursor:pointer;'
-        +     'color:var(--by-ink-3);transition:color 120ms,border-color 120ms;" '
+        +   'class="flex-shrink-0 w-[26px] h-[26px] flex items-center justify-center border rounded bg-by-bg cursor-pointer transition-colors duration-[120ms]" '
+        +   'style="border-color:var(--by-bg-3);color:var(--by-ink-3);" '
         +   'onmouseenter="this.style.color=\'var(--by-ink)\';this.style.borderColor=\'var(--by-ink)\'" '
         +   'onmouseleave="this.style.color=\'var(--by-ink-3)\';this.style.borderColor=\'var(--by-bg-3)\'">'
         +   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'
@@ -749,25 +744,25 @@
   // limits how many rows are shown (inline card use); pass null for the full
   // list (modal use). Always excludes the current user.
   function _renderClassmatesInto(classId, container, cap) {
-    container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_LOADING + '</span>';
+    container.innerHTML = '<span class="text-[11.5px] text-by-ink-4">' + I18N_CM_LOADING + '</span>';
     fetch('/api/class/' + classId + '/students')
       .then(function(r) { return r.json(); })
       .then(function(d) {
         if (!d.ok || !d.students || !d.students.length) {
-          container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_NO_CLASSMATES + '</span>';
+          container.innerHTML = '<span class="text-[11.5px] text-by-ink-4">' + I18N_CM_NO_CLASSMATES + '</span>';
           return;
         }
         var me = {{ current_user_email | tojson }};
         var mates = d.students.filter(function(s) { return s.email !== me; });
         if (cap) mates = mates.slice(0, cap);
         if (!mates.length) {
-          container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_NO_OTHERS + '</span>';
+          container.innerHTML = '<span class="text-[11.5px] text-by-ink-4">' + I18N_CM_NO_OTHERS + '</span>';
           return;
         }
         container.innerHTML = mates.map(_renderClassmateRow).join('');
       })
       .catch(function() {
-        container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_LOAD_ERROR + '</span>';
+        container.innerHTML = '<span class="text-[11.5px] text-by-ink-4">' + I18N_CM_LOAD_ERROR + '</span>';
       });
   }
 
@@ -864,25 +859,24 @@
       list.classList.remove('hidden');
       list.innerHTML = challenges.map(function(ch) {
         // Don't show the prompt text until the student accepts — build suspense.
-        return '<div style="border:1px solid var(--by-bg-3);padding:12px;background:var(--by-bg);">'
-          + '<div style="font-size:13px;color:var(--by-ink);line-height:1.5;margin-bottom:10px;">'
-          +   '<span style="color:var(--by-tomato);font-weight:700;">🎭 New improv dare</span>'
-          +   '<span style="color:var(--by-ink-3);"> from ' + _esc(ch.posted_by_name) + '</span>'
+        return '<div class="border border-by-bg-3 p-3 bg-by-bg">'
+          + '<div class="text-[13px] text-by-ink leading-[1.5] mb-2.5">'
+          +   '<span class="text-by-tomato font-bold">🎭 New improv dare</span>'
+          +   '<span class="text-by-ink-3"> from ' + _esc(ch.posted_by_name) + '</span>'
           +   (ch.responded
-              ? ' <span style="color:var(--by-yes-deep);font-weight:600;">— you already nailed it</span>'
+              ? ' <span class="text-by-yes-deep font-semibold">— you already nailed it</span>'
               : ch.accepted
-                ? ' <span style="color:var(--by-yes-deep);font-weight:600;">— accepted, go!</span>'
+                ? ' <span class="text-by-yes-deep font-semibold">— accepted, go!</span>'
                 : ' — accept to reveal the prompt')
           + '</div>'
-          + '<div style="display:flex;align-items:center;justify-content:space-between;">'
-          + '<span style="font-size:11px;color:var(--by-ink-3);">' + ch.total_responders + ' responded</span>'
+          + '<div class="flex items-center justify-between">'
+          + '<span class="text-[11px] text-by-ink-3">' + ch.total_responders + ' responded</span>'
           + (ch.responded
-              ? '<span style="font-size:11px;font-weight:600;color:var(--by-ink-3);">✓ Submitted</span>'
+              ? '<span class="text-[11px] font-semibold text-by-ink-3">✓ Submitted</span>'
               : ch.accepted
-                ? '<span style="font-size:11px;font-weight:600;color:var(--by-yes-deep);">Accepted — respond now!</span>'
+                ? '<span class="text-[11px] font-semibold text-by-yes-deep">Accepted — respond now!</span>'
                 : '<button onclick="_acceptChallenge(\'' + _esc(ch.id) + '\')" '
-                  + 'style="padding:6px 14px;background:var(--by-ink);color:var(--by-bg);border:none;'
-                  + 'font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;">'
+                  + 'class="px-3.5 py-1.5 bg-by-ink text-by-bg border-0 text-[12px] font-bold cursor-pointer tracking-[.04em]">'
                   + 'Accept (+10 pts if you win)</button>'
             )
           + '</div>'
@@ -904,22 +898,22 @@
           if (submitBtn) submitBtn.style.display = 'none';
           var container = _id('responseInput') ? _id('responseInput').parentElement.parentElement : _id('liveState');
           // Build voting list
-          var votingHtml = '<div style="margin-top:12px;">'
-            + '<div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.18em;color:var(--by-ink-3);margin-bottom:8px;">Class Responses — vote for your favourite</div>'
+          var votingHtml = '<div class="mt-3">'
+            + '<div class="text-[10.5px] uppercase tracking-[.18em] text-by-ink-3 mb-2">Class Responses — vote for your favourite</div>'
             + d.responses.map(function(resp) {
                 var isMine = resp.student_email === {{ current_user_email | tojson }};
                 var voted  = userVotedResponseId === resp.id;
-                return '<div id="vote-' + _esc(resp.id) + '" style="padding:10px 12px;border:1px solid var(--by-bg-3);margin-bottom:6px;background:' + (isMine ? 'var(--by-yes-soft)' : 'var(--by-bg)') + ';">'
-                  + '<div style="display:flex;align-items:flex-start;gap:8px;">'
-                  + '<div style="flex:1;">'
-                  + '<div style="font-size:11px;color:var(--by-ink-3);margin-bottom:2px;">' + _esc(resp.student_name) + (isMine ? ' (you)' : '') + '</div>'
-                  + '<div style="font-size:13px;color:var(--by-ink);line-height:1.5;">' + _esc(resp.response_text) + '</div>'
+                return '<div id="vote-' + _esc(resp.id) + '" class="px-3 py-2.5 border border-by-bg-3 mb-1.5 ' + (isMine ? 'bg-by-yes-soft' : 'bg-by-bg') + '">'
+                  + '<div class="flex items-start gap-2">'
+                  + '<div class="flex-1">'
+                  + '<div class="text-[11px] text-by-ink-3 mb-0.5">' + _esc(resp.student_name) + (isMine ? ' (you)' : '') + '</div>'
+                  + '<div class="text-[13px] text-by-ink leading-[1.5]">' + _esc(resp.response_text) + '</div>'
                   + '</div>'
-                  + '<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;">'
-                  + '<span style="font-size:14px;font-weight:700;color:var(--by-ink);">' + resp.favorite_count + '</span>'
+                  + '<div class="flex-shrink-0 flex flex-col items-center gap-0.5">'
+                  + '<span class="text-[14px] font-bold text-by-ink">' + resp.favorite_count + '</span>'
                   + (!isMine
                       ? '<button onclick="_voteFor(\'' + _esc(resp.id) + '\',\'' + _esc(challengeId) + '\')" '
-                        + 'style="font-size:10px;padding:3px 8px;border:1px solid var(--by-bg-3);background:' + (voted ? 'var(--by-yes)' : 'var(--by-bg)') + ';cursor:pointer;color:var(--by-ink);">'
+                        + 'class="text-[10px] px-2 py-[3px] border border-by-bg-3 cursor-pointer text-by-ink ' + (voted ? 'bg-by-yes' : 'bg-by-bg') + '">'
                         + (voted ? '♥ Voted' : '♡ Vote') + '</button>'
                       : '')
                   + '</div>'
@@ -1109,20 +1103,19 @@
 {# ── Classmates panel (slide-in right) — student names + messaging, opened from a class card ── #}
 {# Structure matches classes.html's #class-panel: single by-panel container, overlay + sliding inner. #}
 <div id="classmates-modal" class="by-panel hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeClassmatesModal()"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[420px] flex flex-col"
-       style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeClassmatesModal()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[420px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd-thick);">
-      <h3 id="classmates-modal-title" class="font-display text-[18px]" style="color:var(--by-ink);"></h3>
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b-[1.5px] border-by-ink">
+      <h3 id="classmates-modal-title" class="font-display text-[18px] text-by-ink"></h3>
       <button onclick="closeClassmatesModal()"
-              style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3);background:none;border:none;cursor:pointer;">
+              class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3 bg-none border-none cursor-pointer">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div id="classmates-modal-body" class="flex-1 overflow-y-auto min-h-0 p-4 flex flex-col gap-1">
-      <span style="font-size:11.5px;color:var(--by-ink-4);">{{ _('Loading…') }}</span>
+      <span class="text-[11.5px] text-by-ink-4">{{ _('Loading…') }}</span>
     </div>
   </div>
 </div>
