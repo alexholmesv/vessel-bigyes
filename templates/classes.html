@@ -17,10 +17,26 @@
           mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
         },
         colors: {
-          'by-yes':      '#FFC629', 'by-yes-deep': '#E5A800', 'by-yes-soft': '#FFE7A0',
-          'by-ink':      '#141210', 'by-ink-2':    '#2A2723', 'by-ink-3':    '#5C544A', 'by-ink-4': '#8A8073',
-          'by-bg':       '#F4EEE2', 'by-bg-2':     '#ECE3D0', 'by-bg-3':     '#E2D6BB',
-          'by-tomato':   '#E5482A', 'by-tomato-deep': '#B83218',
+          'by-yes':      'var(--by-yes)', 'by-yes-deep': 'var(--by-yes-deep)', 'by-yes-soft': 'var(--by-yes-soft)',
+          'by-ink':      'var(--by-ink)', 'by-ink-2':    'var(--by-ink-2)', 'by-ink-3':    'var(--by-ink-3)', 'by-ink-4': 'var(--by-ink-4)',
+          'by-bg':       'var(--by-bg)', 'by-bg-2':     'var(--by-bg-2)', 'by-bg-3':     'var(--by-bg-3)',
+          'by-tomato':   'var(--by-tomato)', 'by-tomato-deep': 'var(--by-tomato-deep)',
+
+          /* phase(6.3c-1): business-logic colors the :root block(s) already define but the
+             config never exposed as utilities — same fix admin.html needed in 6.3b-1. Without
+             these, `color:var(--by-success-green)` -> `text-by-success-green` would generate a
+             class Tailwind never emits, silently dropping the color. */
+          'by-on-accent':      'var(--by-on-accent)',
+          'by-success-green':  'var(--by-success-green)',
+          'by-future-purple':  'var(--by-future-purple)',
+          'by-warning-bg':     'var(--by-warning-bg)',
+          'by-warning-text':   'var(--by-warning-text)',
+          'by-warning-accent': 'var(--by-warning-accent)',
+          'by-alert-bg':       'var(--by-alert-bg)',
+        },
+        boxShadow: {
+          'by-hard':     '4px 4px 0 0 var(--by-ink)',
+          'by-hard-yes': '4px 4px 0 0 var(--by-yes)',
         },
       },
     },
@@ -31,7 +47,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+<!-- CSS file chain (load order matters) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
+
 <style>
+  /* phase(6.3a) REVERT, 2026-07-21, same day — see admin.html for the full
+     note: the CSS <link> chain 404/503s everywhere, no route serves
+     instances/<vessel>/static/*. Restoring this local :root block,
+     complete this time (includes --by-warning-*, --by-alert-bg,
+     --by-on-accent — not just the original set). */
   :root {
     --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
     --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
@@ -47,6 +75,9 @@
     --by-bd-soft:1px solid var(--by-bg-3);
     --by-sh-1:4px 4px 0 0 var(--by-ink);
     --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-warning-bg:#FFFBEB; --by-warning-text:#92550A; --by-warning-accent:#C17A20;
+    --by-alert-bg:#FFF5F3;
+    --by-on-accent:#fff;
   }
   html, body { background: var(--by-bg); }
   body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing: antialiased; padding-bottom: 64px; }
@@ -143,8 +174,8 @@
     font-family:var(--by-f-mono); font-size:10.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase;
     background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
   .chip .dot { width:5px; height:5px; border-radius:999px; flex-shrink:0; }
-  .chip-active .dot { background:#2A8A4F; }
-  .chip-future .dot { background:#6B5CE7; }
+  .chip-active .dot { background:var(--by-success-green); }
+  .chip-future .dot { background:var(--by-future-purple); }
   .chip-past   .dot { background:var(--by-ink-4); }
 
   /* ── Filter pills ─── */
@@ -210,7 +241,7 @@
     font-family:var(--by-f-mono); font-size:10px; font-weight:500; letter-spacing:.06em; text-transform:uppercase;
     cursor:pointer; transition:background 80ms, color 80ms; white-space:nowrap;
   }
-  .btn-danger:hover { background:var(--by-tomato); color:#fff; }
+  .btn-danger:hover { background:var(--by-tomato); color:white; }
   .btn-enroll {
     display:inline-flex; align-items:center; gap:5px;
     padding:7px 14px; border-radius:999px; border:var(--by-bd-thick);
@@ -392,10 +423,9 @@
 {% if messages %}
 <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
   {% for cat, msg in messages %}
-  <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm"
-       style="background:var(--by-bg); {% if cat=='error' %}border-color:var(--by-tomato);color:var(--by-tomato);{% elif cat=='success' %}border-color:#2A8A4F;color:#2A8A4F;{% else %}border-color:var(--by-ink);color:var(--by-ink-2);{% endif %}">
+  <div class="flex items-center gap-3 border px-4 py-3 text-sm max-w-sm bg-by-bg {% if cat=='error' %}border-by-tomato text-by-tomato{% elif cat=='success' %}border-by-success-green text-by-success-green{% else %}border-by-ink text-by-ink-2{% endif %}">
     <span>{{ msg }}</span>
-    <button onclick="this.parentElement.remove()" class="ml-1 text-xs" style="color:var(--by-ink-3)">✕</button>
+    <button onclick="this.parentElement.remove()" class="ml-1 text-xs text-by-ink-3">✕</button>
   </div>
   {% endfor %}
 </div>
@@ -404,8 +434,8 @@
 
 {# ── Mobile top bar ── #}
 <header class="by-mob-bar lg:hidden">
-  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
-    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  <a href="/" class="by-display text-[20px] text-by-ink no-underline leading-none">
+    Big<span class="by-yes-block text-[18px] pt-0 px-[9px] pb-[3px]">Yes</span>
   </a>
   <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
     <span></span><span></span><span></span>
@@ -415,7 +445,7 @@
 <nav id="mob-drawer" class="by-mob-drawer">
   <div class="px-4 py-4 border-b hairline">
     <div class="by-eyebrow">Stage Manager</div>
-    <div class="by-display text-[18px]" style="color:var(--by-ink)">Studio · BCN</div>
+    <div class="by-display text-[18px] text-by-ink">Studio · BCN</div>
   </div>
   <div class="px-3 py-3">
     <a href="/"           class="nav-item" onclick="toggleMobDrawer()">Dashboard</a>
@@ -439,7 +469,7 @@
   <main class="flex-1 min-w-0 overflow-x-hidden">
 
     {# ── Sticky application header ── #}
-    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
 
         <!-- Right-pinned action group -->
@@ -448,8 +478,7 @@
           <!-- Sync classes from website -->
           <button id="btn-sync-classes" onclick="syncClasses()"
                   title="Sync classes from barcelonaimprovgroup.com"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2 border border-by-ink bg-by-bg text-by-ink font-body">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
             Yes-And the Schedule!
           </button>
@@ -457,8 +486,7 @@
           <!-- Add class -->
           <button onclick="openModal('modal-add-class')"
                   title="Add class"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2 border border-by-ink bg-by-bg text-by-ink font-body">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M8 3v4M16 3v4"/></svg>
             Add class
           </button>
@@ -466,8 +494,7 @@
           <!-- Add show -->
           <button onclick="openModal('modal-add-show')"
                   title="Add show"
-                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd); background:var(--by-bg); color:var(--by-ink); font-family:var(--by-f-body);">
+                  class="btn-ghost hidden lg:flex h-9 px-3 text-[13px] items-center gap-2 border border-by-ink bg-by-bg text-by-ink font-body">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v12h12V7"/><path d="M9 11h6"/></svg>
             Add show
           </button>
@@ -475,8 +502,7 @@
           <!-- Add performer -->
           <button onclick="openModal('modal-add-person')"
                   title="Add performer"
-                  class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2"
-                  style="border:var(--by-bd-thick); background:var(--by-yes); color:var(--by-ink); font-family:var(--by-f-sans); font-weight:800; letter-spacing:0.02em; text-transform:uppercase;">
+                  class="btn-spot flex h-9 px-3.5 text-[13px] items-center gap-2 border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-extrabold tracking-[0.02em] uppercase">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
             <span class="hidden lg:inline">Add performer</span>
           </button>
@@ -488,44 +514,41 @@
           {% include 'partials/_inbox_btn.html' %}
           <div class="relative flex-shrink-0" id="user-menu-wrap">
             <button id="user-menu-btn" onclick="toggleUserMenu()"
-                    class="flex items-center gap-2 cursor-pointer h-9 px-2"
-                    style="border:var(--by-bd); background:var(--by-bg);">
+                    class="flex items-center gap-2 cursor-pointer h-9 px-2 border border-by-ink bg-by-bg">
               <!-- Avatar -->
+              {# WHY the surviving inline `display`/size/border on both nodes: _updateHeaderAvatar()
+                 swaps these by assigning style.display = '' to reveal one and 'none' to hide the
+                 other. A Tailwind `hidden` class would outlive style.display = '' and leave the
+                 element permanently hidden, so this must stay inline (same fix as admin.html 6.3b-1). #}
               <img id="header-av-img" class="av object-cover flex-shrink-0"
                    src="{{ current_user_avatar or '' }}"
-                   style="width:28px;height:28px;border:2px solid #000;border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
+                   style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
                    alt="{{ current_user_initials }}">
               <span id="header-av-init" class="av flex items-center justify-center flex-shrink-0"
-                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                    style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:var(--by-on-accent);{{ 'display:none;' if current_user_avatar else '' }}">
                 {{ current_user_initials }}
               </span>
               <!-- Name + role -->
               <div class="hidden lg:block leading-tight text-left">
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:#141210;line-height:1.2;">{{ current_user_name }}</div>
-                <div style="font-family:var(--by-f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C544A;margin-top:1px;">Stage Manager</div>
+                <div class="font-sans font-bold text-[12px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+                <div class="font-mono text-[9.5px] tracking-[.08em] uppercase text-by-ink-3 mt-px">Stage Manager</div>
               </div>
               <!-- Live-status dot -->
-              <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full"
-                    style="width:8px;height:8px;background:#E5482A;box-shadow:0 0 0 2px #fff,0 0 0 3px #E5482A;"></span>
+              <span class="hidden lg:flex flex-shrink-0 items-center justify-center rounded-full w-2 h-2 bg-by-tomato shadow-[0_0_0_2px_white,0_0_0_3px_var(--by-tomato)]"></span>
             </button>
             <!-- Dropdown -->
-            <div id="user-menu-drop" class="hidden" style="
-              position:absolute; top:calc(100% + 6px); right:0; z-index:60;
-              min-width:160px; background:var(--by-bg); border:var(--by-bd-thick);
-              box-shadow:var(--by-sh-1);">
-              <div class="px-3 py-2.5 border-b" style="border-color:var(--by-bg-3);">
-                <div style="font-family:var(--by-f-sans);font-weight:700;font-size:12.5px;color:var(--by-ink);line-height:1.2">{{ current_user_name }}</div>
-                <div style="font-family:var(--by-f-mono);font-size:10.5px;color:var(--by-ink-3);margin-top:2px">Stage Manager</div>
+            <div id="user-menu-drop" class="hidden absolute top-[calc(100%_+_6px)] right-0 z-[60] min-w-[160px] bg-by-bg border-[1.5px] border-by-ink shadow-by-hard">
+              <div class="px-3 py-2.5 border-b border-by-bg-3">
+                <div class="font-sans font-bold text-[12.5px] text-by-ink leading-[1.2]">{{ current_user_name }}</div>
+                <div class="font-mono text-[10.5px] text-by-ink-3 mt-0.5">Stage Manager</div>
               </div>
               <button onclick="openMyConfig(); toggleUserMenu(true)"
-                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b"
-                style="border-color:var(--by-bg-3);font-size:13px;color:var(--by-ink);background:var(--by-bg);">
-                <svg class="w-4 h-4 flex-shrink-0" style="color:var(--by-ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 border-b border-by-bg-3 text-[13px] text-by-ink bg-by-bg">
+                <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Config
               </button>
               <a href="/logout"
-                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5"
-                style="font-size:13px;color:var(--by-tomato);background:var(--by-bg);display:flex;text-decoration:none;">
+                class="w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-[13px] text-by-tomato bg-by-bg no-underline">
                 <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 Log out
               </a>
@@ -540,7 +563,7 @@
       <div class="flex items-start gap-4 flex-wrap">
         <div>
           <div class="by-eyebrow mb-1">Stage Manager · Cohort Management</div>
-          <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+          <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
             Classes &amp; <span class="by-yes-block">Cohorts</span>
           </h1>
         </div>
@@ -548,21 +571,21 @@
 
       {# KPI strip #}
       <div class="mt-5 grid grid-cols-2 gap-2 md:grid-cols-4">
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-yes);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-yes">
           <div class="by-eyebrow">Active classes</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ active_classes|length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ active_classes|length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Total enrolled</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ total_enrolled }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ total_enrolled }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Upcoming</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">{{ future_classes|length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink">{{ future_classes|length }}</div>
         </div>
-        <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+        <div class="border hairline px-3.5 py-2.5 bg-by-bg">
           <div class="by-eyebrow">Past classes</div>
-          <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink-3);">{{ past_classes|length }}</div>
+          <div class="font-display text-[26px] leading-none mt-1 text-by-ink-3">{{ past_classes|length }}</div>
         </div>
       </div>
     </div>
@@ -577,11 +600,11 @@
           <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
             <div>
               <div class="by-eyebrow mb-0.5">Studio · BCN · What's On This Week</div>
-              <h2 class="font-display text-[18px] sm:text-[20px]" style="color:var(--by-ink);">
+              <h2 class="font-display text-[18px] sm:text-[20px] text-by-ink">
                 {% if view_mode == 'month' %}
-                  <span style="color:var(--by-yes-deep);">{{ month_label }}</span><span class="hidden sm:inline"> — Full House View</span>
+                  <span class="text-by-yes-deep">{{ month_label }}</span><span class="hidden sm:inline"> — Full House View</span>
                 {% else %}
-                  <span class="hidden sm:inline">Week of </span><span style="color:var(--by-yes-deep);">{{ week_label }}</span>
+                  <span class="hidden sm:inline">Week of </span><span class="text-by-yes-deep">{{ week_label }}</span>
                 {% endif %}
               </h2>
               <div class="by-eyebrow mt-1">The schedule doesn't lie. Your availability might.</div>
@@ -589,25 +612,25 @@
             {# Desktop nav — hidden on mobile #}
             <div class="hidden sm:flex items-center gap-2">
               {% if view_mode == 'month' %}
-              <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week" style="background:var(--by-bg);color:var(--by-ink);">
+              <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week bg-by-bg text-by-ink">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
               </a>
-              <a href="/classes?view=month" class="btn-week" style="background:var(--by-bg-2);color:var(--by-ink);">This Month</a>
-              <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week" style="background:var(--by-yes);color:var(--by-ink);">
+              <a href="/classes?view=month" class="btn-week bg-by-bg-2 text-by-ink">This Month</a>
+              <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week bg-by-yes text-by-ink">
                 Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
               </a>
-              <a href="/classes" class="btn-week" style="background:var(--by-ink);color:var(--by-yes);text-decoration:none;">
+              <a href="/classes" class="btn-week bg-by-ink text-by-yes no-underline">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Week View
               </a>
               {% else %}
-              <a href="/classes?week_start={{ prev_week }}" class="btn-week" style="background:var(--by-bg);color:var(--by-ink);">
+              <a href="/classes?week_start={{ prev_week }}" class="btn-week bg-by-bg text-by-ink">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
               </a>
-              <a href="/classes?week_start={{ week_start_monday }}" class="btn-week" style="background:var(--by-bg-2);color:var(--by-ink);">Today</a>
-              <a href="/classes?week_start={{ next_week }}" class="btn-week" style="background:var(--by-yes);color:var(--by-ink);">
+              <a href="/classes?week_start={{ week_start_monday }}" class="btn-week bg-by-bg-2 text-by-ink">Today</a>
+              <a href="/classes?week_start={{ next_week }}" class="btn-week bg-by-yes text-by-ink">
                 Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
               </a>
-              <a href="/classes?view=month" class="btn-week" style="background:var(--by-ink);color:var(--by-yes);text-decoration:none;">
+              <a href="/classes?view=month" class="btn-week bg-by-ink text-by-yes no-underline">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Full Month
               </a>
               {% endif %}
@@ -616,19 +639,19 @@
           {# Mobile nav — full-width button row, visible only on mobile #}
           <div class="flex sm:hidden gap-1.5">
             {% if view_mode == 'month' %}
-            <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg);color:var(--by-ink);">
+            <a href="/classes?view=month&month_start={{ prev_month_start }}" class="btn-week flex-1 justify-center bg-by-bg text-by-ink">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
             </a>
-            <a href="/classes?view=month" class="btn-week flex-1 justify-center" style="background:var(--by-bg-2);color:var(--by-ink);">This Month</a>
-            <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week flex-1 justify-center" style="background:var(--by-yes);color:var(--by-ink);">
+            <a href="/classes?view=month" class="btn-week flex-1 justify-center bg-by-bg-2 text-by-ink">This Month</a>
+            <a href="/classes?view=month&month_start={{ next_month_start }}" class="btn-week flex-1 justify-center bg-by-yes text-by-ink">
               Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
             </a>
             {% else %}
-            <a href="/classes?week_start={{ prev_week }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg);color:var(--by-ink);">
+            <a href="/classes?week_start={{ prev_week }}" class="btn-week flex-1 justify-center bg-by-bg text-by-ink">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Prev
             </a>
-            <a href="/classes?week_start={{ week_start_monday }}" class="btn-week flex-1 justify-center" style="background:var(--by-bg-2);color:var(--by-ink);">Today</a>
-            <a href="/classes?week_start={{ next_week }}" class="btn-week flex-1 justify-center" style="background:var(--by-yes);color:var(--by-ink);">
+            <a href="/classes?week_start={{ week_start_monday }}" class="btn-week flex-1 justify-center bg-by-bg-2 text-by-ink">Today</a>
+            <a href="/classes?week_start={{ next_week }}" class="btn-week flex-1 justify-center bg-by-yes text-by-ink">
               Next<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
             </a>
             {% endif %}
@@ -638,28 +661,26 @@
         {% if view_mode == 'month' %}
         <div class="by-card overflow-hidden">
           <div class="overflow-x-auto">
-            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:var(--by-bd-thick);">
+            <div class="grid min-w-[640px] grid-cols-[repeat(7,1fr)] border-b-[1.5px] border-by-ink">
               {% for dname in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] %}
-              <div class="px-2 py-2 text-center border-r hairline last:border-r-0" style="background:var(--by-bg-2);">
-                <span class="font-display text-[11px]" style="color:var(--by-ink);">{{ dname }}</span>
+              <div class="px-2 py-2 text-center border-r hairline last:border-r-0 bg-by-bg-2">
+                <span class="font-display text-[11px] text-by-ink">{{ dname }}</span>
               </div>
               {% endfor %}
             </div>
             {% for week in month_weeks %}
-            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--by-bg-3);">
+            <div class="grid min-w-[640px] grid-cols-[repeat(7,1fr)] border-b border-by-bg-3">
               {% for day in week %}
-              <div class="border-r hairline last:border-r-0 p-1.5 min-h-[80px]"
-                   style="{% if not day.in_month %}opacity:.35;{% endif %}{% if day.is_today %}background:var(--by-yes-soft);{% endif %}">
+              <div class="border-r hairline last:border-r-0 p-1.5 min-h-[80px] {% if not day.in_month %}opacity-[.35]{% endif %} {% if day.is_today %}bg-by-yes-soft{% endif %}">
                 <div class="mb-1">
-                  <span class="font-display text-[12px]"
-                    style="{% if day.is_today %}background:var(--by-ink);color:var(--by-yes);padding:1px 5px;{% else %}color:var(--by-ink-3);{% endif %}">
+                  <span class="font-display text-[12px] {% if day.is_today %}bg-by-ink text-by-yes py-px px-[5px]{% else %}text-by-ink-3{% endif %}">
                     {{ day.label }}
                   </span>
                 </div>
                 {% for session in day.sessions %}
                 <div class="cal-session mb-1">
-                  <div class="text-[10px] font-semibold leading-tight truncate" style="color:var(--by-ink);">{{ session.title }}</div>
-                  <div class="by-eyebrow mt-0.5" style="font-size:8.5px;">{{ session.time }}</div>
+                  <div class="text-[10px] font-semibold leading-tight truncate text-by-ink">{{ session.title }}</div>
+                  <div class="by-eyebrow mt-0.5 text-[8.5px]">{{ session.time }}</div>
                 </div>
                 {% endfor %}
               </div>
@@ -675,19 +696,19 @@
           {% for day in calendar_days %}
           <div class="cal-mobile-day">
             <div class="cal-mobile-day-hd {% if day.is_today %}today{% endif %}">
-              <div class="font-display text-[13px]" style="color:var(--by-ink);">{{ day.short }}</div>
-              <div class="by-eyebrow" style="font-size:9px;color:{% if day.is_today %}var(--by-ink-2){% else %}var(--by-ink-4){% endif %};">{{ day.label }}</div>
+              <div class="font-display text-[13px] text-by-ink">{{ day.short }}</div>
+              <div class="by-eyebrow text-[9px] {% if day.is_today %}text-by-ink-2{% else %}text-by-ink-4{% endif %}">{{ day.label }}</div>
             </div>
             <div class="cal-mobile-sessions">
               {% if day.sessions %}
                 {% for session in day.sessions %}
-                <div class="cal-session" style="margin-bottom:{% if not loop.last %}6px{% else %}0{% endif %};">
-                  <div class="text-[12px] font-semibold leading-tight" style="color:var(--by-ink);">{{ session.title }}</div>
-                  <div class="by-eyebrow mt-0.5" style="font-size:9px;">{{ session.time }} · {{ session.count }} cast</div>
+                <div class="cal-session {% if not loop.last %}mb-1.5{% else %}mb-0{% endif %}">
+                  <div class="text-[12px] font-semibold leading-tight text-by-ink">{{ session.title }}</div>
+                  <div class="by-eyebrow mt-0.5 text-[9px]">{{ session.time }} · {{ session.count }} cast</div>
                 </div>
                 {% endfor %}
               {% else %}
-                <span class="by-eyebrow" style="font-size:10px;color:var(--by-bg-3);">No sessions</span>
+                <span class="by-eyebrow text-[10px] text-by-bg-3">No sessions</span>
               {% endif %}
             </div>
           </div>
@@ -697,25 +718,24 @@
         {# Desktop grid (sm+) #}
         <div class="by-card overflow-hidden hidden sm:block">
           <div class="overflow-x-auto">
-            <div class="grid min-w-[640px]" style="grid-template-columns:repeat(7,1fr);border-bottom:var(--by-bd-thick);">
+            <div class="grid min-w-[640px] grid-cols-[repeat(7,1fr)] border-b-[1.5px] border-by-ink">
               {% for day in calendar_days %}
               <div class="cal-col {% if day.is_today %}today{% endif %} border-r hairline last:border-r-0">
-                <div class="cal-day-header px-3 py-2.5 border-b hairline"
-                     style="{% if day.is_today %}background:var(--by-yes);{% else %}background:var(--by-bg-2);{% endif %}">
-                  <div class="font-display text-[12px]" style="color:var(--by-ink);">{{ day.short }}</div>
-                  <div class="by-eyebrow" style="color:{% if day.is_today %}var(--by-ink-2){% else %}var(--by-ink-4){% endif %}">{{ day.label }}</div>
+                <div class="cal-day-header px-3 py-2.5 border-b hairline {% if day.is_today %}bg-by-yes{% else %}bg-by-bg-2{% endif %}">
+                  <div class="font-display text-[12px] text-by-ink">{{ day.short }}</div>
+                  <div class="by-eyebrow {% if day.is_today %}text-by-ink-2{% else %}text-by-ink-4{% endif %}">{{ day.label }}</div>
                 </div>
                 <div class="p-2 min-h-[100px]">
                   {% if day.sessions %}
                     {% for session in day.sessions %}
                     <div class="cal-session mb-1">
-                      <div class="text-[11.5px] font-semibold leading-tight" style="color:var(--by-ink);">{{ session.title }}</div>
-                      <div class="by-eyebrow mt-0.5" style="font-size:9.5px;">{{ session.time }} · {{ session.count }}</div>
+                      <div class="text-[11.5px] font-semibold leading-tight text-by-ink">{{ session.title }}</div>
+                      <div class="by-eyebrow mt-0.5 text-[9.5px]">{{ session.time }} · {{ session.count }}</div>
                     </div>
                     {% endfor %}
                   {% else %}
                   <div class="flex items-center justify-center h-full pt-4">
-                    <span class="by-eyebrow" style="font-size:10px;color:var(--by-bg-3);">—</span>
+                    <span class="by-eyebrow text-[10px] text-by-bg-3">—</span>
                   </div>
                   {% endif %}
                 </div>
@@ -728,11 +748,11 @@
 
         <div class="mt-3 flex items-center gap-4 flex-wrap">
           <div class="flex items-center gap-1.5">
-            <div style="width:12px;height:12px;background:var(--by-yes);border:1px solid var(--by-ink);flex-shrink:0;"></div>
+            <div class="w-[12px] h-[12px] bg-by-yes border border-by-ink flex-shrink-0"></div>
             <span class="by-eyebrow">Today</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <div style="width:3px;height:12px;background:var(--by-yes-deep);flex-shrink:0;"></div>
+            <div class="w-[3px] h-[12px] bg-by-yes-deep flex-shrink-0"></div>
             <span class="by-eyebrow">Class session</span>
           </div>
         </div>
@@ -747,11 +767,11 @@
       <section>
         <button class="collapse-toggle flex items-center gap-3 mb-4 w-full text-left"
                 onclick="toggleCollapse('term-section', this)">
-          <h2 class="font-display text-[18px]" style="color:var(--by-ink);">Season Acts &amp; Curtain Calls</h2>
+          <h2 class="font-display text-[18px] text-by-ink">Season Acts &amp; Curtain Calls</h2>
           <div class="by-eyebrow">Plot your arc, darling. Four terms. No intermission. Make it count.</div>
-          <svg class="collapse-chevron w-4 h-4 ml-auto open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--by-ink-3)"><path d="M6 9l6 6 6-6"/></svg>
+          <svg class="collapse-chevron w-4 h-4 ml-auto open text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
         </button>
-        <div id="term-section" class="collapse-content" style="max-height:999px;">
+        <div id="term-section" class="collapse-content max-h-[999px]">
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {% for term in terms %}
             {% set today_str = today.isoformat() %}
@@ -760,11 +780,10 @@
             <div class="term-card p-4">
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">
-                  <span class="term-status-dot"
-                    style="background:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}#6B5CE7{% endif %}"></span>
-                  <span class="font-display text-[15px]" style="color:var(--by-ink);">{{ term.name }}</span>
+                  <span class="term-status-dot {% if is_active %}bg-by-yes-deep{% elif is_past %}bg-by-ink-4{% else %}bg-by-future-purple{% endif %}"></span>
+                  <span class="font-display text-[15px] text-by-ink">{{ term.name }}</span>
                 </div>
-                <span class="by-eyebrow" style="color:{% if is_active %}var(--by-yes-deep){% elif is_past %}var(--by-ink-4){% else %}#6B5CE7{% endif %}">
+                <span class="by-eyebrow {% if is_active %}text-by-yes-deep{% elif is_past %}text-by-ink-4{% else %}text-by-future-purple{% endif %}">
                   {{ 'Active' if is_active else ('Past' if is_past else 'Upcoming') }}
                 </span>
               </div>
@@ -773,20 +792,18 @@
                   <label class="by-eyebrow block mb-1">Start</label>
                   <input type="date" id="term-start-{{ term.id }}"
                          value="{{ term.start_date }}"
-                         class="w-full border px-2 py-1.5 text-[12.5px] focus:outline-none"
-                         style="border-color:var(--by-ink);background:var(--by-bg);font-family:var(--by-f-mono);color:var(--by-ink-2);" />
+                         class="w-full border px-2 py-1.5 text-[12.5px] focus:outline-none border-by-ink bg-by-bg font-mono text-by-ink-2" />
                 </div>
                 <div>
                   <label class="by-eyebrow block mb-1">End</label>
                   <input type="date" id="term-end-{{ term.id }}"
                          value="{{ term.end_date }}"
-                         class="w-full border px-2 py-1.5 text-[12.5px] focus:outline-none"
-                         style="border-color:var(--by-ink);background:var(--by-bg);font-family:var(--by-f-mono);color:var(--by-ink-2);" />
+                         class="w-full border px-2 py-1.5 text-[12.5px] focus:outline-none border-by-ink bg-by-bg font-mono text-by-ink-2" />
                 </div>
               </div>
               <button onclick="saveTerm('{{ term.id }}')"
                       class="w-full btn-ghost text-[11.5px] justify-center py-2">Lock It In!</button>
-              <div id="term-status-{{ term.id }}" class="hidden mt-2 text-[11px] text-center font-mono" style="color:var(--by-ink-3)"></div>
+              <div id="term-status-{{ term.id }}" class="hidden mt-2 text-[11px] text-center font-mono text-by-ink-3"></div>
             </div>
             {% endfor %}
           </div>
@@ -802,35 +819,34 @@
       <section>
         <div class="flex items-center gap-3 mb-4 flex-wrap">
           <div class="flex-1">
-            <h2 class="font-display text-[18px]" style="color:var(--by-ink);">
-              The Troupe's <span class="by-yes-block" style="font-size:inherit;padding:0 10px 3px;">Workshops</span>
+            <h2 class="font-display text-[18px] text-by-ink">
+              The Troupe's <span class="by-yes-block text-[length:inherit] pt-0 px-[10px] pb-[3px]">Workshops</span>
             </h2>
             <div class="by-eyebrow mt-1">Every class begins with a blank stage. Nobody knows what happens next. That's the point.</div>
           </div>
           <button id="btn-sync-classes-section" onclick="syncClasses()"
                   title="Sync classes from barcelonaimprovgroup.com"
-                  class="btn-ghost flex items-center gap-1.5 h-8 px-2.5 text-[11.5px] flex-shrink-0"
-                  style="border:var(--by-bd); font-family:var(--by-f-mono); letter-spacing:.06em; text-transform:uppercase;">
+                  class="btn-ghost flex items-center gap-1.5 h-8 px-2.5 text-[11.5px] flex-shrink-0 border border-by-ink font-mono tracking-[.06em] uppercase">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
             Sync
           </button>
           <div class="flex items-center gap-2 flex-wrap">
             <button class="filter-pill active" data-filter="active" onclick="applyClassFilter('active')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:#2A8A4F;flex-shrink:0;"></span>
+              <span class="dot w-1.5 h-1.5 rounded-full bg-by-success-green flex-shrink-0"></span>
               On Stage
               <span class="pill-count">{{ active_classes|length }}</span>
             </button>
             <button class="filter-pill" data-filter="future" onclick="applyClassFilter('future')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:#6B5CE7;flex-shrink:0;"></span>
+              <span class="dot w-1.5 h-1.5 rounded-full bg-by-future-purple flex-shrink-0"></span>
               Warming Up
               <span class="pill-count">{{ future_classes|length }}</span>
             </button>
             <button class="filter-pill" data-filter="past" onclick="applyClassFilter('past')">
-              <span class="dot" style="width:6px;height:6px;border-radius:999px;background:var(--by-ink-4);flex-shrink:0;"></span>
+              <span class="dot w-1.5 h-1.5 rounded-full bg-by-ink-4 flex-shrink-0"></span>
               Curtain Down
               <span class="pill-count">{{ past_classes|length }}</span>
             </button>
-            <button class="filter-pill" data-filter="all" onclick="applyClassFilter('all')" style="margin-left:auto;">
+            <button class="filter-pill ml-auto" data-filter="all" onclick="applyClassFilter('all')">
               Full Ensemble
               <span class="pill-count">{{ (active_classes|length) + (future_classes|length) + (past_classes|length) }}</span>
             </button>
@@ -842,13 +858,12 @@
 
           {# ── Group header: On Stage ── #}
           <div class="class-group-hdr" data-group="active">
-            <div class="flex items-center justify-between px-4 py-2.5"
-                 style="background:var(--by-yes);border:var(--by-bd-thick);box-shadow:var(--by-sh-1);margin-bottom:2px;">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-by-yes border-[1.5px] border-by-ink shadow-by-hard mb-0.5">
               <div>
-                <div class="font-display text-[16px]" style="color:var(--by-ink);">On Stage</div>
+                <div class="font-display text-[16px] text-by-ink">On Stage</div>
                 <div class="by-eyebrow mt-0.5">Currently running · attendance required · no understudy available</div>
               </div>
-              <span class="font-display text-[24px]" style="color:var(--by-ink);">{{ active_classes|length }}</span>
+              <span class="font-display text-[24px] text-by-ink">{{ active_classes|length }}</span>
             </div>
           </div>
 
@@ -859,16 +874,16 @@
           {% set bar_pct = 100 if pct > 100 else pct %}
           <div class="class-card cursor-pointer" data-status="active" id="class-card-{{ cls.id }}"
                onclick="openClassPanel('{{ cls.id }}')">
-            <div class="flex items-stretch" style="transition:background 80ms;">
-              <div class="flex-shrink-0" style="width:3px;background:#2A8A4F;"></div>
-              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+            <div class="flex items-stretch transition-colors duration-[80ms]">
+              <div class="flex-shrink-0 w-[3px] bg-by-success-green"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)] transition-colors duration-[80ms]">
                 <div class="flex-1 min-w-0">
-                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5 text-by-ink">{{ cls.title }}</div>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="chip chip-active" style="font-size:9px;padding:.06rem .38rem;"><span class="dot"></span>On Stage</span>
-                    {% if cls.get('fee') %}<span class="by-eyebrow" style="background:var(--by-yes);color:var(--by-ink);padding:1px 5px;font-size:8.5px;">{{ cls.fee }}</span>{% endif %}
-                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
-                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                    <span class="chip chip-active text-[9px] py-[.06rem] px-[.38rem]"><span class="dot"></span>On Stage</span>
+                    {% if cls.get('fee') %}<span class="by-eyebrow bg-by-yes text-by-ink py-px px-[5px] text-[8.5px]">{{ cls.fee }}</span>{% endif %}
+                    {% if cls.schedule %}<span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow text-[9.5px] text-by-ink-4">·</span><span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.teacher_name }}</span>{% endif %}
                   </div>
                 </div>
                 <div class="flex items-center gap-2.5 flex-shrink-0">
@@ -882,10 +897,10 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink);">{{ cls.enrolled_count }}</div>
-                    <div class="by-eyebrow" style="font-size:8px;">cast</div>
+                    <div class="font-display text-[20px] leading-none enrolled-count text-by-ink">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow text-[8px]">cast</div>
                   </div>
-                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                  <svg class="w-3.5 h-3.5 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
               </div>
             </div>
@@ -894,13 +909,12 @@
 
           {# ── Group header: Warming Up ── #}
           <div class="class-group-hdr mt-4" data-group="future">
-            <div class="flex items-center justify-between px-4 py-2.5"
-                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid #6B5CE7;box-shadow:var(--by-sh-1);margin-bottom:2px;">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-by-bg-2 border-[1.5px] border-by-ink border-l-4 border-l-by-future-purple shadow-by-hard mb-0.5">
               <div>
-                <div class="font-display text-[16px]" style="color:var(--by-ink);">Warming Up</div>
+                <div class="font-display text-[16px] text-by-ink">Warming Up</div>
                 <div class="by-eyebrow mt-0.5">Upcoming · vocals not yet loosened · anticipation building</div>
               </div>
-              <span class="font-display text-[24px]" style="color:#6B5CE7;">{{ future_classes|length }}</span>
+              <span class="font-display text-[24px] text-by-future-purple">{{ future_classes|length }}</span>
             </div>
           </div>
 
@@ -912,15 +926,15 @@
           <div class="class-card cursor-pointer" data-status="future" id="class-card-{{ cls.id }}" style="display:none;"
                onclick="openClassPanel('{{ cls.id }}')">
             <div class="flex items-stretch">
-              <div class="flex-shrink-0" style="width:3px;background:#6B5CE7;"></div>
-              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+              <div class="flex-shrink-0 w-[3px] bg-by-future-purple"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)] transition-colors duration-[80ms]">
                 <div class="flex-1 min-w-0">
-                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink);">{{ cls.title }}</div>
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5 text-by-ink">{{ cls.title }}</div>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="chip chip-future" style="font-size:9px;padding:.06rem .38rem;border-color:#6B5CE7;color:#6B5CE7;"><span class="dot"></span>Warming Up</span>
-                    {% if cls.get('fee') %}<span class="by-eyebrow" style="background:var(--by-yes);color:var(--by-ink);padding:1px 5px;font-size:8.5px;">{{ cls.fee }}</span>{% endif %}
-                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
-                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                    <span class="chip chip-future text-[9px] py-[.06rem] px-[.38rem] border-by-future-purple text-by-future-purple"><span class="dot"></span>Warming Up</span>
+                    {% if cls.get('fee') %}<span class="by-eyebrow bg-by-yes text-by-ink py-px px-[5px] text-[8.5px]">{{ cls.fee }}</span>{% endif %}
+                    {% if cls.schedule %}<span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow text-[9.5px] text-by-ink-4">·</span><span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.teacher_name }}</span>{% endif %}
                   </div>
                 </div>
                 <div class="flex items-center gap-2.5 flex-shrink-0">
@@ -934,10 +948,10 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink);">{{ cls.enrolled_count }}</div>
-                    <div class="by-eyebrow" style="font-size:8px;">cast</div>
+                    <div class="font-display text-[20px] leading-none enrolled-count text-by-ink">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow text-[8px]">cast</div>
                   </div>
-                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-3);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                  <svg class="w-3.5 h-3.5 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
               </div>
             </div>
@@ -946,13 +960,12 @@
 
           {# ── Group header: Curtain Down ── #}
           <div class="class-group-hdr mt-4" data-group="past">
-            <div class="flex items-center justify-between px-4 py-2.5"
-                 style="background:var(--by-bg-2);border:var(--by-bd-thick);border-left:4px solid var(--by-ink-4);opacity:.85;margin-bottom:2px;">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-by-bg-2 border-[1.5px] border-by-ink border-l-4 border-l-by-ink-4 opacity-[.85] mb-0.5">
               <div>
-                <div class="font-display text-[16px]" style="color:var(--by-ink-2);">Curtain Down</div>
+                <div class="font-display text-[16px] text-by-ink-2">Curtain Down</div>
                 <div class="by-eyebrow mt-0.5">Completed · the applause has faded · the memories linger</div>
               </div>
-              <span class="font-display text-[24px]" style="color:var(--by-ink-4);">{{ past_classes|length }}</span>
+              <span class="font-display text-[24px] text-by-ink-4">{{ past_classes|length }}</span>
             </div>
           </div>
 
@@ -964,19 +977,19 @@
           <div class="class-card cursor-pointer" data-status="past" id="class-card-{{ cls.id }}" style="display:none;opacity:.65;"
                onclick="openClassPanel('{{ cls.id }}')">
             <div class="flex items-stretch">
-              <div class="flex-shrink-0" style="width:3px;background:var(--by-ink-4);"></div>
-              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)]" style="transition:background 80ms;">
+              <div class="flex-shrink-0 w-[3px] bg-by-ink-4"></div>
+              <div class="flex-1 min-w-0 px-4 py-3.5 flex items-center gap-4 hover:bg-[var(--by-bg-2)] transition-colors duration-[80ms]">
                 <div class="flex-1 min-w-0">
-                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5" style="color:var(--by-ink-2);">{{ cls.title }}</div>
+                  <div class="font-display text-[14px] lg:text-[15px] leading-tight mb-1.5 text-by-ink-2">{{ cls.title }}</div>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="chip chip-past" style="font-size:9px;padding:.06rem .38rem;border-color:var(--by-ink-4);color:var(--by-ink-4);"><span class="dot"></span>Curtain Down</span>
-                    {% if cls.schedule %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.schedule }}</span>{% endif %}
-                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-4);">·</span><span class="by-eyebrow" style="font-size:9.5px;color:var(--by-ink-3);">{{ cls.teacher_name }}</span>{% endif %}
+                    <span class="chip chip-past text-[9px] py-[.06rem] px-[.38rem] border-by-ink-4 text-by-ink-4"><span class="dot"></span>Curtain Down</span>
+                    {% if cls.schedule %}<span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.schedule }}</span>{% endif %}
+                    {% if cls.teacher_name and cls.teacher_name != '—' %}<span class="by-eyebrow text-[9.5px] text-by-ink-4">·</span><span class="by-eyebrow text-[9.5px] text-by-ink-3">{{ cls.teacher_name }}</span>{% endif %}
                   </div>
                 </div>
                 <div class="flex items-center gap-2.5 flex-shrink-0">
                   <div class="enrollment-meter">
-                    <div class="enrollment-meter-top" style="color:var(--by-ink-4);">
+                    <div class="enrollment-meter-top text-by-ink-4">
                       <span class="enrollment-ratio">{{ cls.enrolled_count }}{% if cap %}/{{ cap }}{% else %} enrolled{% endif %}</span>
                       <span class="enrollment-percent">{% if cap %}{{ pct }}%{% else %}No cap{% endif %}</span>
                     </div>
@@ -985,10 +998,10 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <div class="font-display text-[20px] leading-none enrolled-count" style="color:var(--by-ink-3);">{{ cls.enrolled_count }}</div>
-                    <div class="by-eyebrow" style="font-size:8px;color:var(--by-ink-4);">graduated</div>
+                    <div class="font-display text-[20px] leading-none enrolled-count text-by-ink-3">{{ cls.enrolled_count }}</div>
+                    <div class="by-eyebrow text-[8px] text-by-ink-4">graduated</div>
                   </div>
-                  <svg class="w-3.5 h-3.5" style="color:var(--by-ink-4);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                  <svg class="w-3.5 h-3.5 text-by-ink-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
               </div>
             </div>
@@ -998,8 +1011,8 @@
           {# Empty state #}
           {% if not active_classes and not future_classes and not past_classes %}
           <div class="by-card px-6 py-12 text-center">
-            <div class="font-display text-[18px] mb-2" style="color:var(--by-ink-3);">The stage is empty!</div>
-            <div class="text-[13px]" style="color:var(--by-ink-4);">Hit "Add class" and get this troupe rolling!</div>
+            <div class="font-display text-[18px] mb-2 text-by-ink-3">The stage is empty!</div>
+            <div class="text-[13px] text-by-ink-4">Hit "Add class" and get this troupe rolling!</div>
           </div>
           {% endif %}
 
@@ -1008,10 +1021,10 @@
 
     </div>{# /px-4 py-6 #}
 
-    <footer class="px-4 lg:px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline" style="color:var(--by-ink-3)">
-      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono" style="color:var(--by-ink-4)">v0.9.2 "Curtain Call"</span></div>
+    <footer class="px-4 lg:px-7 py-5 text-[11.5px] flex items-center justify-between border-t hairline text-by-ink-3">
+      <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono text-by-ink-4">v0.9.2 "Curtain Call"</span></div>
       <div class="flex items-center gap-4">
-        <a href="/privacy" class="hover:underline" style="color:var(--by-ink-2);">Privacy Center</a>
+        <a href="/privacy" class="hover:underline text-by-ink-2">Privacy Center</a>
       </div>
     </footer>
   </main>
@@ -1022,30 +1035,29 @@
 
 {# ── Class detail panel (slide-in right) ── #}
 <div id="class-panel" class="by-panel hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeClassPanel()"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[480px] flex flex-col"
-       style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeClassPanel()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[480px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
     {# Header #}
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd-thick);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b-[1.5px] border-by-ink">
       <div>
-        <h3 id="cp-title" class="font-display text-[18px]" style="color:var(--by-ink);"></h3>
+        <h3 id="cp-title" class="font-display text-[18px] text-by-ink"></h3>
         <div id="cp-meta" class="by-eyebrow mt-0.5"></div>
       </div>
-      <button onclick="closeClassPanel()" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3);background:none;border:none;cursor:pointer;">
+      <button onclick="closeClassPanel()" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3 bg-none border-none cursor-pointer">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     {# Tab bar #}
-    <div class="flex-shrink-0 flex" style="border-bottom:var(--by-bd-thick);">
+    <div class="flex-shrink-0 flex border-b-[1.5px] border-by-ink">
       <button id="cp-tab-btn-cast" onclick="switchCpTab('cast')"
-              style="flex:1;padding:10px 0;font-family:var(--by-f-sans);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;background:var(--by-bg);color:var(--by-ink);border-bottom:2.5px solid var(--by-yes);transition:color 120ms,border-color 120ms;">
+              class="flex-1 py-2.5 px-0 font-sans text-[11px] font-bold tracking-[.1em] uppercase border-none cursor-pointer bg-by-bg text-by-ink border-b-[2.5px] border-by-yes transition-colors duration-[120ms]">
         Cast
       </button>
       {% if can_view_finances %}
       <button id="cp-tab-btn-finances" onclick="openClassFinances(_cpClassId)"
-              style="flex:1;padding:10px 0;font-family:var(--by-f-sans);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;background:var(--by-bg);color:var(--by-ink-3);border-bottom:2.5px solid transparent;transition:color 120ms,border-color 120ms;">
+              class="flex-1 py-2.5 px-0 font-sans text-[11px] font-bold tracking-[.1em] uppercase border-none cursor-pointer bg-by-bg text-by-ink-3 border-b-[2.5px] border-transparent transition-colors duration-[120ms]">
         Finances
       </button>
       {% endif %}
@@ -1058,45 +1070,43 @@
       <div id="cp-tab-cast">
 
         {# Teacher section #}
-        <div class="px-5 pt-4 pb-4" style="border-bottom:var(--by-bd-soft);">
+        <div class="px-5 pt-4 pb-4 border-b border-by-bg-3">
           <div class="by-eyebrow mb-2">Teacher</div>
           <div id="cp-teacher-display" class="flex items-center gap-2 mb-3 min-h-[26px]"></div>
           <div class="flex gap-2">
             <div class="by-select-wrap flex-1">
               <select id="cp-teacher-select"
-                      class="w-full border px-3 py-2 text-[13px] focus:outline-none"
-                      style="border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);">
+                      class="w-full border px-3 py-2 text-[13px] focus:outline-none border-by-ink bg-by-bg text-by-ink">
               </select>
             </div>
             <button onclick="assignTeacher()"
-                    style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 14px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);white-space:nowrap;">
+                    class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-bold text-xs py-1.5 px-3.5 cursor-pointer shadow-[3px_3px_0_0_var(--by-ink)] whitespace-nowrap">
               Assign
             </button>
           </div>
         </div>
 
         {# Capacity section #}
-        <div class="px-5 pt-4 pb-4" style="border-bottom:var(--by-bd-soft);">
+        <div class="px-5 pt-4 pb-4 border-b border-by-bg-3">
           <div class="flex items-center justify-between gap-3 mb-2">
             <div class="by-eyebrow">Maximum Students</div>
-            <div id="cp-capacity-percent" class="by-eyebrow" style="color:var(--by-ink);">No cap</div>
+            <div id="cp-capacity-percent" class="by-eyebrow text-by-ink">No cap</div>
           </div>
           <div class="mb-3">
             <div class="enrollment-meter-track" aria-label="Enrollment progress">
-              <div id="cp-capacity-fill" class="enrollment-meter-fill" style="width:0%;"></div>
+              <div id="cp-capacity-fill" class="enrollment-meter-fill w-0"></div>
             </div>
-            <div id="cp-capacity-summary" class="mt-2 text-[12px]" style="color:var(--by-ink-3);">Set a class maximum to track enrollment.</div>
+            <div id="cp-capacity-summary" class="mt-2 text-[12px] text-by-ink-3">Set a class maximum to track enrollment.</div>
           </div>
           <div class="flex gap-2">
             <input id="cp-capacity-input" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum"
-                   class="flex-1 border px-3 py-2 text-[13px] focus:outline-none"
-                   style="border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);" />
+                   class="flex-1 border px-3 py-2 text-[13px] focus:outline-none border-by-ink bg-by-bg text-by-ink" />
             <button onclick="saveClassCapacity()"
-                    style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 14px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);white-space:nowrap;">
+                    class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-bold text-xs py-1.5 px-3.5 cursor-pointer shadow-[3px_3px_0_0_var(--by-ink)] whitespace-nowrap">
               Save
             </button>
           </div>
-          <div id="cp-capacity-status" class="hidden mt-2 text-[11px]" style="color:var(--by-tomato);"></div>
+          <div id="cp-capacity-status" class="hidden mt-2 text-[11px] text-by-tomato"></div>
         </div>
 
         {# Cast list #}
@@ -1106,20 +1116,18 @@
         </div>
 
         {# Add to cast #}
-        <div class="px-5 pt-3 pb-5" style="border-top:var(--by-bd-soft);">
+        <div class="px-5 pt-3 pb-5 border-t border-by-bg-3">
           <div class="by-eyebrow mb-2">Add Student</div>
-          <div style="position:relative;" class="mb-2">
-            <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--by-ink-4);pointer-events:none;"
-                 class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <div class="relative mb-2">
+            <svg class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-by-ink-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
             </svg>
             <input id="cp-enroll-search" type="search" placeholder="Search by name…" autocomplete="off"
-                   class="w-full border px-3 py-2 text-[13px] focus:outline-none"
-                   style="padding-left:34px;border-color:var(--by-ink);background:var(--by-bg);color:var(--by-ink);"
+                   class="w-full border px-3 py-2 text-[13px] focus:outline-none pl-[34px] border-by-ink bg-by-bg text-by-ink"
                    oninput="filterCpEnrollList(this.value)" />
           </div>
           <div id="cp-enroll-list"></div>
-          <div id="cp-enroll-empty" class="by-eyebrow py-4 text-center" style="display:none;color:var(--by-ink-4);">No members to add.</div>
+          <div id="cp-enroll-empty" class="by-eyebrow py-4 text-center text-by-ink-4" style="display:none;">No members to add.</div>
         </div>
 
       </div>{# /cp-tab-cast #}
@@ -1129,32 +1137,32 @@
       <div id="cp-tab-finances" class="px-5 py-4 space-y-5 hidden">
 
         {# Revenue calculator #}
-        <div style="background:var(--by-bg-2);border:1.5px solid var(--by-ink);padding:16px;box-shadow:4px 4px 0 0 var(--by-ink);">
+        <div class="bg-by-bg-2 border-[1.5px] border-by-ink p-4 shadow-by-hard">
           <div class="by-eyebrow mb-3">Revenue Calculator</div>
           <div class="grid grid-cols-2 gap-3 mb-3">
             <div>
-              <div class="by-eyebrow mb-1" style="font-size:10px;">Enrolled students</div>
-              <div id="cfin-enrolled" class="font-display text-[24px]" style="color:var(--by-ink);">0</div>
+              <div class="by-eyebrow mb-1 text-[10px]">Enrolled students</div>
+              <div id="cfin-enrolled" class="font-display text-[24px] text-by-ink">0</div>
             </div>
             <div>
-              <div class="by-eyebrow mb-1" style="font-size:10px;">Tuition rate (€ / student)</div>
+              <div class="by-eyebrow mb-1 text-[10px]">Tuition rate (€ / student)</div>
               <input id="cfin-rate" type="number" min="0" step="0.01" placeholder="0.00"
                      oninput="calcClassNet()"
-                     style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:15px;font-weight:700;padding:4px 8px;outline:none;" />
+                     class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[15px] font-bold py-1 px-2 outline-none" />
             </div>
           </div>
-          <div class="border-t pt-3 grid grid-cols-3 gap-2 text-center" style="border-color:var(--by-bg-3);">
+          <div class="border-t pt-3 grid grid-cols-3 gap-2 text-center border-by-bg-3">
             <div>
-              <div class="by-eyebrow" style="font-size:9px;">Revenue</div>
-              <div id="cfin-gross" class="font-display text-[17px]" style="color:var(--by-ink);">€0.00</div>
+              <div class="by-eyebrow text-[9px]">Revenue</div>
+              <div id="cfin-gross" class="font-display text-[17px] text-by-ink">€0.00</div>
             </div>
             <div>
-              <div class="by-eyebrow" style="font-size:9px;">Expenses</div>
-              <div id="cfin-fees-total" class="font-display text-[17px]" style="color:var(--by-tomato);">€0.00</div>
+              <div class="by-eyebrow text-[9px]">Expenses</div>
+              <div id="cfin-fees-total" class="font-display text-[17px] text-by-tomato">€0.00</div>
             </div>
             <div>
-              <div class="by-eyebrow" style="font-size:9px;">Net</div>
-              <div id="cfin-net" class="font-display text-[17px]" style="color:#2A8A4F;">€0.00</div>
+              <div class="by-eyebrow text-[9px]">Net</div>
+              <div id="cfin-net" class="font-display text-[17px] text-by-success-green">€0.00</div>
             </div>
           </div>
         </div>
@@ -1163,19 +1171,19 @@
         <div>
           <div class="by-eyebrow mb-2">Expense Line Items</div>
           <ul id="cfin-fee-list" class="space-y-1.5 mb-3"></ul>
-          <div style="border:1px solid var(--by-bg-3);background:var(--by-bg-2);padding:12px;" class="space-y-2">
-            <div class="by-eyebrow mb-1" style="font-size:9px;">Add expense</div>
+          <div class="space-y-2 border border-by-bg-3 bg-by-bg-2 p-3">
+            <div class="by-eyebrow mb-1 text-[9px]">Add expense</div>
             <input id="cfin-fee-title" type="text" placeholder="Description (e.g. Room rental)"
-                   style="width:100%;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-body);font-size:13px;padding:6px 10px;outline:none;" />
+                   class="w-full border-[1.5px] border-by-ink bg-by-bg text-by-ink font-body text-[13px] py-1.5 px-2.5 outline-none" />
             <div class="flex gap-2">
               <input id="cfin-fee-amount" type="number" min="0" step="0.01" placeholder="Amount €"
-                     style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);color:var(--by-ink);font-family:var(--by-f-mono);font-size:13px;padding:6px 10px;outline:none;" />
+                     class="flex-1 border-[1.5px] border-by-ink bg-by-bg text-by-ink font-mono text-[13px] py-1.5 px-2.5 outline-none" />
               <button onclick="addCfinFee()"
-                      style="border:1.5px solid var(--by-ink);background:var(--by-yes);color:var(--by-ink);font-family:var(--by-f-sans);font-weight:700;font-size:12px;padding:6px 16px;cursor:pointer;box-shadow:3px 3px 0 0 var(--by-ink);">
+                      class="border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-bold text-xs py-1.5 px-4 cursor-pointer shadow-[3px_3px_0_0_var(--by-ink)]">
                 + Add
               </button>
             </div>
-            <div id="cfin-fee-status" class="hidden text-[11px]" style="color:var(--by-tomato);"></div>
+            <div id="cfin-fee-status" class="hidden text-[11px] text-by-tomato"></div>
           </div>
         </div>
 
@@ -1185,7 +1193,7 @@
     </div>
 
     {# Footer #}
-    <div class="flex-shrink-0 px-5 py-4 flex items-center gap-2 flex-wrap" style="border-top:var(--by-bd);">
+    <div class="flex-shrink-0 px-5 py-4 flex items-center gap-2 flex-wrap border-t border-by-ink">
       <button class="btn-danger ml-auto" onclick="deleteClassFromPanel()">
         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         Cut from the Show
@@ -1197,23 +1205,21 @@
 
 {# ── Delete confirmation panel ── #}
 <div id="delete-confirm-panel" class="by-panel hidden fixed inset-0 z-[60]" role="dialog">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.6)" onclick="cancelDeletePanel()"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[360px] flex flex-col"
-       style="background:var(--by-bg); border-left:2px solid var(--by-tomato);">
-    <div class="px-5 py-5 border-b" style="border-color:var(--by-tomato);background:#FFF5F3;">
-      <div class="text-[11.5px] font-mono uppercase tracking-widest mb-2" style="color:var(--by-tomato);">⚠ Hold your horses, Hamlet!</div>
-      <h3 id="dcp-title" class="font-display text-[20px]" style="color:var(--by-ink);">Cut from the Show?</h3>
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.6)]" onclick="cancelDeletePanel()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[360px] flex flex-col bg-by-bg border-l-2 border-by-tomato">
+    <div class="px-5 py-5 border-b border-by-tomato bg-by-alert-bg">
+      <div class="text-[11.5px] font-mono uppercase tracking-widest mb-2 text-by-tomato">⚠ Hold your horses, Hamlet!</div>
+      <h3 id="dcp-title" class="font-display text-[20px] text-by-ink">Cut from the Show?</h3>
     </div>
     <div class="flex-1 px-5 py-5">
-      <p id="dcp-body" class="text-[13.5px] leading-relaxed" style="color:var(--by-ink-2);"></p>
-      <div class="mt-4 border px-4 py-3 text-[12px]" style="border-color:var(--by-bg-3);background:var(--by-bg-2);color:var(--by-ink-3);">
+      <p id="dcp-body" class="text-[13.5px] leading-relaxed text-by-ink-2"></p>
+      <div class="mt-4 border px-4 py-3 text-[12px] border-by-bg-3 bg-by-bg-2 text-by-ink-3">
         This deletes ALL enrollment records, attendance history, and challenge reactions. There are no second acts after this curtain call.
       </div>
     </div>
-    <div class="flex-shrink-0 px-5 py-4 flex gap-3" style="border-top:var(--by-bd);">
+    <div class="flex-shrink-0 px-5 py-4 flex gap-3 border-t border-by-ink">
       <button onclick="cancelDeletePanel()" class="btn-ghost flex-1 justify-center">No wait, keep them!</button>
-      <button onclick="confirmDeleteClass()" class="flex-1 border px-4 py-2.5 text-[13px] font-semibold"
-              style="border-color:var(--by-tomato);color:#fff;background:var(--by-tomato);">
+      <button onclick="confirmDeleteClass()" class="flex-1 border px-4 py-2.5 text-[13px] font-semibold border-by-tomato text-by-on-accent bg-by-tomato">
         Yes, strike the set
       </button>
     </div>
@@ -1297,14 +1303,14 @@
     const rosterEl = document.getElementById('cp-roster');
     if (!rosterEl) return;
     if (!(d.students || []).length) {
-      rosterEl.innerHTML = '<p class="by-eyebrow py-3 text-center" style="color:var(--by-ink-4);">No one cast yet.</p>';
+      rosterEl.innerHTML = '<p class="by-eyebrow py-3 text-center text-by-ink-4">No one cast yet.</p>';
     } else {
       rosterEl.innerHTML = (d.students || []).map(s => {
         const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-        return `<div class="flex items-center gap-2.5 py-2.5 border-b" style="border-color:var(--by-bg-3);" id="cp-row-${classId}-${s.id}">
-          <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:#fff;flex-shrink:0;">${inits}</span>
+        return `<div class="flex items-center gap-2.5 py-2.5 border-b border-by-bg-3" id="cp-row-${classId}-${s.id}">
+          <span class="av text-[10px] w-[26px] h-[26px] text-by-on-accent flex-shrink-0" style="background:linear-gradient(135deg,#FBBF24,#A78BFA);">${inits}</span>
           <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
+            <div class="text-[13px] font-semibold truncate text-by-ink">${_esc(s.name)}</div>
             <div class="by-eyebrow">${s.roleType} · ${s.pts} pts</div>
           </div>
           <button class="btn-danger" onclick="unenrollFromPanel('${s.id}','${classId}','${_esc(s.name)}',this)">
@@ -1389,12 +1395,12 @@
     if (teacherInDB) {
       const inits = teacherInDB.name.split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
       displayEl.innerHTML = `
-        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#22D3EE,#FBBF24);color:#fff;flex-shrink:0;">${inits}</span>
-        <span class="text-[13px] font-semibold" style="color:var(--by-ink);">${_esc(teacherInDB.name)}</span>`;
+        <span class="av text-[10px] w-[26px] h-[26px] text-by-on-accent flex-shrink-0" style="background:linear-gradient(135deg,#22D3EE,#FBBF24);">${inits}</span>
+        <span class="text-[13px] font-semibold text-by-ink">${_esc(teacherInDB.name)}</span>`;
     } else if (d.teacherName && d.teacherName !== '—') {
-      displayEl.innerHTML = `<span class="text-[12px] font-semibold" style="color:var(--by-tomato);">&#9888; ${_esc(d.teacherName)} — not found in member database</span>`;
+      displayEl.innerHTML = `<span class="text-[12px] font-semibold text-by-tomato">&#9888; ${_esc(d.teacherName)} — not found in member database</span>`;
     } else {
-      displayEl.innerHTML = `<span class="by-eyebrow" style="color:var(--by-ink-4);">No teacher assigned.</span>`;
+      displayEl.innerHTML = `<span class="by-eyebrow text-by-ink-4">No teacher assigned.</span>`;
     }
 
     if (ALL_TEACHERS.length) {
@@ -1463,7 +1469,7 @@
         _updateClassCardEnrollment(classId);
         if (status) {
           status.textContent = 'Saved.';
-          status.style.color = '#2A8A4F';
+          status.style.color = 'var(--by-success-green)';
           status.classList.remove('hidden');
           setTimeout(() => status.classList.add('hidden'), 2200);
         }
@@ -1515,9 +1521,9 @@
     listEl.innerHTML = students.map(s => {
       const inits = s.name.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
       return `<div class="cp-enroll-row" id="cper-${s.id}">
-        <span class="av text-[10px]" style="width:26px;height:26px;background:linear-gradient(135deg,#FBBF24,#A78BFA);color:#fff;flex-shrink:0;">${inits}</span>
+        <span class="av text-[10px] w-[26px] h-[26px] text-by-on-accent flex-shrink-0" style="background:linear-gradient(135deg,#FBBF24,#A78BFA);">${inits}</span>
         <div class="flex-1 min-w-0">
-          <div class="text-[13px] font-semibold truncate" style="color:var(--by-ink);">${_esc(s.name)}</div>
+          <div class="text-[13px] font-semibold truncate text-by-ink">${_esc(s.name)}</div>
           <div class="by-eyebrow">${s.role_type || 'Patron'}</div>
         </div>
         <button class="enroll-row-btn" onclick="enrollStudent('${s.id}','${_esc(s.name)}','${_esc(classId)}',this)">
@@ -1577,7 +1583,7 @@
       statusEl.classList.remove('hidden');
       if (data.ok) {
         statusEl.textContent = '✓ Saved';
-        statusEl.style.color = '#2A8A4F';
+        statusEl.style.color = 'var(--by-success-green)';
         flashToast(`${termId} boundaries saved`);
         setTimeout(() => statusEl.classList.add('hidden'), 3000);
       } else {
@@ -1649,25 +1655,25 @@
     const expenses = _cfinFees.reduce((s, f) => s + parseFloat(f.fee_amount || 0), 0);
     const net      = revenue - expenses;
     document.getElementById('cfin-gross').textContent      = `€${revenue.toFixed(2)}`;
-    document.getElementById('cfin-gross').style.color      = revenue > 0 ? '#2A8A4F' : 'var(--by-ink)';
+    document.getElementById('cfin-gross').style.color      = revenue > 0 ? 'var(--by-success-green)' : 'var(--by-ink)';
     document.getElementById('cfin-fees-total').textContent = `€${expenses.toFixed(2)}`;
     document.getElementById('cfin-net').textContent        = `€${net.toFixed(2)}`;
-    document.getElementById('cfin-net').style.color        = net >= 0 ? '#2A8A4F' : 'var(--by-tomato)';
+    document.getElementById('cfin-net').style.color        = net >= 0 ? 'var(--by-success-green)' : 'var(--by-tomato)';
   }
 
   function renderCfinFees() {
     const list = document.getElementById('cfin-fee-list');
     if (!_cfinFees.length) {
-      list.innerHTML = '<li class="by-eyebrow py-2 text-center" style="color:var(--by-ink-4);">No expenses added yet.</li>';
+      list.innerHTML = '<li class="by-eyebrow py-2 text-center text-by-ink-4">No expenses added yet.</li>';
       calcClassNet();
       return;
     }
     list.innerHTML = _cfinFees.map(f => `
-      <li class="flex items-center gap-2 px-3 py-2 border" style="border-color:var(--by-bg-3);background:var(--by-bg);">
-        <span class="flex-1 text-[13px]" style="color:var(--by-ink);">${_esc(f.title)}</span>
-        <span class="font-mono text-[12px]" style="color:var(--by-tomato);">−€${parseFloat(f.fee_amount).toFixed(2)}</span>
+      <li class="flex items-center gap-2 px-3 py-2 border border-by-bg-3 bg-by-bg">
+        <span class="flex-1 text-[13px] text-by-ink">${_esc(f.title)}</span>
+        <span class="font-mono text-[12px] text-by-tomato">−€${parseFloat(f.fee_amount).toFixed(2)}</span>
         <button onclick="deleteCfinFee('${_esc(f.id)}')"
-                style="color:var(--by-ink-4);background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;">
+                class="text-by-ink-4 bg-transparent border-0 cursor-pointer p-0.5 flex-shrink-0">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </li>`).join('');
@@ -1743,6 +1749,17 @@
     };
     {% endfor %}
   })();
+
+  // Auto-open a class panel when arriving via ?open=<class_id> — used by the
+  // dashboard's weekly-schedule widget, which links here instead of duplicating
+  // this panel's markup/data on the dashboard page.
+  document.addEventListener('DOMContentLoaded', function () {
+    var openId = new URLSearchParams(window.location.search).get('open');
+    if (openId && _CP_DATA[openId]) {
+      openClassPanel(openId);
+      history.replaceState(null, '', window.location.pathname);
+    }
+  });
 
   function openClassPanel(classId) {
     _cpClassId  = classId;
@@ -1881,15 +1898,15 @@
 
 {# ── Add Person ── #}
 <div id="modal-add-person" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-person')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-add-person')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Person</h3>
-        <div class="text-[11.5px] mt-0.5" style="color:var(--by-ink-3)">Patron · Company Player · Mocatriz · Stage Manager</div>
+        <h3 class="text-base font-semibold text-by-ink">Add New Person</h3>
+        <div class="text-[11.5px] mt-0.5 text-by-ink-3">Patron · Company Player · Mocatriz · Stage Manager</div>
       </div>
-      <button onclick="closeModal('modal-add-person')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-add-person')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -1897,18 +1914,18 @@
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Full Name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Full Name</label>
           <input type="text" id="new-person-name" placeholder="Ana García"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Email</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Email</label>
           <input type="email" id="new-person-email" placeholder="ana@bigyes.local"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <div>
-        <label class="mb-3 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Role Type</label>
+        <label class="mb-3 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Role Type</label>
         <div class="grid grid-cols-2 gap-3" id="rt-card-group">
           <div class="rt-card rt-patron selected" data-rt="Patron" onclick="selectRoleType('Patron')">
             <div class="rt-check"></div>
@@ -1936,31 +1953,29 @@
 
       <!-- Access Level (student/teacher subrole — hidden for Stage Manager) -->
       <div id="subrole-section">
-        <label class="mb-2 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Access Level</label>
+        <label class="mb-2 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Access Level</label>
         <div class="flex gap-2">
           <button type="button" id="sys-role-btn-student" onclick="selectSystemRole('student')"
-            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-yes); color:var(--by-ink)">
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border font-sans border-by-ink bg-by-yes text-by-ink">
             Student
           </button>
           <button type="button" id="sys-role-btn-teacher" onclick="selectSystemRole('teacher')"
-            class="flex-1 py-2.5 text-[12.5px] font-semibold border"
-            style="font-family:var(--by-f-sans); border-color:var(--by-ink); background:var(--by-bg); color:var(--by-ink-2)">
+            class="flex-1 py-2.5 text-[12.5px] font-semibold border font-sans border-by-ink bg-by-bg text-by-ink-2">
             Teacher
           </button>
         </div>
         <input type="hidden" id="new-person-role" value="student" />
-        <div class="mt-1.5 text-[11px] leading-relaxed" style="color:var(--by-ink-4)">
-          <strong style="color:var(--by-ink-3)">Student</strong> sees the Student dashboard.
-          <strong style="color:var(--by-ink-3)">Teacher</strong> accesses the Ensemble Room.
+        <div class="mt-1.5 text-[11px] leading-relaxed text-by-ink-4">
+          <strong class="text-by-ink-3">Student</strong> sees the Student dashboard.
+          <strong class="text-by-ink-3">Teacher</strong> accesses the Ensemble Room.
         </div>
       </div>
 
       <div id="add-person-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-person')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-person')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createPerson()" class="flex-1 btn-spot py-2.5 text-sm">Add Person</button>
     </div>
   </div>
@@ -1968,42 +1983,42 @@
 
 {# ── Add Class ── #}
 <div id="modal-add-class" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-class')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-add-class')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
-      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Add New Class</h3>
-      <button onclick="closeModal('modal-add-class')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <h3 class="text-base font-semibold text-by-ink">Add New Class</h3>
+      <button onclick="closeModal('modal-add-class')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Class Name</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Class Name</label>
         <input type="text" id="new-class-name" placeholder="e.g. Level 2 Improv"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Day</label>
           <div class="by-select-wrap">
-            <select id="new-class-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <select id="new-class-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
               {% for d in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
             </select>
           </div>
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Time</label>
           <input type="time" id="new-class-time" value="18:00"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Select Term</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Select Term</label>
         <div class="by-select-wrap">
           <select id="new-class-term" onchange="handleTermChange(this)"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
             <option value="">— No specific term —</option>
             {% for term in terms %}
             <option value="{{ term.id }}" data-start="{{ term.start_date }}" data-end="{{ term.end_date }}">
@@ -2013,11 +2028,11 @@
           </select>
         </div>
       </div>
-      <div id="past-term-warning" style="display:none; background:var(--by-yes-soft); border:var(--by-bd-thick); padding:12px 14px;">
+      <div id="past-term-warning" class="bg-by-yes-soft border-[1.5px] border-by-ink py-3 px-3.5" style="display:none;">
         <div class="flex items-start gap-2">
-          <span style="font-size:18px; flex-shrink:0;">🕰️</span>
+          <span class="text-[18px] flex-shrink-0">🕰️</span>
           <div class="flex-1 min-w-0">
-            <p class="text-[13px] font-semibold" style="color:var(--by-ink); line-height:1.4;">Time travel hasn't been invented yet. This term has already ended, are you sure?</p>
+            <p class="text-[13px] font-semibold text-by-ink leading-[1.4]">Time travel hasn't been invented yet. This term has already ended, are you sure?</p>
             <div class="flex gap-2 mt-2.5">
               <button type="button" onclick="confirmPastTerm()" class="btn-spot text-[11px] px-3 py-1.5">Confirm — log it anyway</button>
               <button type="button" onclick="resetTermSelect()" class="btn-ghost text-[11px] px-3 py-1.5">Pick another term</button>
@@ -2026,9 +2041,9 @@
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Assign Teacher</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Assign Teacher</label>
         <div class="by-select-wrap">
-          <select id="new-class-teacher" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+          <select id="new-class-teacher" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
             {% if teachers %}
               {% for t in teachers.values() %}
               <option value="{{ t.id }}">{{ t.name }}</option>
@@ -2040,39 +2055,38 @@
         </div>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Initial Enrollment</label>
-        <div style="position:relative;">
-          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--by-ink-4);pointer-events:none;" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Initial Enrollment</label>
+        <div class="relative">
+          <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-by-ink-4 pointer-events-none w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="text" id="roster-search" placeholder="Search students by name…" autocomplete="off"
             oninput="filterRosterSearch(this.value)"
-            class="w-full border px-3 py-2.5 text-sm focus:outline-none"
-            style="padding-left:34px; border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-3 py-2.5 text-sm focus:outline-none pl-[34px] border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
-        <div id="roster-search-list" style="max-height:160px; overflow-y:auto; border:1px solid var(--by-ink); border-top:none; background:var(--by-bg);"></div>
-        <div id="roster-selected-summary" class="mt-2 text-[11px]" style="color:var(--by-ink-3); font-family:var(--by-f-mono);display:none;">
+        <div id="roster-search-list" class="max-h-[160px] overflow-y-auto border border-by-ink border-t-0 bg-by-bg"></div>
+        <div id="roster-selected-summary" class="mt-2 text-[11px] text-by-ink-3 font-mono" style="display:none;">
           <span id="roster-selected-count">0</span> patron(s) selected for initial enrollment
         </div>
-        <p class="mt-3 text-[12px] px-3 py-2.5" style="background:var(--by-bg-2); border:var(--by-bd); color:var(--by-ink-2); line-height:1.5;">
+        <p class="mt-3 text-[12px] px-3 py-2.5 bg-by-bg-2 border border-by-ink text-by-ink-2 leading-[1.5]">
           <strong>Tip:</strong> Don't stress about adding everyone right now! You can always add or adjust users in this class at any time via the Classes &amp; Cohorts page later.
         </p>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Maximum Students <span style="color:var(--by-ink-4); font-weight:400;">(optional)</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Maximum Students <span class="text-by-ink-4 font-normal">(optional)</span></label>
         <input type="number" id="new-class-capacity" min="0" step="1" inputmode="numeric" placeholder="e.g. 16"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
-        <p class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Leave blank for no maximum.</p>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
+        <p class="mt-1 text-[11px] text-by-ink-4">Leave blank for no maximum.</p>
       </div>
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Tuition Fee <span style="color:var(--by-ink-4); font-weight:400;">(optional)</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Tuition Fee <span class="text-by-ink-4 font-normal">(optional)</span></label>
         <input type="text" id="new-class-fee" placeholder="e.g. €120 / term · Free"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
-        <p class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Free-form. Used in tuition pipeline reports.</p>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
+        <p class="mt-1 text-[11px] text-by-ink-4">Free-form. Used in tuition pipeline reports.</p>
       </div>
       <div id="add-class-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-class')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-class')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createClass()" class="flex-1 btn-spot py-2.5 text-sm">Add Class</button>
     </div>
   </div>
@@ -2080,73 +2094,73 @@
 
 {# ── Add Show ── #}
 <div id="modal-add-show" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-add-show')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-add-show')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
       <div>
-        <h3 class="text-base font-semibold" style="color:var(--by-ink)">Schedule a Show</h3>
-        <div class="text-[11px] mt-0.5" style="color:var(--by-ink-3)">Link a show type or create a one-off</div>
+        <h3 class="text-base font-semibold text-by-ink">Schedule a Show</h3>
+        <div class="text-[11px] mt-0.5 text-by-ink-3">Link a show type or create a one-off</div>
       </div>
-      <button onclick="closeModal('modal-add-show')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+      <button onclick="closeModal('modal-add-show')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Show Type</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Show Type</label>
         <div class="by-select-wrap">
-          <select id="show-type-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" onchange="onShowTypeChange()">
+          <select id="show-type-select" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" onchange="onShowTypeChange()">
             <option value="">— New one-off (enter title below) —</option>
           </select>
         </div>
-        <p id="show-type-hint" class="mt-1 text-[11px]" style="color:var(--by-ink-4)">Select an existing type to reuse its description, or leave blank to create a one-off.</p>
+        <p id="show-type-hint" class="mt-1 text-[11px] text-by-ink-4">Select an existing type to reuse its description, or leave blank to create a one-off.</p>
       </div>
       <div id="show-title-wrap">
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Title <span style="color:var(--by-tomato)">*</span></label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Title <span class="text-by-tomato">*</span></label>
         <input type="text" id="show-title" placeholder="e.g. Friday Night Harold"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Day <span style="color:var(--by-tomato)">*</span></label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Day <span class="text-by-tomato">*</span></label>
           <div class="by-select-wrap">
-            <select id="show-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">
+            <select id="show-day" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
               {% for d in ['Friday','Saturday','Sunday'] %}<option>{{ d }}</option>{% endfor %}
             </select>
           </div>
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Time <span style="color:var(--by-tomato)">*</span></label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Time <span class="text-by-tomato">*</span></label>
           <input type="time" id="show-time" value="20:00"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Date</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Date</label>
           <input type="date" id="show-date"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Ticket cost</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Ticket cost</label>
           <input type="text" id="show-cost" placeholder="e.g. €12 / Free"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <div>
         <div class="mb-2 flex items-center justify-between">
-          <label class="text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Cast</label>
-          <span id="cast-count" class="text-[11px] font-mono" style="color:var(--by-ink-4)">0 selected</span>
+          <label class="text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Cast</label>
+          <span id="cast-count" class="text-[11px] font-mono text-by-ink-4">0 selected</span>
         </div>
-        <div id="cast-list" class="border divide-y max-h-44 overflow-y-auto" style="border-color:var(--by-ink);">
-          <div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>
+        <div id="cast-list" class="border divide-y max-h-44 overflow-y-auto border-by-ink">
+          <div class="px-4 py-3 text-[12px] text-by-ink-4">No CAST_ELIGIBLE performers found.</div>
         </div>
       </div>
       <div id="add-show-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-add-show')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink); color:var(--by-ink-2); background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-add-show')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="createShow()" class="flex-1 btn-spot py-2.5 text-sm">Schedule Show</button>
     </div>
   </div>
@@ -2154,12 +2168,12 @@
 
 {# ── My Config ── #}
 <div id="modal-my-config" class="by-panel hidden fixed inset-0 z-50">
-  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-my-config')"></div>
-  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col" style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-my-config')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[400px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
 
-    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd);">
-      <h3 class="text-base font-semibold" style="color:var(--by-ink)">Personal info</h3>
-      <button onclick="closeModal('modal-my-config')" style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3)">
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <h3 class="text-base font-semibold text-by-ink">Personal info</h3>
+      <button onclick="closeModal('modal-my-config')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -2167,25 +2181,24 @@
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
       <!-- Avatar section -->
       <div>
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Avatar</div>
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Avatar</div>
         <div class="flex items-center gap-4 mb-4">
-          <div class="relative flex-shrink-0" style="width:64px;height:64px;">
-            <img id="cfg-av-img" class="av object-cover"
+          <div class="relative flex-shrink-0 w-[64px] h-[64px]">
+            <img id="cfg-av-img" class="av object-cover w-[64px] h-[64px] border-[1.5px] border-by-ink"
                  src="{{ current_user_avatar or '' }}"
-                 style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
+                 style="{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
-            <span id="cfg-av-init" class="av flex items-center justify-center"
-                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:#fff;
-                         background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
+            <span id="cfg-av-init" class="av flex items-center justify-center w-[64px] h-[64px] text-[22px] font-bold text-by-on-accent"
+                  style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
                          {{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
             </span>
           </div>
           <div>
-            <div id="cfg-av-label" class="text-[11px] font-semibold" style="color:var(--by-ink)">
+            <div id="cfg-av-label" class="text-[11px] font-semibold text-by-ink">
               {% if current_user_avatar_raw.startswith('char:') and current_user_avatar_raw[5:].isdigit() %}{{ char_avatars[current_user_avatar_raw[5:]|int].name }}{% elif current_user_avatar_raw.startswith('data:') %}Custom photo{% else %}Gradient initials{% endif %}
             </div>
-            <div class="text-[10.5px] mt-0.5" style="color:var(--by-ink-3)">Pick a character, upload a photo,<br>or choose a gradient colour.</div>
+            <div class="text-[10.5px] mt-0.5 text-by-ink-3">Pick a character, upload a photo,<br>or choose a gradient colour.</div>
           </div>
         </div>
         <!-- Character grid -->
@@ -2194,77 +2207,70 @@
           <button type="button" class="cfg-char-btn flex flex-col items-center gap-1 p-1.5 border"
                   style="border-color:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-ink){% else %}var(--by-bg-3){% endif %};background:{% if current_user_avatar_raw == 'char:' ~ loop.index0 %}var(--by-yes-soft){% else %}var(--by-bg){% endif %};"
                   onclick="cfgPickCharacter({{ loop.index0 }})">
-            <img src="{{ ch.url }}" alt="{{ ch.name }}" style="width:52px;height:52px;border-radius:50%;display:block;">
-            <span style="font-family:var(--by-f-mono);font-size:8.5px;color:var(--by-ink-3);letter-spacing:.04em;line-height:1.2;text-align:center;">{{ ch.name }}</span>
+            <img src="{{ ch.url }}" alt="{{ ch.name }}" class="w-[52px] h-[52px] rounded-full block">
+            <span class="font-mono text-[8.5px] text-by-ink-3 tracking-[.04em] leading-[1.2] text-center">{{ ch.name }}</span>
           </button>
           {% endfor %}
         </div>
         <!-- Upload photo -->
-        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold"
-               style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg);">
+        <label class="flex items-center gap-2 cursor-pointer mb-4 px-3 py-2 border text-[12.5px] font-semibold border-by-ink text-by-ink bg-by-bg">
           <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Upload photo
           <input type="file" accept="image/*" class="hidden" onchange="cfgHandleUpload(this)">
         </label>
         <!-- Gradient colour swatches -->
-        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold" style="color:var(--by-ink-3)">Gradient colour</div>
+        <div class="text-[10px] uppercase tracking-widest mb-2 font-bold text-by-ink-3">Gradient colour</div>
         <div class="flex gap-2 flex-wrap" id="cfg-tint-swatches"></div>
       </div>
       <!-- Name fields -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">First name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">First name</label>
           <input type="text" id="cfg-first" placeholder="Sofia"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Last name</label>
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Last name</label>
           <input type="text" id="cfg-last" placeholder="Reyes"
-            class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-            style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+            class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
       <!-- Bio -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Bio</label>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Bio</label>
         <textarea id="cfg-bio" rows="4" placeholder="A few words about yourself…"
-          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed"
-          style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)"></textarea>
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-none leading-relaxed border-by-ink text-by-ink-2 bg-by-bg"></textarea>
       </div>
       <div id="cfg-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
       <!-- Change password -->
-      <div style="border-top:var(--by-bd-soft);padding-top:1.25rem">
-        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3" style="color:var(--by-ink-3)">Change password</div>
+      <div class="border-t border-by-bg-3 pt-5">
+        <div class="text-[10.5px] font-bold uppercase tracking-widest mb-3 text-by-ink-3">Change password</div>
         <div class="space-y-3">
           <div>
-            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Current password</label>
+            <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Current password</label>
             <input type="password" id="cfg-pw-current" placeholder="••••••••"
-              class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-              style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+              class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">New password</label>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">New password</label>
               <input type="password" id="cfg-pw-new" placeholder="••••••••"
-                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
             </div>
             <div>
-              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest" style="color:var(--by-ink-3)">Confirm</label>
+              <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Confirm</label>
               <input type="password" id="cfg-pw-confirm" placeholder="••••••••"
-                class="w-full border px-4 py-2.5 text-sm focus:outline-none"
-                style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)" />
+                class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
             </div>
           </div>
-          <button onclick="changePassword()" class="w-full border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg-2)">Update password</button>
+          <button onclick="changePassword()" class="w-full border py-2.5 text-sm font-semibold border-by-ink text-by-ink bg-by-bg-2">Update password</button>
           <div id="cfg-pw-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
         </div>
       </div>
     </div>
 
-    <div class="flex gap-3 flex-shrink-0 px-5 py-4" style="border-top:var(--by-bd);">
-      <button onclick="closeModal('modal-my-config')" class="flex-1 border py-2.5 text-sm font-semibold" style="border-color:var(--by-ink);color:var(--by-ink-2);background:var(--by-bg)">Cancel</button>
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-my-config')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
       <button onclick="saveMyConfig()" class="flex-1 btn-spot py-2.5 text-sm">Save</button>
     </div>
   </div>
@@ -2277,6 +2283,17 @@
   const CAST_PERFORMERS = {{ cast_performers_json | safe }};
   const NAV_TINTS       = {{ nav_tints_json | safe }};
   const CHAR_AVATARS    = {{ char_avatars_json | safe }};
+
+  function resolveAvatarUrl(avatar) {
+    if (!avatar) return null;
+    if (avatar.startsWith('char:')) {
+      const idx = parseInt(avatar.split(':')[1], 10);
+      return (CHAR_AVATARS[idx] && CHAR_AVATARS[idx].url) || null;
+    }
+    if (avatar.startsWith('data:')) return avatar;
+    return null;
+  }
+
   let _cfgTintIndex   = {{ current_user_tint_idx }};
   let _cfgInitialName = {{ current_user_name | tojson }};
   let _cfgInitialBio  = {{ current_user_bio  | tojson }};
@@ -2458,7 +2475,8 @@
         const newInitials = data.initials;
         const tint        = NAV_TINTS[_cfgTintIndex];
         const gradient    = `linear-gradient(135deg,${tint[0]},${tint[1]})`;
-        _updateHeaderAvatar(data.avatar_url || null, newInitials, gradient);
+        const newAvatarRaw = avatarPayload === 'gradient' ? '' : (avatarPayload || '');
+        _updateHeaderAvatar(resolveAvatarUrl(newAvatarRaw), newInitials, gradient);
         _cfgInitialName = newName;
         _cfgInitialBio  = data.bio !== undefined ? data.bio : bio;
         showFeedback('cfg-status', 'Saved!', 'success');
@@ -2510,13 +2528,13 @@
     const castList = document.getElementById('cast-list');
     if (CAST_PERFORMERS.length) {
       castList.innerHTML = CAST_PERFORMERS.map(p => `
-        <label class="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" style="background:var(--by-bg);" onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background='var(--by-bg)'">
+        <label class="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none bg-by-bg hover:bg-by-bg-2">
           <input type="checkbox" value="${_esc(p.id)}" class="cast-pick w-3.5 h-3.5" onchange="updateCastCount()" />
-          <span class="text-[13px] font-medium" style="color:var(--by-ink)">${_esc(p.name)}</span>
-          <span class="ml-auto text-[11px] font-mono" style="color:var(--by-ink-3)">${_esc(p.role_type || '')}</span>
+          <span class="text-[13px] font-medium text-by-ink">${_esc(p.name)}</span>
+          <span class="ml-auto text-[11px] font-mono text-by-ink-3">${_esc(p.role_type || '')}</span>
         </label>`).join('');
     } else {
-      castList.innerHTML = '<div class="px-4 py-3 text-[12px]" style="color:var(--by-ink-4)">No CAST_ELIGIBLE performers found.</div>';
+      castList.innerHTML = '<div class="px-4 py-3 text-[12px] text-by-ink-4">No CAST_ELIGIBLE performers found.</div>';
     }
     document.getElementById('cast-count').textContent = '0 selected';
     document.getElementById('show-title').value = '';
@@ -2591,18 +2609,17 @@
   function _renderRosterList(students) {
     const listEl = document.getElementById('roster-search-list');
     if (!students.length) {
-      listEl.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--by-ink-4);">No students found.</div>';
+      listEl.innerHTML = '<div class="px-3.5 py-2.5 text-[12px] text-by-ink-4">No students found.</div>';
       return;
     }
     listEl.innerHTML = students.map(s => {
       const checked = _selectedStudentIds.has(s.id) ? 'checked' : '';
       const label   = s.role_type === 'Mocatriz' ? `${s.name} ✦` : s.name;
-      return `<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--by-bg-3);"
-                     onmouseover="this.style.background='var(--by-bg-2)'" onmouseout="this.style.background=''">
+      return `<label class="flex items-center gap-2.5 px-3 py-2 cursor-pointer border-b border-by-bg-3 hover:bg-by-bg-2">
         <input type="checkbox" value="${s.id}" ${checked}
                onchange="toggleRosterStudent('${s.id}', this.checked)" />
-        <span style="font-size:13px;font-weight:600;color:var(--by-ink);">${label}</span>
-        <span style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);text-transform:uppercase;margin-left:auto;">${s.role_type || 'Patron'}</span>
+        <span class="text-[13px] font-semibold text-by-ink">${label}</span>
+        <span class="font-mono text-[10px] text-by-ink-4 uppercase ml-auto">${s.role_type || 'Patron'}</span>
       </label>`;
     }).join('');
   }
@@ -2746,7 +2763,7 @@
     ok.textContent = label;
     const shadow = danger ? '4px 4px 0 0 var(--by-tomato-deep)' : '4px 4px 0 0 var(--by-ink)';
     ok.style.background = danger ? 'var(--by-tomato)' : 'var(--by-ink)';
-    ok.style.color      = danger ? '#fff'             : 'var(--by-yes)';
+    ok.style.color      = danger ? 'var(--by-on-accent)' : 'var(--by-yes)';
     ok.style.boxShadow  = shadow;
     ok.onmouseover = () => { ok.style.boxShadow = 'none'; ok.style.transform = 'translate(2px,2px)'; };
     ok.onmouseout  = () => { ok.style.boxShadow = shadow; ok.style.transform = 'translate(0,0)'; };
@@ -2768,21 +2785,19 @@
 {% include 'partials/_inbox_modal.html' %}
 
 {# ── Confirm modal ── #}
-<div id="by-confirm-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4" style="background:rgba(20,18,16,.6)">
-  <div class="w-full max-w-sm border" style="background:var(--by-bg);border-color:var(--by-ink);box-shadow:6px 6px 0 0 var(--by-ink);">
+<div id="by-confirm-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4 bg-[rgba(20,18,16,.6)]">
+  <div class="w-full max-w-sm border bg-by-bg border-by-ink shadow-[6px_6px_0_0_var(--by-ink)]">
     <div class="p-5">
-      <div id="by-confirm-title" class="font-display text-[18px] mb-2" style="color:var(--by-ink);"></div>
-      <p id="by-confirm-body" class="text-[13px] leading-relaxed" style="color:var(--by-ink-2);"></p>
+      <div id="by-confirm-title" class="font-display text-[18px] mb-2 text-by-ink"></div>
+      <p id="by-confirm-body" class="text-[13px] leading-relaxed text-by-ink-2"></p>
     </div>
-    <div style="display:flex;gap:12px;padding:16px 20px 20px;">
+    <div class="flex gap-3 px-5 pb-5 pt-4">
       <button onclick="byConfirmClose()"
-              style="flex:1;border:1.5px solid var(--by-ink);background:var(--by-bg);
-                     font-family:var(--by-f-body);font-size:13px;font-weight:600;color:var(--by-ink);padding:10px 0;cursor:pointer;">
+              class="flex-1 border-[1.5px] border-by-ink bg-by-bg font-body text-[13px] font-semibold text-by-ink py-2.5 cursor-pointer">
         Cancel
       </button>
       <button id="by-confirm-ok" onclick="byConfirmDo()"
-              style="flex:1;font-family:var(--by-f-display);font-size:13px;
-                     border:1.5px solid var(--by-ink);padding:10px 0;cursor:pointer;text-transform:uppercase;letter-spacing:.02em;">
+              class="flex-1 font-display text-[13px] border-[1.5px] border-by-ink py-2.5 cursor-pointer uppercase tracking-[.02em]">
         Confirm
       </button>
     </div>

@@ -17,19 +17,19 @@
           mono:    ['"DM Mono"', 'ui-monospace', 'monospace'],
         },
         colors: {
-          'by-yes':         '#FFC629',
+          'by-yes':         'var(--by-yes)',
           'by-yes-deep':    '#E5A800',
           'by-yes-soft':    '#FFE7A0',
-          'by-ink':         '#141210',
+          'by-ink':         'var(--by-ink)',
           'by-ink-2':       '#2A2723',
           'by-ink-3':       '#5C544A',
           'by-ink-4':       '#8A8073',
           'by-bg':          '#F4EEE2',
           'by-bg-2':        '#ECE3D0',
           'by-bg-3':        '#E2D6BB',
-          'by-tomato':      '#E5482A',
+          'by-tomato':      'var(--by-tomato)',
           'by-tomato-deep': '#B83218',
-          'by-night':       '#141210',
+          'by-night':       'var(--by-ink)',
           'by-night-on':    '#C9BFA8',
         },
         boxShadow: {
@@ -119,6 +119,16 @@
 
   .class-card { padding:16px; border:1px solid var(--by-ink); background:var(--by-bg); transition:background-color 120ms, box-shadow 120ms; }
   .class-card:hover { background:var(--by-bg-2); box-shadow:var(--by-sh-1); }
+
+  /* ── Slide-in panel (right panels) — matches classes.html / backstage_volunteer_shifts.html ─── */
+  .by-panel { overflow:hidden; }
+  .by-panel-inner {
+    transform:translateX(100%);
+    transition:transform 280ms cubic-bezier(.2,.8,.2,1);
+    box-shadow:-4px 0 0 0 var(--by-ink);
+    max-width:100vw;
+  }
+  .by-panel.open .by-panel-inner { transform:translateX(0); }
 
   .live-card { border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); transition:box-shadow 120ms, border-color 120ms; }
   .live-card.armed { border-color:var(--by-yes); box-shadow:var(--by-sh-yes); }
@@ -386,7 +396,10 @@
         </header>
         <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
           {% for c in classes %}
-          <div class="class-card{% if loop.last and classes | length % 2 == 1 %} md:col-span-2{% endif %}">
+          <div class="class-card cursor-pointer{% if loop.last and classes | length % 2 == 1 %} md:col-span-2{% endif %}"
+               data-class-id="{{ c.id }}" data-class-title="{{ c.title }}"
+               onclick="openClassmatesModal(this.dataset.classId, this.dataset.classTitle)"
+               title="{{ _('View classmates & message options') }}">
             <div class="flex items-start justify-between gap-2">
               <div class="font-display text-[15.5px] leading-tight" style="color:var(--by-ink)">{{ c.title }}</div>
               {% if c.end_date and c.end_date < '2026-05-21' %}
@@ -415,7 +428,8 @@
                 </div>
               </div>
               {% if c.teacher_email %}
-              <button onclick="composeMsgTo({{ c.teacher_email | tojson }}, {{ c.teacher_name | tojson }})"
+              <button data-teacher-email="{{ c.teacher_email }}" data-teacher-name="{{ c.teacher_name }}"
+                      onclick="event.stopPropagation(); composeMsgTo(this.dataset.teacherEmail, this.dataset.teacherName)"
                       title="Message {{ c.teacher_name | e }}"
                       class="flex-shrink-0 flex items-center gap-1.5 px-3 h-8 text-[11.5px] font-semibold border"
                       style="border-color:var(--by-ink);color:var(--by-ink);background:var(--by-bg);cursor:pointer;
@@ -431,9 +445,9 @@
             </div>
             <!-- Classmates row — populated by JS on page load -->
             <div class="mt-2.5 pt-2.5 border-t hairline">
-              <div class="text-[10px] uppercase tracking-widest mb-1.5 font-bold" style="color:var(--by-ink-3)">Classmates</div>
+              <div class="text-[10px] uppercase tracking-widest mb-1.5 font-bold" style="color:var(--by-ink-3)">{{ _('Classmates') }}</div>
               <div id="classmates-{{ c.id }}" class="flex flex-col gap-0">
-                <span class="text-[11.5px]" style="color:var(--by-ink-4)">Loading…</span>
+                <span class="text-[11.5px]" style="color:var(--by-ink-4)">{{ _('Loading…') }}</span>
               </div>
             </div>
           </div>
@@ -689,62 +703,111 @@
     }
   });
 
+  // ── Classmates: shared fetch + render (single source of truth) ─────────────
+  // Used by both the always-visible inline list on each class card (capped)
+  // and the classmates modal opened from a class title click (uncapped).
+  // Do not duplicate this row-rendering logic elsewhere — extend it here.
+
+  // Babel-translated strings for JS-rendered markup (AI_LAWS Law 11 — every
+  // visible string goes through {{ _('...') }}, including ones built in JS).
+  var I18N_CM_LOADING       = {{ _('Loading…') | tojson }};
+  var I18N_CM_NO_CLASSMATES = {{ _('No classmates yet.') | tojson }};
+  var I18N_CM_NO_OTHERS     = {{ _('No other students yet.') | tojson }};
+  var I18N_CM_LOAD_ERROR    = {{ _('Could not load classmates.') | tojson }};
+  var I18N_CM_MESSAGE       = {{ _('Message') | tojson }};
+  var I18N_CM_DEFAULT_TITLE = {{ _('Classmates') | tojson }};
+
+  function _renderClassmateRow(s) {
+    var tint = (s.tint && s.tint[0]) ? s.tint : ['#FBBF24','#F472B6'];
+    var grad = 'linear-gradient(135deg,' + tint[0] + ',' + tint[1] + ')';
+    return '<div class="flex items-center justify-between gap-2 py-1">'
+      + '<div class="flex items-center gap-2 min-w-0">'
+      + '<span class="av flex-shrink-0" style="width:24px;height:24px;font-size:9.5px;font-weight:700;'
+      +   'border-radius:50%;display:inline-flex;align-items:center;justify-content:center;'
+      +   'background:' + grad + ';color:#fff;">' + _esc(s.initials) + '</span>'
+      + '<span class="truncate" style="font-size:12.5px;color:var(--by-ink-2);">' + _esc(s.name) + '</span>'
+      + '</div>'
+      + (s.email
+        ? '<button data-email="' + _esc(s.email) + '" data-name="' + _esc(s.name) + '" '
+        +   'onclick="event.stopPropagation();composeMsgTo(this.dataset.email, this.dataset.name)" '
+        +   'title="' + I18N_CM_MESSAGE + ' ' + _esc(s.name) + '" '
+        +   'style="flex-shrink:0;width:26px;height:26px;display:flex;align-items:center;justify-content:center;'
+        +     'border:1px solid var(--by-bg-3);border-radius:4px;background:var(--by-bg);cursor:pointer;'
+        +     'color:var(--by-ink-3);transition:color 120ms,border-color 120ms;" '
+        +   'onmouseenter="this.style.color=\'var(--by-ink)\';this.style.borderColor=\'var(--by-ink)\'" '
+        +   'onmouseleave="this.style.color=\'var(--by-ink-3)\';this.style.borderColor=\'var(--by-bg-3)\'">'
+        +   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'
+        +     '<rect x="2" y="4" width="20" height="16" rx="2"/>'
+        +     '<path d="M2 7l10 7 10-7"/>'
+        +   '</svg>'
+        + '</button>'
+        : '')
+      + '</div>';
+  }
+
+  // Fetches a class's roster once and renders it into `container`. `cap`
+  // limits how many rows are shown (inline card use); pass null for the full
+  // list (modal use). Always excludes the current user.
+  function _renderClassmatesInto(classId, container, cap) {
+    container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_LOADING + '</span>';
+    fetch('/api/class/' + classId + '/students')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.ok || !d.students || !d.students.length) {
+          container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_NO_CLASSMATES + '</span>';
+          return;
+        }
+        var me = {{ current_user_email | tojson }};
+        var mates = d.students.filter(function(s) { return s.email !== me; });
+        if (cap) mates = mates.slice(0, cap);
+        if (!mates.length) {
+          container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_NO_OTHERS + '</span>';
+          return;
+        }
+        container.innerHTML = mates.map(_renderClassmateRow).join('');
+      })
+      .catch(function() {
+        container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">' + I18N_CM_LOAD_ERROR + '</span>';
+      });
+  }
+
   // ── Classmates loader ──────────────────────────────────────────────────────
-  // For each class card, fetch enrolled classmates and render them with a
-  // mail icon that opens the compose drawer pre-addressed to that student.
+  // For each class card, render up to 6 classmates inline (see the modal
+  // below for the full roster).
   (function loadClassmates() {
     var cards = document.querySelectorAll('[id^="classmates-"]');
     cards.forEach(function(container) {
       var classId = container.id.replace('classmates-', '');
-      fetch('/api/class/' + classId + '/students')
-        .then(function(r) { return r.json(); })
-        .then(function(d) {
-          if (!d.ok || !d.students || !d.students.length) {
-            container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">No classmates yet.</span>';
-            return;
-          }
-          // Exclude current user by email; show max 6 to avoid overflow
-          var me = {{ current_user_email | tojson }};
-          var mates = d.students.filter(function(s) { return s.email !== me; }).slice(0, 6);
-          if (!mates.length) {
-            container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">No other students yet.</span>';
-            return;
-          }
-          container.innerHTML = mates.map(function(s) {
-            var tint = (s.tint && s.tint[0]) ? s.tint : ['#FBBF24','#F472B6'];
-            var grad = 'linear-gradient(135deg,' + tint[0] + ',' + tint[1] + ')';
-            return '<div class="flex items-center justify-between gap-2 py-1">'
-              + '<div class="flex items-center gap-2 min-w-0">'
-              + '<span class="av flex-shrink-0" style="width:22px;height:22px;font-size:9px;font-weight:700;'
-              +   'border-radius:50%;display:inline-flex;align-items:center;justify-content:center;'
-              +   'background:' + grad + ';color:#fff;">' + _esc(s.initials) + '</span>'
-              + '<span class="truncate" style="font-size:12.5px;color:var(--by-ink-2);">' + _esc(s.name) + '</span>'
-              + '</div>'
-              + (s.email
-                ? '<button onclick="composeMsgTo(' + JSON.stringify(s.email) + ',' + JSON.stringify(s.name) + ')" '
-                +   'title="Message ' + _esc(s.name) + '" '
-                +   'style="flex-shrink:0;width:26px;height:26px;display:flex;align-items:center;justify-content:center;'
-                +     'border:1px solid var(--by-bg-3);border-radius:4px;background:var(--by-bg);cursor:pointer;'
-                +     'color:var(--by-ink-3);transition:color 120ms,border-color 120ms;" '
-                +   'onmouseenter="this.style.color=\'var(--by-ink)\';this.style.borderColor=\'var(--by-ink)\'" '
-                +   'onmouseleave="this.style.color=\'var(--by-ink-3)\';this.style.borderColor=\'var(--by-bg-3)\'">'
-                +   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'
-                +     '<rect x="2" y="4" width="20" height="16" rx="2"/>'
-                +     '<path d="M2 7l10 7 10-7"/>'
-                +   '</svg>'
-                + '</button>'
-                : '')
-              + '</div>';
-          }).join('');
-        })
-        .catch(function() {
-          container.innerHTML = '<span style="font-size:11.5px;color:var(--by-ink-4);">Could not load classmates.</span>';
-        });
+      _renderClassmatesInto(classId, container, 6);
     });
   })();
 
   function _esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Classmates panel ──────────────────────────────────────────────────────
+  // Triggered by clicking anywhere on a class card. Reuses _renderClassmatesInto
+  // (same fetch + row rendering as the inline list above), uncapped, so
+  // classes with more than 6 students have a "see everyone" view. Open/close
+  // mechanics match classes.html's openClassPanel/closeClassPanel (slide-in
+  // right, same .by-panel/.by-panel-inner convention).
+  function openClassmatesModal(classId, title) {
+    document.getElementById('classmates-modal-title').textContent = title || I18N_CM_DEFAULT_TITLE;
+    const panel = document.getElementById('classmates-modal');
+    panel.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('open')));
+    document.body.style.overflow = 'hidden';
+    _renderClassmatesInto(classId, document.getElementById('classmates-modal-body'), null);
+  }
+
+  function closeClassmatesModal() {
+    const panel = document.getElementById('classmates-modal');
+    panel.classList.remove('open');
+    const inner = panel.querySelector('.by-panel-inner');
+    const done = () => { panel.classList.add('hidden'); inner.removeEventListener('transitionend', done); };
+    inner.addEventListener('transitionend', done);
+    document.body.style.overflow = '';
   }
 
   // ── Live Challenge System ─────────────────────────────────────────────────
@@ -1042,6 +1105,27 @@
     _pollTimer = setInterval(_poll, 5000);
   })();
 </script>
+
+{# ── Classmates panel (slide-in right) — student names + messaging, opened from a class card ── #}
+{# Structure matches classes.html's #class-panel: single by-panel container, overlay + sliding inner. #}
+<div id="classmates-modal" class="by-panel hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
+  <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeClassmatesModal()"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[420px] flex flex-col"
+       style="background:var(--by-bg); border-left:var(--by-bd-thick);">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4" style="border-bottom:var(--by-bd-thick);">
+      <h3 id="classmates-modal-title" class="font-display text-[18px]" style="color:var(--by-ink);"></h3>
+      <button onclick="closeClassmatesModal()"
+              style="min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--by-ink-3);background:none;border:none;cursor:pointer;">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div id="classmates-modal-body" class="flex-1 overflow-y-auto min-h-0 p-4 flex flex-col gap-1">
+      <span style="font-size:11.5px;color:var(--by-ink-4);">{{ _('Loading…') }}</span>
+    </div>
+  </div>
+</div>
 
 {% include 'partials/_user_config_modal.html' %}
 {% include 'partials/_inbox_modal.html' %}

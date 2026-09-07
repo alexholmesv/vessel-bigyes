@@ -1,0 +1,34 @@
+/* ═════════════════════════════════════════════════════════════
+   BIGYES LAYOUT
+   ═════════════════════════════════════════════════════════════
+   Page shell and structural rules — not reusable components, just
+   the base page chrome (body reset, top-nav dropdown behavior).
+   Loaded after components.css, before nd-mode.css, in base.html's
+   CSS chain.
+
+   Moved from templates/base.html's inline <style> block (2026-07-16, phase 6.9).
+   Same rules, same values — this is a relocation, not a redesign.
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────
+   Page shell — body reset
+   ───────────────────────────────────────────────────────────── */
+
+html, body { background: var(--by-bg); }
+body {
+  font-family: var(--by-f-body);
+  color: var(--by-ink);
+  font-size: var(--by-t-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Top-nav dropdowns (profile menu, role menu) — open/close transition
+   ───────────────────────────────────────────────────────────── */
+
+#profile-menu,
+#role-menu { transition: opacity var(--by-snap), transform var(--by-snap); }
+#profile-menu.hidden,
+#role-menu.hidden { opacity: 0; pointer-events: none; transform: translateY(-4px); }

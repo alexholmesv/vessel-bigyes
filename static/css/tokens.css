@@ -1,71 +1,153 @@
 /* ═════════════════════════════════════════════════════════════
    BIGYES DESIGN TOKENS
    ═════════════════════════════════════════════════════════════
-   CSS custom properties extracted from BigYes Design Language.
-   This file defines all design tokens: colors, typography, radii, spacing.
-   No component rules — only :root variables.
+   CSS custom properties for BigYes. No component rules — only
+   :root variables. Single --by-* prefixed namespace (2026-07-16,
+   phase 6.9b) — the --by- prefix is a deliberate vessel marker.
+   Goal: BigYes's entire visual theme is reskinnable by regenerating
+   just this file, without touching template markup. Keep that
+   swappability in mind whenever editing this file.
    ═════════════════════════════════════════════════════════════ */
 
 :root {
   /* ─────────────────────────────────────────────────────────
      Surface — warm paper, never pure white
      ───────────────────────────────────────────────────────── */
-  --bg:        #F4EEE2;   /* paper */
-  --bg-2:      #ECE3D0;   /* paper deep */
-  --bg-3:      #E2D6BB;   /* paper deeper, dividers */
+  --by-bg:        #F4EEE2;   /* paper */
+  --by-bg-2:      #ECE3D0;   /* paper deep */
+  --by-bg-3:      #E2D6BB;   /* paper deeper, dividers */
 
   /* ─────────────────────────────────────────────────────────
      Ink — text and borders
      ───────────────────────────────────────────────────────── */
-  --ink:       #141210;   /* near-black ink */
-  --ink-2:     #2A2723;   /* darker body text */
-  --ink-3:     #5C544A;   /* muted body */
-  --ink-4:     #8A8073;   /* hint, subtle */
+  --by-ink:       #141210;   /* near-black ink */
+  --by-ink-2:     #2A2723;   /* darker body text */
+  --by-ink-3:     #5C544A;   /* muted body */
+  --by-ink-4:     #8A8073;   /* hint, subtle */
 
   /* ─────────────────────────────────────────────────────────
      Signature — saturated marigold yellow
      ───────────────────────────────────────────────────────── */
-  --yes:       #FFC629;   /* primary accent */
-  --yes-deep:  #E5A800;   /* pressed/deeper state */
-  --yes-soft:  #FFE7A0;   /* soft, secondary use */
+  --by-yes:       #FFC629;   /* primary accent */
+  --by-yes-deep:  #E5A800;   /* pressed/deeper state */
+  --by-yes-soft:  #FFE7A0;   /* soft, secondary use */
 
   /* ─────────────────────────────────────────────────────────
      Secondary — single accent only. Tomato red.
      ───────────────────────────────────────────────────────── */
-  --tomato:     #E5482A;  /* alert, danger, warning */
-  --tomato-deep:#B83218;  /* pressed/darker tomato */
+  --by-tomato:      #E5482A;  /* alert, danger, warning */
+  --by-tomato-deep: #B83218;  /* pressed/darker tomato */
 
   /* ─────────────────────────────────────────────────────────
      Stage — only used on hero/inversion moments
      ───────────────────────────────────────────────────────── */
-  --night:      #141210;  /* dark background (same as ink) */
-  --night-soft: #1E1B17;  /* dark background, slightly lighter */
+  --by-night:      #141210;  /* dark background (same as ink) */
+  --by-night-soft: #1E1B17;  /* dark background, slightly lighter */
+  --by-night-on:   #C9BFA8;  /* muted text on dark surfaces */
 
   /* ─────────────────────────────────────────────────────────
      Type ramp — font families
      ───────────────────────────────────────────────────────── */
-  --f-display: 'Archivo Black', 'Archivo', system-ui, sans-serif;
-  --f-sans:    'Archivo', system-ui, sans-serif;
-  --f-body:    'Manrope', system-ui, sans-serif;
-  --f-mono:    'DM Mono', ui-monospace, monospace;
+  --by-f-display: 'Archivo Black', 'Archivo', system-ui, sans-serif;
+  --by-f-sans:    'Archivo', system-ui, sans-serif;
+  --by-f-body:    'Manrope', system-ui, sans-serif;
+  --by-f-mono:    'DM Mono', ui-monospace, monospace;
+
+  /* ─────────────────────────────────────────────────────────
+     Type ramp — sizes
+     ───────────────────────────────────────────────────────── */
+  --by-t-display-xl: 96px;
+  --by-t-display-l:  64px;
+  --by-t-h1:         40px;
+  --by-t-h2:         24px;
+  --by-t-body-l:     17px;
+  --by-t-body:       15px;
+  --by-t-small:      13.5px;
+  --by-t-mono:       11.5px;
 
   /* ─────────────────────────────────────────────────────────
      Radii — mostly square. Soft only on pills/photos.
      ───────────────────────────────────────────────────────── */
-  --r-1:       4px;       /* tight corners */
-  --r-2:       10px;      /* standard card radius */
-  --r-pill:    999px;     /* pill/circle radius */
+  --by-r-1:    4px;       /* tight corners */
+  --by-r-2:    10px;      /* standard card radius */
+  --by-r-pill: 999px;     /* pill/circle radius */
+
+  /* ─────────────────────────────────────────────────────────
+     Borders & shadows
+     ───────────────────────────────────────────────────────── */
+  --by-bd:       1px solid var(--by-ink);
+  --by-bd-thick: 1.5px solid var(--by-ink);
+  --by-bd-soft:  1px solid var(--by-bg-3);
+  --by-bd-dash:  1px dashed var(--by-bg-3);
+  --by-sh-1:   4px 4px 0 0 var(--by-ink);
+  --by-sh-yes: 4px 4px 0 0 var(--by-yes);
 
   /* ─────────────────────────────────────────────────────────
      Spacing scale (4 px base)
      ───────────────────────────────────────────────────────── */
-  --s-1:  4px;
-  --s-2:  8px;
-  --s-3:  12px;
-  --s-4:  16px;
-  --s-5:  24px;
-  --s-6:  32px;
-  --s-7:  48px;
-  --s-8:  64px;
-  --s-9:  96px;
+  --by-s-1: 4px;  --by-s-2: 8px;  --by-s-3: 12px; --by-s-4: 16px;
+  --by-s-5: 24px; --by-s-6: 32px; --by-s-7: 48px; --by-s-8: 64px; --by-s-9: 96px;
+
+  /* ─────────────────────────────────────────────────────────
+     Transition timing
+     ───────────────────────────────────────────────────────── */
+  --by-snap:  120ms cubic-bezier(.2,.8,.2,1);
+  --by-stamp: 180ms cubic-bezier(.7,0,.2,1.4);
+
+  /* ─────────────────────────────────────────────────────────
+     Component-specific colors (business logic, not design system)
+     ───────────────────────────────────────────────────────── */
+  --by-success-green:    #2A8A4F;   /* active/approved states */
+  --by-future-purple:    #6B5CE7;   /* future/scheduled indicator */
+  --by-warning-bg:       #FFFBEB;   /* warning container background */
+  --by-warning-text:     #92550A;   /* warning container text */
+  --by-warning-accent:   #C17A20;   /* warning indicator color */
+  --by-alert-bg:         #FFF5F3;   /* pale tomato-tinted alert container background
+                                        (paired with border-color:var(--by-tomato)) —
+                                        distinct from --by-warning-bg, do not merge them */
+  --by-on-accent:        #fff;      /* text on saturated/dark surfaces (tomato buttons,
+                                        badges, dark banners) — matches the raw #fff used
+                                        throughout BigYes Design Language.html's own
+                                        .btn.danger/.tag.tomato rules; tokenized 2026-07-21
+                                        (phase 6.3a) so a future reskin can still find it */
+  --by-tier-discount:    #7B5EA7;   /* ticket-tier badge: discount */
+  --by-success-dark-bg:  #2A5C3A;   /* dark-surface success container background */
+  --by-success-dark-text:#D4F0DE;   /* dark-surface success container text */
+  --by-error-dark-bg:    #3b0a0a;   /* critical error banner background (dark surface) */
+  --by-error-dark-text:  #fca5a5;   /* critical error banner text */
+  --by-error-dark-border:#7f1d1d;   /* critical error banner border */
+
+  /* ─────────────────────────────────────────────────────────
+     Ensemble Room — warm-up activity category legend
+     ───────────────────────────────────────────────────────── */
+  --by-cat-status-bg:      #fce7f3;  --by-cat-status-border:      #ec4899;
+  --by-cat-scene-bg:       #dbeafe;  --by-cat-scene-border:       #3b82f6;
+  --by-cat-character-bg:   #dcfce7;  --by-cat-character-border:   #22c55e;
+  --by-cat-group-bg:       #ede9fe;  --by-cat-group-border:       #8b5cf6;
+
+  /* ─────────────────────────────────────────────────────────
+     Backstage pop-art design (BigYes-specific, high-contrast)
+     ───────────────────────────────────────────────────────── */
+  --by-bs-yellow:        #FFC600;   /* backstage container highlight */
+  --by-bs-teal:          #06B6D4;   /* teal pill/tag */
+  --by-bs-coral:         #FF6B6B;   /* coral/red pill/tag */
+  --by-bs-indigo:        #6366F1;   /* indigo/loring location tag */
+  --by-bs-gray-light:    #E5E7EB;   /* progress bar background */
+  --by-bs-green:         #22C55E;   /* green progress indicator */
+  --by-bs-amber:         #F59E0B;   /* amber progress indicator */
+  --by-bs-red:           #EF4444;   /* red progress indicator */
+
+  /* ─────────────────────────────────────────────────────────
+     Badge/status indicators (reporting page)
+     ───────────────────────────────────────────────────────── */
+  --by-badge-green-text:     #166534;   /* status badge text */
+  --by-badge-green-bg:       #dcfce7;   /* status badge background */
+  --by-badge-yellow-text:    #854d0e;   /* warning badge text */
+  --by-badge-red-bg:         #fef2f2;   /* error badge background */
+  --by-msg-success-bg:       #F0FFF8;   /* success message background */
+  --by-msg-error-bg:         #FFF0EE;   /* error message background */
+  --by-chart-text:           #5C544A;   /* Chart.js default text color */
+  --by-chart-border:         #E2D6BB;   /* Chart.js default border color */
+  --by-chart-tooltip-bg:     #141210;   /* Chart.js tooltip background */
+  --by-chart-tooltip-text:   #FFC629;   /* Chart.js tooltip text */
 }

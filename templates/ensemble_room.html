@@ -17,24 +17,24 @@
           mono:    ['"DM Mono"', 'ui-monospace', 'monospace'],
         },
         colors: {
-          'by-yes':         '#FFC629',
-          'by-yes-deep':    '#E5A800',
-          'by-yes-soft':    '#FFE7A0',
-          'by-ink':         '#141210',
-          'by-ink-2':       '#2A2723',
-          'by-ink-3':       '#5C544A',
-          'by-ink-4':       '#8A8073',
-          'by-bg':          '#F4EEE2',
-          'by-bg-2':        '#ECE3D0',
-          'by-bg-3':        '#E2D6BB',
-          'by-tomato':      '#E5482A',
-          'by-tomato-deep': '#B83218',
-          'by-night':       '#141210',
-          'by-night-on':    '#C9BFA8',
+          'by-yes':         'var(--by-yes)',
+          'by-yes-deep':    'var(--by-yes-deep)',
+          'by-yes-soft':    'var(--by-yes-soft)',
+          'by-ink':         'var(--by-ink)',
+          'by-ink-2':       'var(--by-ink-2)',
+          'by-ink-3':       'var(--by-ink-3)',
+          'by-ink-4':       'var(--by-ink-4)',
+          'by-bg':          'var(--by-bg)',
+          'by-bg-2':        'var(--by-bg-2)',
+          'by-bg-3':        'var(--by-bg-3)',
+          'by-tomato':      'var(--by-tomato)',
+          'by-tomato-deep': 'var(--by-tomato-deep)',
+          'by-night':       'var(--by-night)',
+          'by-night-on':    'var(--by-night-soft)',
         },
         boxShadow: {
-          'by-hard':     '4px 4px 0 0 #141210',
-          'by-hard-yes': '4px 4px 0 0 #FFC629',
+          'by-hard':     '4px 4px 0 0 var(--by-ink)',
+          'by-hard-yes': '4px 4px 0 0 var(--by-yes)',
         },
       }
     }
@@ -45,7 +45,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+<!-- CSS file chain (load order matters) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
+
 <style>
+  /* phase(6.3a) REVERT, 2026-07-21, same day — see admin.html for the full
+     note: the CSS <link> chain 404/503s everywhere, no route serves
+     instances/<vessel>/static/*. Restoring this local :root block,
+     complete this time (includes --by-on-accent and the --by-cat-*
+     activity-category pairs — not just the original set). */
   :root {
     --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
     --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
@@ -66,6 +78,11 @@
     --by-sh-yes:4px 4px 0 0 var(--by-yes);
     --by-snap:120ms cubic-bezier(.2,.8,.2,1);
     --by-stamp:180ms cubic-bezier(.7,0,.2,1.4);
+    --by-on-accent:#fff;
+    --by-cat-status-bg:#fce7f3; --by-cat-status-border:#ec4899;
+    --by-cat-scene-bg:#dbeafe; --by-cat-scene-border:#3b82f6;
+    --by-cat-character-bg:#dcfce7; --by-cat-character-border:#22c55e;
+    --by-cat-group-bg:#ede9fe; --by-cat-group-border:#8b5cf6;
   }
 
   html, body { background: var(--by-bg); }
@@ -83,12 +100,12 @@
   /* Chips */
   .chip { display:inline-flex; align-items:center; gap:.375rem; padding:.15rem .55rem; border-radius:999px; font-family:var(--by-f-mono); font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--by-ink); line-height:1.2; background:var(--by-bg); color:var(--by-ink); white-space:nowrap; }
   .chip .dot { width:6px; height:6px; border-radius:999px; flex-shrink:0; background:var(--by-ink); }
-  .chip-active .dot   { background:#2A8A4F; }
+  .chip-active .dot   { background:var(--by-success-green); }
   .chip-upcoming .dot { background:var(--by-ink); }
   .chip-past          { background:var(--by-bg-2); color:var(--by-ink-3); border-color:var(--by-ink-3); }
   .chip-past .dot     { background:var(--by-ink-3); }
-  .chip-live          { background:var(--by-tomato); color:#fff; border-color:var(--by-ink); }
-  .chip-live .dot     { background:#fff; box-shadow:0 0 0 3px rgba(229,72,42,.25); animation:chip-pulse 1.6s infinite; }
+  .chip-live          { background:var(--by-tomato); color:white; border-color:var(--by-ink); }
+  .chip-live .dot     { background:white; box-shadow:0 0 0 3px rgba(229,72,42,.25); animation:chip-pulse 1.6s infinite; }
   @keyframes chip-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.6} }
   .text-live-indicator { color: var(--by-tomato); }
 
@@ -102,7 +119,7 @@
   .btn-spot  { background:var(--by-yes); color:var(--by-ink); font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
   .btn-spot:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
   .btn-spot:active { transform:translate(4px,4px); box-shadow:none; }
-  .btn-live  { background:var(--by-tomato); color:#fff; font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
+  .btn-live  { background:var(--by-tomato); color:white; font-weight:700; border:1px solid var(--by-ink); box-shadow:var(--by-sh-1); }
   .btn-live:hover  { box-shadow:2px 2px 0 0 var(--by-ink); transform:translate(2px,2px); }
   .btn-ghost { border:1px solid var(--by-ink); background:transparent; color:var(--by-ink); font-weight:500; }
   .btn-ghost:hover { background:var(--by-bg-2); }
@@ -126,9 +143,9 @@
   .att { display:inline-flex; gap:2px; padding:2px; background:var(--by-bg-3); border:1px solid var(--by-ink); border-radius:var(--by-r-1); }
   .att button { padding:3px 8px; border-radius:2px; font-size:11px; color:var(--by-ink-3); font-weight:600; cursor:pointer; }
   .att button:hover { color:var(--by-ink); background:var(--by-bg-2); }
-  .att button.on[data-v="P"] { color:#fff; background:#2A8A4F; }
+  .att button.on[data-v="P"] { color:white; background:var(--by-success-green); }
   .att button.on[data-v="L"] { color:var(--by-ink); background:var(--by-yes); }
-  .att button.on[data-v="A"] { color:#fff; background:var(--by-tomato); }
+  .att button.on[data-v="A"] { color:white; background:var(--by-tomato); }
 
   /* Roster row */
   .roster-row:hover td { background:var(--by-bg-2); }
@@ -366,7 +383,7 @@
                  style="width:28px;height:28px;border:2px solid var(--by-ink);border-radius:999px;{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
             <span class="by-um-av-init av flex items-center justify-center flex-shrink-0"
-                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:#fff;{{ 'display:none;' if current_user_avatar else '' }}">
+                  style="width:28px;height:28px;background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid var(--by-ink);border-radius:999px;font-family:var(--by-f-mono);font-size:10px;font-weight:700;color:white;{{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
             </span>
             <div class="hidden md:block leading-tight text-left">
@@ -630,10 +647,10 @@
           <!-- Attendance KPI bar -->
           <div class="px-5 py-3 flex items-center gap-3 border-b hairline flex-wrap" style="background:var(--by-bg-2);">
             <div class="stat-kpi flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#2A8A4F;"></span>
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:var(--by-success-green);"></span>
               <div>
                 <div class="by-eyebrow">Present</div>
-                <div class="font-display text-[20px] leading-none" style="color:#2A8A4F;"><span id="presentCount">0</span></div>
+                <div class="font-display text-[20px] leading-none" style="color:var(--by-success-green);"><span id="presentCount">0</span></div>
               </div>
             </div>
             <div class="stat-kpi flex items-center gap-2.5">
@@ -801,7 +818,7 @@
       </button>
       <button onclick="closeMsgModal()" class="h-11 px-4 btn-ghost text-[13px]" style="font-family:var(--by-f-body);">Cancel</button>
     </div>
-    <div id="msgConfirm" class="hidden text-center text-[12px] py-2" style="color:#2A8A4F;font-family:var(--by-f-mono);">
+    <div id="msgConfirm" class="hidden text-center text-[12px] py-2" style="color:var(--by-success-green);font-family:var(--by-f-mono);">
       ✓ Message sent
     </div>
   </div>
@@ -1300,7 +1317,7 @@
     var foot = modal.querySelector('footer');
     if (foot) {
       foot.innerHTML = '<button onclick="cmDeleteChallenge(\'' + esc(challengeId) + '\')" '
-        + 'style="width:100%;padding:10px;border:var(--by-bd-thick);background:var(--by-tomato);color:#fff;'
+        + 'style="width:100%;padding:10px;border:var(--by-bd-thick);background:var(--by-tomato);color:white;'
         + 'font-family:var(--by-f-body);font-size:12.5px;font-weight:700;cursor:pointer;">'
         + '🗑 Delete this challenge</button>';
     }
@@ -1592,7 +1609,7 @@
              onmouseover="this.style.background='var(--by-yes-soft)'"
              onmouseout="this.style.background=''">
           <span class="w-8 h-8 flex-shrink-0 flex items-center justify-center text-[11px] font-bold"
-                style="background:linear-gradient(135deg,${s.tint[0]},${s.tint[1]});border:var(--by-bd);color:#fff;">
+                style="background:linear-gradient(135deg,${s.tint[0]},${s.tint[1]});border:var(--by-bd);color:white;">
             ${esc(s.initials)}
           </span>
           <div class="min-w-0">
@@ -1627,7 +1644,7 @@
     if (av) {
       av.textContent = student.initials;
       av.style.background = `linear-gradient(135deg,${student.tint[0]},${student.tint[1]})`;
-      av.style.color = '#fff';
+      av.style.color = 'white';
     }
     $('#sd-name').textContent = student.name;
 
@@ -2013,10 +2030,10 @@
     // Category colour
     const catColors = {
       'Warm-Up':    'background:var(--by-yes-soft);border-color:var(--by-yes-deep);color:var(--by-ink);',
-      'Status':     'background:#fce7f3;border-color:#ec4899;color:var(--by-ink);',
-      'Scene Work': 'background:#dbeafe;border-color:#3b82f6;color:var(--by-ink);',
-      'Character':  'background:#dcfce7;border-color:#22c55e;color:var(--by-ink);',
-      'Group':      'background:#ede9fe;border-color:#8b5cf6;color:var(--by-ink);',
+      'Status':     'background:var(--by-cat-status-bg);border-color:var(--by-cat-status-border);color:var(--by-ink);',
+      'Scene Work': 'background:var(--by-cat-scene-bg);border-color:var(--by-cat-scene-border);color:var(--by-ink);',
+      'Character':  'background:var(--by-cat-character-bg);border-color:var(--by-cat-character-border);color:var(--by-ink);',
+      'Group':      'background:var(--by-cat-group-bg);border-color:var(--by-cat-group-border);color:var(--by-ink);',
     };
     document.getElementById('actCategory').style.cssText = catColors[g.cat] ||
       'background:var(--by-bg-2);border-color:var(--by-ink);color:var(--by-ink);';
@@ -2469,7 +2486,7 @@
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || 'Failed');
       $('cmChallengeStatus').textContent = `✓ Deployed to ${_cmClass.students.length} students · 48h window`;
-      $('cmChallengeStatus').style.color = '#2A8A4F';
+      $('cmChallengeStatus').style.color = 'var(--by-success-green)';
     } catch (e) {
       $('cmChallengeStatus').textContent = `Error: ${e.message}`;
       $('cmChallengeStatus').style.color = 'var(--by-tomato)';

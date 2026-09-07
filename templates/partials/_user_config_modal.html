@@ -66,7 +66,7 @@
                  style="width:64px;height:64px;border:var(--by-bd-thick);{{ '' if current_user_avatar else 'display:none;' }}"
                  alt="{{ current_user_initials }}">
             <span id="cfg-av-init" class="av flex items-center justify-center"
-                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:#fff;
+                  style="width:64px;height:64px;font-size:22px;font-weight:700;color:white;
                          background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});
                          {{ 'display:none;' if current_user_avatar else '' }}">
               {{ current_user_initials }}
@@ -210,6 +210,17 @@
   // ── Config state (set once at page load) ──────────────────────────────────
   const NAV_TINTS    = {{ nav_tints_json | safe }};
   const CHAR_AVATARS = {{ char_avatars_json | safe }};
+
+  function resolveAvatarUrl(avatar) {
+    if (!avatar) return null;
+    if (avatar.startsWith('char:')) {
+      const idx = parseInt(avatar.split(':')[1], 10);
+      return (CHAR_AVATARS[idx] && CHAR_AVATARS[idx].url) || null;
+    }
+    if (avatar.startsWith('data:')) return avatar;
+    return null;
+  }
+
   let _cfgTintIndex   = {{ current_user_tint_idx }};
   let _cfgInitialName = {{ current_user_name | tojson }};
   let _cfgInitialBio  = {{ current_user_bio  | tojson }};
@@ -390,9 +401,9 @@
     const el = document.getElementById(elId);
     el.className = 'px-4 py-3 text-sm font-medium text-center border';
     if (type === 'success') {
-      Object.assign(el.style, { background: '#F0FFF8', color: '#166534', borderColor: '#D1FAE5' });
+      Object.assign(el.style, { background: 'var(--by-msg-success-bg)', color: 'var(--by-badge-green-text)', borderColor: 'var(--by-badge-green-bg)' });
     } else {
-      Object.assign(el.style, { background: '#FFF0EE', color: 'var(--by-tomato)', borderColor: 'var(--by-tomato)' });
+      Object.assign(el.style, { background: 'var(--by-msg-error-bg)', color: 'var(--by-tomato)', borderColor: 'var(--by-tomato)' });
     }
     el.textContent = msg;
     el.classList.remove('hidden');
@@ -418,7 +429,8 @@
       if (data.ok) {
         const tint     = NAV_TINTS[_cfgTintIndex];
         const gradient = `linear-gradient(135deg,${tint[0]},${tint[1]})`;
-        _updateHeaderAvatar(data.avatar_url || null, data.initials, gradient);
+        const newAvatarRaw = avatarPayload === 'gradient' ? '' : (avatarPayload || '');
+        _updateHeaderAvatar(resolveAvatarUrl(newAvatarRaw), data.initials, gradient);
         document.querySelectorAll('.by-um-name').forEach(el => el.textContent = data.name);
         _cfgInitialName = data.name;
         _cfgInitialBio  = data.bio !== undefined ? data.bio : bio;

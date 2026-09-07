@@ -91,7 +91,7 @@
   </div>
 
   <!-- ── Filter bar ── -->
-  <div class="px-4 lg:px-8 py-4 border-b" style="border-color:#D4C9B3;background:var(--by-bg-2);">
+  <div class="px-4 lg:px-8 py-4 border-b" style="border-color:var(--by-bg-3);background:var(--by-bg-2);">
     <form method="GET" action="/backstage/activity-log" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <div class="flex flex-col gap-1">
         <label class="by-eyebrow" style="font-size:9.5px;">Name</label>
@@ -163,7 +163,7 @@
               <span style="font-family:var(--by-f-mono);font-size:9.5px;font-weight:700;
                            letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;
                            {% if r == 'stage_manager' %}background:var(--by-yes);color:var(--by-ink);
-                           {% elif r == 'teacher' %}background:#E0EEE8;color:#1D6138;
+                           {% elif r == 'teacher' %}background:var(--by-bg-2);color:var(--by-success-green);
                            {% else %}background:var(--by-bg-3);color:var(--by-ink-3);{% endif %}">
                 {{ r.replace('_', ' ') if r else '—' }}
               </span>
@@ -226,7 +226,7 @@
   window.openEntry = function(idx) {
     const e = ENTRIES[idx];
     if (!e) return;
-    const roleStyle = {'stage_manager':'background:var(--by-yes);color:var(--by-ink);','teacher':'background:#E0EEE8;color:#1D6138;'}[e.role] || 'background:var(--by-bg-3);color:var(--by-ink-3);';
+    const roleStyle = {'stage_manager':'background:var(--by-yes);color:var(--by-ink);','teacher':'background:var(--by-bg-2);color:var(--by-success-green);'}[e.role] || 'background:var(--by-bg-3);color:var(--by-ink-3);';
     document.getElementById('al-actor').textContent = e.actor || '—';
     const date = (e.ts||'').slice(0,10);
     const time = (e.ts||'').slice(11,16);
