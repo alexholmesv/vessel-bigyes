@@ -293,7 +293,10 @@ function flakeBadge(r) { return badge(r, {SOLID:'green',WATCH:'yellow',FLAKY:'re
 function classifyBadge(c) {
   const L = {HIDDEN_GEM:'💎 GEM',SOLID:'✓ SOLID',MONEY_PIT:'🔥 PIT',UNDER_REVIEW:'? REVIEW'};
   const M = {HIDDEN_GEM:'green',SOLID:'yellow',MONEY_PIT:'red',UNDER_REVIEW:'gray'};
-  return badge(L[c]||c, M[c]||'gray');
+  // Fall back to '—' rather than the raw (possibly undefined) classification value —
+  // shows with no gross/expenses data have no classification, and L[c]||c used to
+  // render the literal string "undefined" in the Class column.
+  return badge(L[c]||'—', M[c]||'gray');
 }
 function noData(msg='No data in this period — the improv troupe went on holiday.') {
   return `<div class="chart-empty">${msg}</div>`;
@@ -612,7 +615,7 @@ async function loadBeta() {
             }
             return `<tr>
               <td><span class="font-semibold">${s.title}</span><br>
-                  <span class="text-[10px] text-by-ink-4">${s.date} · ${s.show_type}</span></td>
+                  <span class="text-[10px] text-by-ink-4">${s.date} · ${s.show_type||'—'}</span></td>
               <td class="text-right font-mono">${euro(s.gross)}</td>
               <td class="text-right font-mono text-by-tomato">${euro(s.total_expenses)}</td>
               <td class="text-right" style="font-family:var(--by-f-mono);color:${s.net_profit>=0?'var(--by-badge-green-text)':'var(--by-tomato)'};">${euro(s.net_profit)}</td>
