@@ -3,21 +3,19 @@
 {% block page_title %}Scene Library{% endblock %}
 
 {% block page_header %}
-<header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+<header class="sticky top-0 z-30 border-b hairline bg-by-bg">
   <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
     <div class="min-w-0">
       <div class="by-eyebrow mb-1">Backstage · Spontaneity Engine</div>
-      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+      <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
         Scene <span class="by-yes-block">Library</span>
       </h1>
       <!-- Category count pills -->
       <div class="flex flex-wrap gap-2 mt-3">
         {% for cat in categories %}
-        <span style="font-family:var(--by-f-mono);font-size:10px;font-weight:600;letter-spacing:.1em;
-                     text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;
-                     padding:3px 8px 3px 10px;border:var(--by-bd);background:var(--by-bg);">
+        <span class="inline-flex items-center gap-[5px] pt-[3px] pr-2 pb-[3px] pl-[10px] border border-by-ink bg-by-bg font-mono text-[10px] font-semibold tracking-[.1em] uppercase">
           {{ cat }}
-          <span style="background:var(--by-yes);color:var(--by-ink);padding:0 5px;font-weight:700;">
+          <span class="bg-by-yes text-by-ink px-[5px] font-bold">
             {{ counts.get(cat, 0) }}
           </span>
         </span>
@@ -162,7 +160,7 @@
 
   <!-- Legend strip -->
   <div class="flex flex-wrap items-center gap-6 mb-6 pb-5 border-b hairline">
-    <p class="text-[13px]" style="color:var(--by-ink-3);">
+    <p class="text-[13px] text-by-ink-3">
       Prompt pool used for live challenge deployment.
     </p>
     <div class="flex items-center gap-5 ml-auto">
@@ -181,7 +179,7 @@
   <div class="flex flex-col gap-6">
     {% for cat in categories %}
     {% set items = prompts_by_category[cat] %}
-    <div id="cat-{{ cat }}" style="border: var(--by-bd-thick); box-shadow: var(--by-sh-1); background: var(--by-bg);">
+    <div id="cat-{{ cat }}" class="border-[1.5px] border-by-ink shadow-by-hard bg-by-bg">
 
       <div class="cat-header">
         <div class="flex items-center">
