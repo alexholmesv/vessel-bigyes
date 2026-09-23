@@ -3,19 +3,17 @@
 {% block page_title %}Money Makes The World Go Round{% endblock %}
 
 {% block page_header %}
-<header class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+<header class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
   <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
     <div class="min-w-0">
       <div class="by-eyebrow mb-1">Backstage · Finance</div>
-      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+      <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
         Money makes the world <span class="by-yes-block">go round</span>
       </h1>
-      <p class="mt-2 text-[13px]" style="color:var(--by-ink-3);">Yes, and… it also pays for the studio. Treat these numbers with the gravity they deserve.</p>
+      <p class="mt-2 text-[13px] text-by-ink-3">Yes, and… it also pays for the studio. Treat these numbers with the gravity they deserve.</p>
     </div>
     <div class="ml-auto flex items-center gap-3 flex-shrink-0 pt-1">
-      <span style="font-family:var(--by-f-mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-                   display:inline-block;padding:2px 8px;
-                   background:var(--by-yes);color:var(--by-ink);" class="hidden lg:inline-block">Restricted ✦</span>
+      <span class="hidden lg:inline-block font-mono text-[9px] font-bold tracking-[.1em] uppercase px-2 py-0.5 bg-by-yes text-by-ink">Restricted ✦</span>
       {% include 'partials/_header_user_pill.html' %}
     </div>
   </div>
@@ -83,12 +81,12 @@
 {% block content %}
 
 <!-- ── Filter bar ── -->
-<div class="px-4 lg:px-7 py-4 border-b" style="border-color:var(--by-bg-3);background:var(--by-bg-2);">
+<div class="px-4 lg:px-7 py-4 border-b border-by-bg-3 bg-by-bg-2">
   <form id="fin-filter-form" method="GET" action="/backstage/finances">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <!-- Preset pills -->
       <div class="flex flex-col gap-1 sm:col-span-2 lg:col-span-2">
-        <span class="by-eyebrow" style="font-size:9.5px;">Quick range</span>
+        <span class="by-eyebrow text-[9.5px]">Quick range</span>
         <div class="flex gap-1.5 flex-wrap">
           <button type="button" onclick="finPreset('this_month')"
                   class="fin-preset-btn h-9 px-3" id="preset-this_month">This month</button>
@@ -100,12 +98,12 @@
       </div>
       <!-- Date pickers -->
       <div class="flex flex-col gap-1">
-        <label class="by-eyebrow" for="fin-from" style="font-size:9.5px;">From</label>
+        <label class="by-eyebrow text-[9.5px]" for="fin-from">From</label>
         <input id="fin-from" name="date_from" type="date"
                value="{{ filter_date_from }}" class="fin-input w-full" />
       </div>
       <div class="flex flex-col gap-1">
-        <label class="by-eyebrow" for="fin-to" style="font-size:9.5px;">To</label>
+        <label class="by-eyebrow text-[9.5px]" for="fin-to">To</label>
         <input id="fin-to" name="date_to" type="date"
                value="{{ filter_date_to }}" class="fin-input w-full" />
       </div>
@@ -123,27 +121,27 @@
 
   <!-- ── Aggregate KPI cards ── -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-10">
-    <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+    <div class="border hairline px-3.5 py-2.5 bg-by-bg">
       <div class="by-eyebrow">Gross Income</div>
-      <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-ink);">
+      <div class="font-display text-[26px] leading-none mt-1 text-by-ink">
         €{{ "%.2f"|format(total_gross) }}
       </div>
-      <div class="mt-1 text-[12px]" style="color:var(--by-ink-4);">Classes + Shows</div>
+      <div class="mt-1 text-[12px] text-by-ink-4">Classes + Shows</div>
     </div>
-    <div class="border hairline px-3.5 py-2.5" style="background:var(--by-bg);">
+    <div class="border hairline px-3.5 py-2.5 bg-by-bg">
       <div class="by-eyebrow">Total Expenses</div>
-      <div class="font-display text-[26px] leading-none mt-1" style="color:var(--by-tomato);">
+      <div class="font-display text-[26px] leading-none mt-1 text-by-tomato">
         €{{ "%.2f"|format(total_expenses) }}
       </div>
-      <div class="mt-1 text-[12px]" style="color:var(--by-ink-4);">Fees &amp; overheads</div>
+      <div class="mt-1 text-[12px] text-by-ink-4">Fees &amp; overheads</div>
     </div>
-    <div class="border hairline px-3.5 py-2.5" style="background:{{ 'var(--by-yes)' if net_balance >= 0 else 'var(--by-bg)' }};">
+    <div class="border hairline px-3.5 py-2.5 {{ 'bg-by-yes' if net_balance >= 0 else 'bg-by-bg' }}">
       <div class="by-eyebrow">Net Balance</div>
       <div class="font-display text-[26px] leading-none mt-1"
            style="color:{{ 'var(--by-success-green)' if net_balance >= 0 else 'var(--by-tomato)' }};">
         {{ '+' if net_balance > 0 else '' }}€{{ "%.2f"|format(net_balance) }}
       </div>
-      <div class="mt-1 text-[12px]" style="color:var(--by-ink-4);">Organisational bottom line</div>
+      <div class="mt-1 text-[12px] text-by-ink-4">Organisational bottom line</div>
     </div>
   </div>
 
@@ -152,29 +150,29 @@
     <div class="by-eyebrow mb-3">Class Financials</div>
     <div class="by-card overflow-hidden">
       <div class="by-table-wrap">
-      <table class="w-full text-[13px]" style="border-collapse:collapse;min-width:560px;">
+      <table class="w-full text-[13px] border-collapse min-w-[560px]">
         <thead>
-          <tr style="background:var(--by-bg-2);">
-            <th class="text-left px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Class</th>
-            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Enrolled</th>
-            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Per Student</th>
-            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Gross</th>
-            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Fees</th>
-            <th class="text-right px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Net</th>
+          <tr class="bg-by-bg-2">
+            <th class="text-left px-5 py-2.5 font-semibold text-by-ink-3">Class</th>
+            <th class="text-right px-4 py-2.5 font-semibold text-by-ink-3">Enrolled</th>
+            <th class="text-right px-4 py-2.5 font-semibold text-by-ink-3">Per Student</th>
+            <th class="text-right px-4 py-2.5 font-semibold text-by-ink-3">Gross</th>
+            <th class="text-right px-4 py-2.5 font-semibold text-by-ink-3">Fees</th>
+            <th class="text-right px-5 py-2.5 font-semibold text-by-ink-3">Net</th>
           </tr>
         </thead>
         <tbody>
           {% for b in class_balances %}
-          <tr class="border-t" style="border-color:var(--by-bg-3);background:var(--by-bg);">
-            <td class="px-5 py-3 font-semibold" style="color:var(--by-ink);">{{ b.title }}</td>
-            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">{{ b.enrolled }}</td>
-            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">
+          <tr class="border-t border-by-bg-3 bg-by-bg">
+            <td class="px-5 py-3 font-semibold text-by-ink">{{ b.title }}</td>
+            <td class="px-4 py-3 text-right font-mono text-[12px] text-by-ink-3">{{ b.enrolled }}</td>
+            <td class="px-4 py-3 text-right font-mono text-[12px] text-by-ink-3">
               {% if b.per_student > 0 %}€{{ "%.2f"|format(b.per_student) }}{% else %}—{% endif %}
             </td>
-            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink);">
+            <td class="px-4 py-3 text-right font-mono text-[12px] text-by-ink">
               {% if b.gross > 0 %}€{{ "%.2f"|format(b.gross) }}{% else %}—{% endif %}
             </td>
-            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-tomato);">
+            <td class="px-4 py-3 text-right font-mono text-[12px] text-by-tomato">
               {% if b.fees > 0 %}−€{{ "%.2f"|format(b.fees) }}{% else %}—{% endif %}
             </td>
             <td class="px-5 py-3 text-right font-semibold"
@@ -188,12 +186,12 @@
         </tbody>
         {% if class_balances %}
         <tfoot>
-          <tr style="background:var(--by-bg-2); border-top:1.5px solid var(--by-ink);">
-            <td class="px-5 py-2.5 font-bold text-[12px]" colspan="3" style="color:var(--by-ink);">Class Totals</td>
-            <td class="px-4 py-2.5 text-right font-bold font-mono text-[12px]" style="color:var(--by-ink);">
+          <tr class="bg-by-bg-2 border-t-[1.5px] border-by-ink">
+            <td class="px-5 py-2.5 font-bold text-[12px] text-by-ink" colspan="3">Class Totals</td>
+            <td class="px-4 py-2.5 text-right font-bold font-mono text-[12px] text-by-ink">
               €{{ "%.2f"|format(class_balances|sum(attribute='gross')) }}
             </td>
-            <td class="px-4 py-2.5 text-right font-bold font-mono text-[12px]" style="color:var(--by-tomato);">
+            <td class="px-4 py-2.5 text-right font-bold font-mono text-[12px] text-by-tomato">
               {% set tf = class_balances|sum(attribute='fees') %}
               {% if tf > 0 %}−€{{ "%.2f"|format(tf) }}{% else %}—{% endif %}
             </td>
@@ -214,25 +212,25 @@
     <div class="by-eyebrow mb-3">Show Financials</div>
     <div class="by-card overflow-hidden">
       <div class="by-table-wrap">
-      <table class="w-full text-[13px]" style="border-collapse:collapse;min-width:480px;">
+      <table class="w-full text-[13px] border-collapse min-w-[480px]">
         <thead>
-          <tr style="background:var(--by-bg-2);">
-            <th class="text-left px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Show</th>
-            <th class="text-left px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Date</th>
-            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Ticket Price</th>
-            <th class="text-right px-4 py-2.5 font-semibold" style="color:var(--by-ink-3);">Fees</th>
-            <th class="text-right px-5 py-2.5 font-semibold" style="color:var(--by-ink-3);">Net</th>
+          <tr class="bg-by-bg-2">
+            <th class="text-left px-5 py-2.5 font-semibold text-by-ink-3">Show</th>
+            <th class="text-left px-4 py-2.5 font-semibold text-by-ink-3">Date</th>
+            <th class="text-right px-4 py-2.5 font-semibold text-by-ink-3">Ticket Price</th>
+            <th class="text-right px-4 py-2.5 font-semibold text-by-ink-3">Fees</th>
+            <th class="text-right px-5 py-2.5 font-semibold text-by-ink-3">Net</th>
           </tr>
         </thead>
         <tbody>
           {% for b in show_balances %}
-          <tr class="border-t" style="border-color:var(--by-bg-3);background:var(--by-bg);">
-            <td class="px-5 py-3 font-semibold" style="color:var(--by-ink);">{{ b.title }}</td>
-            <td class="px-4 py-3 font-mono text-[12px]" style="color:var(--by-ink-3);">{{ b.date or '—' }}</td>
-            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-ink-3);">
+          <tr class="border-t border-by-bg-3 bg-by-bg">
+            <td class="px-5 py-3 font-semibold text-by-ink">{{ b.title }}</td>
+            <td class="px-4 py-3 font-mono text-[12px] text-by-ink-3">{{ b.date or '—' }}</td>
+            <td class="px-4 py-3 text-right font-mono text-[12px] text-by-ink-3">
               {% if b.ticket_price > 0 %}€{{ "%.2f"|format(b.ticket_price) }}{% else %}—{% endif %}
             </td>
-            <td class="px-4 py-3 text-right font-mono text-[12px]" style="color:var(--by-tomato);">
+            <td class="px-4 py-3 text-right font-mono text-[12px] text-by-tomato">
               {% if b.fees > 0 %}−€{{ "%.2f"|format(b.fees) }}{% else %}—{% endif %}
             </td>
             <td class="px-5 py-3 text-right font-semibold"
@@ -247,7 +245,7 @@
       </table>
       </div>
     </div>
-    <p class="mt-3 text-[12px]" style="color:var(--by-ink-4);">
+    <p class="mt-3 text-[12px] text-by-ink-4">
       Show gross revenue reflects ticket price × attendance. Attendance tracking is not yet implemented — gross shows €0 until wired.
     </p>
   </div>
