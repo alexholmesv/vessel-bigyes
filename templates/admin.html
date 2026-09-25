@@ -637,100 +637,6 @@
 
 
     <!-- ─── Workspace grid ─── -->
-    {% if mock_preview %}
-    <!-- ═══════════════════════════════════════════════════════════
-         DESIGN MOCKUP — visible only when ?mock_preview=1
-         Static hardcoded data. Safe to restyle freely.
-         DOM IDs below match the live IDs so JS wire-ups are shown.
-         ═══════════════════════════════════════════════════════════ -->
-    <main class="px-4 lg:px-7 py-4 lg:py-6 grid grid-cols-12 gap-4 lg:gap-5">
-
-      <!-- Roster table (8 cols) — mock -->
-      <section id="roster-section" class="col-span-12 xl:col-span-8 border border-by-ink bg-by-bg-2">
-        <header class="px-5 py-4 flex flex-wrap items-center gap-3 border-b border-by-ink">
-          <div class="flex-1">
-            <p class="by-h-sans text-[15px] text-by-ink">Roster <span id="rosterCount" class="by-eyebrow ml-2">24 rows</span></p>
-          </div>
-          <input id="rosterSearch" type="text" placeholder="Filter roster…" class="rounded px-3 py-1.5 text-[13px] border bg-by-bg border-by-ink w-44" />
-        </header>
-        <div class="overflow-x-auto">
-          <table class="w-full text-[13px]">
-            <thead><tr class="border-b border-by-ink">
-              <th class="px-5 py-2.5 text-left by-eyebrow">Name</th>
-              <th class="px-5 py-2.5 text-left by-eyebrow">Level</th>
-              <th class="px-5 py-2.5 text-left by-eyebrow">Status</th>
-              <th class="px-5 py-2.5 text-left by-eyebrow">Points</th>
-              <th class="px-5 py-2.5 text-left by-eyebrow">Attendance</th>
-            </tr></thead>
-            <tbody id="rosterBody">
-              {% for name, level, status, pts, att in [
-                ('Ana García','L2','Active',340,'●●●○○'),
-                ('Marc Puig','L3','Active',510,'●●●●○'),
-                ('Lena Kovač','L1','Active',120,'●●○○○'),
-                ('Tom Riera','L2','Active',275,'●●●○○'),
-                ('Júlia Mas','L3','Alumni',490,'●●●●●'),
-              ] %}
-              <tr class="border-b border-by-bg-3">
-                <td class="px-5 py-3 font-semibold">{{ name }}</td>
-                <td class="px-5 py-3 by-eyebrow">{{ level }}</td>
-                <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-semibold border border-by-ink">{{ status }}</span></td>
-                <td class="px-5 py-3 font-mono">{{ pts }}</td>
-                <td class="px-5 py-3 tracking-widest text-by-yes-deep">{{ att }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <footer class="px-5 py-3 by-eyebrow border-t border-by-ink">
-          Showing <span id="rosterShown">5</span> of <span id="rosterTotal">24</span>
-        </footer>
-      </section>
-
-      <!-- Right column (4 cols) — mock -->
-      <aside id="live-challenge-panel" class="col-span-12 xl:col-span-4 flex flex-col gap-5">
-
-        <!-- Volunteer pool mock -->
-        <section class="border border-by-ink bg-by-bg-2 p-5">
-          <p class="by-h-sans text-[16px] mb-3 text-by-ink">Volunteer pool</p>
-          <div class="grid grid-cols-3 gap-2 text-center text-[12px] border-b border-by-ink pb-3 mb-3">
-            <div><p class="by-eyebrow">Door</p><p class="font-black text-[20px]" id="poolN">3</p></div>
-            <div><p class="by-eyebrow">Bar</p><p class="font-black text-[20px]">2</p></div>
-            <div><p class="by-eyebrow">House</p><p class="font-black text-[20px]">1</p></div>
-          </div>
-          <ul id="poolList" class="space-y-1.5 text-[13px]">
-            <li class="flex items-center gap-2"><span class="w-6 h-6 rounded border border-by-ink bg-by-yes flex items-center justify-center text-[10px] font-black">AP</span> Ana P. — Door</li>
-            <li class="flex items-center gap-2"><span class="w-6 h-6 rounded border border-by-ink bg-by-bg-3 flex items-center justify-center text-[10px] font-black">MP</span> Marc P. — Bar</li>
-          </ul>
-        </section>
-
-        <!-- Spont generator mock -->
-        <section class="spont-card border border-by-ink bg-by-bg-2 p-5">
-          <p class="by-h-sans text-[16px] mb-3 text-by-ink">Scene generator</p>
-          <div class="flex gap-2 mb-3">
-            <div id="perfA" class="flex items-center gap-2 flex-1 border border-by-ink rounded px-3 py-2">
-              <span class="w-5 h-5 rounded text-[9px] font-black flex items-center justify-center bg-by-yes">AG</span>
-              <span class="text-[13px]">Ana García</span>
-            </div>
-            <div id="perfB" class="flex items-center gap-2 flex-1 border border-by-ink rounded px-3 py-2">
-              <span class="w-5 h-5 rounded text-[9px] font-black flex items-center justify-center bg-by-bg-3">MP</span>
-              <span class="text-[13px]">Marc Puig</span>
-            </div>
-          </div>
-          <div class="space-y-1.5 text-[13px] mb-4">
-            <div class="flex justify-between"><span class="by-eyebrow">Location</span><span id="locReel" class="font-semibold">Airport</span></div>
-            <div class="flex justify-between"><span class="by-eyebrow">Style</span><span id="styleReel" class="font-semibold">Harold</span></div>
-            <div class="flex justify-between"><span class="by-eyebrow">Constraint</span><span id="constraintReel" class="text-by-tomato">No questions</span></div>
-          </div>
-          <div class="flex gap-2">
-            <button id="spinBtn" class="flex-1 h-10 rounded border border-by-ink bg-by-yes font-semibold text-[13.5px]">Spin</button>
-            <button id="saveBtn" class="h-10 px-3 rounded border border-by-ink text-[13px]">Save scene</button>
-          </div>
-        </section>
-
-      </aside>
-
-    </main>
-    {% else %}
 
     {# ── Per-view page headers ── #}
     {% if not show_roster and not show_section %}
@@ -1140,6 +1046,11 @@
                 class="flex items-center gap-1.5 px-3.5 py-2 text-[11.5px] font-bold border-[1.5px] border-by-ink text-by-ink bg-by-yes shadow-by-hard">
                 + Add Show
               </button>
+              <button onclick="openDeleteAllShows()" id="btn-sb-delete-all" title="Nuclear option — delete every show"
+                class="flex items-center gap-1.5 px-3 py-2 ml-1 text-[11.5px] font-semibold border border-by-tomato text-by-tomato bg-by-bg">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+                Delete All
+              </button>
             </div>
           </div>
 
@@ -1187,61 +1098,12 @@
         </div>
       </section>
 
-
-{% elif show_section == 'scene_library' %}
-      <section id="bs-scenelibrary" class="col-span-12 border hairline bg-by-bg">
-        <header class="px-5 py-4 border-b hairline flex items-center justify-between">
-          <div>
-            <div class="by-eyebrow mb-1">Backstage</div>
-            <div class="font-display text-[22px] text-by-ink">Scene Library</div>
-            <div class="text-[12px] mt-0.5 text-by-ink-3">Spontaneity Engine saves · <span id="bs-sceneCount" class="font-mono">0</span> scenes</div>
-          </div>
-          <button onclick="clearSceneLibrary()" class="border px-3 py-2 text-[11.5px] font-semibold border-by-ink text-by-tomato bg-by-bg">Clear all</button>
-        </header>
-        <div class="px-5 py-2">
-          <ul id="bs-sceneList" class="divide-y border-by-bg-3">
-            <li id="bs-sceneEmpty" class="py-6 text-center text-[12.5px] text-by-ink-4">
-              No scenes saved yet.<br>
-              <span class="text-[11px] text-by-ink-4">Spin the Spontaneity Engine on the dashboard and save scenes here.</span>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      {% elif show_section == 'reports' %}
-      <section id="bs-reports" class="col-span-12 border hairline bg-by-bg">
-        <header class="px-5 py-4 border-b hairline">
-          <div class="by-eyebrow mb-1">Backstage</div>
-          <div class="font-display text-[22px] text-by-ink">Reports &amp; Exports</div>
-          <div class="text-[12px] mt-0.5 text-by-ink-3">One-click CSV exports for finance, attendance, and compliance</div>
-        </header>
-        <div class="px-5 py-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <button onclick="exportReport('tuition_pipeline')"
-            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
-            <div class="text-[13px] font-bold mb-1 text-by-ink">Tuition Pipeline</div>
-            <div class="text-[11.5px] text-by-ink-3">Revenue by cohort</div>
-          </button>
-          <button onclick="exportReport('volunteer_audit')"
-            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
-            <div class="text-[13px] font-bold mb-1 text-by-ink">Volunteer Audit</div>
-            <div class="text-[11.5px] text-by-ink-3">Shift history &amp; coverage</div>
-          </button>
-          <button onclick="exportReport('attendance_log')"
-            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
-            <div class="text-[13px] font-bold mb-1 text-by-ink">Attendance Log</div>
-            <div class="text-[11.5px] text-by-ink-3">Per-class check-in data</div>
-          </button>
-          <button onclick="exportReport('gdpr_summary')"
-            class="border px-5 py-4 text-left border-by-ink bg-by-bg-2 shadow-by-hard">
-            <div class="text-[13px] font-bold mb-1 text-by-ink">GDPR Summary</div>
-            <div class="text-[11.5px] text-by-ink-3">Member data consent log</div>
-          </button>
-        </div>
-      </section>
-      {% endif %}{# /backstage section views #}
+      {% endif %}{# /backstage section views — only 'shows_bookings' is ever set; the former
+         'scene_library'/'reports' branches were dead code (6.11, removed 2026-09-23) since
+         /backstage/scene-library and /backstage/reports each render their own dedicated
+         template and never set show_section to those values #}
 
     </main>
-    {% endif %}{# end mock_preview #}
 
     <footer class="px-7 py-6 text-[11.5px] flex items-center justify-between border-t hairline text-by-ink-3">
       <div>© 2026 Barcelona Improv Group · Big Yes CRM <span class="font-mono text-by-ink-4">v0.9.2 "Curtain Call"</span></div>
@@ -3827,43 +3689,6 @@
         flashToast(`Save failed: ${data.error}`);
       }
     } catch { flashToast('Network error — scene not saved.'); }
-  }
-
-  function clearSceneLibrary() {
-    if (!_sceneLog.length) { flashToast('Library is already empty.'); return; }
-    _sceneLog.length = 0;
-    renderSceneLibrary();
-    flashToast('Scene library cleared');
-  }
-
-  // ── Reports: export trigger ────────────────────────────────────
-  async function exportReport(type) {
-    const labels = {
-      tuition_pipeline: 'Tuition Pipeline',
-      volunteer_audit:  'Volunteer Audit',
-      attendance_log:   'Attendance Log',
-      gdpr_summary:     'GDPR Summary',
-    };
-    try {
-      const res  = await fetch('/api/backstage/reports/export', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type }),
-      });
-      const data = await res.json();
-      if (data.ok && data.download_url) {
-        flashToast(`${labels[type] || type} export ready ↓`);
-        // Trigger a download via a transient <a> element
-        const a    = document.createElement('a');
-        a.href     = data.download_url;
-        a.download = data.download_url.split('/').pop();
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } else {
-        flashToast(`Export failed: ${data.error || 'unknown error'}`);
-      }
-    } catch { flashToast('Network error — export not generated.'); }
   }
 
   // ── Init: render backstage widgets on page load ────────────────
