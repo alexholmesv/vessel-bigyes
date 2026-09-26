@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html data-mode="{{ 'nd' if nd_mode else 'standard' }}" lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -574,6 +574,21 @@
           </div>
           <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
+
+        <!-- ND mode toggle (Phase 7.6) — per-person, saved via /api/me/accessibility-mode -->
+        <div class="flex items-center justify-between gap-3 px-4 py-3 border hairline bg-by-bg">
+          <div class="min-w-0">
+            <div id="nd-mode-label" class="font-display text-[15px] text-by-ink">{{ _('ND mode') }}</div>
+            <div class="mt-0.5 text-[12px] text-by-ink-3">{{ _('Calmer screens, bigger text, one step at a time.') }}</div>
+          </div>
+          <button id="nd-mode-switch" type="button" role="switch"
+                  aria-checked="{{ 'true' if nd_mode else 'false' }}" aria-labelledby="nd-mode-label"
+                  onclick="toggleNdMode(this)"
+                  class="relative flex-shrink-0 w-11 h-6 rounded-full border border-by-ink cursor-pointer {{ 'bg-by-yes' if nd_mode else 'bg-by-bg-2' }}">
+            <span class="absolute top-0.5 w-4 h-4 rounded-full bg-by-ink {{ 'left-[22px]' if nd_mode else 'left-0.5' }}"></span>
+          </button>
+        </div>
+        <div id="nd-mode-error" class="hidden text-[12px] text-by-tomato" role="alert"></div>
       </aside>
 
       <!-- ── DISPATCH INBOX ── -->
@@ -663,6 +678,29 @@
     /* Update the sidebar balance progress bar */
     var bar = document.querySelector('#app-sidebar .bd-bar i, #app-sidebar i[style*="background:var(--by-yes)"]');
     if (bar) bar.style.width = Math.min(_cachedPts % 100, 100) + '%';
+  }
+
+  // ── ND mode toggle (Phase 7.6) ── saves, then reloads so <html data-mode> flips.
+  const ND_MODE_SAVE_ERROR = {{ _('Could not save. Please try again.') | tojson }};
+  async function toggleNdMode(btn) {
+    const nextMode = btn.getAttribute('aria-checked') === 'true' ? 'standard' : 'nd';
+    const errEl = document.getElementById('nd-mode-error');
+    errEl.classList.add('hidden');
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/me/accessibility-mode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: nextMode }),
+      });
+      const body = await res.json();
+      if (!body.ok) throw new Error(body.error);
+      location.reload();
+    } catch (e) {
+      errEl.textContent = ND_MODE_SAVE_ERROR;
+      errEl.classList.remove('hidden');
+      btn.disabled = false;
+    }
   }
 
   function toggleSidebar() {
