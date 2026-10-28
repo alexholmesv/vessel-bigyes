@@ -3,14 +3,14 @@
 {% block page_title %}Activity Log{% endblock %}
 
 {% block page_header %}
-<header class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+<header class="sticky top-0 z-30 border-b hairline bg-by-bg">
   <div class="px-4 lg:px-7 pt-5 pb-4 flex items-start gap-4">
     <div class="min-w-0">
       <div class="by-eyebrow mb-1">Backstage · Audit</div>
-      <h1 class="by-display text-[28px] lg:text-[34px]" style="color:var(--by-ink);line-height:1.0;">
+      <h1 class="by-display text-[28px] lg:text-[34px] text-by-ink leading-none">
         Activity <span class="by-yes-block">Log</span>
       </h1>
-      <p class="mt-2 text-[13px]" style="color:var(--by-ink-3);">Every action, every click, every moment of mild administrative panic — logged for posterity.</p>
+      <p class="mt-2 text-[13px] text-by-ink-3">Every action, every click, every moment of mild administrative panic — logged for posterity.</p>
     </div>
     <div class="ml-auto flex items-center gap-3 flex-shrink-0 pt-1">
       {% include 'partials/_header_user_pill.html' %}
@@ -82,24 +82,24 @@
 
   <!-- ── Description + count ── -->
   <div class="px-6 lg:px-8 pt-6 pb-4">
-    <p class="text-[13.5px]" style="color:var(--by-ink-3);">
+    <p class="text-[13.5px] text-by-ink-3">
       Every action taken in the app — who did what and when.
       {% if entries %}
-      <span style="color:var(--by-ink-4);">{{ entries|length }} result{% if entries|length != 1 %}s{% endif %}.</span>
+      <span class="text-by-ink-4">{{ entries|length }} result{% if entries|length != 1 %}s{% endif %}.</span>
       {% endif %}
     </p>
   </div>
 
   <!-- ── Filter bar ── -->
-  <div class="px-4 lg:px-8 py-4 border-b" style="border-color:var(--by-bg-3);background:var(--by-bg-2);">
+  <div class="px-4 lg:px-8 py-4 border-b border-by-bg-3 bg-by-bg-2">
     <form method="GET" action="/backstage/activity-log" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <div class="flex flex-col gap-1">
-        <label class="by-eyebrow" style="font-size:9.5px;">Name</label>
+        <label class="by-eyebrow text-[9.5px]">Name</label>
         <input name="name" type="text" placeholder="Search by name…"
                value="{{ filter_name }}" class="al-input w-full" />
       </div>
       <div class="flex flex-col gap-1">
-        <label class="by-eyebrow" style="font-size:9.5px;">Role</label>
+        <label class="by-eyebrow text-[9.5px]">Role</label>
         <div class="by-select-wrap">
           <select name="role" class="al-input w-full">
             <option value="">All roles</option>
@@ -110,12 +110,12 @@
         </div>
       </div>
       <div class="flex flex-col gap-1">
-        <label class="by-eyebrow" style="font-size:9.5px;">From</label>
+        <label class="by-eyebrow text-[9.5px]">From</label>
         <input name="date_from" type="date" value="{{ filter_date_from }}"
                class="al-input w-full" />
       </div>
       <div class="flex flex-col gap-1">
-        <label class="by-eyebrow" style="font-size:9.5px;">To</label>
+        <label class="by-eyebrow text-[9.5px]">To</label>
         <input name="date_to" type="date" value="{{ filter_date_to }}"
                class="al-input w-full" />
       </div>
@@ -136,9 +136,9 @@
       <table class="log-table">
         <thead>
           <tr>
-            <th style="width:170px;">When</th>
-            <th style="width:170px;">Who</th>
-            <th style="width:120px;">Role</th>
+            <th class="w-[170px]">When</th>
+            <th class="w-[170px]">Who</th>
+            <th class="w-[120px]">Role</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -146,30 +146,26 @@
           {% for e in entries %}
           <tr onclick="openEntry({{ loop.index0 }})">
             <td>
-              <span style="font-family:var(--by-f-mono);font-size:11.5px;color:var(--by-ink-4);">
+              <span class="font-mono text-[11.5px] text-by-ink-4">
                 {{ e.timestamp[:10] }}
               </span>
-              <span style="font-family:var(--by-f-mono);font-size:11px;color:var(--by-ink-4);display:block;">
+              <span class="font-mono text-[11px] text-by-ink-4 block">
                 {{ e.timestamp[11:16] if e.timestamp|length > 10 else '' }} UTC
               </span>
             </td>
             <td>
-              <span style="font-family:var(--by-f-body);font-size:13.5px;font-weight:600;color:var(--by-ink);">
+              <span class="font-body text-[13.5px] font-semibold text-by-ink">
                 {{ e.actor_name }}
               </span>
             </td>
             <td>
               {% set r = e.actor_role or '' %}
-              <span style="font-family:var(--by-f-mono);font-size:9.5px;font-weight:700;
-                           letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;
-                           {% if r == 'stage_manager' %}background:var(--by-yes);color:var(--by-ink);
-                           {% elif r == 'teacher' %}background:var(--by-bg-2);color:var(--by-success-green);
-                           {% else %}background:var(--by-bg-3);color:var(--by-ink-3);{% endif %}">
+              <span class="font-mono text-[9.5px] font-bold tracking-[.08em] uppercase px-[7px] py-0.5" style="{% if r == 'stage_manager' %}background:var(--by-yes);color:var(--by-ink);{% elif r == 'teacher' %}background:var(--by-bg-2);color:var(--by-success-green);{% else %}background:var(--by-bg-3);color:var(--by-ink-3);{% endif %}">
                 {{ r.replace('_', ' ') if r else '—' }}
               </span>
             </td>
             <td>
-              <span style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);">
+              <span class="font-body text-[13.5px] text-by-ink-2">
                 {{ e.message }}
               </span>
             </td>
@@ -182,10 +178,10 @@
 
     {% else %}
     <div class="py-16 text-center">
-      <div class="by-display text-[22px] mb-2" style="color:var(--by-ink-4);">( silence )</div>
-      <p style="font-size:13.5px;color:var(--by-ink-3);">
+      <div class="by-display text-[22px] mb-2 text-by-ink-4">( silence )</div>
+      <p class="text-[13.5px] text-by-ink-3">
         {% if filter_name or filter_role or filter_date_from or filter_date_to %}
-        No entries match your filters. The cast is hiding. <a href="/backstage/activity-log" style="color:var(--by-yes-deep);font-weight:600;">Clear filters</a>
+        No entries match your filters. The cast is hiding. <a href="/backstage/activity-log" class="text-by-yes-deep font-semibold">Clear filters</a>
         {% else %}
         Nobody has done anything yet. Suspicious for an improv group.
         {% endif %}
@@ -197,14 +193,12 @@
 <!-- ── Activity Detail Drawer ── -->
 <div id="al-overlay" class="al-overlay" onclick="closeEntry()"></div>
 <div id="al-drawer" class="al-drawer">
-  <div class="px-5 py-4 flex items-start justify-between gap-4 flex-shrink-0"
-       style="background:var(--by-yes);border-bottom:var(--by-bd-thick);">
+  <div class="px-5 py-4 flex items-start justify-between gap-4 flex-shrink-0 bg-by-yes border-b-[1.5px] border-by-ink">
     <div class="min-w-0">
       <div class="by-eyebrow mb-0.5">Activity Detail</div>
-      <div id="al-actor" class="by-display text-[22px] leading-tight" style="color:var(--by-ink);">—</div>
+      <div id="al-actor" class="by-display text-[22px] leading-tight text-by-ink">—</div>
     </div>
-    <button onclick="closeEntry()" class="flex-shrink-0 w-9 h-9 flex items-center justify-center mt-0.5"
-            style="border:var(--by-bd-thick);background:var(--by-bg);">
+    <button onclick="closeEntry()" class="flex-shrink-0 w-9 h-9 flex items-center justify-center mt-0.5 border-[1.5px] border-by-ink bg-by-bg">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
   </div>
@@ -231,17 +225,17 @@
     const date = (e.ts||'').slice(0,10);
     const time = (e.ts||'').slice(11,16);
     document.getElementById('al-body').innerHTML = `
-      <div style="border:var(--by-bd);background:var(--by-bg-2);padding:14px 16px;">
+      <div class="border border-by-ink bg-by-bg-2 px-4 py-3.5">
         <div class="grid grid-cols-2 gap-4">
-          <div><div class="by-eyebrow mb-1">Who</div><div style="font-family:var(--by-f-sans);font-weight:700;font-size:15px;color:var(--by-ink);">${esc(e.actor)}</div></div>
-          <div><div class="by-eyebrow mb-1">Role</div><span style="font-family:var(--by-f-mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;${roleStyle}">${esc(e.role.replace(/_/g,' '))}</span></div>
-          <div><div class="by-eyebrow mb-1">Date</div><div style="font-family:var(--by-f-mono);font-size:13px;color:var(--by-ink);">${esc(date)}</div></div>
-          <div><div class="by-eyebrow mb-1">Time</div><div style="font-family:var(--by-f-mono);font-size:13px;color:var(--by-ink);">${esc(time)} UTC</div></div>
+          <div><div class="by-eyebrow mb-1">Who</div><div class="font-sans font-bold text-[15px] text-by-ink">${esc(e.actor)}</div></div>
+          <div><div class="by-eyebrow mb-1">Role</div><span class="font-mono text-[10px] font-bold tracking-[.1em] uppercase px-2 py-0.5" style="${roleStyle}">${esc(e.role.replace(/_/g,' '))}</span></div>
+          <div><div class="by-eyebrow mb-1">Date</div><div class="font-mono text-[13px] text-by-ink">${esc(date)}</div></div>
+          <div><div class="by-eyebrow mb-1">Time</div><div class="font-mono text-[13px] text-by-ink">${esc(time)} UTC</div></div>
         </div>
       </div>
       <div>
         <div class="by-eyebrow mb-2">Action</div>
-        <div style="border:var(--by-bd);background:var(--by-bg);padding:16px;font-size:15px;line-height:1.7;color:var(--by-ink-2);">${esc(e.msg)}</div>
+        <div class="border border-by-ink bg-by-bg p-4 text-[15px] leading-[1.7] text-by-ink-2">${esc(e.msg)}</div>
       </div>`;
     document.getElementById('al-overlay').classList.add('open');
     document.getElementById('al-drawer').classList.add('open');

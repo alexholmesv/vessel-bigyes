@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ vessel_current_locale | default('en') }}" class="h-full">
+<html data-mode="{{ 'nd' if nd_mode else 'standard' }}" lang="{{ vessel_current_locale | default('en') }}" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
