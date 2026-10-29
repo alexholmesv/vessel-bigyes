@@ -70,6 +70,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+{% if nd_mode %}
+<script src="{{ url_for('static', filename='js/nd-celebrate.js') }}"></script>
+<script src="{{ url_for('static', filename='js/nd-wizard.js') }}"></script>
+{% endif %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
 
 <style>
@@ -477,7 +481,122 @@
 {% include 'partials/_byselect.html' %}
 </head>
 
-<body class="min-h-screen">
+<body class="min-h-screen"{% if nd_mode %} data-nd-declutter="1"{% endif %}>
+
+{% if nd_mode and not show_roster and not show_section %}
+<!-- Phase 7.4i -- always-visible ND chrome controls (Dashboard floating-modal mode) -->
+<div id="nd-chrome-controls">
+  <button type="button" id="nd-mode-switch-floating" role="switch"
+          aria-checked="{{ 'true' if nd_mode else 'false' }}"
+          aria-label="{{ _('ND mode') }}"
+          title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+          onclick="toggleNdMode(this)"
+          class="relative flex-shrink-0 flex items-center gap-2 h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-yes text-by-ink">
+    <span class="w-2 h-2 rounded-full flex-shrink-0 bg-by-ink" aria-hidden="true"></span>
+    <span>{{ _('ND mode') }}: {{ _('On') }}</span>
+  </button>
+  <button type="button" id="nd-menu-btn" aria-haspopup="true" aria-expanded="false"
+          aria-label="{{ _('More options') }}" title="{{ _('More options') }}"
+          onclick="ndToggleExtraMenu()"
+          class="relative flex-shrink-0 flex items-center justify-center rounded-full border border-by-ink cursor-pointer bg-by-bg text-by-ink-3">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div id="nd-extra-menu" class="hidden" role="menu">
+    <button type="button" id="nd-show-sidebar-btn" onclick="ndToggleChrome('sidebar')"
+            class="flex-shrink-0 flex items-center h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-bg text-by-ink-3">
+      {{ _('Show sidebar') }}
+    </button>
+    <button type="button" id="nd-show-navbar-btn" onclick="ndToggleChrome('navbar')"
+            class="flex-shrink-0 flex items-center h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-bg text-by-ink-3">
+      {{ _('Show navbar') }}
+    </button>
+  </div>
+</div>
+<script>
+(function () {
+  var MAP = {
+    sidebar: { key: 'nd_chrome_sidebar', attr: 'data-nd-sidebar', btn: 'nd-show-sidebar-btn', onLabel: {{ _('Hide sidebar') | tojson }}, offLabel: {{ _('Show sidebar') | tojson }} },
+    navbar:  { key: 'nd_chrome_navbar',  attr: 'data-nd-navbar',  btn: 'nd-show-navbar-btn',  onLabel: {{ _('Hide navbar') | tojson }},  offLabel: {{ _('Show navbar') | tojson }} }
+  };
+
+  function isVisible(which) {
+    try { return sessionStorage.getItem(MAP[which].key) === '1'; } catch (e) { return false; }
+  }
+
+  function measureNavbarHeight() {
+    var header = document.getElementById('sticky-header');
+    if (!header) return;
+    var h = header.offsetHeight;
+    if (h > 0) document.body.style.setProperty('--nd-navbar-h', h + 'px');
+  }
+
+  function apply(which) {
+    var m = MAP[which];
+    var visible = isVisible(which);
+    document.body.setAttribute(m.attr, visible ? 'visible' : 'hidden');
+    var btn = document.getElementById(m.btn);
+    if (btn) btn.textContent = visible ? m.onLabel : m.offLabel;
+    // The navbar's real height varies with viewport width (button labels
+    // wrap at different widths), so re-measure it every time it's shown --
+    // this is what keeps #nd-chrome-controls from landing on top of it.
+    if (which === 'navbar' && visible) {
+      measureNavbarHeight();
+    }
+  }
+
+  window.ndToggleChrome = function (which) {
+    var m = MAP[which];
+    var next = !isVisible(which);
+    try { sessionStorage.setItem(m.key, next ? '1' : '0'); } catch (e) {}
+    apply(which);
+  };
+
+  window.addEventListener('resize', function () {
+    if (isVisible('navbar')) measureNavbarHeight();
+  });
+
+  apply('sidebar');
+  apply('navbar');
+
+  window.ndToggleExtraMenu = function () {
+    var menu = document.getElementById('nd-extra-menu');
+    var btn = document.getElementById('nd-menu-btn');
+    if (!menu) return;
+    var opening = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden');
+    if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  };
+
+  document.addEventListener('click', function (e) {
+    var menu = document.getElementById('nd-extra-menu');
+    var btn = document.getElementById('nd-menu-btn');
+    if (!menu || menu.classList.contains('hidden')) return;
+    if (menu.contains(e.target) || (btn && btn.contains(e.target))) return;
+    menu.classList.add('hidden');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var menu = document.getElementById('nd-extra-menu');
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+      var btn = document.getElementById('nd-menu-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
+{% elif nd_mode %}
+<!-- Phase 7.4m -- Performers roster / backstage sub-sections rendered through
+     this same template (show_roster or show_section) get the generic
+     chrome-controls + "Do something else" treatment instead of the
+     Dashboard's own action-box -- they're not "home", so a way back matters. -->
+{% set nd_show_back = true %}{% set nd_home_url = '/' %}
+{% include 'partials/_nd_chrome_controls.html' %}
+{% endif %}
 
 {# ── Pre-compute page stats ─────────────────────────────── #}
 {% set open_slot_count = namespace(value=0) %}
@@ -547,7 +666,11 @@
 
 
   <!-- ════════════ MAIN COLUMN ════════════ -->
-  <div class="flex flex-col min-w-0">
+  <!-- Phase 7.4m: id only added for the roster/backstage-section views --
+       the true Dashboard home keeps its own #nd-action-box floating-modal
+       treatment instead (adding id="nd-main-col" here too would centre
+       the whole dashboard AND float the action box over it, doubled up). -->
+  <div{% if show_roster or show_section %} id="nd-main-col"{% endif %} class="flex flex-col min-w-0">
 
     <!-- ─── Sticky header ─── -->
     <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
@@ -585,6 +708,32 @@
 
           <!-- User profile pill -->
           {% include 'partials/_inbox_btn.html' %}
+{% if not nd_mode %}
+          <!-- ND mode toggle -- moved to top navbar (Phase 7.4f) -->
+          <button type="button" id="nd-mode-switch" role="switch"
+                  aria-checked="{{ 'true' if nd_mode else 'false' }}"
+                  aria-label="{{ _('ND mode') }}"
+                  title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+                  onclick="toggleNdMode(this)"
+                  class="relative flex-shrink-0 flex items-center gap-2 h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer {{ 'bg-by-yes text-by-ink' if nd_mode else 'bg-by-bg text-by-ink-3' }}">
+            <span class="w-2 h-2 rounded-full flex-shrink-0 {{ 'bg-by-ink' if nd_mode else 'bg-by-ink-3' }}" aria-hidden="true"></span>
+            <span>{{ _('ND mode') }}: {{ _('On') if nd_mode else _('Off') }}</span>
+          </button>
+{% endif %}
+          <script>
+          function toggleNdMode(btn) {
+            var nextMode = btn.getAttribute('aria-checked') === 'true' ? 'standard' : 'nd';
+            btn.disabled = true;
+            fetch('/api/me/accessibility-mode', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ mode: nextMode }),
+            }).then(function (res) { return res.json(); }).then(function (body) {
+              if (!body.ok) throw new Error(body.error || 'save failed');
+              location.reload();
+            }).catch(function () { btn.disabled = false; });
+          }
+          </script>
           <div class="relative flex-shrink-0" id="user-menu-wrap">
             <button id="user-menu-btn" onclick="toggleUserMenu()"
                     class="flex items-center gap-2 cursor-pointer h-9 px-2 border border-by-ink bg-by-bg">
@@ -640,9 +789,10 @@
 
     {# ── Per-view page headers ── #}
     {% if not show_roster and not show_section %}
-    {# Dashboard page header #}
+    {# Dashboard page header -- stays in the DOM in ND mode but blurred/dimmed
+       behind the floating action-box modal (Phase 7.4i) #}
     {% set teacher_count = users | selectattr('identity','equalto','teacher') | list | length %}
-    <div class="px-4 lg:px-7 pt-6 pb-4 border-b hairline">
+    <div class="px-4 lg:px-7 pt-6 pb-4 border-b hairline{{ ' nd-backdrop' if nd_mode else '' }}">
       <div class="flex items-start gap-4 flex-wrap">
         <div>
           <div class="by-eyebrow mb-1">Stage Manager · Studio BCN</div>
@@ -672,7 +822,6 @@
         </div>
       </div>
     </div>
-    {% endif %}
 
     {% if show_roster %}
     {# Performers page header #}
@@ -720,12 +869,384 @@
       </div>
     </div>
     {% endif %}
+    {% endif %}
 
     <main class="px-4 lg:px-7 py-4 lg:py-6 grid grid-cols-12 gap-4 lg:gap-5">
 
       {% if not show_roster and not show_section %}
+      {% if nd_mode %}
+      <!-- ══ ND Mode: Guided Action Box (Phase 7.4i — floats as a centered modal
+           over the blurred/dimmed dashboard; sidebar + navbar hidden, reveal
+           buttons + the ND toggle live in the always-visible #nd-chrome-controls
+           strip added near <body>) ══ -->
+      <div id="nd-action-box">
+        <div class="nd-modal-card w-full text-center" style="max-width: 640px;">
+          <div class="font-display text-[32px] lg:text-[40px] text-by-ink leading-tight mb-3">
+            {{ _('What do you want to do?') }}
+          </div>
+          <div class="text-[16px] text-by-ink-3 mb-9">
+            {{ _('Type it in, or pick one below.') }}
+          </div>
+
+          <form id="nd-action-form" class="flex flex-col sm:flex-row gap-3 mb-7" onsubmit="return ndActionSubmit(event)">
+            <input id="nd-action-input" type="text" autocomplete="off"
+                   placeholder="{{ _('e.g. &#39;add a user&#39;, &#39;view a user&#39;, &#39;check your messages&#39;') }}"
+                   class="flex-1 h-14 px-5 border border-by-ink bg-by-bg text-[17px] text-by-ink text-center sm:text-left">
+            <button type="submit" class="h-14 px-8 border-[1.5px] border-by-ink bg-by-yes text-by-ink font-sans font-bold text-[15px] uppercase tracking-[0.02em]">
+              {{ _('Go') }}
+            </button>
+          </form>
+
+          <div class="mb-6">
+            <div class="by-eyebrow mb-3">{{ _('Or try one of these') }}</div>
+            <div class="flex flex-wrap justify-center gap-3" id="nd-action-examples">
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('add_performer')">{{ _('Add a user') }}</button>
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('view_performer')">{{ _('View a user') }}</button>
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('messages')">{{ _('Check your messages') }}</button>
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('send_message')">{{ _('Send a message to a class') }}</button>
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('add_class')">{{ _('Add a class') }}</button>
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('add_show')">{{ _('Add a show') }}</button>
+            </div>
+          </div>
+
+          <div id="nd-action-result" class="hidden border border-by-ink bg-by-bg-2 px-5 py-4 text-left" style="max-width: 560px; margin: 0 auto;"></div>
+          <div id="nd-start-over-wrap" class="mt-5">
+            <button type="button" id="nd-start-over-btn" onclick="ndReset()"
+                    class="inline-flex items-center h-10 px-5 font-sans text-[12px] font-bold uppercase tracking-[0.03em] cursor-pointer"
+                    style="background:#000;color:#fff;border:1.5px solid #000;">
+              {{ _('Start Over') }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        // Phase 7.4s -- every role reachable on this Dashboard can be looking
+        // at it (teachers/owners/managers can all land here, not just
+        // stage_manager -- see /dashboard in routes_old.py), so some
+        // intents are gated to the roles they actually make sense/are
+        // permitted for. Mirrors the server-side scoping now enforced in
+        // the /attendance and /api/comms/send-blast routes -- this is just
+        // the UI not offering what the server would refuse anyway.
+        var CURRENT_ROLE = {{ (current_role or '') | lower | tojson }};
+        var CURRENT_USER_NAME = {{ (current_user_name or '') | tojson }};
+
+        var INTENTS = [
+          { id: 'add_performer', label: 'Add a performer', keywords: ['add a user','add user','add a performer','add performer','new user','new performer','new member','add member','add student','add a student'] },
+          { id: 'view_performer', label: 'View performers', keywords: ['view a user','view user','view a performer','view performer','see user','see performer','roster','performers','students','members'] },
+          { id: 'messages', label: 'Check your messages', keywords: ['check your messages','check messages','messages','message','inbox','mail','email'] },
+          { id: 'send_message', label: 'Send a message', keywords: ['send a message','send message','message a class','message to a class','message someone','message a person','write a message','dm someone','blast','dispatch','comms','announce','notify'] },
+          { id: 'add_class', label: 'Add a class', keywords: ['add a class','add class','new class','class'] },
+          { id: 'add_show', label: 'Add a show', keywords: ['add a show','add show','new show','performance','production'] },
+          { id: 'edit_profile', label: 'Edit your profile', keywords: ['edit profile','edit my profile','my profile','update profile','account settings','change password','my account','profile settings','settings'] },
+          { id: 'callboard', label: 'Callboard', keywords: ['callboard','call board','notice board','backstage board'] },
+          { id: 'shows_view', label: 'View shows', keywords: ['view shows','see shows','manage shows','shows list','show list','productions','upcoming shows','all shows','shows'] },
+          { id: 'finances', label: 'Finances', keywords: ['finances','financials','money','revenue','payments','ledger','box office','income'] },
+          { id: 'scene_library', label: 'Scene Library', keywords: ['scene library','scenes','scene list','improv scenes','games list'] },
+          { id: 'activity_log', label: 'Activity Log', keywords: ['activity log','audit log','activity','who did what','history log'], roles: ['owner', 'stage_manager', 'manager'] },
+          { id: 'volunteer_shifts', label: 'Volunteer Shifts', keywords: ['volunteer shifts','volunteer schedule','shifts','volunteers','backstage shifts'] },
+          { id: 'attendance', label: 'Attendance', keywords: ['attendance','check in','check-in','take attendance','mark attendance',"who's here",'who is here','roll call'] },
+          { id: 'reports', label: 'Reports', keywords: ['reports','report','analytics','view reports','see reports','show me reports'] },
+          { id: 'reports_all', label: 'All reports', keywords: ['all reports','every report'] },
+          { id: 'reports_alpha', label: 'VIP Patrons, Churn Risk & Patron LTV', keywords: ['vip patrons','churn risk','patron ltv','churn','ltv'] },
+          { id: 'reports_beta', label: 'Production Margin Matrix & ROI', keywords: ['production margin','margin matrix','roi','production roi','margin and roi'] },
+          { id: 'reports_gamma', label: 'Capacity Forecast & Seasonal Velocity', keywords: ['capacity forecast','seasonal velocity','capacity','seasonal trends','forecast'] },
+          { id: 'reports_delta', label: 'Backstage Ops & Volunteer Attrition', keywords: ['volunteer attrition','backstage ops','attrition','backstage operations'] }
+        ];
+
+        function intentsForRole() {
+          return INTENTS.filter(function (i) { return !i.roles || i.roles.indexOf(CURRENT_ROLE) !== -1; });
+        }
+
+        function ndMatch(text) {
+          var t = (text || '').toLowerCase().trim();
+          if (!t) return null;
+          var best = null, bestScore = 0;
+          intentsForRole().forEach(function (intent) {
+            intent.keywords.forEach(function (kw) {
+              if (t.indexOf(kw) !== -1 && kw.length > bestScore) {
+                best = intent;
+                bestScore = kw.length;
+              }
+            });
+          });
+          return best;
+        }
+
+        function ndExecute(id) {
+          if (id === 'add_performer') {
+            var btn = document.getElementById('addPerformerBtn');
+            if (btn) btn.click();
+          } else if (id === 'messages') {
+            if (typeof inboxOpen === 'function') inboxOpen();
+          } else if (id === 'add_class') {
+            if (typeof openModal === 'function') openModal('modal-add-class');
+          } else if (id === 'add_show') {
+            if (typeof openModal === 'function') openModal('modal-add-show');
+          } else if (id === 'edit_profile') {
+            window.location.href = '/settings';
+          } else if (id === 'callboard') {
+            window.location.href = '/backstage/callboard';
+          } else if (id === 'shows_view') {
+            window.location.href = '/backstage/shows';
+          } else if (id === 'finances') {
+            window.location.href = '/backstage/finances';
+          } else if (id === 'scene_library') {
+            window.location.href = '/backstage/scene-library';
+          } else if (id === 'activity_log') {
+            window.location.href = '/backstage/activity-log';
+          } else if (id === 'volunteer_shifts') {
+            window.location.href = '/backstage/volunteer-shifts';
+          } else if (id === 'reports_all') {
+            window.location.href = '/backstage/reports';
+          } else if (id === 'reports_alpha') {
+            window.location.href = '/backstage/reports#card-alpha';
+          } else if (id === 'reports_beta') {
+            window.location.href = '/backstage/reports#card-beta';
+          } else if (id === 'reports_gamma') {
+            window.location.href = '/backstage/reports#card-gamma';
+          } else if (id === 'reports_delta') {
+            window.location.href = '/backstage/reports#card-delta';
+          }
+        }
+
+        function ndShowResult(html) {
+          var el = document.getElementById('nd-action-result');
+          if (!el) return;
+          el.innerHTML = html;
+          el.classList.remove('hidden');
+          var card = el.closest('.nd-modal-card');
+          if (card) {
+            Array.prototype.forEach.call(card.children, function (child) {
+              // The Start Over button must stay reachable no matter what's
+              // showing -- "always an option and always visible" -- so it's
+              // the one sibling explicitly excluded from the dim/blur that
+              // nd-backdrop applies (nd-backdrop also sets pointer-events:
+              // none, which would otherwise make it unclickable right when
+              // it's most needed).
+              if (child !== el && child.id !== 'nd-start-over-wrap') child.classList.add('nd-backdrop');
+            });
+          }
+        }
+
+        // Reports: ambiguous ("reports" alone) gets a clarifying picker
+        // rather than a guess -- 4 real report cards live on one page
+        // (/backstage/reports), so "which one" actually matters. A specific
+        // match (ROI, churn, capacity, attrition, ...) or the literal "all
+        // reports" skips the picker and goes straight to the normal
+        // confirm step.
+        function ndShowReportsPicker() {
+          ndShowResult(
+            '<div class="text-[13px] text-by-ink mb-2 font-semibold">Which report?</div>' +
+            '<div class="flex flex-wrap gap-2">' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndActionRun(\'reports_alpha\')">VIP Patrons &amp; Churn Risk</button>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndActionRun(\'reports_beta\')">Production Margin &amp; ROI</button>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndActionRun(\'reports_gamma\')">Capacity Forecast</button>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndActionRun(\'reports_delta\')">Backstage Ops &amp; Attrition</button>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndActionRun(\'reports_all\')">All reports</button>' +
+            '</div>'
+          );
+        }
+
+        // Attendance: stage managers/owners/managers can take attendance for
+        // any class or any member; a teacher only for their own classes and
+        // the students enrolled in them -- enforced for real server-side in
+        // /attendance (routes_old.py), this is just the matching UI choice.
+        function ndShowAttendancePicker() {
+          ndShowResult(
+            '<div class="text-[13px] text-by-ink mb-2 font-semibold">Take attendance by:</div>' +
+            '<div class="flex flex-wrap gap-2">' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndAttendanceByClass()">By class</button>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndAttendanceByStudent()">By student</button>' +
+            '</div>'
+          );
+        }
+
+        window.ndAttendanceByClass = function () {
+          var isTeacher = CURRENT_ROLE === 'teacher';
+          var mine = (typeof CLASSES_ALL !== 'undefined' ? CLASSES_ALL : []).filter(function (c) {
+            return !isTeacher || (c.instructor || '').trim().toLowerCase() === CURRENT_USER_NAME.trim().toLowerCase();
+          });
+          if (!mine.length) {
+            ndShowResult('<div class="text-[13px] text-by-ink-3">' + (isTeacher ? "You don't have any classes yet." : 'No classes found.') + '</div>');
+            return;
+          }
+          ndShowResult(
+            '<div class="text-[13px] text-by-ink mb-2 font-semibold">Pick a class:</div>' +
+            '<div class="flex flex-col gap-1.5 max-h-[220px] overflow-y-auto">' +
+            mine.map(function (c) {
+              return '<button type="button" class="nd-student-result block w-full text-left px-3 py-2.5 border border-by-ink bg-by-bg text-[13.5px] text-by-ink" onclick="window.location.href=\'/attendance?class_id=' + encodeURIComponent(c.id) + '\'">' + window.esc(c.title || c.name || '') + '</button>';
+            }).join('') +
+            '</div>'
+          );
+        };
+
+        window.ndAttendanceByStudent = function () {
+          // The server (/attendance) already scopes the member list to a
+          // teacher's own enrolled students -- no extra client-side picker
+          // needed, it's the real enforcement either way.
+          window.location.href = '/attendance';
+        };
+
+        // Message picker: the callboard (class/group blast) must never be
+        // the default for "send a message" -- only reachable here when
+        // explicitly choosing it, and only offered to roles that are
+        // actually allowed to use it (mirrors the real server-side gate in
+        // api_comms_send_blast). Everyone else -- teacher, student, or a
+        // stage manager messaging one person -- goes to a name search that
+        // opens the real inbox compose, same modal already on this page.
+        function ndShowMessagePicker() {
+          var canBlast = ['owner', 'stage_manager', 'manager'].indexOf(CURRENT_ROLE) !== -1;
+          var html =
+            '<div class="text-[13px] text-by-ink mb-2 font-semibold">Message who?</div>' +
+            '<div class="flex flex-wrap gap-2">' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndMessagePerson()">One person</button>';
+          if (canBlast) {
+            html += '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="window.location.href=\'/backstage/comms\'">A whole class / group</button>';
+          }
+          html += '</div>';
+          ndShowResult(html);
+        }
+
+        window.ndMessagePerson = function () {
+          var contacts = (typeof ROSTER !== 'undefined' ? ROSTER : []).filter(function (p) {
+            return (p.identity === 'student' || p.identity === 'teacher') && p.name !== CURRENT_USER_NAME;
+          });
+          ndShowResult(
+            '<div class="text-[13px] text-by-ink mb-2 font-semibold">Type a name:</div>' +
+            '<input type="text" id="nd-message-search-input" autocomplete="off" placeholder="e.g. Ana Garcia" ' +
+            'class="w-full h-11 px-3 border-[1.5px] border-by-ink bg-by-bg text-[14px] text-by-ink mb-2" />' +
+            '<div id="nd-message-search-results" class="flex flex-col gap-1.5 max-h-[220px] overflow-y-auto"></div>'
+          );
+          var input = document.getElementById('nd-message-search-input');
+          var resultsEl = document.getElementById('nd-message-search-results');
+          function render(q) {
+            q = (q || '').toLowerCase().trim();
+            var matches = !q ? [] : contacts.filter(function (p) {
+              return (p.name || '').toLowerCase().indexOf(q) !== -1;
+            }).slice(0, 8);
+            resultsEl.innerHTML = matches.length
+              ? matches.map(function (p) {
+                  return '<button type="button" class="nd-student-result block w-full text-left px-3 py-2.5 border border-by-ink bg-by-bg text-[13.5px] text-by-ink" data-email="' + window.esc(p.email) + '" data-name="' + window.esc(p.name) + '">' + window.esc(p.name) + '</button>';
+                }).join('')
+              : (q ? '<div class="text-[12.5px] text-by-ink-4 px-1">No match.</div>' : '');
+          }
+          if (input) {
+            input.focus();
+            input.addEventListener('input', function () { render(input.value); });
+          }
+          if (resultsEl) {
+            resultsEl.addEventListener('click', function (ev) {
+              var btn = ev.target.closest('.nd-student-result');
+              if (!btn) return;
+              if (typeof composeMsgTo === 'function') composeMsgTo(btn.dataset.email, btn.dataset.name);
+              ndReset();
+            });
+          }
+        };
+
+        // View tasks are for looking something up, not entering data --
+        // skip the roster list entirely and jump straight to a name search,
+        // so picking a match opens that student's summary directly.
+        function ndShowStudentSearch() {
+          ndShowResult(
+            '<div class="text-[13px] text-by-ink mb-2 font-semibold">Type a student name:</div>' +
+            '<input type="text" id="nd-student-search-input" autocomplete="off" placeholder="e.g. Ana Garcia" ' +
+            'class="w-full h-11 px-3 border-[1.5px] border-by-ink bg-by-bg text-[14px] text-by-ink mb-2" />' +
+            '<div id="nd-student-search-results" class="flex flex-col gap-1.5 max-h-[220px] overflow-y-auto"></div>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body mt-3" onclick="ndReset()">Back</button>'
+          );
+          var input = document.getElementById('nd-student-search-input');
+          var resultsEl = document.getElementById('nd-student-search-results');
+          function render(q) {
+            q = (q || '').toLowerCase().trim();
+            var matches = !q ? [] : ROSTER.filter(function (p) {
+              return (p.name || '').toLowerCase().indexOf(q) !== -1;
+            }).slice(0, 8);
+            resultsEl.innerHTML = matches.length
+              ? matches.map(function (p) {
+                  return '<button type="button" class="nd-student-result block w-full text-left px-3 py-2.5 border border-by-ink bg-by-bg text-[13.5px] text-by-ink" data-id="' + window.esc(p.id) + '">' + window.esc(p.name) + '</button>';
+                }).join('')
+              : (q ? '<div class="text-[12.5px] text-by-ink-4 px-1">No match.</div>' : '');
+          }
+          if (input) {
+            input.focus();
+            input.addEventListener('input', function () { render(input.value); });
+          }
+          if (resultsEl) {
+            resultsEl.addEventListener('click', function (ev) {
+              var btn = ev.target.closest('.nd-student-result');
+              if (!btn) return;
+              var p = ROSTER.find(function (x) { return String(x.id) === String(btn.dataset.id); });
+              if (p) openStudentPanel(p);
+            });
+          }
+        }
+
+        var FALLBACK_HIDE = ['reports_all', 'reports_alpha', 'reports_beta', 'reports_gamma', 'reports_delta'];
+
+        window.ndActionRun = function (id) {
+          if (id === 'view_performer') { ndShowStudentSearch(); return; }
+          if (id === 'reports') { ndShowReportsPicker(); return; }
+          if (id === 'attendance') { ndShowAttendancePicker(); return; }
+          if (id === 'send_message') { ndShowMessagePicker(); return; }
+          var matches = INTENTS.filter(function (i) { return i.id === id; });
+          var intent = matches.length ? matches[0] : null;
+          if (!intent) return;
+          ndShowResult(
+            '<div class="text-[13px] text-by-ink mb-2">Got it \u2014 ' + intent.label + '?</div>' +
+            '<div class="flex flex-wrap gap-2">' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndConfirm(\'' + id + '\')">Yes, do it</button>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndReset()">No, something else</button>' +
+            '</div>'
+          );
+        };
+
+        window.ndConfirm = function (id) {
+          ndExecute(id);
+        };
+
+        window.ndReset = function () {
+          var el = document.getElementById('nd-action-result');
+          if (el) { el.classList.add('hidden'); el.innerHTML = ''; }
+          var card = document.querySelector('#nd-action-box .nd-modal-card');
+          if (card) {
+            Array.prototype.forEach.call(card.children, function (child) {
+              child.classList.remove('nd-backdrop');
+            });
+          }
+          var input = document.getElementById('nd-action-input');
+          if (input) { input.value = ''; input.focus(); }
+        };
+
+        window.ndActionSubmit = function (ev) {
+          ev.preventDefault();
+          var input = document.getElementById('nd-action-input');
+          var text = input ? input.value : '';
+          var intent = ndMatch(text);
+          if (intent) {
+            if (intent.id === 'reports' && /\ball\b/i.test(text)) {
+              window.ndActionRun('reports_all');
+            } else {
+              window.ndActionRun(intent.id);
+            }
+          } else {
+            ndShowResult(
+              '<div class="text-[13px] text-by-ink mb-2">I\'m not sure what you mean. Try one of these:</div>' +
+              '<div class="flex flex-wrap gap-2">' +
+              intentsForRole().filter(function (i) { return FALLBACK_HIDE.indexOf(i.id) === -1; }).map(function (i) {
+                return '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndActionRun(\'' + i.id + '\')">' + i.label + '</button>';
+              }).join('') +
+              '</div>'
+            );
+          }
+          return false;
+        };
+      })();
+      </script>
+      {% endif %}
       <!-- ══ Weekly Schedule Matrix ══ -->
-      <div class="col-span-12 border border-by-ink bg-by-bg shadow-by-hard">
+      <div class="col-span-12 border border-by-ink bg-by-bg shadow-by-hard{{ ' nd-backdrop' if nd_mode else '' }}">
         <div class="px-5 py-4 flex items-center justify-between border-b border-by-ink bg-by-yes">
           <div>
             <div class="font-display text-[17px] text-by-ink">This Week On Stage &amp; In Studio</div>
@@ -841,7 +1362,7 @@
 
       {% if not show_roster and not show_section %}
       <!-- ══ Shows & Volunteer Slots (8 cols) + Spontaneity Engine (4 cols) ══ -->
-      <section id="shows-section" class="col-span-12 xl:col-span-8 border hairline bg-by-bg">
+      <section id="shows-section" class="col-span-12 xl:col-span-8 border hairline bg-by-bg{{ ' nd-backdrop' if nd_mode else '' }}">
         <header class="px-5 py-4 border-b hairline flex items-center justify-between">
           <div>
             <div class="font-display text-[16.5px] text-by-ink">Shows &amp; Volunteer Slots</div>
@@ -941,7 +1462,7 @@
       </section>
 
       <!-- ══ Spontaneity Engine / Warm-up Draw (4 cols) ══ -->
-      <section class="col-span-12 xl:col-span-4 spont-card p-0">
+      <section class="col-span-12 xl:col-span-4 spont-card p-0{{ ' nd-backdrop' if nd_mode else '' }}">
         <!-- WHY: rgba(20,18,16,.12) is a translucent tint of --by-ink with no registered
              Tailwind opacity utility for this token — kept inline, same as the matching
              rgba(20,18,16,.35)/rgba(255,255,255,.35) values further down in this section. -->
@@ -1499,7 +2020,7 @@
 
 
 {# ── Student Info ── #}
-<div id="modal-student-info" class="by-panel hidden fixed inset-0 z-50">
+<div id="modal-student-info" class="by-panel hidden fixed inset-0 z-50" data-nd-wizard-skip-all>
   <div class="absolute inset-0" style="background:rgba(20,18,16,.5)" onclick="closeModal('modal-student-info')"></div>
   <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[420px] flex flex-col bg-by-bg border-l-[1.5px] border-by-ink">
 
@@ -2909,8 +3430,10 @@
       if (cc) cc.textContent = '0 / 300';
       selectSpontPool('locations');
     }
+    if (typeof ndWizardOnOpen === 'function') ndWizardOnOpen(id);
   }
   function closeModal(id) {
+    if (typeof ndWizardOnClose === 'function') ndWizardOnClose(id);
     const el = document.getElementById(id);
     el.classList.remove('open');
     const inner = el.querySelector('.by-panel-inner');

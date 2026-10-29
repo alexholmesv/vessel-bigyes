@@ -1,6 +1,45 @@
 <!-- User profile pill — include inside page_header block overrides -->
 <!-- NOTE: _inbox_btn.html is already included below. Do NOT include it separately in the parent header. -->
+<!-- NOTE (Phase 7.4m correction): the ND toggle WAS removed from here during 7.4f on the
+     premise that backstage_layout.html's own page_header block already renders one -- that
+     premise turned out to be false. All 5 templates that include this partial (activity_log,
+     callboard, finances, reports, scene_library) override the page_header block entirely,
+     so backstage_layout.html's default page_header (and the toggle inside it) never actually
+     renders for any of them -- it's dead code. Without a toggle here, those 5 pages had NO
+     way to turn ND mode on/off at all (the floating #nd-mode-switch-floating in
+     #nd-chrome-controls only appears once ND mode is already on). Restored below.
+     NOTE (Phase 7.4o correction): now that #nd-chrome-controls is included on every one of
+     these 5 pages (via backstage_layout.html), this toggle duplicates the always-visible
+     floating one whenever ND mode is already on and the navbar is revealed -- two switches
+     for the same state, stacked right on top of each other. Only rendered below when ND mode
+     is OFF, since that's the one case the floating toggle can't cover (it only exists once ND
+     mode is already on). -->
 {% include 'partials/_inbox_btn.html' %}
+{% if not nd_mode %}
+<button type="button" id="nd-mode-switch" role="switch"
+        aria-checked="{{ 'true' if nd_mode else 'false' }}"
+        aria-label="{{ _('ND mode') }}"
+        title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+        onclick="toggleNdMode(this)"
+        class="relative flex-shrink-0 flex items-center gap-2 h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer {{ 'bg-by-yes text-by-ink' if nd_mode else 'bg-by-bg text-by-ink-3' }}">
+  <span class="w-2 h-2 rounded-full flex-shrink-0 {{ 'bg-by-ink' if nd_mode else 'bg-by-ink-3' }}" aria-hidden="true"></span>
+  <span>{{ _('ND mode') }}: {{ _('On') if nd_mode else _('Off') }}</span>
+</button>
+{% endif %}
+<script>
+function toggleNdMode(btn) {
+  var nextMode = btn.getAttribute('aria-checked') === 'true' ? 'standard' : 'nd';
+  btn.disabled = true;
+  fetch('/api/me/accessibility-mode', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: nextMode }),
+  }).then(function (res) { return res.json(); }).then(function (body) {
+    if (!body.ok) throw new Error(body.error || 'save failed');
+    location.reload();
+  }).catch(function () { btn.disabled = false; });
+}
+</script>
 <div class="relative hidden lg:block flex-shrink-0" id="user-menu-wrap">
   <button id="user-menu-btn" onclick="toggleUserMenu()"
           class="flex items-center gap-2 cursor-pointer h-9 px-2"

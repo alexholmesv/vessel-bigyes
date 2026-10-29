@@ -35,6 +35,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+{% if nd_mode %}
+<script src="{{ url_for('static', filename='js/nd-celebrate.js') }}"></script>
+{% endif %}
 
 <style>
   /* ── BigYes Design Tokens ──────────────────────────────────────────── */
@@ -169,7 +173,10 @@
 {% block extra_head %}{% endblock %}
 {% include 'partials/_byselect.html' %}
 </head>
-<body>
+<body{% if nd_mode %} data-nd-declutter="1"{% endif %}>
+
+{% set nd_show_back = true %}{% set nd_home_url = '/' %}
+{% include 'partials/_nd_chrome_controls.html' %}
 
 <!-- ── Mobile top bar ── -->
 <header class="by-mob-bar">
@@ -210,11 +217,11 @@
   {% include 'partials/_sidebar.html' %}
 
   {# ════ MAIN COLUMN ════ #}
-  <div class="flex flex-col min-w-0">
+  <div id="nd-main-col" class="flex flex-col min-w-0">
 
     {# Default sticky page header — pages can override this block entirely #}
     {% block page_header %}
-    <header class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline" style="background:var(--by-bg);">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
         <div class="min-w-0">
           <div class="by-eyebrow">{% block page_eyebrow %}Backstage{% endblock %}</div>
@@ -227,6 +234,30 @@
           {% include 'partials/_scene_switcher.html' %}
 <!-- User profile pill -->
           {% include 'partials/_inbox_btn.html' %}
+          <!-- ND mode toggle -- moved to top navbar (Phase 7.4f) -->
+          <button type="button" id="nd-mode-switch" role="switch"
+                  aria-checked="{{ 'true' if nd_mode else 'false' }}"
+                  aria-label="{{ _('ND mode') }}"
+                  title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+                  onclick="toggleNdMode(this)"
+                  class="relative flex-shrink-0 flex items-center gap-2 h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer {{ 'bg-by-yes text-by-ink' if nd_mode else 'bg-by-bg text-by-ink-3' }}">
+            <span class="w-2 h-2 rounded-full flex-shrink-0 {{ 'bg-by-ink' if nd_mode else 'bg-by-ink-3' }}" aria-hidden="true"></span>
+            <span>{{ _('ND mode') }}: {{ _('On') if nd_mode else _('Off') }}</span>
+          </button>
+          <script>
+          function toggleNdMode(btn) {
+            var nextMode = btn.getAttribute('aria-checked') === 'true' ? 'standard' : 'nd';
+            btn.disabled = true;
+            fetch('/api/me/accessibility-mode', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ mode: nextMode }),
+            }).then(function (res) { return res.json(); }).then(function (body) {
+              if (!body.ok) throw new Error(body.error || 'save failed');
+              location.reload();
+            }).catch(function () { btn.disabled = false; });
+          }
+          </script>
           <div class="relative hidden lg:block flex-shrink-0" id="user-menu-wrap">
             <button id="user-menu-btn" onclick="toggleUserMenu()"
                     class="flex items-center gap-2 cursor-pointer h-9 px-2"

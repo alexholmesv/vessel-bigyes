@@ -44,6 +44,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+{% if nd_mode %}
+<script src="{{ url_for('static', filename='js/nd-celebrate.js') }}"></script>
+{% endif %}
 
 <style>
   /* ── BigYes Design Tokens ──────────────────────────────────────────── */
@@ -280,7 +284,10 @@
 </style>
 {% include 'partials/_byselect.html' %}
 </head>
-<body>
+<body{% if nd_mode %} data-nd-declutter="1"{% endif %}>
+
+{% set nd_show_back = true %}{% set nd_home_url = '/' %}
+{% include 'partials/_nd_chrome_controls.html' %}
 
 <!-- ── Mobile top bar ── -->
 <header class="by-mob-bar">
@@ -322,10 +329,10 @@
 
 
   <!-- ════ MAIN COLUMN ════ -->
-  <div class="flex flex-col min-w-0">
+  <div id="nd-main-col" class="flex flex-col min-w-0">
 
     <!-- ─── Sticky page header ─── -->
-    <header class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
+    <header id="sticky-header" class="sticky top-0 lg:top-0 z-30 border-b hairline bg-by-bg">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
         <div class="min-w-0">
           <div class="by-eyebrow">Backstage</div>
@@ -348,6 +355,33 @@
               <div class="font-mono text-[9.5px] tracking-[.08em] uppercase text-by-ink-3 mt-px">Stage Manager</div>
             </div>
           </div>
+{% if not nd_mode %}
+          <!-- ND mode toggle -- moved to top navbar (Phase 7.4f) -->
+          <button type="button" id="nd-mode-switch" role="switch"
+                  aria-checked="{{ 'true' if nd_mode else 'false' }}"
+                  aria-label="{{ _('ND mode') }}"
+                  title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+                  onclick="toggleNdMode(this)"
+                  class="relative hidden lg:flex flex-shrink-0 items-center gap-2 h-9 px-4 rounded-full cursor-pointer"
+                  style="border:var(--by-bd);font-family:var(--by-f-sans);font-weight:700;font-size:12px;background:{{ 'var(--by-yes)' if nd_mode else 'var(--by-bg)' }};color:{{ 'var(--by-ink)' if nd_mode else 'var(--by-ink-3)' }};">
+            <span style="width:8px;height:8px;border-radius:999px;flex-shrink:0;background:{{ 'var(--by-ink)' if nd_mode else 'var(--by-ink-3)' }};" aria-hidden="true"></span>
+            <span>{{ _('ND mode') }}: {{ _('On') if nd_mode else _('Off') }}</span>
+          </button>
+{% endif %}
+          <script>
+          function toggleNdMode(btn) {
+            var nextMode = btn.getAttribute('aria-checked') === 'true' ? 'standard' : 'nd';
+            btn.disabled = true;
+            fetch('/api/me/accessibility-mode', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ mode: nextMode }),
+            }).then(function (res) { return res.json(); }).then(function (body) {
+              if (!body.ok) throw new Error(body.error || 'save failed');
+              location.reload();
+            }).catch(function () { btn.disabled = false; });
+          }
+          </script>
           <a href="/logout" class="hidden lg:flex items-center h-9 px-3 text-[12px] border border-by-ink text-by-tomato bg-by-bg font-sans font-semibold no-underline">
             Log out
           </a>
@@ -365,13 +399,43 @@
         </p>
       </div>
 
+      {% if nd_mode %}
+      <!-- Phase 7.4t -- ND mode shows one section at a time; the Transmission
+           Log starts hidden and only appears behind this explicit toggle,
+           same pattern as "Show sidebar"/"Show navbar". -->
+      <div class="mb-5">
+        <button type="button" id="nd-translog-toggle" onclick="ndToggleTranslog()"
+                class="flex-shrink-0 flex items-center h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-bg text-by-ink-3">
+          {{ _('View Transmission Log') }}
+        </button>
+      </div>
+      <script>
+      (function () {
+        function isVisible() {
+          try { return sessionStorage.getItem('nd_translog_visible') === '1'; } catch (e) { return false; }
+        }
+        function apply() {
+          var visible = isVisible();
+          document.body.setAttribute('data-nd-translog', visible ? 'visible' : 'hidden');
+          var btn = document.getElementById('nd-translog-toggle');
+          if (btn) btn.textContent = visible ? {{ _('Hide Transmission Log') | tojson }} : {{ _('View Transmission Log') | tojson }};
+        }
+        window.ndToggleTranslog = function () {
+          try { sessionStorage.setItem('nd_translog_visible', isVisible() ? '0' : '1'); } catch (e) {}
+          apply();
+        };
+        apply();
+      })();
+      </script>
+      {% endif %}
+
       <!-- ══ Two-column grid ══ -->
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
 
         <!-- ════════════════════════════════════════════════════════
              LEFT — DIRECTIVES COMPOSER
         ════════════════════════════════════════════════════════ -->
-        <section class="border-[1.5px] border-by-ink bg-by-bg">
+        <section id="composerPanel" class="border-[1.5px] border-by-ink bg-by-bg">
 
           <header class="px-5 py-4 flex items-center gap-3 border-b border-by-ink">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -857,6 +921,25 @@
 </script>
 
   {% include 'partials/_inbox_modal.html' %}
+
+{% if nd_mode %}
+<script>
+// Phase 7.4k -- ND mode deep-links: the Dashboard's guided action box sends
+// "check your messages" here as ?nd_open=inbox and "send a message to a
+// class" as ?nd_open=compose, so the right thing is already open/focused
+// the moment this page's centered ND modal appears.
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var open = params.get('nd_open');
+  if (open === 'inbox' && typeof inboxOpen === 'function') {
+    inboxOpen();
+  } else if (open === 'compose') {
+    var ta = document.getElementById('messageBody');
+    if (ta) ta.focus();
+  }
+})();
+</script>
+{% endif %}
 
 </body>
 </html>
