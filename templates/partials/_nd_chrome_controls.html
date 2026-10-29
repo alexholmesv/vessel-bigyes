@@ -1,0 +1,113 @@
+{% if nd_mode %}
+<!-- Phase 7.4k -- shared always-visible ND chrome controls (toggle + reveal
+     buttons + optional "Do something else" return-to-actions button).
+     Included on every non-dashboard ND page; the Dashboard keeps its own
+     inline copy in admin.html (it IS the "something else" destination). -->
+<div id="nd-chrome-controls">
+  <button type="button" id="nd-mode-switch-floating" role="switch"
+          aria-checked="{{ 'true' if nd_mode else 'false' }}"
+          aria-label="{{ _('ND mode') }}"
+          title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+          onclick="toggleNdMode(this)"
+          class="relative flex-shrink-0 flex items-center gap-2 h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-yes text-by-ink">
+    <span class="w-2 h-2 rounded-full flex-shrink-0 bg-by-ink" aria-hidden="true"></span>
+    <span>{{ _('ND mode') }}: {{ _('On') }}</span>
+  </button>
+  <button type="button" id="nd-menu-btn" aria-haspopup="true" aria-expanded="false"
+          aria-label="{{ _('More options') }}" title="{{ _('More options') }}"
+          onclick="ndToggleExtraMenu()"
+          class="relative flex-shrink-0 flex items-center justify-center rounded-full border border-by-ink cursor-pointer bg-by-bg text-by-ink-3">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div id="nd-extra-menu" class="hidden" role="menu">
+    {% if nd_show_back %}
+    <button type="button" id="nd-back-to-actions-btn" onclick="window.location.href='{{ nd_home_url | default('/') }}'"
+            class="flex-shrink-0 flex items-center h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-yes-soft text-by-ink">
+      {{ _('Do something else') }}
+    </button>
+    {% endif %}
+    <button type="button" id="nd-show-sidebar-btn" onclick="ndToggleChrome('sidebar')"
+            class="flex-shrink-0 flex items-center h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-bg text-by-ink-3">
+      {{ _('Show sidebar') }}
+    </button>
+    <button type="button" id="nd-show-navbar-btn" onclick="ndToggleChrome('navbar')"
+            class="flex-shrink-0 flex items-center h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-bg text-by-ink-3">
+      {{ _('Show navbar') }}
+    </button>
+  </div>
+</div>
+<script>
+(function () {
+  var MAP = {
+    sidebar: { key: 'nd_chrome_sidebar', attr: 'data-nd-sidebar', btn: 'nd-show-sidebar-btn', onLabel: {{ _('Hide sidebar') | tojson }}, offLabel: {{ _('Show sidebar') | tojson }} },
+    navbar:  { key: 'nd_chrome_navbar',  attr: 'data-nd-navbar',  btn: 'nd-show-navbar-btn',  onLabel: {{ _('Hide navbar') | tojson }},  offLabel: {{ _('Show navbar') | tojson }} }
+  };
+
+  function isVisible(which) {
+    try { return sessionStorage.getItem(MAP[which].key) === '1'; } catch (e) { return false; }
+  }
+
+  function measureNavbarHeight() {
+    var header = document.getElementById('sticky-header');
+    if (!header) return;
+    var h = header.offsetHeight;
+    if (h > 0) document.body.style.setProperty('--nd-navbar-h', h + 'px');
+  }
+
+  function apply(which) {
+    var m = MAP[which];
+    var visible = isVisible(which);
+    document.body.setAttribute(m.attr, visible ? 'visible' : 'hidden');
+    var btn = document.getElementById(m.btn);
+    if (btn) btn.textContent = visible ? m.onLabel : m.offLabel;
+    if (which === 'navbar' && visible) {
+      measureNavbarHeight();
+    }
+  }
+
+  window.ndToggleChrome = function (which) {
+    var m = MAP[which];
+    var next = !isVisible(which);
+    try { sessionStorage.setItem(m.key, next ? '1' : '0'); } catch (e) {}
+    apply(which);
+  };
+
+  window.addEventListener('resize', function () {
+    if (isVisible('navbar')) measureNavbarHeight();
+  });
+
+  apply('sidebar');
+  apply('navbar');
+
+  window.ndToggleExtraMenu = function () {
+    var menu = document.getElementById('nd-extra-menu');
+    var btn = document.getElementById('nd-menu-btn');
+    if (!menu) return;
+    var opening = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden');
+    if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  };
+
+  document.addEventListener('click', function (e) {
+    var menu = document.getElementById('nd-extra-menu');
+    var btn = document.getElementById('nd-menu-btn');
+    if (!menu || menu.classList.contains('hidden')) return;
+    if (menu.contains(e.target) || (btn && btn.contains(e.target))) return;
+    menu.classList.add('hidden');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var menu = document.getElementById('nd-extra-menu');
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+      var btn = document.getElementById('nd-menu-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
+{% endif %}

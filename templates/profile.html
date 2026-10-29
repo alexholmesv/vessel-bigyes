@@ -44,6 +44,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+{% if nd_mode %}
+<script src="{{ url_for('static', filename='js/nd-celebrate.js') }}"></script>
+<script src="{{ url_for('static', filename='js/nd-wizard.js') }}"></script>
+{% endif %}
 
 <style>
   :root {
@@ -196,7 +201,98 @@
 </style>
 {% include 'partials/_byselect.html' %}
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen"{% if nd_mode %} data-nd-declutter="1"{% endif %}>
+
+{% if nd_mode %}
+<!-- Phase 7.4n -- Student ND chrome controls. Same reasoning as the Teacher
+     view: .app-sidebar is already an off-canvas slide-over by default, so
+     there's no persistent sidebar to declutter -- just the toggle + a way
+     to reveal the navbar. This page IS the student's home, so no
+     "Do something else" button either. -->
+<div id="nd-chrome-controls">
+  <button type="button" id="nd-mode-switch-floating" role="switch"
+          aria-checked="{{ 'true' if nd_mode else 'false' }}"
+          aria-label="{{ _('ND mode') }}"
+          title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+          onclick="toggleNdMode(this)"
+          class="relative flex-shrink-0 flex items-center gap-2 h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-yes text-by-ink">
+    <span class="w-2 h-2 rounded-full flex-shrink-0 bg-by-ink" aria-hidden="true"></span>
+    <span>{{ _('ND mode') }}: {{ _('On') }}</span>
+  </button>
+  <button type="button" id="nd-menu-btn" aria-haspopup="true" aria-expanded="false"
+          aria-label="{{ _('More options') }}" title="{{ _('More options') }}"
+          onclick="ndToggleExtraMenu()"
+          class="relative flex-shrink-0 flex items-center justify-center rounded-full border border-by-ink cursor-pointer bg-by-bg text-by-ink-3">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div id="nd-extra-menu" class="hidden" role="menu">
+    <button type="button" id="nd-show-navbar-btn" onclick="ndToggleChrome('navbar')"
+            class="flex-shrink-0 flex items-center h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer bg-by-bg text-by-ink-3">
+      {{ _('Show navbar') }}
+    </button>
+  </div>
+</div>
+<script>
+(function () {
+  var MAP = {
+    navbar: { key: 'nd_chrome_navbar', attr: 'data-nd-navbar', btn: 'nd-show-navbar-btn', onLabel: {{ _('Hide navbar') | tojson }}, offLabel: {{ _('Show navbar') | tojson }} }
+  };
+  function isVisible(which) { try { return sessionStorage.getItem(MAP[which].key) === '1'; } catch (e) { return false; } }
+  function measureNavbarHeight() {
+    var header = document.getElementById('sticky-header');
+    if (!header) return;
+    var h = header.offsetHeight;
+    if (h > 0) document.body.style.setProperty('--nd-navbar-h', h + 'px');
+  }
+  function apply(which) {
+    var m = MAP[which];
+    var visible = isVisible(which);
+    document.body.setAttribute(m.attr, visible ? 'visible' : 'hidden');
+    var btn = document.getElementById(m.btn);
+    if (btn) btn.textContent = visible ? m.onLabel : m.offLabel;
+    if (which === 'navbar' && visible) { measureNavbarHeight(); }
+  }
+  window.ndToggleChrome = function (which) {
+    var m = MAP[which];
+    var next = !isVisible(which);
+    try { sessionStorage.setItem(m.key, next ? '1' : '0'); } catch (e) {}
+    apply(which);
+  };
+  window.addEventListener('resize', function () { if (isVisible('navbar')) measureNavbarHeight(); });
+  apply('navbar');
+
+  window.ndToggleExtraMenu = function () {
+    var menu = document.getElementById('nd-extra-menu');
+    var btn = document.getElementById('nd-menu-btn');
+    if (!menu) return;
+    var opening = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden');
+    if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  };
+
+  document.addEventListener('click', function (e) {
+    var menu = document.getElementById('nd-extra-menu');
+    var btn = document.getElementById('nd-menu-btn');
+    if (!menu || menu.classList.contains('hidden')) return;
+    if (menu.contains(e.target) || (btn && btn.contains(e.target))) return;
+    menu.classList.add('hidden');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var menu = document.getElementById('nd-extra-menu');
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+      var btn = document.getElementById('nd-menu-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
+{% endif %}
 
 <!-- Toast -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 rounded text-[.78125rem] font-semibold pointer-events-none whitespace-nowrap" style="opacity:0;transition:opacity 200ms ease;"></div>
@@ -273,7 +369,7 @@
   <div class="flex flex-col min-w-0">
 
     <!-- Sticky header -->
-    <header class="sticky top-0 z-30 border-b hairline bg-by-bg">
+    <header id="sticky-header" class="sticky top-0 z-30 border-b hairline bg-by-bg">
       <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-3 lg:gap-4">
         <!-- Sidebar toggle (desktop) -->
         <button onclick="toggleSidebar()" class="hidden lg:flex h-9 w-9 items-center justify-center flex-shrink-0 btn-ghost" title="Toggle sidebar">
@@ -297,6 +393,32 @@
         {% include 'partials/_scene_switcher.html' %}
         {% include 'partials/_inbox_btn.html' %}
 
+{% if not nd_mode %}
+        <!-- ND mode toggle -- moved to top navbar (Phase 7.4f) -->
+        <button type="button" id="nd-mode-switch" role="switch"
+                aria-checked="{{ 'true' if nd_mode else 'false' }}"
+                aria-label="{{ _('ND mode') }}"
+                title="{{ _('A calmer stage for ADHD and neurodivergent minds — flip it on for a smoother, simpler show.') }}"
+                onclick="toggleNdMode(this)"
+                class="relative flex-shrink-0 flex items-center gap-2 h-9 px-4 rounded-full border border-by-ink font-sans text-[12px] font-semibold cursor-pointer {{ 'bg-by-yes text-by-ink' if nd_mode else 'bg-by-bg text-by-ink-3' }}">
+          <span class="w-2 h-2 rounded-full flex-shrink-0 {{ 'bg-by-ink' if nd_mode else 'bg-by-ink-3' }}" aria-hidden="true"></span>
+          <span>{{ _('ND mode') }}: {{ _('On') if nd_mode else _('Off') }}</span>
+        </button>
+{% endif %}
+        <script>
+        function toggleNdMode(btn) {
+          var nextMode = btn.getAttribute('aria-checked') === 'true' ? 'standard' : 'nd';
+          btn.disabled = true;
+          fetch('/api/me/accessibility-mode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: nextMode }),
+          }).then(function (res) { return res.json(); }).then(function (body) {
+            if (!body.ok) throw new Error(body.error || 'save failed');
+            location.reload();
+          }).catch(function () { btn.disabled = false; });
+        }
+        </script>
         <div class="relative flex-shrink-0" id="user-menu-wrap">
           <button id="user-menu-btn" onclick="toggleUserMenu()"
                   class="flex items-center gap-2 cursor-pointer h-9 px-2 border border-by-ink bg-by-bg">
@@ -326,8 +448,128 @@
 
     <main class="px-4 lg:px-7 py-4 lg:py-6 grid grid-cols-12 gap-4 lg:gap-5">
 
+      {% if nd_mode %}
+      <!-- ══ ND Mode: Student Guided Action Box (Phase 7.4n) — same pattern
+           as the Dashboard's and the Teacher's. ══ -->
+      <div id="nd-action-box">
+        <div class="nd-modal-card w-full text-center" style="max-width: 640px;">
+          <div class="font-display text-[32px] lg:text-[40px] text-by-ink leading-tight mb-3">{{ _('What do you want to do?') }}</div>
+          <div class="text-[16px] text-by-ink-3 mb-9">{{ _('Type it in, or pick one below.') }}</div>
+          <form id="nd-action-form" onsubmit="return ndActionSubmit(event)">
+            <div class="flex gap-2 mb-6">
+              <input id="nd-action-input" type="text" placeholder="{{ _('e.g. check my messages') }}"
+                class="flex-1 border px-5 py-3.5 text-[17px] focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
+              <button type="submit" class="h-14 px-8 btn-spot text-[15px]">{{ _('Go') }}</button>
+            </div>
+          </form>
+          <div class="mb-6">
+            <div class="by-eyebrow mb-3">{{ _('Or try one of these') }}</div>
+            <div class="flex flex-wrap justify-center gap-3" id="nd-action-examples">
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('view_classes')">{{ _('View my classes') }}</button>
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('respond_challenge')">{{ _('Respond to the challenge') }}</button>
+              <button type="button" class="btn-ghost h-11 px-5 text-[14px] font-body" onclick="ndActionRun('check_messages')">{{ _('Check your messages') }}</button>
+            </div>
+          </div>
+          <div id="nd-action-result" class="hidden border border-by-ink bg-by-bg-2 px-5 py-4 text-left" style="max-width: 560px; margin: 0 auto;"></div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var INTENTS = [
+          { id: 'view_classes', label: 'View my classes', keywords: ['view my classes','my classes','classes','class','schedule','enrolled'] },
+          { id: 'respond_challenge', label: 'Respond to the challenge', keywords: ['respond to the challenge','challenge','respond','submit','prompt','activity'] },
+          { id: 'check_messages', label: 'Check your messages', keywords: ['check your messages','check messages','messages','message','inbox','mail','email'] }
+        ];
+
+        function ndMatch(text) {
+          var t = (text || '').toLowerCase().trim();
+          if (!t) return null;
+          var best = null, bestScore = 0;
+          INTENTS.forEach(function (intent) {
+            intent.keywords.forEach(function (kw) {
+              if (t.indexOf(kw) !== -1 && kw.length > bestScore) { best = intent; bestScore = kw.length; }
+            });
+          });
+          return best;
+        }
+
+        function ndExecute(id) {
+          if (id === 'view_classes') {
+            var sec = document.getElementById('classes');
+            if (sec) sec.scrollIntoView({ behavior: 'auto', block: 'center' });
+          } else if (id === 'respond_challenge') {
+            var aside = document.getElementById('challenge');
+            if (aside) aside.scrollIntoView({ behavior: 'auto', block: 'center' });
+          } else if (id === 'check_messages') {
+            if (typeof inboxOpen === 'function') inboxOpen();
+          }
+        }
+
+        function ndShowResult(html) {
+          var el = document.getElementById('nd-action-result');
+          if (!el) return;
+          el.innerHTML = html;
+          el.classList.remove('hidden');
+          var card = el.closest('.nd-modal-card');
+          if (card) {
+            Array.prototype.forEach.call(card.children, function (child) {
+              if (child !== el) child.classList.add('nd-backdrop');
+            });
+          }
+        }
+
+        window.ndActionRun = function (id) {
+          var matches = INTENTS.filter(function (i) { return i.id === id; });
+          var intent = matches.length ? matches[0] : null;
+          if (!intent) return;
+          ndShowResult(
+            '<div class="text-[13px] text-by-ink mb-2">Got it — ' + intent.label + '?</div>' +
+            '<div class="flex flex-wrap gap-2">' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndConfirm(\'' + id + '\')">Yes, do it</button>' +
+            '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndReset()">No, something else</button>' +
+            '</div>'
+          );
+        };
+
+        window.ndConfirm = function (id) { ndExecute(id); };
+
+        window.ndReset = function () {
+          var el = document.getElementById('nd-action-result');
+          if (el) el.classList.add('hidden');
+          var card = document.querySelector('#nd-action-box .nd-modal-card');
+          if (card) {
+            Array.prototype.forEach.call(card.children, function (child) {
+              child.classList.remove('nd-backdrop');
+            });
+          }
+          var input = document.getElementById('nd-action-input');
+          if (input) { input.value = ''; input.focus(); }
+        };
+
+        window.ndActionSubmit = function (evt) {
+          evt.preventDefault();
+          var input = document.getElementById('nd-action-input');
+          var text = input ? input.value : '';
+          var intent = ndMatch(text);
+          if (intent) {
+            ndShowResult(
+              '<div class="text-[13px] text-by-ink mb-2">Got it — ' + intent.label + '?</div>' +
+              '<div class="flex flex-wrap gap-2">' +
+              '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndConfirm(\'' + intent.id + '\')">Yes, do it</button>' +
+              '<button type="button" class="btn-ghost h-9 px-3 text-[13px] font-body" onclick="ndReset()">No, something else</button>' +
+              '</div>'
+            );
+          } else {
+            ndShowResult('<div class="text-[13px] text-by-ink-3">Not sure what you mean — try one of the buttons above.</div>');
+          }
+          return false;
+        };
+      })();
+      </script>
+      {% endif %}
+
       <!-- ── POINTS HERO ── -->
-      <section class="col-span-12 points-hero">
+      <section class="col-span-12 points-hero{{ ' nd-backdrop' if nd_mode else '' }}">
         <div class="points-hero-inner grid grid-cols-12 gap-4 lg:gap-6 items-center">
           <div class="col-span-12 lg:col-span-5">
             <div class="flex items-center gap-2 text-[10.5px] uppercase tracking-[.18em] text-by-yes-deep">
@@ -385,7 +627,7 @@
       </section>
 
       <!-- ── MY CLASSES (7 cols) ── -->
-      <section id="classes" class="col-span-12 xl:col-span-7 border hairline bg-by-bg">
+      <section id="classes" class="col-span-12 xl:col-span-7 border hairline bg-by-bg{{ ' nd-backdrop' if nd_mode else '' }}">
         <header class="px-5 py-4 flex items-center justify-between border-b hairline">
           <div>
             <div class="font-display text-[17px] text-by-ink">My classes</div>
@@ -458,7 +700,7 @@
       </section>
 
       <!-- ── LIVE CHALLENGE + ACHIEVEMENTS (5 cols) ── -->
-      <aside id="challenge" class="col-span-12 xl:col-span-5 flex flex-col gap-5">
+      <aside id="challenge" class="col-span-12 xl:col-span-5 flex flex-col gap-5{{ ' nd-backdrop' if nd_mode else '' }}">
         <div id="liveCard" class="live-card">
           <div class="live-card-inner">
             <div class="flex items-center justify-between">
@@ -575,20 +817,6 @@
           <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
 
-        <!-- ND mode toggle (Phase 7.6) — per-person, saved via /api/me/accessibility-mode -->
-        <div class="flex items-center justify-between gap-3 px-4 py-3 border hairline bg-by-bg">
-          <div class="min-w-0">
-            <div id="nd-mode-label" class="font-display text-[15px] text-by-ink">{{ _('ND mode') }}</div>
-            <div class="mt-0.5 text-[12px] text-by-ink-3">{{ _('Calmer screens, bigger text, one step at a time.') }}</div>
-          </div>
-          <button id="nd-mode-switch" type="button" role="switch"
-                  aria-checked="{{ 'true' if nd_mode else 'false' }}" aria-labelledby="nd-mode-label"
-                  onclick="toggleNdMode(this)"
-                  class="relative flex-shrink-0 w-11 h-6 rounded-full border border-by-ink cursor-pointer {{ 'bg-by-yes' if nd_mode else 'bg-by-bg-2' }}">
-            <span class="absolute top-0.5 w-4 h-4 rounded-full bg-by-ink {{ 'left-[22px]' if nd_mode else 'left-0.5' }}"></span>
-          </button>
-        </div>
-        <div id="nd-mode-error" class="hidden text-[12px] text-by-tomato" role="alert"></div>
       </aside>
 
       <!-- ── DISPATCH INBOX ── -->
@@ -680,28 +908,6 @@
     if (bar) bar.style.width = Math.min(_cachedPts % 100, 100) + '%';
   }
 
-  // ── ND mode toggle (Phase 7.6) ── saves, then reloads so <html data-mode> flips.
-  const ND_MODE_SAVE_ERROR = {{ _('Could not save. Please try again.') | tojson }};
-  async function toggleNdMode(btn) {
-    const nextMode = btn.getAttribute('aria-checked') === 'true' ? 'standard' : 'nd';
-    const errEl = document.getElementById('nd-mode-error');
-    errEl.classList.add('hidden');
-    btn.disabled = true;
-    try {
-      const res = await fetch('/api/me/accessibility-mode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: nextMode }),
-      });
-      const body = await res.json();
-      if (!body.ok) throw new Error(body.error);
-      location.reload();
-    } catch (e) {
-      errEl.textContent = ND_MODE_SAVE_ERROR;
-      errEl.classList.remove('hidden');
-      btn.disabled = false;
-    }
-  }
 
   function toggleSidebar() {
     const d = document.getElementById('app-sidebar');
@@ -832,9 +1038,11 @@
     requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('open')));
     document.body.style.overflow = 'hidden';
     _renderClassmatesInto(classId, document.getElementById('classmates-modal-body'), null);
+    if (typeof ndWizardOnOpen === 'function') ndWizardOnOpen('classmates-modal');
   }
 
   function closeClassmatesModal() {
+    if (typeof ndWizardOnClose === 'function') ndWizardOnClose('classmates-modal');
     const panel = document.getElementById('classmates-modal');
     panel.classList.remove('open');
     const inner = panel.querySelector('.by-panel-inner');

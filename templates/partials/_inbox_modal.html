@@ -26,7 +26,7 @@
                  1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0
                  1-1.07-1.916V6.75"/>
       </svg>
-      <span style="font-family:var(--by-f-display);font-size:16px;color:white;letter-spacing:.04em;text-transform:uppercase;">
+      <span id="inbox-title" style="font-family:var(--by-f-display);font-size:16px;color:white;letter-spacing:.04em;text-transform:uppercase;">
         Inbox
       </span>
       <span id="inbox-unread-pill" class="px-2 py-0.5"
@@ -34,7 +34,17 @@
                    color:white;font-weight:700;display:none;"></span>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="composeMsg()"
+      <button id="inbox-mark-all-read-btn" onclick="inboxMarkAllRead()"
+              class="hidden items-center justify-center focus:outline-none"
+              style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,0.25);
+                     color:white;background:transparent;transition:background 100ms;cursor:pointer;"
+              onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+              onmouseout="this.style.background='transparent'" title="Mark all as read">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m3 12 4.5 4.5L18 6M9.5 16.5 10 16m4.5-10L9 13"/>
+        </svg>
+      </button>
+      <button id="inbox-compose-btn" onclick="composeMsg()"
               class="flex items-center justify-center focus:outline-none"
               style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,0.25);
                      color:white;background:transparent;transition:background 100ms;cursor:pointer;
@@ -45,7 +55,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
       </button>
-      <button onclick="inboxClose()"
+      <button id="inbox-header-close-btn" onclick="inboxClose()"
               class="flex items-center justify-center focus:outline-none"
               style="width:28px;height:28px;border:1.5px solid rgba(255,255,255,0.25);
                      color:white;background:transparent;transition:background 100ms;cursor:pointer;"
@@ -114,7 +124,7 @@
                       style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink-2);
                              font-family:var(--by-f-body);line-height:1.5;"
                       onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey))inboxSendReply();"></textarea>
-            <button onclick="inboxSendReply()"
+            <button id="inbox-send-btn" onclick="inboxSendReply()"
                     class="shrink-0 px-4 py-2 text-sm font-bold uppercase focus:outline-none"
                     style="background:var(--by-yes);border:var(--by-bd-thick);color:var(--by-ink);
                            font-family:var(--by-f-display);font-size:11px;letter-spacing:.06em;
@@ -125,7 +135,7 @@
               Send
             </button>
           </div>
-          <p class="mt-1" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">
+          <p id="inbox-reply-hint" class="mt-1" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">
             Ctrl+Enter to send
           </p>
         </div>
@@ -141,6 +151,32 @@
   let _open  = false;
   let _notifs = [];
   let _activeId = null;
+  let _knownIds = null;  // null = first render, nothing animates as "new" yet
+
+  // The original server-rendered skeleton of #inbox-thread's innerHTML, so
+  // it can be restored after composeMsg() replaces it with the compose form
+  // -- without this, _select()/_renderThread() have no #inbox-thread-subject
+  // etc. to write into once a user has sent a message from inside compose.
+  var _THREAD_SKELETON =
+    '<div class="shrink-0 px-5 py-3" style="border-bottom:1.5px solid var(--by-bg-3);">' +
+      '<p id="inbox-thread-subject" style="font-family:var(--by-f-sans);font-weight:700;font-size:15px;color:var(--by-ink);"></p>' +
+      '<p id="inbox-thread-meta" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:2px;"></p>' +
+    '</div>' +
+    '<div id="inbox-thread-body" class="flex-1 overflow-y-auto px-5 py-4 space-y-3"></div>' +
+    '<div class="shrink-0 px-5 pb-4 pt-3" style="border-top:1.5px solid var(--by-bg-3);">' +
+      '<div class="flex gap-2">' +
+        '<textarea id="inbox-reply-input" placeholder="Write a reply…" rows="2" ' +
+          'class="flex-1 px-3 py-2 text-sm resize-none focus:outline-none" ' +
+          'style="border:var(--by-bd-thick);background:var(--by-bg);color:var(--by-ink-2);font-family:var(--by-f-body);line-height:1.5;" ' +
+          'onkeydown="if(event.key===\'Enter\'&&(event.ctrlKey||event.metaKey))inboxSendReply();"></textarea>' +
+        '<button id="inbox-send-btn" onclick="inboxSendReply()" ' +
+          'class="shrink-0 px-4 py-2 text-sm font-bold uppercase focus:outline-none" ' +
+          'style="background:var(--by-yes);border:var(--by-bd-thick);color:var(--by-ink);font-family:var(--by-f-display);font-size:11px;letter-spacing:.06em;box-shadow:3px 3px 0 0 var(--by-ink);transition:box-shadow 80ms,transform 80ms;align-self:flex-end;cursor:pointer;" ' +
+          'onmouseover="this.style.boxShadow=\'1px 1px 0 0 var(--by-ink)\';this.style.transform=\'translate(2px,2px)\'" ' +
+          'onmouseout="this.style.boxShadow=\'3px 3px 0 0 var(--by-ink)\';this.style.transform=\'\'">Send</button>' +
+      '</div>' +
+      '<p id="inbox-reply-hint" class="mt-1" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">Ctrl+Enter to send</p>' +
+    '</div>';
 
   function _esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -155,22 +191,26 @@
   function _badge(n) {
     const b = document.getElementById('inbox-badge');
     const p = document.getElementById('inbox-unread-pill');
+    const markAllBtn = document.getElementById('inbox-mark-all-read-btn');
     if (!b) return;
     if (n > 0) {
       b.textContent = n < 100 ? n : '99+';
       b.style.display = 'flex';
       if (p) { p.textContent = n + ' unread'; p.style.display = 'inline-block'; }
+      if (markAllBtn) { markAllBtn.classList.remove('hidden'); markAllBtn.classList.add('flex'); }
     } else {
       b.style.display = 'none';
       if (p) p.style.display = 'none';
+      if (markAllBtn) { markAllBtn.classList.add('hidden'); markAllBtn.classList.remove('flex'); }
     }
   }
 
   function _renderList() {
     const wrap  = document.getElementById('inbox-items');
     const empty = document.getElementById('inbox-empty');
+    const priorIds = _knownIds;  // ids present before THIS render (null = first render ever)
     wrap.innerHTML = '';
-    if (!_notifs.length) { empty.style.display = 'flex'; return; }
+    if (!_notifs.length) { empty.style.display = 'flex'; _knownIds = new Set(); return; }
     empty.style.display = 'none';
     _notifs.forEach(function(n) {
       const btn = document.createElement('button');
@@ -192,12 +232,41 @@
         ? '→ ' + _esc(n.recipient_email)
         : 'from ' + _esc(n.sender_name);
       btn.innerHTML =
-        '<p style="font-family:var(--by-f-sans);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--by-ink);font-weight:' + (!n.is_read && !n.is_sent ? '700' : '500') + ';">' +
+        '<p class="inbox-row-subject" style="font-family:var(--by-f-sans);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--by-ink);font-weight:' + (!n.is_read && !n.is_sent ? '700' : '500') + ';">' +
         dot + _esc(n.subject) + '</p>' +
-        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:2px;">' + meta + '</p>' +
-        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">' + _fmt(n.created_at) + '</p>';
+        '<p class="inbox-row-meta" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-top:2px;">' + meta + '</p>' +
+        '<p class="inbox-row-meta" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);">' + _fmt(n.created_at) + '</p>';
       wrap.appendChild(btn);
+
+      // New row (not present in the previous render) slides/fades in instead
+      // of just popping into place -- it's already in normal document flow
+      // first (so it genuinely pushes the rows below it down via layout),
+      // the animation only tweens opacity/transform on top of that.
+      // Web Animations API, not a CSS animation/transition, so it isn't
+      // affected by nd-mode.css's blanket reduced-motion kill rule.
+      if (priorIds !== null && !priorIds.has(n.id) && typeof btn.animate === 'function') {
+        btn.animate(
+          [
+            { opacity: 0, transform: 'translateY(-10px)' },
+            { opacity: 1, transform: 'translateY(0)' }
+          ],
+          { duration: 320, easing: 'cubic-bezier(.22,.8,.36,1)', fill: 'both' }
+        );
+      }
+
+      // The active row gets a brief highlight flash so selection reads as a
+      // clear, visible event rather than a flat, static color swap.
+      if (isActive && typeof btn.animate === 'function') {
+        btn.animate(
+          [
+            { backgroundColor: 'var(--by-yes)' },
+            { backgroundColor: 'var(--by-yes-soft)' }
+          ],
+          { duration: 500, easing: 'ease-out' }
+        );
+      }
     });
+    _knownIds = new Set(_notifs.map(function(n) { return n.id; }));
   }
 
   function _renderThread(n) {
@@ -217,9 +286,9 @@
     const orig = document.createElement('div');
     orig.style.cssText = 'background:var(--by-bg-2);border:1px solid var(--by-bg-3);padding:12px 14px;';
     orig.innerHTML =
-      '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;">' +
+      '<p class="inbox-bubble-meta" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;">' +
       _esc(n.sender_name) + ' · ' + _fmt(n.created_at) + '</p>' +
-      '<p style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);white-space:pre-wrap;line-height:1.6;">' + _esc(n.body) + '</p>';
+      '<p class="inbox-bubble-body" style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);white-space:pre-wrap;line-height:1.6;">' + _esc(n.body) + '</p>';
     body.appendChild(orig);
 
     // Reply bubbles
@@ -230,9 +299,9 @@
         'padding:10px 14px;border:1px solid var(--by-bg-3);' +
         (mine ? 'background:var(--by-yes-soft);margin-left:32px;' : 'background:var(--by-bg);margin-right:32px;');
       el.innerHTML =
-        '<p style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;">' +
+        '<p class="inbox-bubble-meta" style="font-family:var(--by-f-mono);font-size:10px;color:var(--by-ink-4);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;">' +
         _esc(r.sender_name) + ' · ' + _fmt(r.created_at) + '</p>' +
-        '<p style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);white-space:pre-wrap;line-height:1.6;">' + _esc(r.body) + '</p>';
+        '<p class="inbox-bubble-body" style="font-family:var(--by-f-body);font-size:13.5px;color:var(--by-ink-2);white-space:pre-wrap;line-height:1.6;">' + _esc(r.body) + '</p>';
       body.appendChild(el);
     });
 
@@ -294,6 +363,59 @@
     document.getElementById('inbox-panel').style.transform = 'translateX(-50%) translateY(100%)';
   };
 
+  // Mark every unread message as read in one call, instead of opening each
+  // one. Updates the local list/badge immediately rather than waiting on a
+  // round-trip refetch, since the server call can't fail in a way that
+  // would leave the two out of sync (it's a blanket UPDATE, not conditional
+  // per-row logic the client needs to mirror).
+  window.inboxMarkAllRead = function() {
+    const btn = document.getElementById('inbox-mark-all-read-btn');
+    if (btn) btn.style.pointerEvents = 'none';
+    fetch('/api/comms/mark-all-read', { method: 'POST' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (btn) btn.style.pointerEvents = '';
+        if (!d.ok) return;
+        _notifs.forEach(function(n) { n.is_read = true; });
+        _renderList();
+        _badge(0);
+      })
+      .catch(function() { if (btn) btn.style.pointerEvents = ''; });
+  };
+
+  // Return the panel to the default message-list view and force-refresh the
+  // list, regardless of whether the panel is already open. Needed after a
+  // successful compose send: calling inboxOpen() there is a no-op (its
+  // `if (_open) return;` guard fires, since the panel is already open --
+  // that's how a successful send used to look exactly like a dead button).
+  //
+  // Also restores #inbox-thread's original skeleton (composeMsg() replaced
+  // it with the compose form's own markup, which has none of the ids
+  // _renderThread()/_select() need), then auto-selects the just-sent
+  // message so it shows highlighted in the list AND open in the thread pane
+  // -- visible proof the send actually worked, not just an empty list.
+  window.inboxBackToList = function() {
+    const thread = document.getElementById('inbox-thread');
+    if (thread) thread.innerHTML = _THREAD_SKELETON;
+    _activeId = null;
+    fetch('/api/inbox/messages')
+      .then(function(r){ return r.json(); })
+      .then(function(d) {
+        if (!d.ok) return;
+        _notifs = d.notifications || [];
+        const unread = _notifs.filter(function(x){ return !x.is_read; }).length;
+        _badge(unread);
+        if (_notifs.length) {
+          _select(_notifs[0].id);  // highlights it + opens its thread
+        } else {
+          _renderList();
+          const placeholder = document.getElementById('inbox-placeholder');
+          if (thread) { thread.style.display = 'none'; thread.classList.add('hidden'); }
+          if (placeholder) placeholder.style.display = '';
+        }
+      });
+  };
+
   window.inboxSendReply = function() {
     const input = document.getElementById('inbox-reply-input');
     const body  = (input.value || '').trim();
@@ -308,6 +430,7 @@
       .then(function(d) {
         input.disabled = false;
         if (!d.ok) { alert(d.error || 'Failed to send reply.'); return; }
+        if (typeof window.ndCelebrate === 'function') window.ndCelebrate('Reply sent');
         const n = _notifs.find(function(x){ return x.id === _activeId; });
         if (n) {
           n.replies = n.replies || [];
@@ -426,7 +549,12 @@ function sendCompose() {
   })
     .then(function(r){ return r.json(); })
     .then(function(d) {
-      if (d.ok) { inboxOpen(); } else { alert(d.error || 'Failed to send message.'); }
+      if (d.ok) {
+        if (typeof window.ndCelebrate === 'function') window.ndCelebrate('Message sent');
+        inboxBackToList();
+      } else {
+        alert(d.error || 'Failed to send message.');
+      }
     })
     .catch(function(){ alert('Network error — please try again.'); });
 }

@@ -1,0 +1,525 @@
+/* ═══════════════════════════════════════════════════════════════
+   ND MODE — BigYes
+   ═══════════════════════════════════════════════════════════════
+   Everything here is scoped under [data-mode="nd"] and layers on
+   top of each template's own tokens by overriding CSS custom
+   properties and a handful of blanket rules — it never touches
+   markup, and it's intentionally the same file whether a template
+   loads tokens.css or defines its vars inline.
+
+   Phase 7.4b (THIS FILE, 2026-10-29): reduced motion + calm-visuals,
+   "soften, keep brand" (decided by the user) — desaturated/lower-
+   contrast yellow and tomato, eased ink contrast, softened shadows,
+   motion collapsed to near-zero.
+   Phase 7.4c (not yet written): per-size font/line-height overrides.
+   Phase 7.4d (not yet written): completion feedback ("celebration
+   burst" + running tally) — a DELIBERATE exception to the reduced-
+   motion rule below, per MASTER_PLAN.md Phase 7. It must explicitly
+   re-enable animation itself (its own scoped class with !important
+   durations), not relax the blanket rule here.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+[data-mode="nd"] *,
+[data-mode="nd"] *::before,
+[data-mode="nd"] *::after {
+  transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
+  animation-duration: 0.01ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+}
+
+[data-mode="nd"] {
+  /* timing tokens some templates reference directly */
+  --by-snap: 0.01ms linear;
+  --by-stamp: 0.01ms linear;
+}
+
+/* ── Calm visuals: soften, keep brand ────────────────────────── */
+[data-mode="nd"] {
+  /* Signature yellow — same hue, pulled toward neutral, less glare */
+  --by-yes:      #DCB13F;
+  --by-yes-deep: #C79A2E;
+  --by-yes-soft: #F3E3B8;
+
+  /* Secondary tomato — same hue, pulled toward neutral */
+  --by-tomato:      #CA5940;
+  --by-tomato-deep: #A5452F;
+
+  /* Primary ink eased off near-black — cuts the starkest contrast
+     without going gray-on-gray. Hardcoded rather than var(--by-ink-2)
+     so it resolves identically whether or not a given template's own
+     :root happens to define --by-ink-2 (login.html and 403.html don't). */
+  --by-ink: #2A2723;
+
+  /* Pop-art hard-offset shadows softened into a gentle blur */
+  --by-sh-1:   0 2px 8px rgba(20, 18, 16, 0.14);
+  --by-sh-yes: 0 2px 10px rgba(220, 177, 63, 0.3);
+
+  /* Borders eased off pure ink */
+  --by-bd:       1px solid #5C544A;
+  --by-bd-thick: 1.5px solid #5C544A;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Phase 7.4c -- per-size font-size + line-height overrides
+
+   BigYes uses Tailwind arbitrary-value utility classes for type
+   (text-[11px], leading-[1.2], ...), compiled straight to fixed px --
+   there's no --by-font-size-* custom property to redefine the way
+   the calm-visuals block above redefines --by-yes/--by-ink/etc, so
+   these are direct selector overrides instead. Values below are every
+   text-[Npx] size actually found in instances/bigyes/templates/**/*.html
+   (grepped, not guessed) that was under 28px -- 28px and up (section
+   titles, hero numbers) are left alone, they're already generous.
+   ───────────────────────────────────────────────────────────── */
+[data-mode="nd"] .text-\[8px\] { font-size: 12px !important; }
+[data-mode="nd"] .text-\[8.5px\] { font-size: 12.5px !important; }
+[data-mode="nd"] .text-\[9px\] { font-size: 13px !important; }
+[data-mode="nd"] .text-\[9.5px\] { font-size: 13.5px !important; }
+[data-mode="nd"] .text-\[10px\] { font-size: 14px !important; }
+[data-mode="nd"] .text-\[10.5px\] { font-size: 14.5px !important; }
+[data-mode="nd"] .text-\[11px\] { font-size: 15px !important; }
+[data-mode="nd"] .text-\[11.5px\] { font-size: 15.5px !important; }
+[data-mode="nd"] .text-\[12px\] { font-size: 15px !important; }
+[data-mode="nd"] .text-\[12.5px\] { font-size: 15.5px !important; }
+[data-mode="nd"] .text-\[13px\] { font-size: 16px !important; }
+[data-mode="nd"] .text-\[13.5px\] { font-size: 16.5px !important; }
+[data-mode="nd"] .text-\[14px\] { font-size: 17px !important; }
+[data-mode="nd"] .text-\[14.5px\] { font-size: 17.5px !important; }
+[data-mode="nd"] .text-\[15px\] { font-size: 18px !important; }
+[data-mode="nd"] .text-\[15.5px\] { font-size: 18.5px !important; }
+[data-mode="nd"] .text-\[16px\] { font-size: 18px !important; }
+[data-mode="nd"] .text-\[16.5px\] { font-size: 18.5px !important; }
+[data-mode="nd"] .text-\[17px\] { font-size: 19px !important; }
+[data-mode="nd"] .text-\[17.5px\] { font-size: 19.5px !important; }
+[data-mode="nd"] .text-\[18px\] { font-size: 20px !important; }
+[data-mode="nd"] .text-\[19px\] { font-size: 21px !important; }
+[data-mode="nd"] .text-\[20px\] { font-size: 21px !important; }
+[data-mode="nd"] .text-\[22px\] { font-size: 23px !important; }
+[data-mode="nd"] .text-\[24px\] { font-size: 25px !important; }
+[data-mode="nd"] .text-\[26px\] { font-size: 27px !important; }
+
+/* Tight/compressed line-heights read as cramped for ND users -- loosen
+   every named-tight/none/snug class, plus the sub-1.5 arbitrary values,
+   to a calmer 1.5. leading-relaxed/normal and anything already >=1.5
+   (1.5/1.6/1.65/1.7) are already fine and left untouched. */
+[data-mode="nd"] .leading-none { line-height: 1.5 !important; }
+[data-mode="nd"] .leading-tight { line-height: 1.5 !important; }
+[data-mode="nd"] .leading-snug { line-height: 1.5 !important; }
+[data-mode="nd"] .leading-\[1.1\] { line-height: 1.5 !important; }
+[data-mode="nd"] .leading-\[1.2\] { line-height: 1.5 !important; }
+[data-mode="nd"] .leading-\[1.3\] { line-height: 1.5 !important; }
+[data-mode="nd"] .leading-\[1.4\] { line-height: 1.5 !important; }
+
+
+/* ─────────────────────────────────────────────────────────────
+   Phase 7.4i -- Dashboard floating modal: hide sidebar + navbar,
+   blur/dim the rest of the dashboard behind a centered, floating
+   action-box "modal". Scoped to [data-nd-declutter="1"], which
+   admin.html only sets on <body> when nd_mode is on AND we're on
+   the Dashboard route itself (not show_roster/show_section) -- so
+   every other page, and every other section of this same page,
+   keeps its normal sidebar + navbar untouched.
+
+   The ND toggle lives in its own always-visible #nd-chrome-controls
+   strip (added just inside <body>, outside #main-sidebar and
+   #sticky-header) specifically so it is never hidden by the rules
+   below -- "keep the ND mode off switch visible at all times".
+   ───────────────────────────────────────────────────────────── */
+
+body[data-nd-declutter="1"] #main-sidebar { display: none; }
+body[data-nd-declutter="1"][data-nd-sidebar="visible"] #main-sidebar { display: flex; }
+
+body[data-nd-declutter="1"] #sticky-header,
+body[data-nd-declutter="1"] #page-header { display: none; }
+body[data-nd-declutter="1"][data-nd-navbar="visible"] #sticky-header,
+body[data-nd-declutter="1"][data-nd-navbar="visible"] #page-header { display: block; }
+
+/* Collapse the 248px sidebar gutter while it's hidden so the main column
+   isn't left with a dead empty strip down the left edge. */
+body[data-nd-declutter="1"]:not([data-nd-sidebar="visible"]) .lg\:grid-cols-\[248px_1fr\] {
+  grid-template-columns: 1fr !important;
+}
+
+/* The rest of the dashboard (stats row, weekly matrix, shows &
+   spontaneity) stays rendered -- marked .nd-backdrop by admin.html --
+   but is blurred, dimmed and made non-interactive, reading as "backstage"
+   behind the floating modal rather than disappearing outright. */
+body[data-nd-declutter="1"] .nd-backdrop {
+  filter: blur(6px);
+  opacity: 0.35;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The action box itself: a true floating, centered modal over a dim
+   scrim, sitting above the blurred backdrop. */
+body[data-nd-declutter="1"] #nd-action-box {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 18, 16, 0.14);
+}
+
+body[data-nd-declutter="1"] #nd-action-box .nd-modal-card {
+  background: var(--by-bg);
+  border: 1.5px solid var(--by-ink);
+  box-shadow: var(--by-sh-1);
+  padding: 40px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+/* Always-visible fixed control strip: ND toggle (never hidden) + the
+   Show sidebar / Show navbar reveal buttons. Default top offset assumes the
+   navbar is hidden; admin.html's JS bumps it down (via --nd-navbar-h, set
+   from the real measured #sticky-header height) whenever the navbar is
+   revealed, so the strip never sits on top of it. */
+body[data-nd-declutter="1"] #nd-chrome-controls {
+  /* Phase 7.4p: right edge, stacked vertically -- unchanged from before
+     today's detour. Centered-top used to sit directly above/overlapping
+     the centered modal's own top edge; pinned to a corner instead, it
+     stays reachable without ever fighting the modal for visual space. */
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  left: auto;
+  transform: none;
+  /* Phase 7.4s fix: #nd-action-box (the Dashboard's own floating "what do
+     you want to do" card + scrim) is ALSO z-index:45 and sits later in the
+     DOM, so at equal z-index it was painting -- and hit-testing -- on top
+     of this strip everywhere the two overlap, which on the Dashboard route
+     is the entire viewport (#nd-action-box is position:fixed; inset:0).
+     The pills were visible (the scrim is only 14% opacity) but completely
+     unclickable underneath it. Bumped above #nd-action-box so the "ND mode
+     off switch always usable" guarantee actually holds on the one page
+     that has a full-screen scrim -- still deliberately BELOW real modals
+     (z-50 and up throughout admin.html, e.g. Add Performer/Add Class),
+     which should still win over this strip while they're open. */
+  z-index: 48;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+}
+
+/* Deliberate, explicit exception to the blanket reduced-motion rule at the
+   top of this file (see its own comment: any new motion here must opt back
+   in on purpose). The control strip sliding out of the navbar's way when
+   it's revealed is the whole point of this transition, so it's carved out
+   specifically rather than inherited. */
+body[data-nd-declutter="1"] #nd-chrome-controls {
+  transition-property: top !important;
+  transition-duration: 220ms !important;
+  transition-timing-function: ease !important;
+}
+
+body[data-nd-declutter="1"][data-nd-navbar="visible"] #nd-chrome-controls {
+  top: calc(var(--nd-navbar-h, 64px) + 16px);
+  right: 16px;
+  left: auto;
+  transform: none;
+}
+
+/* Phase 7.4r: the hamburger (#nd-menu-btn) and its dropdown
+   (#nd-extra-menu) are a MOBILE-ONLY affordance -- see the
+   @media (max-width: 900px) block below. On desktop they're switched off
+   entirely: the hamburger is hidden, and the "extra menu" wrapper is
+   forced to lay out exactly as the individual pills always did (a plain
+   flex column, no dropdown box/border/shadow), so desktop is byte-for-byte
+   the same right-edge pill stack as before -- "Do something else" /
+   "Show sidebar" / "Show navbar" each their own visible pill, ND pill at
+   its normal size. The .hidden class the JS toggles for the mobile
+   dropdown is irrelevant here because these !important rules pin display
+   regardless of it. */
+body[data-nd-declutter="1"] #nd-menu-btn {
+  display: none !important;
+}
+body[data-nd-declutter="1"] #nd-extra-menu {
+  display: flex !important;
+  position: static !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 8px !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+body[data-nd-declutter="1"] #nd-extra-menu button {
+  width: auto !important;
+  justify-content: center !important;
+}
+
+/* Mobile only: collapse "Do something else" / "Show sidebar" / "Show
+   navbar" behind a small hamburger next to a shrunk ND pill, instead of
+   showing every pill individually. This is what actually fixes the
+   mobile clutter (7.4p/7.4q both tried shrinking/wrapping the full pill
+   row and still buried page content under it) -- on a narrow screen there
+   just isn't room for 2-4 full-width pills, so most of them move behind
+   one tap instead. */
+@media (max-width: 900px) {
+  body[data-nd-declutter="1"] #nd-mode-switch-floating {
+    height: 28px !important;
+    padding: 0 10px !important;
+    font-size: 10.5px !important;
+    gap: 5px !important;
+  }
+  body[data-nd-declutter="1"] #nd-mode-switch-floating .w-2.h-2 {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  body[data-nd-declutter="1"] #nd-chrome-controls {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+  body[data-nd-declutter="1"] #nd-menu-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+  }
+  body[data-nd-declutter="1"] #nd-extra-menu {
+    display: none !important;
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    z-index: 46 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+    min-width: 180px !important;
+    padding: 8px !important;
+    background: var(--by-bg) !important;
+    border: 1.5px solid var(--by-ink) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--by-sh-1, 0 8px 24px rgba(0, 0, 0, 0.18)) !important;
+  }
+  body[data-nd-declutter="1"] #nd-extra-menu:not(.hidden) {
+    display: flex !important;
+  }
+  body[data-nd-declutter="1"] #nd-extra-menu button {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* ── Phase 7.4k: ND declutter on content pages other than the Dashboard ──
+   The Dashboard (admin.html) has its own purpose-built #nd-action-box
+   search/picker. Every other ND-mode page (Callboard, Comms, Finances,
+   Reports, Activity Log, Scene Library, and eventually the teacher/student
+   homes) just needs its EXISTING main column lifted into a centered,
+   bounded, floating card over a dimmed backdrop -- same "one calm thing in
+   the middle of the screen" shape, reusing whatever that page already
+   renders rather than rebuilding it. #nd-main-col is that page's own
+   "<main column>" wrapper div; see backstage_layout.html / comms.html. */
+body[data-nd-declutter="1"] #nd-main-col {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 44;
+  width: min(820px, calc(100vw - 48px));
+  max-height: calc(100vh - 96px);
+  background: var(--by-bg);
+  border: 1.5px solid var(--by-ink);
+  box-shadow: var(--by-sh-1);
+  overflow-y: auto;
+}
+
+/* Dimmed backdrop behind the floating card -- a fixed, full-viewport layer
+   painted just behind #nd-main-col (z-index:-1 inside its own stacking
+   context), echoing the same rgba(20,18,16,.14) wash #nd-action-box uses
+   on the Dashboard, so every ND page reads as the same "one calm window"
+   treatment regardless of which page it is. */
+body[data-nd-declutter="1"] #nd-main-col::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(20, 18, 16, 0.14);
+}
+
+/* ── Phase 7.4t: Comms/Callboard -- one section per view, never two cards
+   side by side. The Directives Composer and the Transmission Log used to
+   sit in a 2-column grid inside #nd-main-col, which is exactly the kind
+   of clutter ND mode exists to remove. The log is now hidden by default
+   and only shown behind its own explicit toggle (comms.html), same
+   reveal-button pattern as "Show sidebar"/"Show navbar" elsewhere. When
+   hidden, the grid collapses to a single column so the Composer isn't
+   left with a dead empty half. */
+body[data-nd-declutter="1"] #logPanel {
+  display: none;
+}
+body[data-nd-declutter="1"][data-nd-translog="visible"] #logPanel {
+  display: block;
+}
+body[data-nd-declutter="1"]:not([data-nd-translog="visible"]) .xl\:grid-cols-2 {
+  grid-template-columns: 1fr !important;
+}
+
+/* The mobile top bar + drawer are a second, smaller navbar/sidebar pair --
+   declutter hides those too, same as the real ones. */
+body[data-nd-declutter="1"] .by-mob-bar,
+body[data-nd-declutter="1"] #mob-drawer,
+body[data-nd-declutter="1"] #mob-overlay {
+  display: none !important;
+}
+
+/* ── Phase 7.4l: right-side slide-over panels become centered modals
+   under ND mode -- "no sliding menus or popups, everything in the
+   central modal." Every .by-panel in the app shares this structure
+   (absolute inset-y-0 right-0 ...; animated via a translateX transform),
+   so overriding it once here covers Add Person, Add Class, Add Show,
+   and every other panel built the same way. !important is deliberate:
+   it has to beat both the base slide-over rule below AND whatever
+   Tailwind utility classes (absolute, inset-y-0, right-0, w-full, ...)
+   are sitting on the same element. ── */
+[data-mode="nd"] .by-panel-inner {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -46%) !important;
+  width: min(560px, calc(100vw - 48px)) !important;
+  max-width: none !important;
+  max-height: calc(100vh - 96px) !important;
+  border-left: none !important;
+  border: 1.5px solid var(--by-ink) !important;
+  box-shadow: var(--by-sh-1) !important;
+  opacity: 0;
+  transition: transform 220ms ease, opacity 220ms ease !important;
+}
+[data-mode="nd"] .by-panel.open .by-panel-inner {
+  transform: translate(-50%, -50%) !important;
+  opacity: 1;
+}
+/* The dimming backdrop every .by-panel already has (its first child, an
+   inset-0 div) gets a blur too, matching the rest of ND mode's "blur what
+   isn't the active thing" language. */
+[data-mode="nd"] .by-panel > .absolute.inset-0 {
+  backdrop-filter: blur(4px);
+}
+
+/* ── Phase 7.4l: the step-by-step wizard itself (see nd-wizard.js) ── */
+[data-mode="nd"] .nd-step-hide {
+  display: none !important;
+}
+[data-mode="nd"] .nd-step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px dashed #D4C9B3;
+}
+[data-mode="nd"] .nd-step-progress {
+  font-family: var(--by-f-mono);
+  font-size: 11px;
+  color: var(--by-ink-4);
+  flex-shrink: 0;
+}
+[data-mode="nd"] .nd-step-nav-btns {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+/* Deliberate motion exception (see the reduced-motion rule at the top of
+   this file): a brief outline flash is how a skipped required field gets
+   pointed out without any text popping in and out. */
+[data-mode="nd"] .nd-step-invalid {
+  outline: 2px solid var(--by-tomato) !important;
+  outline-offset: 4px !important;
+  transition: outline-color 150ms ease !important;
+}
+
+/* ── Phase 7.4q: inbox modal -- bigger, bigger type, more breathing room ──
+   under ND mode. The modal and its row/bubble text are built with inline
+   style="" attributes (see partials/_inbox_modal.html), so every override
+   here needs !important to win over them; ids/classes were added to the
+   static markup and to the JS-generated list rows and thread bubbles
+   specifically so these selectors have something stable to target. */
+[data-mode="nd"] #inbox-panel {
+  width: min(1040px, 94vw) !important;
+  height: 88vh !important;
+  max-height: 820px !important;
+}
+[data-mode="nd"] #inbox-list {
+  width: 300px !important;
+}
+[data-mode="nd"] #inbox-title {
+  font-size: 20px !important;
+}
+[data-mode="nd"] #inbox-compose-btn,
+[data-mode="nd"] #inbox-header-close-btn {
+  width: 40px !important;
+  height: 40px !important;
+}
+[data-mode="nd"] #inbox-compose-btn svg,
+[data-mode="nd"] #inbox-header-close-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+[data-mode="nd"] #inbox-empty,
+[data-mode="nd"] #inbox-placeholder {
+  font-size: 14px !important;
+}
+[data-mode="nd"] .inbox-row-subject {
+  font-size: 15px !important;
+  white-space: normal !important;
+}
+[data-mode="nd"] .inbox-row-meta {
+  font-size: 12.5px !important;
+}
+[data-mode="nd"] #inbox-items > button {
+  padding: 14px 16px !important;
+}
+[data-mode="nd"] #inbox-thread-subject {
+  font-size: 19px !important;
+}
+[data-mode="nd"] #inbox-thread-meta {
+  font-size: 12.5px !important;
+}
+[data-mode="nd"] #inbox-thread-body {
+  padding: 24px !important;
+  gap: 16px !important;
+}
+[data-mode="nd"] .inbox-bubble-meta {
+  font-size: 12px !important;
+}
+[data-mode="nd"] .inbox-bubble-body {
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+}
+[data-mode="nd"] #inbox-reply-input {
+  font-size: 15px !important;
+  padding: 14px !important;
+}
+[data-mode="nd"] #inbox-send-btn {
+  font-size: 13px !important;
+  padding: 12px 22px !important;
+}
+[data-mode="nd"] #inbox-reply-hint {
+  font-size: 11.5px !important;
+}
+/* Reduce clutter: the per-row timestamp line is the least essential of the
+   three lines in a list row (subject + sender already orient you) -- drop
+   it so each row reads as two lines, not three, without losing any data
+   you can't already see once you open the thread. */
+[data-mode="nd"] #inbox-items > button > p.inbox-row-meta:last-child {
+  display: none !important;
+}

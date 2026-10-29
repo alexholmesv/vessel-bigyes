@@ -61,6 +61,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+  {% if nd_mode %}
+  <script src="{{ url_for('static', filename='js/nd-celebrate.js') }}"></script>
+  {% endif %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
 
   <!-- Design tokens, component classes, and page-shell rules that used to live
