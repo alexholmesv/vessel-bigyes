@@ -1,0 +1,265 @@
+<!doctype html>
+<html data-mode="{{ 'nd' if nd_mode else 'standard' }}" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Yes — Class Reports</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ["'Archivo Black'", 'system-ui', 'sans-serif'],
+          sans:    ["'Archivo'",       'ui-sans-serif', 'system-ui'],
+          body:    ["'Manrope'",       'ui-sans-serif', 'system-ui'],
+          mono:    ["'DM Mono'",       'ui-monospace',  'monospace'],
+        },
+        colors: {
+          'by-yes':      '#FFC629', 'by-yes-deep': '#E5A800', 'by-yes-soft': '#FFE7A0',
+          'by-ink':      '#141210', 'by-ink-2':    '#2A2723', 'by-ink-3':    '#5C544A', 'by-ink-4': '#8A8073',
+          'by-bg':       '#F4EEE2', 'by-bg-2':     '#ECE3D0', 'by-bg-3':     '#E2D6BB',
+          'by-tomato':   '#E5482A', 'by-tomato-deep': '#B83218',
+          'by-success-green': '#10b981',
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
+{% if nd_mode %}
+<script src="{{ url_for('static', filename='js/nd-celebrate.js') }}"></script>
+<script src="{{ url_for('static', filename='js/nd-wizard.js') }}"></script>
+{% endif %}
+
+<style>
+  :root {
+    --by-bg:#F4EEE2; --by-bg-2:#ECE3D0; --by-bg-3:#E2D6BB;
+    --by-ink:#141210; --by-ink-2:#2A2723; --by-ink-3:#5C544A; --by-ink-4:#8A8073;
+    --by-yes:#FFC629; --by-yes-deep:#E5A800; --by-yes-soft:#FFE7A0;
+    --by-tomato:#E5482A; --by-tomato-deep:#B83218;
+    --by-f-display:'Archivo Black','Archivo',system-ui,sans-serif;
+    --by-f-sans:'Archivo',system-ui,sans-serif;
+    --by-f-body:'Manrope',system-ui,sans-serif;
+    --by-f-mono:'DM Mono',ui-monospace,monospace;
+    --by-t-mono:11.5px;
+    --by-bd:1px solid var(--by-ink);
+    --by-bd-thick:1.5px solid var(--by-ink);
+    --by-bd-soft:1px solid var(--by-bg-3);
+    --by-bd-dash:1px dashed var(--by-bg-3);
+    --by-sh-1:4px 4px 0 0 var(--by-ink);
+    --by-sh-yes:4px 4px 0 0 var(--by-yes);
+    --by-snap:120ms cubic-bezier(.2,.8,.2,1);
+  }
+  html, body { background: var(--by-bg); }
+  body { font-family: var(--by-f-body); color: var(--by-ink); -webkit-font-smoothing: antialiased; padding-bottom: 64px; }
+  @media (min-width: 1024px) { body { padding-bottom: 0; } }
+
+  .by-display { font-family:var(--by-f-display); font-weight:900; line-height:.88; letter-spacing:-.02em; text-transform:uppercase; }
+  .by-eyebrow { font-family:var(--by-f-mono); font-size:var(--by-t-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--by-ink-3); }
+  .by-yes-block { display:inline-block; background:var(--by-yes); color:var(--by-ink); padding:0 12px 4px; transform:skew(-6deg); }
+  .hairline { border-color: var(--by-ink); }
+
+  .by-mob-bar {
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 16px; background:var(--by-bg); border-bottom:var(--by-bd-thick);
+  }
+  .by-ham { width:44px; height:44px; border:var(--by-bd-thick); background:var(--by-bg);
+    display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; }
+  .by-ham span { display:block; width:16px; height:1.5px; background:var(--by-ink); }
+  @media (min-width: 1024px) { .by-ham { display:none; } }
+
+  .by-mob-overlay { display:none; position:fixed; inset:0; z-index:40; background:rgba(20,18,16,.45); }
+  .by-mob-overlay.open { display:block; }
+  .by-mob-drawer {
+    position:fixed; top:0; left:0; bottom:0; z-index:50; width:272px;
+    background:var(--by-bg); border-right:var(--by-bd-thick);
+    transform:translateX(-100%); transition:transform 240ms cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;
+  }
+  .by-mob-drawer.open { transform:translateX(0); }
+  @media (min-width: 1024px) { .by-mob-bar,.by-mob-overlay,.by-mob-drawer { display:none !important; } }
+
+  .nav-item {
+    display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:0;
+    font-family:var(--by-f-body); font-size:13.5px; font-weight:500; color:var(--by-ink-3);
+    text-decoration:none; transition:background var(--by-snap),color var(--by-snap);
+    border:none; border-left:4px solid transparent;
+  }
+  .nav-item:hover { background:var(--by-bg-2); color:var(--by-ink); }
+  .nav-item.active { color:var(--by-ink); font-weight:700; background:var(--by-bg-2); border-left-color:var(--by-yes); }
+  .nav-item .ico { width:18px; height:18px; flex:0 0 18px; color:var(--by-ink-3); }
+  .nav-item.active .ico { color:var(--by-ink); }
+
+  .btn-ghost {
+    display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .75rem;
+    border:var(--by-bd); background:var(--by-bg); color:var(--by-ink);
+    font-family:var(--by-f-body); font-size:13px; font-weight:500; cursor:pointer;
+    transition:background var(--by-snap);
+  }
+  .btn-ghost:hover { background:var(--by-bg-2); }
+
+  .chip {
+    display:inline-flex; align-items:center; gap:.3rem;
+    font-family:var(--by-f-mono); font-size:10px; letter-spacing:.10em; text-transform:uppercase;
+    padding:.15rem .5rem; border:1px solid; line-height:1.4;
+  }
+  .chip .dot { width:6px; height:6px; border-radius:9999px; flex-shrink:0; }
+  .chip-present { background:var(--by-yes-soft); border-color:var(--by-ink); color:var(--by-ink); }
+  .chip-present .dot { background:var(--by-success-green); }
+  .chip-late { background:#FFFBEB; border-color:#C17A20; color:#92400e; }
+  .chip-late .dot { background:#C17A20; }
+  .chip-absent { background:#FEF2F2; border-color:var(--by-tomato); color:var(--by-tomato-deep); }
+  .chip-absent .dot { background:var(--by-tomato); }
+  .chip-private { background:var(--by-bg-2); border-color:var(--by-ink-4); color:var(--by-ink-3); }
+  .chip-shared { background:var(--by-yes-soft); border-color:var(--by-ink); color:var(--by-ink); }
+
+  .report-card { border:var(--by-bd); background:var(--by-bg); }
+  .report-card + .report-card { margin-top: 18px; }
+  .note-row { border-top:var(--by-bd-soft); padding:10px 0; }
+  .note-row:first-child { border-top:none; }
+</style>
+</head>
+<body{% if nd_mode %} data-nd-declutter="1"{% endif %}>
+
+{% set nd_show_back = true %}{% set nd_home_url = '/' %}
+{% include 'partials/_nd_chrome_controls.html' %}
+
+<header class="by-mob-bar lg:hidden">
+  <a href="/" class="by-display" style="font-size:20px;color:var(--by-ink);text-decoration:none;line-height:1;">
+    Big<span class="by-yes-block" style="font-size:18px;padding:0 9px 3px;">Yes</span>
+  </a>
+  <button class="by-ham" aria-label="Open menu" onclick="toggleMobDrawer()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+<div id="mob-overlay" class="by-mob-overlay" onclick="toggleMobDrawer()"></div>
+<nav id="mob-drawer" class="by-mob-drawer">
+  <div class="px-4 py-4 border-b hairline">
+    <div class="by-eyebrow">Big Yes</div>
+    <div class="by-display text-[18px]" style="color:var(--by-ink)">Studio · BCN</div>
+  </div>
+  <div class="px-3 py-3">
+    <a href="/"                           class="nav-item" onclick="toggleMobDrawer()">Dashboard</a>
+    <a href="/ensemble-room"              class="nav-item" onclick="toggleMobDrawer()">Ensemble Room</a>
+    <a href="/classes"                    class="nav-item" onclick="toggleMobDrawer()">Classes &amp; Cohorts</a>
+    <a href="/backstage/class-reports"    class="nav-item active" onclick="toggleMobDrawer()">Class Reports</a>
+  </div>
+</nav>
+
+<div class="min-h-screen flex flex-col lg:grid lg:grid-cols-[248px_1fr]">
+
+  {% include 'partials/_sidebar.html' %}
+
+  <main id="nd-main-col" class="flex-1 min-w-0 overflow-x-hidden">
+
+    <header id="sticky-header" class="sticky top-0 z-30 border-b hairline" style="background:var(--by-bg);">
+      <div class="px-4 lg:px-7 py-3 lg:py-3.5 flex items-center gap-4">
+        <div class="flex items-center gap-4 ml-auto flex-shrink-0">
+          <div class="flex items-center gap-2" style="border:var(--by-bd);background:var(--by-bg);padding:.35rem .6rem;">
+            <span class="w-6 h-6 flex items-center justify-center flex-shrink-0"
+                  style="background:linear-gradient(135deg,{{ current_user_tint[0] }},{{ current_user_tint[1] }});border:2px solid #000;border-radius:999px;font-family:var(--by-f-mono);font-size:9px;font-weight:700;color:#fff;">
+              {{ current_user_initials }}
+            </span>
+            <span class="hidden lg:inline" style="font-family:var(--by-f-sans);font-weight:700;font-size:12px;color:var(--by-ink);">{{ current_user_name }}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="px-4 lg:px-7 py-6 max-w-[1100px] mx-auto">
+
+      <div class="mb-6">
+        <div class="by-eyebrow mb-1">{{ 'Every class you teach' if not is_unrestricted_viewer else 'Every class in the studio' }}</div>
+        <h1 class="by-display text-[26px] lg:text-[32px]" style="color:var(--by-ink);">Class Reports</h1>
+        <p class="text-[13px] mt-1" style="color:var(--by-ink-3);">Attendance, session notes, and per-student notes — in one place, newest first.</p>
+      </div>
+
+      {% if not report_classes %}
+      <div class="report-card px-6 py-10 text-center" style="color:var(--by-ink-3);">
+        <div class="font-display text-[16px] mb-1" style="color:var(--by-ink);">No classes to report on yet</div>
+        <div class="text-[13px]">{{ 'Classes you teach will show up here once you have some.' if not is_unrestricted_viewer else 'Once there is attendance or notes on a class, it will show up here.' }}</div>
+      </div>
+      {% endif %}
+
+      {% for c in report_classes %}
+      <section class="report-card">
+        <header class="px-5 py-4 border-b hairline flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="font-display text-[19px]" style="color:var(--by-ink);">{{ c.title }}</div>
+            <div class="by-eyebrow mt-0.5">{{ c.schedule }}{% if c.instructor %} · {{ c.instructor }}{% endif %}{% if not c.is_active %} · Inactive{% endif %}</div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="chip chip-present"><span class="dot"></span>{{ c.attendance.present }} present</span>
+            <span class="chip chip-late"><span class="dot"></span>{{ c.attendance.late }} late</span>
+            <span class="chip chip-absent"><span class="dot"></span>{{ c.attendance.absent }} absent</span>
+          </div>
+        </header>
+
+        <div class="grid lg:grid-cols-2 gap-0">
+
+          {# ── Session notes history ───────────────────────────────── #}
+          <div class="px-5 py-4 lg:border-r hairline">
+            <div class="by-eyebrow mb-2">Session notes ({{ c.session_notes | length }})</div>
+            {% if not c.session_notes %}
+            <div class="text-[12.5px]" style="color:var(--by-ink-4);">No session notes yet.</div>
+            {% endif %}
+            {% for n in c.session_notes %}
+            <div class="note-row">
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <span class="text-[12.5px] font-semibold" style="color:var(--by-ink);">{{ n.session_date }}</span>
+                <span class="chip {{ 'chip-shared' if n.visibility == 'shared' else 'chip-private' }}">{{ n.visibility }}</span>
+              </div>
+              <div class="by-eyebrow">{{ n.teacher_name }}</div>
+              {% if n.went_well %}<div class="text-[12.5px] mt-1.5" style="color:var(--by-ink-2);"><strong>Went well:</strong> {{ n.went_well }}</div>{% endif %}
+              {% if n.went_wrong %}<div class="text-[12.5px] mt-1" style="color:var(--by-ink-2);"><strong>Went wrong:</strong> {{ n.went_wrong }}</div>{% endif %}
+              {% if n.activities %}<div class="text-[12.5px] mt-1" style="color:var(--by-ink-2);"><strong>Activities:</strong> {{ n.activities }}</div>{% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          {# ── Per-student notes ───────────────────────────────────── #}
+          <div class="px-5 py-4">
+            <div class="by-eyebrow mb-2">Student notes ({{ c.student_notes_by_student | length }} student{{ 's' if c.student_notes_by_student | length != 1 else '' }})</div>
+            {% if not c.student_notes_by_student %}
+            <div class="text-[12.5px]" style="color:var(--by-ink-4);">No student notes yet.</div>
+            {% endif %}
+            {% for s in c.student_notes_by_student %}
+            <div class="note-row">
+              <div class="text-[13px] font-semibold mb-1.5" style="color:var(--by-ink);">{{ s.student_name }}</div>
+              {% for n in s.notes %}
+              <div class="{{ 'mt-2' if not loop.first else '' }}">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="by-eyebrow">{{ n.session_date }} · {{ n.teacher_name }}</span>
+                  <span class="chip {{ 'chip-shared' if n.visibility == 'shared' else 'chip-private' }}">{{ n.visibility }}</span>
+                </div>
+                <div class="text-[12.5px] mt-0.5" style="color:var(--by-ink-2);">{{ n.note_text }}</div>
+              </div>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+
+        </div>
+      </section>
+      {% endfor %}
+
+    </div>
+  </main>
+</div>
+
+<script>
+  function toggleMobDrawer() {
+    document.getElementById('mob-drawer').classList.toggle('open');
+    document.getElementById('mob-overlay').classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>
