@@ -338,6 +338,10 @@
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
       Challenge Inbox
     </a>
+    <a href="#self-eval" class="nav-item" onclick="toggleSidebar()">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      Self-Evaluation
+    </a>
 
   </nav>
 
@@ -817,6 +821,18 @@
           <svg class="w-4 h-4 flex-shrink-0 text-by-ink-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
 
+        <!-- Self-Evaluation (class_tracker module) -->
+        <section id="self-eval" class="border hairline bg-by-bg">
+          <header class="px-5 py-4 border-b hairline flex items-center justify-between">
+            <div class="font-display text-[16px] text-by-ink">Self-Evaluation</div>
+            <span id="selfEvalCount" class="text-[11.5px] font-mono text-by-ink-3">0 pending</span>
+          </header>
+          <div id="selfEvalList" class="p-4 flex flex-col gap-2.5">
+            <div class="py-4 text-center text-[12.5px] text-by-ink-3">Loading…</div>
+          </div>
+          <div id="selfEvalForm" class="hidden px-4 pb-4 flex flex-col gap-3"></div>
+        </section>
+
       </aside>
 
       <!-- ── DISPATCH INBOX ── -->
@@ -883,6 +899,10 @@
   <a href="#challenge">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
     Challenge
+  </a>
+  <a href="#self-eval">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    Self-Eval
   </a>
 </nav>
 
@@ -1161,7 +1181,11 @@
                       ? '<button onclick="_voteFor(\'' + _esc(resp.id) + '\',\'' + _esc(challengeId) + '\')" '
                         + 'class="text-[10px] px-2 py-[3px] border border-by-bg-3 cursor-pointer text-by-ink ' + (voted ? 'bg-by-yes' : 'bg-by-bg') + '">'
                         + (voted ? '♥ Voted' : '♡ Vote') + '</button>'
-                      : '')
+                      // Shown, not hidden — a student can see their own response in the
+                      // list, just can't vote for it (explicit product decision).
+                      : '<button disabled title="You can\'t vote for your own response" '
+                        + 'class="text-[10px] px-2 py-[3px] border border-by-bg-3 bg-by-bg-2 text-by-ink-3 cursor-not-allowed opacity-60">'
+                        + '♡ Vote</button>')
                   + '</div>'
                   + '</div>'
                   + '</div>';
@@ -1343,6 +1367,129 @@
     // Start polling immediately and every 5s
     _poll();
     _pollTimer = setInterval(_poll, 5000);
+  })();
+</script>
+
+<script>
+  // ── Self-Evaluation (class_tracker module) ──────────────────────────────
+  // Live-computed pending list (no notification plumbing — see
+  // areas/class-tracker-feature.md): pulls sessions attended with no
+  // self-eval response yet from /api/class-tracker/self-eval/pending.
+  (function () {
+    var _questions = [];
+    var _pending   = [];
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function _renderList() {
+      var countEl = document.getElementById('selfEvalCount');
+      var listEl  = document.getElementById('selfEvalList');
+      if (!countEl || !listEl) return;
+      countEl.textContent = _pending.length + (_pending.length === 1 ? ' pending' : ' pending');
+      if (!_pending.length) {
+        listEl.innerHTML = '<div class="py-4 text-center text-[12.5px] text-by-ink-3">' +
+          "You're all caught up — nothing to self-evaluate right now.</div>";
+        return;
+      }
+      listEl.innerHTML = _pending.map(function (p, i) {
+        return '<button onclick="openSelfEvalForm(' + i + ')" ' +
+          'class="w-full text-left px-3.5 py-3 border border-by-ink bg-by-bg-2 flex items-center justify-between gap-3">' +
+          '<div class="min-w-0"><div class="text-[13px] font-semibold text-by-ink truncate">' + esc(p.class_name || 'Class') + '</div>' +
+          '<div class="text-[11px] text-by-ink-3 font-mono">' + esc(p.session_date) + '</div></div>' +
+          '<span class="text-[11px] text-by-ink-3 flex-shrink-0">Evaluate →</span></button>';
+      }).join('');
+    }
+
+    function _questionField(q) {
+      if (q.type === 'scale') {
+        var opts = [1, 2, 3, 4, 5].map(function (n) {
+          return '<label class="flex-1 text-center">' +
+            '<input type="radio" name="q_' + q.id + '" value="' + n + '" class="peer sr-only" />' +
+            '<span class="block py-2 border border-by-ink text-[13px] font-mono cursor-pointer peer-checked:bg-by-yes peer-checked:font-bold">' + n + '</span></label>';
+        }).join('');
+        return '<div><label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">' + esc(q.text) +
+          ' <span class="text-by-tomato">*</span></label><div class="flex gap-1.5">' + opts + '</div></div>';
+      }
+      var req = q.optional ? '<span class="text-by-ink-4 font-normal">(optional)</span>' : '<span class="text-by-tomato">*</span>';
+      return '<div><label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">' + esc(q.text) + ' ' + req + '</label>' +
+        '<textarea data-qid="' + q.id + '" rows="2" class="w-full border px-3 py-2 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg"></textarea></div>';
+    }
+
+    window.openSelfEvalForm = function (idx) {
+      var p = _pending[idx];
+      if (!p) return;
+      var formEl = document.getElementById('selfEvalForm');
+      formEl.dataset.sessionId = p.session_id;
+      formEl.classList.remove('hidden');
+      formEl.innerHTML = _questions.map(_questionField).join('') +
+        '<div id="selfEvalStatus" class="hidden px-3 py-2.5 text-[12.5px] font-medium text-center"></div>' +
+        '<button onclick="submitSelfEval()" class="w-full h-10 btn-spot text-[13px]">Submit self-evaluation</button>';
+      formEl.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    };
+
+    window.submitSelfEval = function () {
+      var formEl = document.getElementById('selfEvalForm');
+      var sessionId = formEl.dataset.sessionId;
+      var answers = {};
+      _questions.forEach(function (q) {
+        if (q.type === 'scale') {
+          var checked = formEl.querySelector('input[name="q_' + q.id + '"]:checked');
+          if (checked) answers[q.id] = checked.value;
+        } else {
+          var ta = formEl.querySelector('textarea[data-qid="' + q.id + '"]');
+          if (ta) answers[q.id] = ta.value.trim();
+        }
+      });
+      var missing = _questions.filter(function (q) { return !q.optional && !answers[q.id]; });
+      if (missing.length) {
+        var statusEl = document.getElementById('selfEvalStatus');
+        statusEl.classList.remove('hidden');
+        statusEl.className = 'px-3 py-2.5 text-[12.5px] font-medium text-center bg-by-tomato-soft border border-by-tomato text-by-tomato';
+        statusEl.textContent = 'Please answer every required question.';
+        return;
+      }
+      fetch('/api/class-tracker/self-eval', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({session_id: sessionId, answers: answers})
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        var statusEl = document.getElementById('selfEvalStatus');
+        statusEl.classList.remove('hidden');
+        if (data.ok) {
+          statusEl.className = 'px-3 py-2.5 text-[12.5px] font-medium text-center bg-by-yes-soft border border-by-ink text-by-ink';
+          statusEl.textContent = 'Thanks — submitted!';
+          _pending = _pending.filter(function (p) { return p.session_id !== sessionId; });
+          setTimeout(function () {
+            formEl.classList.add('hidden');
+            _renderList();
+          }, 900);
+        } else {
+          statusEl.className = 'px-3 py-2.5 text-[12.5px] font-medium text-center bg-by-tomato-soft border border-by-tomato text-by-tomato';
+          statusEl.textContent = data.error || 'Could not submit — try again.';
+        }
+      }).catch(function () {});
+    };
+
+    function _load() {
+      Promise.all([
+        fetch('/api/class-tracker/self-eval/questions').then(function (r) { return r.json(); }).catch(function () { return {ok: false}; }),
+        fetch('/api/class-tracker/self-eval/pending').then(function (r) { return r.json(); }).catch(function () { return {ok: false}; }),
+      ]).then(function (results) {
+        var qRes = results[0], pRes = results[1];
+        if (qRes && qRes.ok) _questions = qRes.questions || [];
+        if (pRes && pRes.ok) _pending   = pRes.pending   || [];
+        _renderList();
+      }).catch(function () {
+        // Module not enabled on this vessel yet — leave the "Loading…" copy
+        // out and show the empty state instead of looping forever.
+        var listEl = document.getElementById('selfEvalList');
+        if (listEl) listEl.innerHTML = '<div class="py-4 text-center text-[12.5px] text-by-ink-3">Self-evaluations aren\'t available yet.</div>';
+      });
+    }
+    _load();
   })();
 </script>
 

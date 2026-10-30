@@ -70,6 +70,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/nd-mode.css') }}">
 {% if nd_mode %}
 <script src="{{ url_for('static', filename='js/nd-celebrate.js') }}"></script>
+<script src="{{ url_for('static', filename='js/nd-wizard.js') }}"></script>
 {% endif %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/overrides.css') }}">
 
@@ -156,9 +157,29 @@
   .tab.active .count { color:var(--by-ink); background:var(--by-yes); }
 
   /* Class card */
-  .class-card { border:1px solid var(--by-ink); background:var(--by-bg); padding:14px; cursor:pointer; transition:background-color 120ms, box-shadow 120ms; }
+  .class-card { border:1px solid var(--by-ink); background:var(--by-bg); padding:10px 12px; cursor:pointer; transition:background-color 120ms, box-shadow 120ms, transform 120ms; position:relative; }
   .class-card:hover   { background:var(--by-bg-2); box-shadow:var(--by-sh-1); }
-  .class-card.selected { background:var(--by-yes-soft); box-shadow:var(--by-sh-yes); }
+  .class-card.selected {
+    background:var(--by-yes-soft);
+    box-shadow:inset 4px 0 0 0 var(--by-ink), var(--by-sh-yes);
+    padding-left:16px;
+  }
+  .class-card.selected::after {
+    content:'\2713';
+    position:absolute; top:10px; right:10px;
+    width:18px; height:18px; border-radius:999px;
+    background:var(--by-ink); color:var(--by-yes);
+    font-size:11px; font-weight:800; line-height:18px; text-align:center;
+  }
+
+  /* Master/detail: unified Classes + Roster panel */
+  #classesMasterDetail { border:1px solid var(--by-ink); background:var(--by-bg); }
+  #classStackCol { border-bottom:1px solid var(--by-ink); }
+  @media (min-width: 768px) {
+    #classStackCol { border-bottom:none; border-right:1px solid var(--by-ink); }
+  }
+  #rosterPanel { transition:opacity 160ms ease; }
+  #rosterPanel.panel-swap { opacity:.4; }
 
   /* Attendance pills */
   .att { display:inline-flex; gap:2px; padding:2px; background:var(--by-bg-3); border:1px solid var(--by-ink); border-radius:var(--by-r-1); }
@@ -415,6 +436,12 @@
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       Message Students
     </button>
+    {% if (feature_enabled is not defined) or feature_enabled(g.tenant, 'class_tracker') %}
+    <a href="/backstage/class-reports" class="nav-item" onclick="toggleSidebar()">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 17v-6M13 17V7M17 17v-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      Class Reports
+    </a>
+    {% endif %}
   </nav>
 
   {% set next_cls = active_classes[0] if active_classes else none %}
@@ -855,23 +882,24 @@
       </div>
     </div>
 
-    <!-- ══ Main grid: Vertical class stack (left) + Roster (right) ══ -->
-    <main class="px-4 lg:px-7 pt-5 pb-6 flex flex-col md:grid md:grid-cols-12 gap-4 lg:gap-5 min-w-0">
+    <!-- ══ Classes + Roster: one unified master/detail panel ══ -->
+    <main class="px-4 lg:px-7 pt-5 pb-6 min-w-0">
+      <div id="classesMasterDetail" class="w-full flex flex-col md:grid md:grid-cols-12 min-w-0 overflow-hidden">
 
       <!-- Left column: Classes stacked vertically -->
-      <section class="w-full md:col-span-6 flex flex-col gap-3 min-w-0" id="classStackCol">
+      <section class="w-full md:col-span-5 flex flex-col gap-3 min-w-0 p-4" id="classStackCol">
         <div class="flex items-center justify-between">
           <div class="font-display text-[17px] text-by-ink">Classes</div>
           <span id="classStackCount" class="by-eyebrow">{{ active_classes | length }} active</span>
         </div>
-        <div id="classStrip" class="flex flex-col gap-2 max-h-[calc(100vh-420px)] md:max-h-[calc(100vh-380px)] overflow-y-auto pr-0.5"></div>
+        <div id="classStrip" class="flex flex-col gap-1.5 max-h-[calc(100vh-420px)] md:max-h-[calc(100vh-380px)] overflow-y-auto pr-0.5"></div>
       </section>
 
       <!-- Right column: Roster -->
-      <section class="w-full md:col-span-6 flex flex-col gap-4 lg:gap-5 min-w-0">
+      <section class="w-full md:col-span-7 flex flex-col min-w-0">
 
         <!-- Roster -->
-        <section id="rosterPanel" class="border hairline bg-by-bg">
+        <section id="rosterPanel" class="bg-by-bg">
 
           <!-- Roster header -->
           <header class="px-5 py-4 flex items-start gap-4 border-b hairline">
@@ -953,6 +981,10 @@
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Message this cohort
               </button>
+              <button id="sessionNotesBtn" class="btn-ghost h-7 px-2 text-[11.5px] hidden items-center gap-1.5 font-body" onclick="openSessionNotesModal()">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Session notes
+              </button>
               <button id="detailsBtn" class="h-7 px-2 text-[11.5px] hidden items-center gap-1.5 bg-by-yes border border-by-ink cursor-pointer text-by-ink font-body font-semibold" onclick="openSelectedClassModal()">
                 More details →
               </button>
@@ -962,6 +994,7 @@
 
       </section>
 
+      </div>
     </main>
 
     <footer class="px-4 lg:px-7 py-4 text-[11.5px] flex items-center justify-between border-t hairline text-by-ink-3">
@@ -971,8 +1004,23 @@
   </div>
 </div>
 
-<!-- ══ Shared right-drawer styles ══ -->
+<!-- ══ Shared right-drawer + slide-in panel styles ══ -->
 <style>
+  /* ── Slide-in panel (modal-session-notes, modal-student-note) ───────────
+     Same convention as classes.html/admin.html's by-panel — brought in here
+     so the new class-tracker modals can use ndWizardOnOpen/ndWizardOnClose
+     and inherit this session's ND-wizard validation/refresh fixes, rather
+     than extending the by-drawer pattern already used by student-drawer/
+     msg-drawer/month-drawer below. See areas/class-tracker-feature.md. */
+  .by-panel { overflow:hidden; }
+  .by-panel-inner {
+    transform:translateX(100%);
+    transition:transform 280ms cubic-bezier(.2,.8,.2,1);
+    box-shadow:-4px 0 0 0 var(--by-ink);
+    max-width:100vw;
+  }
+  .by-panel.open .by-panel-inner { transform:translateX(0); }
+
   .by-drawer-overlay {
     display:none; position:fixed; inset:0; z-index:49; background:rgba(20,18,16,.45);
   }
@@ -989,6 +1037,99 @@
   .by-drawer.open { transform:translateX(0); }
   .by-drawer-wide { width:min(640px, 100vw); }
 </style>
+
+<!-- ══ Session Notes modal (class_tracker module) ══ -->
+<div id="modal-session-notes" class="by-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-session-notes')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[460px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <div class="min-w-0">
+        <h3 class="text-base font-semibold text-by-ink">Session Notes</h3>
+        <p id="sn-subtitle" class="text-[11.5px] text-by-ink-3 mt-0.5">—</p>
+      </div>
+      <button onclick="closeModal('modal-session-notes')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">What went well <span class="text-by-tomato">*</span></label>
+        <textarea id="sn-went-well" rows="3" required
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg"></textarea>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">What went wrong <span class="text-by-ink-4 font-normal">(optional)</span></label>
+        <textarea id="sn-went-wrong" rows="3"
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg"></textarea>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Activities run <span class="text-by-ink-4 font-normal">(optional)</span></label>
+        <textarea id="sn-activities" rows="2"
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" placeholder="e.g. Yes-And warmups, Harold run-through"></textarea>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Visibility</label>
+        <div class="by-select-wrap">
+          <select id="sn-visibility" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
+            <option value="private">Private — staff only</option>
+            <option value="shared">Shared — e.g. for a substitute teacher</option>
+          </select>
+        </div>
+      </div>
+      <div id="session-notes-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-session-notes')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
+      <button onclick="saveSessionNote()" class="flex-1 btn-spot py-2.5 text-sm">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Student Note modal (class_tracker module) ══ -->
+<div id="modal-student-note" class="by-panel hidden fixed inset-0 z-50">
+  <div class="absolute inset-0 bg-[rgba(20,18,16,.5)]" onclick="closeModal('modal-student-note')"></div>
+  <div class="by-panel-inner absolute inset-y-0 right-0 w-full sm:max-w-[440px] flex flex-col bg-by-bg border-l-[1.5px] border-l-by-ink">
+
+    <div class="flex items-center justify-between flex-shrink-0 px-5 py-4 border-b border-by-ink">
+      <h3 id="stn-title" class="text-base font-semibold text-by-ink">Note about —</h3>
+      <button onclick="closeModal('modal-student-note')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-by-ink-3">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Class <span class="text-by-tomato">*</span></label>
+        <div class="by-select-wrap">
+          <select id="stn-class" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg"></select>
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Note <span class="text-by-tomato">*</span></label>
+        <textarea id="stn-text" rows="5" required
+          class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg"></textarea>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Visibility</label>
+        <div class="by-select-wrap">
+          <select id="stn-visibility" class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg">
+            <option value="private">Private — staff only, never shown to the student</option>
+            <option value="shared">Shared — visible to the student</option>
+          </select>
+        </div>
+      </div>
+      <div id="student-note-status" class="hidden px-4 py-3 text-sm font-medium text-center"></div>
+    </div>
+
+    <div class="flex gap-3 flex-shrink-0 px-5 py-4 border-t border-by-ink">
+      <button onclick="closeModal('modal-student-note')" class="flex-1 border py-2.5 text-sm font-semibold border-by-ink text-by-ink-2 bg-by-bg">Cancel</button>
+      <button onclick="saveStudentNote()" class="flex-1 btn-spot py-2.5 text-sm">Save note</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══ Student Detail Drawer ══ -->
 <div id="student-drawer-overlay" class="by-drawer-overlay" onclick="closeStudentDrawer()"></div>
@@ -1138,11 +1279,24 @@
   window.selectClass = function(id) {
     const cls = CLASSES.find(c => c.id === id);
     if (!cls) return;
+    const changed = STATE.selectedId !== id;
     STATE.tab = cls.status;
     $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === cls.status));
     STATE.selectedId = id;
     renderStrip();
-    renderSelected();
+
+    // Fade the roster panel out/in on swap so the change is unmissable
+    const panel = $('#rosterPanel');
+    if (panel && changed) {
+      panel.classList.add('panel-swap');
+      setTimeout(() => {
+        renderSelected();
+        requestAnimationFrame(() => panel.classList.remove('panel-swap'));
+      }, 110);
+    } else {
+      renderSelected();
+    }
+
     updateWeekPills();
     // Scroll roster into view on mobile
     if (window.innerWidth < 1024) {
@@ -1168,18 +1322,19 @@
                                 '<span class="chip chip-past"><span class="dot"></span>Past</span>';
     return `
       <div class="class-card ${isSel ? 'selected' : ''}" data-id="${esc(c.id)}">
-        <div class="flex items-start justify-between gap-2">
-          <div class="font-display text-[15.5px] leading-tight text-by-ink">${esc(c.title)}</div>
+        <div class="flex items-start justify-between gap-2 pr-5">
+          <div class="font-display text-[14px] leading-tight text-by-ink">${esc(c.title)}</div>
           ${chip}
         </div>
-        <div class="mt-2 text-[12px] flex items-center gap-1.5 text-by-ink-3">
-          <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <div class="mt-1.5 text-[11.5px] flex items-center gap-1.5 text-by-ink-3">
+          <svg class="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           ${esc(c.sched)}
+          <span class="text-by-ink-4">·</span>
+          <span class="font-mono">${esc(c.term)}</span>
         </div>
-        <div class="mt-1 text-[11.5px] font-mono text-by-ink-3">${esc(c.term)}</div>
-        <div class="mt-3 pt-3 flex items-center justify-between border-t border-by-bg-3">
-          <span class="text-[11.5px] text-by-ink-3">${esc(c.room)}</span>
-          <span class="text-[13px] font-mono text-by-ink"><b>${enrolled}</b><span class="text-by-ink-4">/${c.cap}</span></span>
+        <div class="mt-2 pt-2 flex items-center justify-between border-t border-by-bg-3">
+          <span class="text-[11px] text-by-ink-3">${esc(c.room)}</span>
+          <span class="text-[12.5px] font-mono text-by-ink"><b>${enrolled}</b><span class="text-by-ink-4">/${c.cap}</span></span>
         </div>
       </div>`;
   }
@@ -1208,7 +1363,7 @@
     const att = STATE.attendance[s.id];
     return `
       <tr class="roster-row" data-id="${esc(s.id)}">
-        <td class="pl-5 pr-3 py-2.5">
+        <td class="pl-5 pr-3 py-2.5 cursor-pointer" onclick="openStudentDrawer('${esc(s.id)}')" title="View ${esc(s.name)} — message, notes, attendance">
           <div class="flex items-center gap-3">
             <span class="av border-[1.5px] border-by-ink" style="background:linear-gradient(135deg,${t[0]},${t[1]});">${esc(s.initials)}</span>
             <div class="leading-tight">
@@ -1248,6 +1403,7 @@
       $('#rosterFooterMsg').textContent = 'No class selected.';
       $('#msgClassBtn').style.display = 'none';
       $('#detailsBtn').style.display = 'none';
+      $('#sessionNotesBtn').style.display = 'none';
       updateAttendanceCounts();
       return;
     }
@@ -1265,6 +1421,7 @@
     $('#rosterFooterMsg').textContent = `${c.title} · ${c.students.length} student${c.students.length !== 1 ? 's' : ''}`;
     $('#msgClassBtn').style.display = 'flex';
     $('#detailsBtn').style.display = 'flex';
+    $('#sessionNotesBtn').style.display = 'flex';
 
     if (!c.students.length) {
       $('#rosterBody').innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center text-[13px] text-by-ink-3">Roster opens when this class becomes active.</td></tr>`;
@@ -1368,12 +1525,14 @@
       return;
     }
     $('#recentChallenges').innerHTML = recentChallenges.map((r, idx) => {
-      var prompt = (r.prompt || r.title || '').slice(0, 55);
-      var title  = prompt.length > 50 ? prompt + '…' : prompt;
-      return '<li class="px-5 py-2.5 flex items-start gap-2 cursor-pointer hover:bg-by-bg-2"'
+      // Full text always — never truncate challenge prompts here (explicit
+      // product requirement). Rows wrap and grow to fit; no fixed-width or
+      // ellipsis cropping of any kind.
+      var title = (r.prompt || r.title || '');
+      return '<li class="px-5 py-3.5 flex items-start gap-3 cursor-pointer hover:bg-by-bg-2"'
         + ' onclick="cmOpenChallengeDetail(\'' + esc(r.id) + '\')">'
-        + '<span class="flex-1 leading-snug text-by-ink-2 text-[12.5px]">' + esc(title) + '</span>'
-        + '<span class="by-eyebrow flex-shrink-0 text-[10px]">' + esc(r.posted_by_name || 'Teacher') + '</span>'
+        + '<span class="flex-1 leading-snug text-by-ink-2 text-[13.5px] break-words">' + esc(title) + '</span>'
+        + '<span class="by-eyebrow flex-shrink-0 text-[10px] mt-0.5">' + esc(r.posted_by_name || 'Teacher') + '</span>'
         + '</li>';
     }).join('');
   }
@@ -1556,7 +1715,8 @@
     var subEmpty  = document.getElementById('respSubEmpty');
     var subList   = document.getElementById('respSubList');
 
-    if (subPrompt) subPrompt.textContent = (prompt.length > 60 ? prompt.slice(0,57) + '…' : prompt);
+    // Full prompt text always — never truncate (explicit requirement).
+    if (subPrompt) subPrompt.textContent = prompt;
     if (!modal) { console.error('responsesModal not in DOM'); return; }
     modal.style.display = 'block';
     if (subEmpty) subEmpty.style.display = 'none';
@@ -1586,19 +1746,19 @@
       if (subList) {
         subList.innerHTML = responses.map(function(r, idx) {
           var voted = r.voter_rated || r.user_rated || false;
-          return '<div class="py-3 px-[18px] border-b border-by-bg-3">'
-            + '<div class="flex items-center justify-between mb-1">'
-            + '<div class="font-body text-[13px] font-semibold text-by-ink">' + esc('Anonymous #' + (idx + 1)) + '</div>'
-            + '<div class="flex items-center gap-1.5">'
-            + '<span class="font-mono text-[13px] font-bold text-by-tomato">♥ ' + (r.favorite_count || 0) + '</span>'
+          return '<div class="py-4 px-6 border-b border-by-bg-3">'
+            + '<div class="flex items-center justify-between mb-1.5">'
+            + '<div class="font-body text-[14.5px] font-semibold text-by-ink">' + esc('Anonymous #' + (idx + 1)) + '</div>'
+            + '<div class="flex items-center gap-2">'
+            + '<span class="font-mono text-[15px] font-bold text-by-tomato">♥ ' + (r.favorite_count || 0) + '</span>'
             + (voted
-                ? '<span class="text-[11px] text-by-yes-deep">voted</span>'
+                ? '<span class="text-[12px] text-by-yes-deep">voted</span>'
                 : '<button onclick="cmVoteOnResponse(\'' + esc(challengeId) + '\',\'' + esc(r.id) + '\')" '
-                +   'class="text-[10.5px] py-0.5 px-2 border border-by-bg-3 bg-by-bg cursor-pointer text-by-ink font-mono">'
+                +   'class="text-[12px] py-1 px-2.5 border border-by-bg-3 bg-by-bg cursor-pointer text-by-ink font-mono">'
                 +   '♡ Vote</button>')
             + '</div>'
             + '</div>'
-            + '<div class="font-body text-[13px] text-by-ink-2 leading-[1.5]">' + esc(r.response_text) + '</div>'
+            + '<div class="font-body text-[15px] text-by-ink-2 leading-[1.55] break-words">' + esc(r.response_text) + '</div>'
             + '</div>';
         }).join('');
       }
@@ -1932,6 +2092,12 @@
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Message ${esc(student.name.split(' ')[0])}
         </button>
+        <button onclick="openStudentNoteModal('${esc(student.id)}', '${esc(student.name)}');closeStudentDrawer();"
+          class="w-full h-10 mt-2 font-display text-[13px] flex items-center justify-center gap-2
+          bg-by-bg border-[1.5px] border-by-ink cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          Add a note about ${esc(student.name.split(' ')[0])}
+        </button>
       </div>`;
 
     $('#student-drawer').classList.add('open');
@@ -1943,6 +2109,150 @@
     $('#student-drawer').classList.remove('open');
     $('#student-drawer-overlay').classList.remove('open');
     document.body.style.overflow = '';
+  };
+
+  // ── Class Tracker: panel helpers (by-panel convention, matches classes.html) ─
+  // Assigned to window (not plain function declarations) because this whole
+  // block lives inside this script's top-level IIFE — the modal markup's
+  // inline onclick="openModal(...)" / "closeModal(...)" attributes run in
+  // global scope, so a plain `function closeModal(){}` here would stay
+  // private to the IIFE and never be reachable from them (confirmed live:
+  // without this, clicking Cancel/X/the overlay threw a real
+  // "closeModal is not defined" ReferenceError and the modal never closed —
+  // matches how window.openStudentDrawer/closeStudentDrawer are exposed
+  // just above for the exact same reason).
+  window.openModal = function (id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+    document.body.style.overflow = 'hidden';
+    if (typeof ndWizardOnOpen === 'function') ndWizardOnOpen(id);
+  };
+  window.closeModal = function (id) {
+    if (typeof ndWizardOnClose === 'function') ndWizardOnClose(id);
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('open');
+    const inner = el.querySelector('.by-panel-inner');
+    if (inner) {
+      const done = () => { el.classList.add('hidden'); inner.removeEventListener('transitionend', done); };
+      inner.addEventListener('transitionend', done);
+    } else {
+      el.classList.add('hidden');
+    }
+    document.body.style.overflow = '';
+  };
+
+  // ── Class Tracker: Session Notes (scoped to the currently selected class + today) ──
+  let _snSessionId = null, _snClassId = null;
+
+  window.openSessionNotesModal = async function() {
+    const c = CLASSES.find(x => x.id === STATE.selectedId);
+    if (!c) { flashToast('Select a class first'); return; }
+    _snClassId = c.id;
+    $('#sn-subtitle').textContent = `${c.title} · today`;
+    $('#sn-went-well').value = '';
+    $('#sn-went-wrong').value = '';
+    $('#sn-activities').value = '';
+    $('#sn-visibility').value = 'private';
+    $('#session-notes-status').className = 'hidden px-4 py-3 text-sm font-medium text-center';
+    openModal('modal-session-notes');
+    try {
+      const res  = await fetch(`/api/class-tracker/session?class_id=${encodeURIComponent(c.id)}`);
+      const data = await res.json();
+      if (data.ok) {
+        _snSessionId = data.session.id;
+        if (data.note) {
+          $('#sn-went-well').value  = data.note.went_well  || '';
+          $('#sn-went-wrong').value = data.note.went_wrong || '';
+          $('#sn-activities').value = data.note.activities || '';
+          $('#sn-visibility').value = data.note.visibility || 'private';
+        }
+        if (typeof ndWizardRefresh === 'function') ndWizardRefresh();
+      }
+    } catch (e) { /* feature may not be enabled on this vessel yet */ }
+  };
+
+  window.saveSessionNote = async function() {
+    const wentWell = $('#sn-went-well').value.trim();
+    if (!wentWell) { flashToast('Add at least a quick note on what went well'); return; }
+    const payload = {
+      class_id:    _snClassId,
+      went_well:   wentWell,
+      went_wrong:  $('#sn-went-wrong').value.trim(),
+      activities:  $('#sn-activities').value.trim(),
+      visibility:  $('#sn-visibility').value,
+    };
+    try {
+      const res  = await fetch('/api/class-tracker/session-note', {
+        method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      const el = $('#session-notes-status');
+      el.classList.remove('hidden');
+      if (data.ok) {
+        el.className = 'px-4 py-3 text-sm font-medium text-center bg-by-yes-soft border border-by-ink text-by-ink';
+        el.textContent = 'Saved.';
+        setTimeout(() => closeModal('modal-session-notes'), 700);
+      } else {
+        el.className = 'px-4 py-3 text-sm font-medium text-center bg-by-tomato-soft border border-by-tomato text-by-tomato';
+        el.textContent = data.error || 'Could not save — try again.';
+      }
+    } catch (e) {
+      flashToast('Could not reach the server');
+    }
+  };
+
+  // ── Class Tracker: Student Notes ──────────────────────────────────────────
+  let _stnStudentId = null;
+
+  window.openStudentNoteModal = function(studentId, studentName) {
+    _stnStudentId = studentId;
+    $('#stn-title').textContent = `Note about ${studentName}`;
+    $('#stn-text').value = '';
+    $('#stn-visibility').value = 'private';
+    $('#student-note-status').className = 'hidden px-4 py-3 text-sm font-medium text-center';
+
+    const enrolled = CLASSES.filter(c => c.students.some(s => s.id === studentId));
+    const sel = $('#stn-class');
+    sel.innerHTML = enrolled.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('')
+      || '<option value="" disabled>Not enrolled in any class</option>';
+    if (STATE.selectedId && enrolled.some(c => c.id === STATE.selectedId)) {
+      sel.value = STATE.selectedId;
+    }
+    openModal('modal-student-note');
+  };
+
+  window.saveStudentNote = async function() {
+    const classId  = $('#stn-class').value;
+    const noteText = $('#stn-text').value.trim();
+    if (!classId)   { flashToast('Pick a class'); return; }
+    if (!noteText)  { flashToast('Write a note first'); return; }
+    const payload = {
+      class_id:   classId,
+      student_id: _stnStudentId,
+      note_text:  noteText,
+      visibility: $('#stn-visibility').value,
+    };
+    try {
+      const res  = await fetch('/api/class-tracker/student-note', {
+        method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      const el = $('#student-note-status');
+      el.classList.remove('hidden');
+      if (data.ok) {
+        el.className = 'px-4 py-3 text-sm font-medium text-center bg-by-yes-soft border border-by-ink text-by-ink';
+        el.textContent = 'Note saved.';
+        setTimeout(() => closeModal('modal-student-note'), 700);
+      } else {
+        el.className = 'px-4 py-3 text-sm font-medium text-center bg-by-tomato-soft border border-by-tomato text-by-tomato';
+        el.textContent = data.error || 'Could not save — try again.';
+      }
+    } catch (e) {
+      flashToast('Could not reach the server');
+    }
   };
 
   window.sendTeacherMessage = async function() {
@@ -2460,20 +2770,20 @@
   <div class="absolute inset-0 bg-[rgba(20,18,16,.3)]"
        onclick="cmCloseResponses()"></div>
 
-  <div class="absolute top-0 right-0 h-full w-full max-w-[380px]
+  <div class="absolute top-0 right-0 h-full w-full max-w-[560px]
               bg-by-bg border-l-[1.5px] border-by-ink
               shadow-[-4px_0_16px_rgba(0,0,0,.2)]
               flex flex-col overflow-hidden">
 
-    <header class="py-4 px-[18px] border-b-[1.5px] border-by-ink shrink-0 flex items-center justify-between">
+    <header class="py-5 px-6 border-b-[1.5px] border-by-ink shrink-0 flex items-center justify-between">
       <div>
-        <div class="font-mono text-[9.5px] tracking-[.12em] uppercase text-by-ink-3">Challenge</div>
-        <div id="respSubPrompt" class="font-display text-[15px] text-by-ink mt-0.5 leading-[1.3]"></div>
+        <div class="font-mono text-[10.5px] tracking-[.12em] uppercase text-by-ink-3">Challenge</div>
+        <div id="respSubPrompt" class="font-display text-[19px] text-by-ink mt-1 leading-[1.35] break-words"></div>
       </div>
       <button onclick="cmCloseResponses()"
-              class="w-[34px] h-[34px] flex items-center justify-center
+              class="w-[38px] h-[38px] flex items-center justify-center
                      border-[1.5px] border-by-ink bg-by-bg cursor-pointer shrink-0 text-by-ink-3">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </header>
 
@@ -2749,7 +3059,8 @@
       if (showSubmodal) {
         // Render submodal
         const prompt = data.challenge ? data.challenge.prompt : '—';
-        $('respSubPrompt').textContent = prompt.length > 60 ? prompt.slice(0,57)+'…' : prompt;
+        // Full prompt text always — never truncate (explicit requirement).
+        $('respSubPrompt').textContent = prompt;
 
         if (!data.responses || !data.responses.length) {
           $('respSubList').innerHTML = '';
@@ -2757,12 +3068,12 @@
         } else {
           $('respSubEmpty').style.display = 'none';
           $('respSubList').innerHTML = data.responses.map(r => `
-            <div class="py-3 px-[18px] border-b border-by-bg-3">
-              <div class="flex items-center justify-between mb-1">
-                <div class="font-body text-[13px] font-semibold text-by-ink">${esc(r.student_name)}</div>
-                <div class="font-mono text-[10px] text-by-ink-4">${esc(r.submitted_at ? r.submitted_at.slice(0,16).replace('T',' ') : '')}</div>
+            <div class="py-4 px-6 border-b border-by-bg-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="font-body text-[14.5px] font-semibold text-by-ink">${esc(r.student_name)}</div>
+                <div class="font-mono text-[11px] text-by-ink-4">${esc(r.submitted_at ? r.submitted_at.slice(0,16).replace('T',' ') : '')}</div>
               </div>
-              <div class="font-body text-[13px] text-by-ink-2 leading-[1.5]">${esc(r.response_text)}</div>
+              <div class="font-body text-[15px] text-by-ink-2 leading-[1.55] break-words">${esc(r.response_text)}</div>
             </div>`).join('');
         }
         $('responsesModal').style.display = 'block';

@@ -1660,22 +1660,23 @@
       <!-- Name + Email -->
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Full Name</label>
-          <input type="text" id="new-person-name" placeholder="Ana García"
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Full Name <span class="text-by-tomato">*</span></label>
+          <input type="text" id="new-person-name" placeholder="Ana García" required
             class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Email</label>
-          <input type="email" id="new-person-email" placeholder="ana@bigyes.local"
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Email <span class="text-by-tomato">*</span></label>
+          <input type="email" id="new-person-email" placeholder="ana@bigyes.local" required
             class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
       </div>
 
       <!-- Initial Password -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Password</label>
-        <input type="password" id="new-person-password" name="password" placeholder="Initial passphrase" required
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Password <span class="text-by-ink-4 font-normal">(optional)</span></label>
+        <input type="password" id="new-person-password" name="password" placeholder="Initial passphrase"
           class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
+        <p class="mt-1 text-[11px] text-by-ink-4">Leave blank to use the vessel's default initial passphrase.</p>
       </div>
 
       <!-- Role Type (primary identity — 4 cards) -->
@@ -1787,8 +1788,8 @@
 
     <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Class Name</label>
-        <input type="text" id="new-class-name" placeholder="e.g. Level 2 Improv"
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Class Name <span class="text-by-tomato">*</span></label>
+        <input type="text" id="new-class-name" placeholder="e.g. Level 2 Improv" required
           class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <div class="grid grid-cols-2 gap-3">
@@ -2218,8 +2219,8 @@
       </div>
       <!-- File picker -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Select .csv or .xlsx file</label>
-        <input type="file" id="bulk-file-input" accept=".csv,.xlsx"
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Select .csv or .xlsx file <span class="text-by-tomato">*</span></label>
+        <input type="file" id="bulk-file-input" accept=".csv,.xlsx" required
           class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
       </div>
       <!-- Results -->
@@ -2307,8 +2308,8 @@
       <!-- Name fields -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">First name</label>
-          <input type="text" id="cfg-first" placeholder="Sofia"
+          <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">First name <span class="text-by-tomato">*</span></label>
+          <input type="text" id="cfg-first" placeholder="Sofia" required
             class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg" />
         </div>
         <div>
@@ -3770,17 +3771,23 @@
     } else {
       warningEl.style.display = 'none';
     }
+    // The warning is its own ND-wizard step-candidate (see nd-wizard.js), and
+    // this can fire while that candidate IS the active step -- toggling its
+    // visibility here wouldn't otherwise be picked up until Next/Back.
+    if (typeof ndWizardRefresh === 'function') ndWizardRefresh();
   }
 
   function confirmPastTerm() {
     _pastTermConfirmed = true;
     document.getElementById('past-term-warning').style.display = 'none';
+    if (typeof ndWizardRefresh === 'function') ndWizardRefresh();
   }
 
   function resetTermSelect() {
     document.getElementById('new-class-term').value = '';
     document.getElementById('past-term-warning').style.display = 'none';
     _pastTermConfirmed = false;
+    if (typeof ndWizardRefresh === 'function') ndWizardRefresh();
   }
 
   // ── Enrollment search ─────────────────────────────────────
@@ -3885,6 +3892,10 @@
     const finSection     = document.getElementById('fin-section');
     if (subroleSection) subroleSection.classList.toggle('hidden', isStageManager);
     if (finSection)     finSection.classList.toggle('hidden', !isStageManager);
+    // subrole-section/fin-section are their own ND-wizard step-candidates
+    // (see nd-wizard.js) -- this keeps the step count accurate immediately
+    // rather than only after the next Next/Back.
+    if (typeof ndWizardRefresh === 'function') ndWizardRefresh();
   }
 
   function selectSystemRole(identity) {
@@ -4723,8 +4734,8 @@
 
       {# ── Show details ── #}
       <div>
-        <label class="by-label">Title</label>
-        <input id="esh-title" type="text" class="by-input w-full" placeholder="e.g. The BIG Improvised Musical">
+        <label class="by-label">Title <span class="text-by-tomato">*</span></label>
+        <input id="esh-title" type="text" class="by-input w-full" placeholder="e.g. The BIG Improvised Musical" required>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
@@ -4743,8 +4754,8 @@
         </div>
       </div>
       <div>
-        <label class="by-label">Time</label>
-        <input id="esh-time" type="text" class="by-input w-full" placeholder="20:00">
+        <label class="by-label">Time <span class="text-by-tomato">*</span></label>
+        <input id="esh-time" type="text" class="by-input w-full" placeholder="20:00" required>
       </div>
 
       {# ── Booking status ── #}
@@ -4911,8 +4922,8 @@
 
       <!-- Text input -->
       <div>
-        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Describe it</label>
-        <textarea id="spont-pool-content" rows="4" maxlength="300"
+        <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-by-ink-3">Describe it <span class="text-by-tomato">*</span></label>
+        <textarea id="spont-pool-content" rows="4" maxlength="300" required
           placeholder="e.g. A crowded metro station just as someone's headphones explode with embarrassing music…"
           class="w-full border px-4 py-3 text-[13.5px] focus:outline-none resize-none leading-relaxed border-by-ink text-by-ink-2 bg-by-bg"></textarea>
         <div class="flex items-center justify-between mt-1.5">
@@ -5056,15 +5067,15 @@
       </div>
 
       <div>
-        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5 text-by-ink-3">Subject</label>
-        <input type="text" id="mail-subject"
+        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5 text-by-ink-3">Subject <span class="text-by-tomato">*</span></label>
+        <input type="text" id="mail-subject" required
                class="w-full border px-4 py-2.5 text-sm focus:outline-none border-by-ink text-by-ink-2 bg-by-bg"
                placeholder="e.g. See you Thursday — doors at 19:30" />
       </div>
 
       <div>
-        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5 text-by-ink-3">Message</label>
-        <textarea id="mail-body"
+        <label class="text-[10px] font-bold uppercase tracking-widest block mb-1.5 text-by-ink-3">Message <span class="text-by-tomato">*</span></label>
+        <textarea id="mail-body" required
                   class="w-full border px-4 py-2.5 text-sm focus:outline-none resize-y font-body leading-relaxed border-by-ink text-by-ink-2 bg-by-bg"
                   style="min-height:200px;"
                   placeholder="Write your message here. No projecting — the mic is hot."></textarea>

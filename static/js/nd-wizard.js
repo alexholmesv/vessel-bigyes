@@ -49,9 +49,24 @@
     });
   }
 
+  // Deliberately NOT window.getComputedStyle(el).display: the wizard's own
+  // step-hiding mechanism (the .nd-step-hide CSS class, see nd-mode.css) also
+  // resolves to display:none in computed style. Using computed style here
+  // would make visibleSteps() see a step the wizard itself just hid as "not
+  // a real step anymore" instead of "temporarily inactive" -- after the very
+  // first render every other section collapses out of the step list for
+  // good, the step count drops to 1, and "Review" appears immediately with
+  // every other field (Title, Day/Time, ...) unreachable until Review force-
+  // reveals everything. Checking only the app's own two hiding conventions
+  // (the Tailwind `hidden` class, and inline style.display -- see e.g. the
+  // avatar-preview comment in modal-my-config) sidesteps that collision
+  // entirely: a field-group conditionally hidden by business logic (like
+  // Schedule a Show's Title field when an existing show type is picked)
+  // is still correctly excluded from the step list, but the wizard's own
+  // bookkeeping no longer poisons it.
   function isHiddenNow(el) {
     if (el.classList.contains('hidden')) return true;
-    return window.getComputedStyle(el).display === 'none';
+    return el.style.display === 'none';
   }
 
   var active = null;
@@ -165,5 +180,22 @@
 
   window.ndWizardOnClose = function (panelId) {
     if (active && active.panelId === panelId) teardown();
+  };
+
+  // Content-agnostic re-render hook. A step's own business logic can change
+  // ANOTHER section's visibility while that section isn't the active step
+  // (e.g. Schedule a Show's Title field toggling off a later, already-passed
+  // step) -- visibleSteps() picks that up fine on the next Next/Back because
+  // renderStep() always recomputes from scratch. But when a click INSIDE the
+  // currently active step changes that same step's own visibility (e.g. the
+  // Add Class past-term warning hiding itself when "Confirm" or "Pick
+  // another term" is clicked), nothing calls renderStep() again until the
+  // person manually hits Next/Back -- they're left staring at a blank step
+  // with a stale "N / M" counter. Rather than teach the wizard about every
+  // modal's own business logic, any template function that hides/reveals a
+  // step-candidate section mid-step calls this afterward; it's a no-op when
+  // no wizard is active or ND mode is off.
+  window.ndWizardRefresh = function () {
+    if (active) renderStep();
   };
 })();
